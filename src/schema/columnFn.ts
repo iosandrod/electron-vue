@@ -1,9 +1,10 @@
-import { computed, h } from "vue"
+import { VNode, computed, h, withDirectives } from "vue"
 import { column } from "./column"
 import { StyleType } from "@/types/schema"
 import { getTableRowHeight } from "./tableFn"
 import { isUndefined } from 'xe-utils'
-import { system } from "./system"
+import { getIcon, useMousePoint } from "./icon"
+// import { system } from "./system"
 export const getOutSizeDiv = (column: column, row: any) => {
     const table = column.table!
     const rowHeight = getTableRowHeight(table)
@@ -17,15 +18,29 @@ export const getOutSizeDiv = (column: column, row: any) => {
 }
 
 
-export const getInSizeDiv = (column: column, row: any) => {//得到内部的div
+//得到内部的div
+export const getInSizeDiv = (column: column, row: any) => {
     const style = {}
     return getRenderFn('div', { style: { ...style } })
 }
 
 
-export const getRenderFn = (node: string, props: any) => {
-    return (nestNode: any[]) => {
-        return h(node, props, nestNode)
+export const getRenderFn = (node: string | VNode, props: any, directive?: any) => {
+    return (nestNode?: any[] | any) => {
+        let _nestNode: any[] = []
+        if (Array.isArray(nestNode)) {
+            _nestNode = [nestNode]
+        } else {
+            _nestNode = nestNode
+        }
+        const vnode = h(node, props, nestNode)
+        if (directive != null) {
+            if (Array.isArray(directive)) {
+                return withDirectives(vnode, [...directive])
+            }
+            return withDirectives(vnode, [[directive]])
+        }
+        return vnode
     }
 }
 
@@ -48,12 +63,11 @@ export const getTimeEditDiv = (column: column, row: any) => {
 
 
 
-export const getSlotDefault = (column: column) => {
+export const getSlotDefault = (_column: column) => {
     return computed(() => {
-        const columnConfig = column.columnConfig
-        const type = columnConfig.type as string
+        const columnConfig = _column.columnConfig
         const fn = ({ row, rowIndex, column }: any) => {
-            const outSizeDiv = getOutSizeDiv(column, row)
+            const outSizeDiv = getOutSizeDiv(_column, row)//外部的div
             return outSizeDiv
         }
         return fn
@@ -70,29 +84,42 @@ export const getColumnSlot = (column: column) => {
         }
         let slot: any = {}
         const _default = getSlotDefault(column).value
-        const edit = getSlotEdit(column).value
         const header = getSlotHeader(column).value
         slot.default = _default
-        slot.edit = edit
         slot.header = header
         return slot
     })
 }
 
-export const getSlotEdit = (column: column) => {
-    return computed(() => {
-
-    })
-}
 
 export const getSlotHeader = (_column: column) => {
     return computed(() => {
         const fn = () => {
-            return h('div', {}, ['123'])
+            //过滤图标
+            const renderColumn = _column.renderColumn
+            const title: string = renderColumn.title as string || 'title'
+            const filterIcon = useMousePoint({
+                onClick: (event) => {
+                    console.log('我被点击了')
+                }
+            })
+            const targetIcon = getIcon("vxe-icon-funnel")
+            const icon = filterIcon(targetIcon())
+            //排序图标
+            return h('div', {}, [title, icon])
         }
         return fn
     })
 }
+
+export const getSlotHeaderFilterIcon = (column: column) => {//获取头部的图标
+    return
+}
+
+export const getSlotHeaderSortIcon = (column: column) => {
+
+}
+
 
 export const getColumnVisiable = (column: column) => {
     return computed(() => {
@@ -134,5 +161,13 @@ export const getColumnSystem = (column: column) => {
     return computed(() => {
         const system = column.table?.system
         return system
+    })
+}
+
+export const getColumnTitle = (column: column) => {
+    return computed(() => {
+        const columnConfig = column.columnConfig
+        const title = columnConfig.title
+        return title
     })
 }

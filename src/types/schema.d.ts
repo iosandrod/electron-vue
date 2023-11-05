@@ -35,7 +35,8 @@ export type tableConfig = {
   filterConfig: filterConfig[],
   mergeConfig: mergeConfig[],
   rowConfig: {
-    rowHeight: string
+    rowHeight: string,
+    currentEditRow: any[]
   },
   headerConfig: {
     rowHeight: string
@@ -47,8 +48,6 @@ export type tableData = {
 }
 export type columnConfig = {
   isEdit: boolean,
-  // type?: 'string' | 'number',
-  columnHeight: string
 }
 
 export type pickRef<T = any> = {

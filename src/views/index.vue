@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full w-full ">
+    <div class="w-full h-full ">
         <table-view :columns="columns" :data="data"></table-view>
     </div>
 </template>
@@ -13,6 +13,8 @@ const columns = ref<VxeGridPropTypes.Columns>([
     { field: 'sex', title: 'sex' },
     { field: 'address', title: 'Address' }
 ])
+
+
 
 const data = ref([
     { id: 10001, name: 'Test1', nickname: 'T1', role: 'Develop', sex: 'Man', age: 28, address: 'Shenzhen' },

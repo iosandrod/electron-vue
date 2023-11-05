@@ -18,10 +18,11 @@ export class tableView extends base<tableSchema> {
     filterConfig: [{ field: 'name', value: 'Test1' }],//过滤配置
     mergeConfig: [],//合并配置
     rowConfig: {
-      rowHeight: "30px"
+      rowHeight: "30px",//行高度
+      currentEditRow: []//当前编辑的行配置
     },
     headerConfig: {//表头配置
-      rowHeight: "30px"
+      rowHeight: "30px"//行高度
     }
   }
   tableData: tableData = {
@@ -126,6 +127,5 @@ export function createTable(schema?: any, context?: any) {
   const _table = reactive(new tableView(_system, schema))
   _table.initGridOptions()
   _table.initComponent()
-  console.log(_table.component)
   return _table
 }

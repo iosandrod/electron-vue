@@ -4,13 +4,13 @@ import { VxeTableDefines } from "vxe-table"
 export class system {
   defaultTableConfig = {}
   defaultColumnConfig: VxeTableDefines.ColumnOptions = {
-    width: 200
+    width: 400
   }
-  constructor() {}
-  async systemInit() {}
-  async initSystemPermission() {}
-  async initSystemHttp() {}
-  async initSystemMenu() {}
+  constructor() { }
+  async systemInit() { }
+  async initSystemPermission() { }
+  async initSystemHttp() { }
+  async initSystemMenu() { }
 }
 
 const _system = reactive(new system())
