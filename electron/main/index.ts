@@ -1,6 +1,8 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, session } from 'electron'
 import { release } from 'node:os'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
+// import electronDevtoolsInstaller, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+
 
 // The built directory structure
 //
@@ -89,7 +91,11 @@ app.on('second-instance', () => {
     win.focus()
   }
 })
-
+// app.on('ready', () => {
+//   const _path = resolve(__dirname, '../../devtool')
+//   session.defaultSession.loadExtension(_path).then(res => {
+//   })
+// })
 app.on('activate', () => {
   const allWindows = BrowserWindow.getAllWindows()
   if (allWindows.length) {

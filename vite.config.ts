@@ -5,7 +5,10 @@ import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 import { notBundle } from 'vite-plugin-electron/plugin'
 import pkg from './package.json'
+import { resolve } from 'path'
 
+import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
+// import { Quasar } from 'quasar'
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   rmSync('dist-electron', { recursive: true, force: true })
@@ -15,8 +18,17 @@ export default defineConfig(({ command }) => {
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG
 
   return {
+    resolve: {
+      alias: {
+        /** @ 符号指向 src 目录 */
+        "@": resolve(__dirname, "./src")
+      }
+    },
     plugins: [
       vue(),
+      quasar({
+        sassVariables: 'src/quasar-variables.sass'
+      }),
       electron([
         {
           // Main process entry file of the Electron App.
@@ -81,5 +93,12 @@ export default defineConfig(({ command }) => {
       }
     })(),
     clearScreen: false,
+    // css: {
+    //   preprocessorOptions: {
+    //     scss: {
+    //       additionalData: `@import "@/style/vxe-table/index.scss";`, // 全局的 SCSS 变量和样式
+    //     },
+    //   },
+    // },
   }
 })
