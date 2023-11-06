@@ -1,4 +1,4 @@
-import { StyleType, componentConfig, concatAny, schema } from "types/schema"
+import { StyleType, componentConfig, concatAny, schema } from "@/types/schema"
 import { system } from "./system"
 // import * as Rx from "rxjs"
 import { ShallowRef, VNode, computed, h, shallowRef } from "vue"
@@ -8,9 +8,10 @@ export class base<T = any> {
   comopnentConfig?: concatAny<componentConfig>
   componentType?: string
   componentName?: string
-  schema?: concatAny<T>
+  schema?: concatAny<T> = {} as any
+  pageRef: any = {}
+  effectPool: any = {}//作用域
   component?: () => VNode
-  // = () => h('div', {}, ['123'])
   constructor(system: system, schema?: any) {
     this.system = system
     this.schema = schema

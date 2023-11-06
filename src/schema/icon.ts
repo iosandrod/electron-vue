@@ -5,10 +5,11 @@ import { StyleType } from "@/types/schema"
 export type propsConfig = {
     onClick?: (event: MouseEvent) => void,
     style?: StyleType,//
-    class?: any//类型
+    class?: any//类型,
+    directive?: Array<Array<Directive>>
 }
 
-export const getIcon = (iconName: string, propsConfig?: propsConfig) => {
+export const getIcon = (propsConfig: propsConfig | null = {}, iconName: string,) => {
     const classArr = [iconName]
     const style: StyleType = {
     }
@@ -27,15 +28,17 @@ export const useMousePoint = (props: propsConfig = {}) => {
         const _props = props
         await _props?.onClick && _props.onClick!(event)
     }
-    const directive: Directive = {
-        created: () => {
-            console.log('is create directive')
-        },
-        mounted: () => {
-            console.log('is mount')
-        },
-    }
+    const directive = props.directive as any
     return getRenderFn('div', {
         style: { ...style }, onClick: onClick, ref: value
-    }, directive)
+    }, directive)//自定义指令 
 }
+
+
+export const getDialogDiv = (props?: propsConfig) => {
+
+}
+
+
+
+

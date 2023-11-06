@@ -8,8 +8,4 @@ export default defineComponent({
     const table: any = createTable(props, context)
     return table.component
   },
-  // render() {
-  //   return h('div')
-  //   // return this.table.component()
-  // }
 })

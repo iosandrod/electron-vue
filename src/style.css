@@ -10,3 +10,14 @@ body{
     --vxe-table-cell-padding-left: 0px;
     --vxe-table-cell-padding-right: 0px;
 }
+
+.curRowClass{
+    background: #6bc6d6;
+}
+
+.notCurRowClass{
+    /* background: blue; */
+}
+.rowSelect{
+    background: #13777a;
+}

@@ -1,13 +1,13 @@
-import { VNode, computed, h, withDirectives } from "vue"
+import { ComputedRef, Directive, VNode, computed, h, isReactive, isRef, reactive, withDirectives } from "vue"
 import { column } from "./column"
 import { StyleType } from "@/types/schema"
-import { getTableRowHeight } from "./tableFn"
+import { getTableHeaderHeight, getTableRowHeight } from "./tableFn"
 import { isUndefined } from 'xe-utils'
-import { getIcon, useMousePoint } from "./icon"
+import { getIcon, propsConfig, useMousePoint } from "./icon"
 // import { system } from "./system"
 export const getOutSizeDiv = (column: column, row: any) => {
     const table = column.table!
-    const rowHeight = getTableRowHeight(table)
+    const rowHeight = getTableRowHeight(table).value
     const style: StyleType = {//外部div的配置
         width: '100%',
         height: rowHeight
@@ -16,7 +16,21 @@ export const getOutSizeDiv = (column: column, row: any) => {
     const value = row[column.renderColumn.field as string]
     return getRenderFn('div', { style: { ...style } })([inSizeDiv([value])])
 }
+export const getColumnRowHeight = (column: column, row?: any) => {
+    const table = column.table!
+    return computed(() => {
+        const rowHeight = getTableRowHeight(table).value
+        return rowHeight
+    })
+}
 
+export const getColumnHeaderHeight = (column: column) => {
+    const table = column.table!
+    return computed(() => {
+        const rowHeight = getTableHeaderHeight(table).value
+        return rowHeight
+    })
+}
 
 //得到内部的div
 export const getInSizeDiv = (column: column, row: any) => {
@@ -25,7 +39,7 @@ export const getInSizeDiv = (column: column, row: any) => {
 }
 
 
-export const getRenderFn = (node: string | VNode, props: any, directive?: any) => {
+export const getRenderFn = (node: string | VNode, props: any, directive?: Array<[Directive]>) => {
     return (nestNode?: any[] | any) => {
         let _nestNode: any[] = []
         if (Array.isArray(nestNode)) {
@@ -36,7 +50,7 @@ export const getRenderFn = (node: string | VNode, props: any, directive?: any) =
         const vnode = h(node, props, nestNode)
         if (directive != null) {
             if (Array.isArray(directive)) {
-                return withDirectives(vnode, [...directive])
+                return withDirectives(vnode, directive)
             }
             return withDirectives(vnode, [[directive]])
         }
@@ -65,7 +79,6 @@ export const getTimeEditDiv = (column: column, row: any) => {
 
 export const getSlotDefault = (_column: column) => {
     return computed(() => {
-        const columnConfig = _column.columnConfig
         const fn = ({ row, rowIndex, column }: any) => {
             const outSizeDiv = getOutSizeDiv(_column, row)//外部的div
             return outSizeDiv
@@ -85,12 +98,21 @@ export const getColumnSlot = (column: column) => {
         let slot: any = {}
         const _default = getSlotDefault(column).value
         const header = getSlotHeader(column).value
+        const filter = getSlotFilter(column).value
         slot.default = _default
         slot.header = header
+        slot.filter = filter
         return slot
     })
 }
-
+export const getSlotFilter = (column: column) => {
+    return computed(() => {
+        const fn = () => {
+            return h('div', {}, ['123123'])
+        }
+        return fn
+    })
+}
 
 export const getSlotHeader = (_column: column) => {
     return computed(() => {
@@ -100,13 +122,22 @@ export const getSlotHeader = (_column: column) => {
             const title: string = renderColumn.title as string || 'title'
             const filterIcon = useMousePoint({
                 onClick: (event) => {
-                    console.log('我被点击了')
+                    console.log(123)
+                    const table = _column.table!
+                    // console.log(_column.renderColumn.field)
+                    table.openColumnFilter(_column.renderColumn?.field as string)
                 }
             })
-            const targetIcon = getIcon("vxe-icon-funnel")
+            const targetIcon = getIcon(null, "vxe-icon-funnel")
             const icon = filterIcon(targetIcon())
+            const sortIcon = getSortColmmnIcons(undefined, _column)
             //排序图标
-            return h('div', {}, [title, icon])
+            const style: StyleType = {
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center'
+            }
+            return h('div', { style }, [title, icon, sortIcon])
         }
         return fn
     })
@@ -169,5 +200,20 @@ export const getColumnTitle = (column: column) => {
         const columnConfig = column.columnConfig
         const title = columnConfig.title
         return title
+    })
+}
+
+
+export const getSortColmmnIcons = (props: propsConfig = {}, column: column) => {
+    const upIcon = useMousePoint()(getIcon({ onClick: () => { } }, 'vxe-icon-caret-up')())
+    const downIcon = useMousePoint()(getIcon({ onClick: () => { } }, 'vxe-icon-caret-down')())
+    const rowHeight = getColumnHeaderHeight(column).value
+    const style = { ...props.style, display: "flex", flexDirection: 'column', height: rowHeight }
+    return getRenderFn('div', ({ ...props, style: style }))([upIcon, downIcon])
+}
+
+export const getColumnFilterRender = (column: column) => {
+    return computed(() => {
+        return {}
     })
 }

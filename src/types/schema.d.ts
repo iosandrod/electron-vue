@@ -40,11 +40,14 @@ export type tableConfig = {
   },
   headerConfig: {
     rowHeight: string
-  }
-}
+  },
+  // [key in keyof ]:[]
+} & VxeTableProps
 export type tableData = {
   data: any[],
-  showData: any[]
+  showData: any[],
+  curRow: any,
+  curColumn: any
 }
 export type columnConfig = {
   isEdit: boolean,
@@ -57,4 +60,8 @@ export type pickRef<T = any> = {
 
 export type mergeType<T = any, R = any> = {
   [key in keyof T & keyof R]: T[key] & R[key]
+}
+
+export type pickKey<T = any> = {
+  [key in keyof T]?: T[key]
 }

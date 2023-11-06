@@ -5,7 +5,7 @@ import { VxeColumnProps, VxeGridPropTypes, VxeColumn, VxeGridProps, VxeTableDefi
 import { StyleType, columnConfig, pickRef } from "@/types/schema"
 import { isUndefined } from "xe-utils"
 import { tableView } from "./table"
-import { getColumnField, getColumnSlot, getColumnTitle, getColumnType, getColumnVisiable, getColumnWidth, getInSizeDiv, getOutSizeDiv, getSlotDefault } from "./columnFn"
+import { getColumnField, getColumnFilterRender, getColumnSlot, getColumnTitle, getColumnType, getColumnVisiable, getColumnWidth, getInSizeDiv, getOutSizeDiv, getSlotDefault } from "./columnFn"
 
 export class column extends base<VxeTableDefines.ColumnOptions> {
   // columnConfig: pickRef<VxeTableDefines.ColumnOptions & columnConfig> = {
@@ -36,6 +36,8 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
     renderColumn.type = getColumnType(this) as any
     renderColumn.width = getColumnWidth(this) as any
     renderColumn.title = getColumnTitle(this) as any
+    renderColumn.filterRender = getColumnFilterRender(this) as any
+    console.log(renderColumn.filterRender)
   }
   async initComponent(): Promise<void> { }
   changeColumnType(type: any) {
@@ -43,7 +45,7 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
   }
 }
 
-export function createColumn(schema?: any, table?: any) {
+export function createColumn(schema: any, table: any) {
   const system = _system
   const _column = reactive(new column(system, schema, table))
   _column.initColumnConfig()

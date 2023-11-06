@@ -4,7 +4,7 @@ import { VxeTableDefines } from "vxe-table"
 export class system {
   defaultTableConfig = {}
   defaultColumnConfig: VxeTableDefines.ColumnOptions = {
-    width: 400
+    width: 180
   }
   constructor() { }
   async systemInit() { }

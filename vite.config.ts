@@ -1,3 +1,4 @@
+//@ts-ignore
 import { rmSync } from 'node:fs'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -8,7 +9,6 @@ import pkg from './package.json'
 import { resolve } from 'path'
 
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
-// import { Quasar } from 'quasar'
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   rmSync('dist-electron', { recursive: true, force: true })
@@ -93,12 +93,5 @@ export default defineConfig(({ command }) => {
       }
     })(),
     clearScreen: false,
-    // css: {
-    //   preprocessorOptions: {
-    //     scss: {
-    //       additionalData: `@import "@/style/vxe-table/index.scss";`, // 全局的 SCSS 变量和样式
-    //     },
-    //   },
-    // },
   }
 })
