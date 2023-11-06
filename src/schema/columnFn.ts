@@ -38,7 +38,7 @@ export const getInSizeDiv = (column: column, row: any) => {
     return getRenderFn('div', { style: { ...style } })
 }
 
-
+//directive 是指令注册
 export const getRenderFn = (node: string | VNode, props: any, directive?: Array<[Directive]>) => {
     return (nestNode?: any[] | any) => {
         let _nestNode: any[] = []
@@ -217,3 +217,5 @@ export const getColumnFilterRender = (column: column) => {
         return {}
     })
 }
+
+

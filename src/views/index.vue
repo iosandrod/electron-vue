@@ -1,18 +1,36 @@
 <template>
     <div class="w-full h-full ">
-        <table-view :columns="columns" :data="data"></table-view>
+        <!-- <table-view :columns="columns" :data="data"></table-view> -->
+        <vxe-button content="多窗口、叠加窗口" @click="openAlert"></vxe-button>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
-import { VxeGridPropTypes } from 'vxe-table';
+import { reactive, ref, nextTick, h } from 'vue';
+import { VxeButton, VxeGridPropTypes, VxeModalProps } from 'vxe-table';
+import VXETable from 'vxe-table';
+import { concatAny } from '@/types/schema'
 const columns = ref<VxeGridPropTypes.Columns>([
     { type: 'seq', width: 50 },
     { field: 'name', title: 'name' },
     { field: 'sex', title: 'sex' },
     { field: 'address', title: 'Address' }
 ])
+
+function openAlert() {
+    const openConfig: concatAny<VxeModalProps> = reactive({
+        id: 'testModel', slots: {
+            default: (params) => {
+                return h('div', {}, [h('button', {
+                    onClick: () => {
+                        console.log(params)
+                    }
+                }, ['button'])])
+            }
+        }, lockView: false, mask: true, modelValue: false
+    })
+    VXETable.modal.open(openConfig)
+}
 // setTimeout(() => {
 //     columns.value = columns.value.filter((col, i) => {
 //         return i < 2
@@ -147,6 +165,8 @@ const data = ref([
     { id: 10007, name: 'Test7', nickname: 'T7', role: 'Test', sex: 'Man', age: 29, address: 'Shenzhen' },
     { id: 10008, name: 'Test8', nickname: 'T8', role: 'Develop', sex: 'Man', age: 35, address: 'Shenzhen' }
 ])
+
+
 
 </script>
 

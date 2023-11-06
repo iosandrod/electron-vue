@@ -11,10 +11,12 @@ export class base<T = any> {
   schema?: concatAny<T> = {} as any
   pageRef: any = {}
   effectPool: any = {}//作用域
+  context?: any = {}
   component?: () => VNode
-  constructor(system: system, schema?: any) {
+  constructor(system: system, schema?: any, context?: any) {
     this.system = system
     this.schema = schema
+    this.context = context
   }
   async initBase() { }
   async initComponent() { }
