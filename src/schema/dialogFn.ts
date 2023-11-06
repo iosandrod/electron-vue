@@ -21,6 +21,7 @@ export const getDialogSlots = (dialog: dialog) => {
         slots.header = getDialogSlotsHeader(dialog).value
         slots.default = getDialogSlotsDefault(dialog).value
         slots.footer = getDialogSlotsFooter(dialog).value
+        return slots
     })
 }
 

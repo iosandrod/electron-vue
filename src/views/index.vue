@@ -10,6 +10,7 @@ import { reactive, ref, nextTick, h } from 'vue';
 import { VxeButton, VxeGridPropTypes, VxeModalProps } from 'vxe-table';
 import VXETable from 'vxe-table';
 import { concatAny } from '@/types/schema'
+import { dialogPool, createDialog } from '@/schema/dialog'
 const columns = ref<VxeGridPropTypes.Columns>([
     { type: 'seq', width: 50 },
     { field: 'name', title: 'name' },
@@ -18,19 +19,22 @@ const columns = ref<VxeGridPropTypes.Columns>([
 ])
 
 function openAlert() {
-    const openConfig: concatAny<VxeModalProps> = reactive({
-        id: 'testModel', slots: {
-            default: (params) => {
-                return h('div', {}, [h('button', {
-                    onClick: () => {
-                        console.log(params)
-                    }
-                }, ['button'])])
-            }
-        }, lockView: false, mask: true, modelValue: false
-    })
-    VXETable.modal.open(openConfig)
+    // const openConfig: concatAny<VxeModalProps> = reactive({
+    //     id: 'testModel', slots: {
+    //         default: (params) => {
+    //             return h('div', {}, [h('button', {
+    //                 onClick: () => {
+    //                     console.log(params)
+    //                 }
+    //             }, ['button'])])
+    //         }
+    //     }, lockView: false, mask: true, modelValue: false
+    // })
+    // VXETable.modal.open(openConfig)
+    // const dialog = createDialog({ type: "modal" }, {})
+    dialogPool.openDialog({ props: { type: "modal" }, dialogName: "codeEdit" })
 }
+//打开弹框
 // setTimeout(() => {
 //     columns.value = columns.value.filter((col, i) => {
 //         return i < 2

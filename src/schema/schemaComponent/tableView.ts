@@ -6,6 +6,9 @@ export default defineComponent({
   props: ['align', 'animat', 'columns', 'columnConfig', 'data'] as Array<keyof VxeGridProps>,
   setup(props, context) {
     const table: any = createTable(props, context)
+    defineExpose({
+      table
+    })
     return table.component
   },
 })
