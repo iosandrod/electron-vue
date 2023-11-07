@@ -1,10 +1,10 @@
 import { computed, h, reactive, toRef } from "vue"
 import { base } from "./base"
-import { _system, system } from "./system"
+import { systemInstance, system } from "./system"
 import { VxeColumnProps, VxeGridPropTypes, VxeColumn, VxeGridProps, VxeTableDefines } from "vxe-table"
 import { StyleType, columnConfig, pickRef } from "@/types/schema"
 import { isUndefined } from "xe-utils"
-import { tableView } from "./table"
+import { table } from "./table"
 import { getColumnField, getColumnFilterRender, getColumnSlot, getColumnTitle, getColumnType, getColumnVisiable, getColumnWidth, getInSizeDiv, getOutSizeDiv, getSlotDefault } from "./columnFn"
 
 export class column extends base<VxeTableDefines.ColumnOptions> {
@@ -13,13 +13,13 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
     isEdit: false,
     type: 'string' as any,
   } //渲染组件配置
-  table?: tableView
+  table?: table
   filterConfig = {}
   sortConfig = {}
   renderColumn: pickRef<VxeTableDefines.ColumnOptions> = {
     // slots: {},
   }
-  constructor(system: system, schema?: any, table?: tableView) {
+  constructor(system: system, schema?: any, table?: table) {
     super(system, schema)
     this.table = table
     Object.keys(schema).forEach((key) => {
@@ -37,7 +37,6 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
     renderColumn.width = getColumnWidth(this) as any
     renderColumn.title = getColumnTitle(this) as any
     renderColumn.filterRender = getColumnFilterRender(this) as any
-    console.log(renderColumn.filterRender)
   }
   async initComponent(): Promise<void> { }
   changeColumnType(type: any) {
@@ -46,7 +45,7 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
 }
 
 export function createColumn(schema: any, table: any) {
-  const system = _system
+  const system = systemInstance
   const _column = reactive(new column(system, schema, table))
   _column.initColumnConfig()
   return _column

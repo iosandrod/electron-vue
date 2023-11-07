@@ -10,13 +10,14 @@ import {
   VxeTablePropTypes,
   VxeTableInstance
 } from "vxe-table"
-import { system, _system } from "./system"
-import { StyleType, pickKey, tableConfig, tableData, tableSchema } from "@/types/schema"
+import { system, systemInstance } from "./system"
+import { StyleType, dialogConfig, pickKey, tableConfig, tableData, tableSchema } from "@/types/schema"
 import { column, createColumn } from "./column"
 import { getOptionsCellClassName, getOptionsColumns, getOptionsData, getOptionsFilterConfig, getOptionsRowClassName, getOptionsRowConfig, getOptionsScrollX, getOptionsScrollY, getOptionsTreeConfig, getTableRowConfig, getTableStyle } from "./tableFn"
 import { getRenderFn } from "./columnFn"
 import { } from 'rxjs'
-export class tableView extends base<tableSchema> {
+import { createDialog, dialog } from "./dialog"
+export class table extends base<tableSchema> {
   tableConfig: tableConfig = {
     columns: [],//列
     filterConfig: [{ field: 'name', value: 'Test1' }],//过滤配置
@@ -29,13 +30,20 @@ export class tableView extends base<tableSchema> {
       rowHeight: "30px"//行高度
     }
   }
+  filterDialog?: dialog
+  filterDialogConfig = {
+    props: {
+      type: "modal", height: '400px', width: '100px', modelValue: false, destroyOnClose: true, maskClosable: true, onHide: () => { }, modalData: { table: this }
+    } as dialogConfig, context: {}, dialogName: 'columnFilterDialog'
+  }
   propsTableConfig: pickKey<tableConfig> = {
   }
   tableData: tableData = {
     showData: [],
     data: [],
-    curRow: null,
-    curColumn: null
+    curRow: undefined,
+    curColumn: undefined,
+    curFilterColumn: undefined
   }
   gridOptions: any = {}
   constructor(system: system, schema?: tableSchema, parent?: any) {
@@ -45,9 +53,6 @@ export class tableView extends base<tableSchema> {
   initTableConfig() {
     const schema: tableSchema = this.schema as any
     if (schema != null && Object.keys(schema).length > 0) {
-      // this.effectPool.tableConfigEffect = watchEffect(() => {
-
-      // })
       Object.keys(schema).forEach(key => {
         this.effectPool[`table${key}Effect`] = watchEffect(() => {
           const tableData = this.tableData
@@ -66,6 +71,7 @@ export class tableView extends base<tableSchema> {
     }
     //最后才会初始化Component
     this.initGridOptions()
+    this.initColumnFilter()
     this.initComponent()
   }
   async initComponent() {
@@ -106,22 +112,36 @@ export class tableView extends base<tableSchema> {
     gridOptions.rowClassName = getOptionsRowClassName(this) as any
     gridOptions.cellClassName = getOptionsCellClassName(this) as any
     gridOptions.filterConfig = getOptionsFilterConfig(this) as any
+
   }
   async setCurRow(row: any) {//设置当前行
     this.tableData.curRow = row
   }
   async setCurColumn(col: any) {
-    this.tableData.curColumn = col
+    const params = col?.params
+    if (params instanceof column) {
+      this.tableData.curColumn = params
+    } else if (col instanceof column) {
+      this.tableData.curColumn = col
+    }
   }
   async openColumnFilter(field: string) {
-    const vxeGrid = this.pageRef.vxeGrid as VxeTableInstance
-    // console.log(this.gridOptions)
-    console.log(vxeGrid, vxeGrid.openFilter)
+    this.filterDialog && this.filterDialog.open()
+  }
+  async initColumnFilter() {
+    const filterDialogConfig = this.filterDialogConfig
+    const dialog = createDialog(filterDialogConfig.props as any, filterDialogConfig.context, filterDialogConfig.dialogName)//使用这个模态框
+    this.filterDialog = dialog as any
+  }
+  async filterFirstData() {
+    this.tableData.data = this.tableData.data.filter((row, i) => {
+      return i < 3
+    })
   }
 }
 
 export function createTable(schema?: any, context?: any) {
-  const _table = reactive(new tableView(_system, schema))
+  const _table = reactive(new table(systemInstance, schema))
   _table.initTableConfig()
   return _table
 }

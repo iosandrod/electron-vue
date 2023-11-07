@@ -1,4 +1,4 @@
-import { VNode, defineComponent, h, onMounted, resolveComponent } from "vue"
+import { VNode, defineExpose, defineComponent, h, onMounted, resolveComponent } from "vue"
 import { createTable } from "../table"
 import { createEntityTable } from "../entityTable"
 import { VxeTableProps, VxeGridProps, VxeGrid, Grid } from 'vxe-table'
@@ -12,3 +12,5 @@ export default defineComponent({
     return table.component
   },
 })
+
+

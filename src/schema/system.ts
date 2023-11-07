@@ -13,5 +13,5 @@ export class system {
   async initSystemMenu() { }
 }
 
-const _system = reactive(new system())
-export { _system }
+const systemInstance = reactive(new system())
+export { systemInstance } 

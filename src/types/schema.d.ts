@@ -1,6 +1,7 @@
 import { column } from "@/schema/column"
-import { ComputedRef } from "vue"
-import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines } from "vxe-table"
+import { dialog } from "@/schema/dialog"
+import { ComputedRef, VNode } from "vue"
+import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines } from "vxe-table"
 
 export type schema = {
   componentType: string
@@ -47,7 +48,8 @@ export type tableData = {
   data: any[],
   showData: any[],
   curRow: any,
-  curColumn: any
+  curColumn?: column,
+  curFilterColumn?: column
 }
 export type columnConfig = {
   isEdit: boolean,
@@ -65,3 +67,15 @@ export type mergeType<T = any, R = any> = {
 export type pickKey<T = any> = {
   [key in keyof T]?: T[key]
 }
+
+
+export type dialogConfig = concatAny<VxeModalDefines.ModalOptions & { dialogPrimaryName?: string, hasOpen?: boolean, modalData: any }>
+
+
+export type dialogComponent = {
+  header?: (dialog: dialog) => VNode | ((vNodeArr?: []) => VNode),
+  default?: (dialog: dialog) => VNode | ((vNodeArr?: []) => VNode),
+  footer?: (dialog: dialog) => VNode | ((vNodeArr?: []) => VNode),
+  corner?: (dialog: dialog) => VNode | ((vNodeArr?: []) => VNode)
+}
+

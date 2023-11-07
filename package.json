@@ -52,6 +52,7 @@
     "rxjs": "^7.8.1",
     "vue-devtools": "^5.1.4",
     "vue-router": "^4.2.5",
-    "vxe-table": "^4.5.13"
+    "vxe-table": "^4.5.13",
+    "xe-utils": "^3.5.14"
   }
 }

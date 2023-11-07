@@ -1,12 +1,13 @@
 <template>
     <div class="w-full h-full ">
-        <!-- <table-view :columns="columns" :data="data"></table-view> -->
-        <vxe-button content="多窗口、叠加窗口" @click="openAlert"></vxe-button>
+        <!-- <table-view :columns="columns" :data="data"></table-view>
+        <vxe-button content="多窗口、叠加窗口" @click="openAlert"></vxe-button> -->
+        <button-view>button</button-view>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, nextTick, h } from 'vue';
+import { reactive, ref, nextTick, h, onMounted } from 'vue';
 import { VxeButton, VxeGridPropTypes, VxeModalProps } from 'vxe-table';
 import VXETable from 'vxe-table';
 import { concatAny } from '@/types/schema'
@@ -17,7 +18,11 @@ const columns = ref<VxeGridPropTypes.Columns>([
     { field: 'sex', title: 'sex' },
     { field: 'address', title: 'Address' }
 ])
-
+onMounted(() => {
+    setTimeout(() => {
+        openAlert()
+    }, 100);
+})
 function openAlert() {
     // const openConfig: concatAny<VxeModalProps> = reactive({
     //     id: 'testModel', slots: {
@@ -32,7 +37,14 @@ function openAlert() {
     // })
     // VXETable.modal.open(openConfig)
     // const dialog = createDialog({ type: "modal" }, {})
-    dialogPool.openDialog({ props: { type: "modal" }, dialogName: "codeEdit" })
+    // const openConfig: any = reactive({ props: { type: "modal", modelValue: true } as concatAny<VxeModalProps>, dialogName: "codeEdit" })
+    // const dialog = dialogPool.openDialog(openConfig)
+    // setTimeout(() => {
+    //     dialog.open()
+    //     setTimeout(() => {
+    //         dialog.open()
+    //     }, 4000);
+    // }, 4000);
 }
 //打开弹框
 // setTimeout(() => {

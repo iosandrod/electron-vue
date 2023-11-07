@@ -1,21 +1,21 @@
 import { computed, isReactive } from "vue";
-import { tableView } from "./table";
+import { table } from "./table";
 import { StyleType } from "@/types/schema";
 import { column, createColumn } from "./column";
 
 
-export const getTableRowConfig = (table: tableView) => {
+export const getTableRowConfig = (table: table) => {
     const tableConfig = table.tableConfig
     const rowConfig = tableConfig.rowConfig
     return rowConfig
 }
-export const getTableHeaderConfig = (table: tableView) => {
+export const getTableHeaderConfig = (table: table) => {
     const tableConfig = table.tableConfig
     const headerConfig = tableConfig.headerConfig
     return headerConfig
 }
 
-export const getTableRowHeight = (table: tableView) => {
+export const getTableRowHeight = (table: table) => {
     return computed(() => {
         const rowConfig = getTableRowConfig(table)
         const rowHeight = rowConfig.rowHeight
@@ -23,7 +23,7 @@ export const getTableRowHeight = (table: tableView) => {
     })
 }
 
-export const getTableHeaderHeight = (table: tableView) => {
+export const getTableHeaderHeight = (table: table) => {
     return computed(() => {
         const headerConfig = getTableHeaderConfig(table)
         const rowHeight = headerConfig.rowHeight
@@ -31,7 +31,7 @@ export const getTableHeaderHeight = (table: tableView) => {
     })
 }
 
-export const getTableStyle = (table: tableView) => {
+export const getTableStyle = (table: table) => {
     return computed(() => {
         const style: StyleType = {}
         const baseStyle = table.getBaseStyle().value
@@ -39,13 +39,13 @@ export const getTableStyle = (table: tableView) => {
     })
 }
 
-export const getOptionsId = (table: tableView) => {
+export const getOptionsId = (table: table) => {
     return computed(() => {
         return
     })
 }
 
-export const getOptionsData = (table: tableView) => {
+export const getOptionsData = (table: table) => {
     return computed(() => {
         const showData = table.tableData.data
         const _data = showData.filter(row => {
@@ -69,7 +69,7 @@ export const getOptionsData = (table: tableView) => {
     })
 }
 
-export const getOptionsColumns = (table: tableView) => {
+export const getOptionsColumns = (table: table) => {
     return computed(() => {
         const tableConfig = table.tableConfig
         const columns = tableConfig.columns
@@ -84,14 +84,14 @@ export const getOptionsColumns = (table: tableView) => {
 }
 
 
-export const getOptionsTreeConfig = (table: tableView) => {
+export const getOptionsTreeConfig = (table: table) => {
     return computed(() => {
         return {}
     })
 }
 
 
-export const getOptionsScrollX = (table: tableView) => {
+export const getOptionsScrollX = (table: table) => {
     return computed(() => {
         return {
             enable: true,
@@ -101,7 +101,7 @@ export const getOptionsScrollX = (table: tableView) => {
     })
 }
 
-export const getOptionsScrollY = (table: tableView) => {
+export const getOptionsScrollY = (table: table) => {
     return computed(() => {
         return {
             enable: true,
@@ -111,7 +111,7 @@ export const getOptionsScrollY = (table: tableView) => {
     })
 }
 
-export const getOptionsRowConfig = (table: tableView) => {
+export const getOptionsRowConfig = (table: table) => {
     return computed(() => {
         return {
             isHover: true
@@ -119,7 +119,7 @@ export const getOptionsRowConfig = (table: tableView) => {
     })
 }
 
-export const getOptionsRowClassName = (table: tableView) => {
+export const getOptionsRowClassName = (table: table) => {
     return computed(() => {
         return ({ row }: any) => {
             const curRow = table.tableData.curRow
@@ -131,12 +131,12 @@ export const getOptionsRowClassName = (table: tableView) => {
     })
 }
 
-export const getOptionsCellClassName = (table: tableView) => {
+export const getOptionsCellClassName = (table: table) => {
     return computed(() => {
         return ({ row, column }: any) => {
             const curRow = table.tableData.curRow
             const curColumn = table.tableData.curColumn
-            if (row == curRow && column?.field == curColumn?.field && column?.field != null) {
+            if (row == curRow && column?.params == curColumn && column?.field != null) {
                 return ['rowSelect']
             }
             return []
@@ -144,12 +144,13 @@ export const getOptionsCellClassName = (table: tableView) => {
     })
 }
 
-export const getOptionsFilterConfig = (table: tableView) => {
+export const getOptionsFilterConfig = (table: table) => {
     return computed(() => {
         return {
             showIcon: true
         }
     })
 }
+
 
 
