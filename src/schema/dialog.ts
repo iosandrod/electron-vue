@@ -6,11 +6,13 @@ import { concatAny, dialogConfig } from "@/types/schema";
 import { getDialogDestroyOnClose, getDialogHeight, getDialogMaskClosable, getDialogMinHeight, getDialogMinMask, getDialogMinWidth, getDialogModelValue, getDialogOnHide, getDialogPrimaryId, getDialogResize, getDialogShowFooter, getDialogSlots, getDialogType, getDialogWidth } from "./dialogFn";
 import { Subject } from "rxjs";
 import register from "@/plugin/register";
+import dialogComponent from "./dialogComponent";
 export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     renderDialog: VxeModalDefines.ModalOptions = {}
     childDialog: dialog[] = []//子节点
     parentDialog?: dialog
     dialogPool?: DialogPool
+    dialogComponent = dialogComponent
     subject = new Subject()//
     // dialogConfig: concatAny<VxeModalProps & { dialogPrimaryName?: string }> = {//modalData 是模态框的存储数据
     dialogConfig: dialogConfig = {
@@ -68,7 +70,6 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         renderDialog.type = getDialogType(this) as any
         renderDialog.showFooter = getDialogShowFooter(this) as any
         renderDialog.slots = getDialogSlots(this) as any
-        // renderDialog.id = getDialogPrimaryId(this) as any
         renderDialog.id = this.dialogConfig.dialogPrimaryName
         renderDialog.height = getDialogHeight(this) as any
         renderDialog.width = getDialogWidth(this) as any
@@ -111,6 +112,10 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     }
     //确认弹框
     async confirm() { }
+    getTableView() {
+        const modalData = this.dialogConfig.modalData
+        return modalData.table
+    }
 }
 
 export class DialogPool {
@@ -176,7 +181,7 @@ export class DialogPool {
         nextTick(() => {
             Object.values(VXETable).forEach((value: any) => {
                 if (typeof value.setup == 'function' && value.name) {
-                    // this.dynamicApp!.component(value.name, value)
+                    this.dynamicApp!.component(value.name, value)
                 }
             })
             this.dynamicApp!.use(register)

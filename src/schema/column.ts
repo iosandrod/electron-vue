@@ -12,9 +12,11 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
   columnConfig: pickRef<VxeTableDefines.ColumnOptions & columnConfig> = {
     isEdit: false,
     type: 'string' as any,
+    showFilter: true,
   } //渲染组件配置
   table?: table
-  filterConfig = {}
+  filterConfig = {
+  }
   sortConfig = {}
   renderColumn: pickRef<VxeTableDefines.ColumnOptions> = {
     // slots: {},

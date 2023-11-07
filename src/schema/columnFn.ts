@@ -96,12 +96,10 @@ export const getColumnSlot = (column: column) => {
             return {}
         }
         let slot: any = {}
-        const _default = getSlotDefault(column).value
-        const header = getSlotHeader(column).value
-        const filter = getSlotFilter(column).value
+        const _default = getSlotDefault(column).value//默认的
+        const header = getSlotHeader(column).value//表头的显示
         slot.default = _default
         slot.header = header
-        slot.filter = filter
         return slot
     })
 }
@@ -120,16 +118,15 @@ export const getSlotHeader = (_column: column) => {
             //过滤图标
             const renderColumn = _column.renderColumn
             const title: string = renderColumn.title as string || 'title'
-            const filterIcon = useMousePoint({
+            const filterIconFn = useMousePoint({
                 onClick: (event) => {
-                    console.log(123)
                     const table = _column.table!
-                    // console.log(_column.renderColumn.field)
-                    table.openColumnFilter(_column.renderColumn?.field as string)
+                    table.openColumnFilter(_column.renderColumn?.field as string)//打开过滤器
                 }
             })
             const targetIcon = getIcon(null, "vxe-icon-funnel")
-            const icon = filterIcon(targetIcon())
+            const filterIcon = filterIconFn(targetIcon())//isVNode
+            const _filterIcon = _column.columnConfig.showFilter == true ? filterIcon : null
             const sortIcon = getSortColmmnIcons(undefined, _column)
             //排序图标
             const style: StyleType = {
@@ -137,7 +134,7 @@ export const getSlotHeader = (_column: column) => {
                 flexDirection: 'row',
                 alignItems: 'center'
             }
-            return h('div', { style }, [title, icon, sortIcon])
+            return h('div', { style }, [title, _filterIcon, sortIcon])
         }
         return fn
     })

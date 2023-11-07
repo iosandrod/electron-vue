@@ -1,7 +1,7 @@
 <template>
     <div class="w-full h-full ">
-        <!-- <table-view :columns="columns" :data="data"></table-view>
-        <vxe-button content="多窗口、叠加窗口" @click="openAlert"></vxe-button> -->
+        <table-view :columns="columns" :data="data"></table-view>
+        <!-- <vxe-button content="多窗口、叠加窗口" @click="openAlert"></vxe-button> -->
         <button-view>button</button-view>
     </div>
 </template>

@@ -3,6 +3,7 @@ import { dialog } from "./dialog";
 import { ModalDefaultSlotParams } from 'vxe-table'
 import { VxeButton } from "vxe-table";
 import { table } from "./table";
+import { dialogComponent } from "@/types/schema";
 export const getDialogType = (dialog: dialog) => {
     return computed(() => {
         const dialogConfig = dialog.dialogConfig
@@ -38,6 +39,14 @@ export const getDialogSlotsHeader = (dialog: dialog) => {
 export const getDialogSlotsDefault = (dialog: dialog) => {
     return computed(() => {
         return (params: ModalDefaultSlotParams) => {
+            const dialogComponent = dialog.dialogComponent
+            const dialogName = dialog.dialogName!
+            const defaultComFn = dialogComponent['columnFilter']?.default
+            if (defaultComFn != null) {
+                const com = defaultComFn(dialog)
+                console.log(com, 'testCom')
+                return h(com)
+            }
             return h("div", {}, ['default'])
         }
     })

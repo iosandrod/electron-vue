@@ -53,6 +53,7 @@ export type tableData = {
 }
 export type columnConfig = {
   isEdit: boolean,
+  showFilter: boolean
 }
 
 export type pickRef<T = any> = {
@@ -73,9 +74,9 @@ export type dialogConfig = concatAny<VxeModalDefines.ModalOptions & { dialogPrim
 
 
 export type dialogComponent = {
-  header?: (dialog: dialog) => VNode | ((vNodeArr?: []) => VNode),
-  default?: (dialog: dialog) => VNode | ((vNodeArr?: []) => VNode),
-  footer?: (dialog: dialog) => VNode | ((vNodeArr?: []) => VNode),
-  corner?: (dialog: dialog) => VNode | ((vNodeArr?: []) => VNode)
+  header?: (dialog: dialog) => VNode | ((vNodeArr?: [] | VNode) => VNode),
+  default?: (dialog: dialog) => VNode | ((vNodeArr?: [] | VNode) => VNode),
+  footer?: (dialog: dialog) => VNode | ((vNodeArr?: [] | VNode) => VNode),
+  corner?: (dialog: dialog) => VNode | ((vNodeArr?: [] | VNode) => VNode)
 }
 
