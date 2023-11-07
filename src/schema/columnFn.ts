@@ -4,6 +4,7 @@ import { StyleType } from "@/types/schema"
 import { getTableHeaderHeight, getTableRowHeight } from "./tableFn"
 import { isUndefined } from 'xe-utils'
 import { getIcon, propsConfig, useMousePoint } from "./icon"
+import { getMouseEventPosition, registerDocumentClickFn } from "@/utils/utils"
 // import { system } from "./system"
 export const getOutSizeDiv = (column: column, row: any) => {
     const table = column.table!
@@ -95,12 +96,12 @@ export const getColumnSlot = (column: column) => {
         if (type == 'seq' || type == 'checkbox' || type == 'radio') {
             return {}
         }
-        let slot: any = {}
+        let slots: any = {}
         const _default = getSlotDefault(column).value//默认的
         const header = getSlotHeader(column).value//表头的显示
-        slot.default = _default
-        slot.header = header
-        return slot
+        slots.default = _default
+        slots.header = header
+        return slots
     })
 }
 export const getSlotFilter = (column: column) => {
@@ -118,11 +119,19 @@ export const getSlotHeader = (_column: column) => {
             //过滤图标
             const renderColumn = _column.renderColumn
             const title: string = renderColumn.title as string || 'title'
+            const table = _column.table!
+            const docClick = registerDocumentClickFn(() => {
+                table.closeColumnFilter()
+            })
             const filterIconFn = useMousePoint({
-                onClick: (event) => {
+                capture: true,
+                onClick: (event: MouseEvent) => {
+                    event.stopPropagation()
+                    const position = getMouseEventPosition(event)
                     const table = _column.table!
-                    table.openColumnFilter(_column.renderColumn?.field as string)//打开过滤器
-                }
+                    table.openColumnFilter(_column.renderColumn?.field as string, position)//打开过滤器
+                },
+                directive: [[docClick]]
             })
             const targetIcon = getIcon(null, "vxe-icon-funnel")
             const filterIcon = filterIconFn(targetIcon())//isVNode
@@ -202,8 +211,8 @@ export const getColumnTitle = (column: column) => {
 
 
 export const getSortColmmnIcons = (props: propsConfig = {}, column: column) => {
-    const upIcon = useMousePoint()(getIcon({ onClick: () => { } }, 'vxe-icon-caret-up')())
-    const downIcon = useMousePoint()(getIcon({ onClick: () => { } }, 'vxe-icon-caret-down')())
+    const upIcon = useMousePoint({ style: { height: '50%' } })(getIcon({ onClick: () => { } }, 'vxe-icon-caret-up')())
+    const downIcon = useMousePoint({ style: { height: "50%" } })(getIcon({ onClick: () => { } }, 'vxe-icon-caret-down')())
     const rowHeight = getColumnHeaderHeight(column).value
     const style = { ...props.style, display: "flex", flexDirection: 'column', height: rowHeight }
     return getRenderFn('div', ({ ...props, style: style }))([upIcon, downIcon])
@@ -216,3 +225,10 @@ export const getColumnFilterRender = (column: column) => {
 }
 
 
+
+
+export const getColumnAlign = (column: column) => {
+    return computed(() => {
+        return column.columnConfig.align
+    })
+}

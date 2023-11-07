@@ -19,13 +19,9 @@ export const columnFilter: dialogComponent = {
             return modalData.loadColumns || []
         })
         const props = reactive({ data: loadData.value, columns: loadColumns.value })
-        // const tableCom = h('div', {}, ['123'])
         const _talbeView = resolveComponent('table-view')
         const tableCom = h(_talbeView, props)
         const node = defaultDialogDivFn(tableCom)
-        // console.log(node, 'testNode')
-        console.log(tableCom)
-        // return tableCom
         return node
     },
     header: (dialog) => {

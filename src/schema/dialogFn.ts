@@ -3,7 +3,8 @@ import { dialog } from "./dialog";
 import { ModalDefaultSlotParams } from 'vxe-table'
 import { VxeButton } from "vxe-table";
 import { table } from "./table";
-import { dialogComponent } from "@/types/schema";
+import { dialogComponent, position } from "@/types/schema";
+import { tranPosition } from "@/utils/utils";
 export const getDialogType = (dialog: dialog) => {
     return computed(() => {
         const dialogConfig = dialog.dialogConfig
@@ -158,8 +159,6 @@ export const getDialogOnHide = (dialog: dialog) => {
                 const dialogConfig = dialog.dialogConfig
                 dialogConfig.modelValue = false
                 dialog.dialogConfig.hasOpen = true
-                const $modal = params.$modal
-                console.log($modal)
             }
             return fn
         },
@@ -173,5 +172,23 @@ export const getDialogDestroyOnClose = (dialog: dialog) => {
     return computed(() => {
         const dialogConfig = dialog.dialogConfig
         return dialogConfig.destroyOnClose
+    })
+}
+
+export const getDialogLockView = (dialog: dialog) => {
+    return computed(() => {
+        return dialog.dialogConfig.lockView
+    })
+}
+
+export const getDialogPosition = (dialog: dialog) => {
+    return computed(() => {
+        const dialogConfig = dialog.dialogConfig
+        const position = dialogConfig.position
+        if (typeof position == 'string') {
+            return position
+        }
+        const _position = tranPosition(position as position)
+        return _position
     })
 }

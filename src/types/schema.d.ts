@@ -32,6 +32,8 @@ export type mergeConfig = {
   mergeSpan: number//合并多少个
 }
 export type tableConfig = {
+  showCheckBoxColumn: boolean,
+  showSeqColumn: boolean,
   columns: column[]
   filterConfig: filterConfig[],
   mergeConfig: mergeConfig[],
@@ -80,3 +82,9 @@ export type dialogComponent = {
   corner?: (dialog: dialog) => VNode | ((vNodeArr?: [] | VNode) => VNode)
 }
 
+
+
+export type position = {
+  left: number,
+  top: number
+}

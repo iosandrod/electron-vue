@@ -7,11 +7,14 @@ export type propsConfig = {
     style?: StyleType,//
     class?: any//类型,
     directive?: Array<Array<Directive>>
+    capture?: boolean
 }
 
 export const getIcon = (propsConfig: propsConfig | null = {}, iconName: string,) => {
     const classArr = [iconName]
     const style: StyleType = {
+        height: "100%",
+        width: "100%"
     }
     const obj = { class: [...classArr, ...propsConfig?.class || []], style: { ...style, ...propsConfig?.style || {} } }
     return getRenderFn('span', obj)
@@ -21,8 +24,12 @@ export const getIcon = (propsConfig: propsConfig | null = {}, iconName: string,)
 export const useMousePoint = (props: propsConfig = {}) => {
     const style: StyleType = {
         cursor: 'pointer',
-        display: 'inline'
+        display: 'flex',
+        justifyContent: "center",
+        alignItems: "center",
+        ...props?.style || {}
     }
+    const _class = [...props.class || []]
     const value = ref(null)
     const onClick = async (event: MouseEvent) => {
         const _props = props
@@ -30,7 +37,7 @@ export const useMousePoint = (props: propsConfig = {}) => {
     }
     const directive = props.directive as any
     return getRenderFn('div', {
-        style: { ...style }, onClick: onClick, ref: value
+        ...props || {}, style: { ...style }, class: _class, onClick: onClick, ref: value
     }, directive)//自定义指令 
 }
 

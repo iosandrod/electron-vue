@@ -11,13 +11,13 @@ body{
     --vxe-table-cell-padding-right: 0px;
 }
 
-.curRowClass{
-    background: #6bc6d6;
+.curRowClass{ 
+    background:RGB(228, 228, 229);
 }
-
+ 
 .notCurRowClass{
     /* background: blue; */
 }
 .rowSelect{
-    background: #13777a;
+    background:RGB(198, 198, 209);
 }

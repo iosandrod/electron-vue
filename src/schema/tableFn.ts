@@ -72,7 +72,10 @@ export const getOptionsData = (table: table) => {
 export const getOptionsColumns = (table: table) => {
     return computed(() => {
         const tableConfig = table.tableConfig
-        const columns = tableConfig.columns
+        const checkBoxColumn = tableConfig.showCheckBoxColumn == true ? { type: 'checkbox', width: 50, field: 'checkboxField', align: 'center' } : null
+        const seqColumn = tableConfig.showSeqColumn == true ? { type: "seq", width: 30, align: 'center' } : null
+        const defaultColumns = [seqColumn, checkBoxColumn].filter(col => col != null)
+        const columns = [...defaultColumns, ...tableConfig.columns,]
         const renderColumns = columns.map(col => {
             if (col instanceof column) {
                 return col.renderColumn
@@ -86,7 +89,7 @@ export const getOptionsColumns = (table: table) => {
 
 export const getOptionsTreeConfig = (table: table) => {
     return computed(() => {
-        return {}
+        return null
     })
 }
 
@@ -152,5 +155,34 @@ export const getOptionsFilterConfig = (table: table) => {
     })
 }
 
+export const getOptionsCheckboxConfig = (table: table) => {
+    return computed(() => {
+        const tableConfig = table.tableConfig
+        return tableConfig.checkboxConfig
+    })
+}
 
+export const getOptionsHeight = (table: table) => {
+    return computed(() => {
+        const tableConfig = table.tableConfig
+        return tableConfig.height
+    })
+}
 
+export const getOptionsShowFooter = (table: table) => {
+    return computed(() => {
+        const columns = getOptionsColumns(table).value
+        const showFooter = columns.reduce((res: boolean, item) => {
+            if (res == true) {
+                return res
+            }
+            const slots: any = item.slots!
+            const footer = slots?.footer
+            if (footer != null) {
+                return true
+            }
+            return res
+        }, false)
+        return showFooter
+    })
+}

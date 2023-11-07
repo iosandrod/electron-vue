@@ -11,9 +11,9 @@ import {
   VxeTableInstance
 } from "vxe-table"
 import { system, systemInstance } from "./system"
-import { StyleType, dialogConfig, pickKey, tableConfig, tableData, tableSchema } from "@/types/schema"
+import { StyleType, dialogConfig, pickKey, position, tableConfig, tableData, tableSchema } from "@/types/schema"
 import { column, createColumn } from "./column"
-import { getOptionsCellClassName, getOptionsColumns, getOptionsData, getOptionsFilterConfig, getOptionsRowClassName, getOptionsRowConfig, getOptionsScrollX, getOptionsScrollY, getOptionsTreeConfig, getTableRowConfig, getTableStyle } from "./tableFn"
+import { getOptionsCellClassName, getOptionsCheckboxConfig, getOptionsColumns, getOptionsData, getOptionsFilterConfig, getOptionsHeight, getOptionsRowClassName, getOptionsRowConfig, getOptionsScrollX, getOptionsScrollY, getOptionsShowFooter, getOptionsTreeConfig, getTableRowConfig, getTableStyle } from "./tableFn"
 import { getRenderFn } from "./columnFn"
 import { } from 'rxjs'
 import { createDialog, dialog } from "./dialog"
@@ -22,31 +22,44 @@ export class table extends base<tableSchema> {
     columns: [],//列
     filterConfig: [{ field: 'name', value: 'Test1' }],//过滤配置
     mergeConfig: [],//合并配置
+    height: '400px',
     rowConfig: {
       rowHeight: "30px",//行高度
       currentEditRow: []//当前编辑的行配置
     },
     headerConfig: {//表头配置
       rowHeight: "30px"//行高度
+    },
+    showCheckBoxColumn: true,//显示选择项
+    showSeqColumn: true,//显示数字项目
+    checkboxConfig: {
+      range: true,
+      checkAll: false,
+      checkField: "checkboxField"
     }
   }
   filterDialog?: dialog
   filterDialogConfig = {
     props: {
-      position: { top: 0, left: 0 },
-      type: "modal", height: '300px', width: '150px', modelValue: false, destroyOnClose: true, maskClosable: true, onHide: () => { },
+      position: { top: '0px', left: '0px' } as any,
+      lockView: false,
+      type: "modal",
+      height: '300px', width: '150px', mask: false,
+      modelValue: false,
+      destroyOnClose: true,
+      maskClosable: true, onHide: () => { },
       modalData: {
         table: this, loadData: [{ id: 10001, name: 'Test1', nickname: 'T1', role: 'Develop', sex: 'Man', age: 28, address: 'Shenzhen' },
         { id: 10002, name: 'Test2', nickname: 'T2', role: 'Test', sex: 'Women', age: 22, address: 'Guangzhou' },
         { id: 10003, name: 'Test3', nickname: 'T3', role: 'PM', sex: 'Man', age: 32, address: 'Shanghai' },
-        { id: 10004, name: 'Test4', nickname: 'T4', role: 'Designer', sex: 'Women', age: 23, address: 'Shenzhen' },
-        { id: 10005, name: 'Test5', nickname: 'T5', role: 'Develop', sex: 'Women', age: 30, address: 'Shanghai' },],
-        loadColumns: [{ type: 'checkbox', width: 50, showFilter: false },
-        { field: 'name', title: 'name', width: 100, showFilter: false },]
+        ],
+        loadColumns: [
+          { field: 'name', title: 'name', width: 100, showFilter: false },]
       }
     } as dialogConfig, context: {}, dialogName: 'columnFilter'
   }
   propsTableConfig: pickKey<tableConfig> = {
+
   }
   tableData: tableData = {
     showData: [],
@@ -64,19 +77,19 @@ export class table extends base<tableSchema> {
     const schema: tableSchema = this.schema as any
     if (schema != null && Object.keys(schema).length > 0) {
       Object.keys(schema).forEach(key => {
-        this.effectPool[`table${key}Effect`] = watchEffect(() => {
-          const tableData = this.tableData
-          const _tableConfig = this.tableConfig as any
-          if (['data'].includes(key)) {
-            tableData.data = schema['data'] as any || []
-            tableData.showData = schema['data'] as any || []
-          } else {
-            const value = schema[key]
-            if (value != null) {
+        const _value = schema[key]
+        if (_value != null) {
+          this.effectPool[`table${key}Effect`] = watchEffect(() => {
+            const tableData = this.tableData
+            const _tableConfig = this.tableConfig as any
+            if (['data'].includes(key)) {
+              tableData.data = schema['data'] as any || []
+              tableData.showData = schema['data'] as any || []
+            } else {
               _tableConfig[key] = schema[key]
             }
-          }
-        })
+          })
+        }
       })
     }
     //最后才会初始化Component
@@ -122,7 +135,9 @@ export class table extends base<tableSchema> {
     gridOptions.rowClassName = getOptionsRowClassName(this) as any
     gridOptions.cellClassName = getOptionsCellClassName(this) as any
     gridOptions.filterConfig = getOptionsFilterConfig(this) as any
-
+    gridOptions.checkboxConfig = getOptionsCheckboxConfig(this) as any
+    gridOptions.height = getOptionsHeight(this) as any
+    gridOptions.showFooter = getOptionsShowFooter(this) as any
   }
   async setCurRow(row: any) {//设置当前行
     this.tableData.curRow = row
@@ -135,8 +150,15 @@ export class table extends base<tableSchema> {
       this.tableData.curColumn = col
     }
   }
-  async openColumnFilter(field: string) {
+  async openColumnFilter(field: string, position?: position) {
+    console.log(position)
+    if (position) {
+      this.filterDialogConfig.props.position = position
+    }
     this.filterDialog && this.filterDialog.open()
+  }
+  async closeColumnFilter() {
+    this.filterDialog && this.filterDialog.close()
   }
   async initColumnFilter() {
     const filterDialogConfig = this.filterDialogConfig
