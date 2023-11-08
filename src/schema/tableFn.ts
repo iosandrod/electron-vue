@@ -186,3 +186,9 @@ export const getOptionsShowFooter = (table: table) => {
         return showFooter
     })
 }
+
+export const getOptionsShowHeader = (table: table) => {
+    return computed(() => {
+        return table.tableConfig.showHeader
+    })
+}

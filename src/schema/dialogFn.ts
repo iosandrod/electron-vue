@@ -4,7 +4,7 @@ import { ModalDefaultSlotParams } from 'vxe-table'
 import { VxeButton } from "vxe-table";
 import { table } from "./table";
 import { dialogComponent, position } from "@/types/schema";
-import { tranPosition } from "@/utils/utils";
+import { tranPosition, tranPositionNumber } from "@/utils/utils";
 export const getDialogType = (dialog: dialog) => {
     return computed(() => {
         const dialogConfig = dialog.dialogConfig
@@ -41,11 +41,10 @@ export const getDialogSlotsDefault = (dialog: dialog) => {
     return computed(() => {
         return (params: ModalDefaultSlotParams) => {
             const dialogComponent = dialog.dialogComponent
-            const dialogName = dialog.dialogName!
-            const defaultComFn = dialogComponent['columnFilter']?.default
+            const dialogName = dialog.dialogName! as keyof typeof dialogComponent
+            const defaultComFn = dialogComponent[dialogName]?.default
             if (defaultComFn != null) {
                 const com = defaultComFn(dialog)
-                console.log(com, 'testCom')
                 return h(com)
             }
             return h("div", {}, ['default'])
@@ -152,21 +151,7 @@ export const getDialogModelValue = (dialog: dialog) => {
     })
 }
 
-export const getDialogOnHide = (dialog: dialog) => {
-    return computed({
-        get: () => {
-            const fn = (params: any) => {
-                const dialogConfig = dialog.dialogConfig
-                dialogConfig.modelValue = false
-                dialog.dialogConfig.hasOpen = true
-            }
-            return fn
-        },
-        set: () => {
 
-        }
-    })
-}
 
 export const getDialogDestroyOnClose = (dialog: dialog) => {
     return computed(() => {
@@ -192,3 +177,34 @@ export const getDialogPosition = (dialog: dialog) => {
         return _position
     })
 }
+
+export const getDialogOnShow = (dialog: dialog) => {
+    return computed(() => {
+        return (params: any) => {
+            const $modal = params.$modal
+            dialog.modalInstance = $modal
+            const onShow = dialog.dialogConfig.onShow
+            if (typeof onShow == 'function') {
+                onShow(params)
+            }
+        }
+    })
+}
+
+export const getDialogOnHide = (dialog: dialog) => {
+    return computed(() => {
+        const fn = (params: any) => {
+            const onHide = dialog.dialogConfig.onHide
+            if (typeof onHide == 'function') {
+                onHide(params)
+            }
+            const dialogConfig = dialog.dialogConfig
+            dialogConfig.modelValue = false
+            dialog.dialogConfig.hasOpen = true
+        }
+        return fn
+    },
+    )
+}
+
+// export const getDialog

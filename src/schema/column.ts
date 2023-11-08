@@ -5,7 +5,7 @@ import { VxeColumnProps, VxeGridPropTypes, VxeColumn, VxeGridProps, VxeTableDefi
 import { StyleType, columnConfig, pickRef } from "@/types/schema"
 import { isUndefined } from "xe-utils"
 import { table } from "./table"
-import { getColumnAlign, getColumnField, getColumnFilterRender, getColumnSlot, getColumnTitle, getColumnType, getColumnVisiable, getColumnWidth, getInSizeDiv, getOutSizeDiv, getSlotDefault } from "./columnFn"
+import { getColumnAlign, getColumnField, getColumnSlot, getColumnTitle, getColumnType, getColumnVisiable, getColumnWidth, getInSizeDiv, getOutSizeDiv, getSlotDefault } from "./columnFn"
 
 export class column extends base<VxeTableDefines.ColumnOptions> {
   // columnConfig: pickRef<VxeTableDefines.ColumnOptions & columnConfig> = {
@@ -13,6 +13,7 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
     isEdit: false,
     type: 'string' as any,
     showFilter: true,
+    showSort: true
   } //渲染组件配置
   table?: table
   filterConfig = {
@@ -38,7 +39,7 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
     renderColumn.type = getColumnType(this) as any
     renderColumn.width = getColumnWidth(this) as any
     renderColumn.title = getColumnTitle(this) as any
-    renderColumn.filterRender = getColumnFilterRender(this) as any
+    // renderColumn.filterRender = getColumnFilterRender(this) as any
     renderColumn.align = getColumnAlign(this) as any
     renderColumn.resizable = true
   }

@@ -8,15 +8,15 @@ import "@/style/index.scss"
 import "@/style/vxe-table/index.scss"
 // import 'quasar/src/css/index.sass'
 import "@/style.css"
-import { Quasar } from 'quasar'
-import XEUtils from 'xe-utils'
 import VXETable from 'vxe-table'
 import router from './router'
 import 'xe-utils'
 import register from './plugin/register'
+import Antd from 'ant-design-vue';
+import 'ant-design-vue/dist/reset.css';
 createApp(App)
-  .use(Quasar, {})
   .use(VXETable)
+  .use(Antd)
   .use(router)
   .use(register)
   .mount('#app')

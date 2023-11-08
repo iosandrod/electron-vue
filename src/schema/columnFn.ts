@@ -3,8 +3,8 @@ import { column } from "./column"
 import { StyleType } from "@/types/schema"
 import { getTableHeaderHeight, getTableRowHeight } from "./tableFn"
 import { isUndefined } from 'xe-utils'
-import { getIcon, propsConfig, useMousePoint } from "./icon"
-import { getMouseEventPosition, registerDocumentClickFn } from "@/utils/utils"
+import { getIcon, propsConfig, useCenterDiv, useMousePoint, usePropsDiv } from "./icon"
+import { getMouseEventPosition, getPercentLength, registerDocumentClickFn } from "@/utils/utils"
 // import { system } from "./system"
 export const getOutSizeDiv = (column: column, row: any) => {
     const table = column.table!
@@ -93,7 +93,14 @@ export const getColumnSlot = (column: column) => {
         const columnConfig = column.columnConfig
         const type = columnConfig.type
         //使用默认插槽
-        if (type == 'seq' || type == 'checkbox' || type == 'radio') {
+        if (type == 'seq') {
+            return {
+                header: () => {
+                    return h('div', {}, [])
+                }
+            }
+        }
+        if (type == 'checkbox' || type == 'radio') {
             return {}
         }
         let slots: any = {}
@@ -117,44 +124,58 @@ export const getSlotHeader = (_column: column) => {
     return computed(() => {
         const fn = () => {
             //过滤图标
-            const renderColumn = _column.renderColumn
-            const title: string = renderColumn.title as string || 'title'
-            const table = _column.table!
-            const docClick = registerDocumentClickFn(() => {
-                table.closeColumnFilter()
-            })
-            const filterIconFn = useMousePoint({
-                capture: true,
-                onClick: (event: MouseEvent) => {
-                    event.stopPropagation()
-                    const position = getMouseEventPosition(event)
-                    const table = _column.table!
-                    table.openColumnFilter(_column.renderColumn?.field as string, position)//打开过滤器
-                },
-                directive: [[docClick]]
-            })
-            const targetIcon = getIcon(null, "vxe-icon-funnel")
-            const filterIcon = filterIconFn(targetIcon())//isVNode
-            const _filterIcon = _column.columnConfig.showFilter == true ? filterIcon : null
-            const sortIcon = getSortColmmnIcons(undefined, _column)
-            //排序图标
+            const showHeader = _column.columnConfig.showHeader
+            if (showHeader == false) {
+                return
+            }
+            const headerHeight = getColumnRowHeight(_column).value
             const style: StyleType = {
                 display: 'flex',
                 flexDirection: 'row',
-                alignItems: 'center'
+                alignItems: 'center',
+                height: headerHeight,
             }
-            return h('div', { style }, [title, _filterIcon, sortIcon])
+            const outSizeDiv = usePropsDiv({ style })
+            const renderColumn = _column.renderColumn
+            const title: string = renderColumn.title as string || 'title'
+            const _filterIcon = _column.columnConfig.showFilter == true ? getSlotHeaderFilterIcon(_column) : null
+            const sortIcon = _column.columnConfig.showSort == true ? getSlotHeaderSortIcon(_column) : null
+            //排序图标
+            return outSizeDiv([title, _filterIcon, sortIcon])
         }
         return fn
     })
 }
 
-export const getSlotHeaderFilterIcon = (column: column) => {//获取头部的图标
-    return
+export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的图标
+    const table = _column.table!
+    const docClick = registerDocumentClickFn(() => {
+        table.closeColumnFilter()
+    })
+    const filterIconFn = useMousePoint({
+        capture: true,
+        onClick: (event: MouseEvent) => {
+            event.stopPropagation()
+            const position = getMouseEventPosition(event)
+            const table = _column.table!
+            table.openColumnFilter(_column.renderColumn?.field as string, position)//打开过滤器
+        },
+        directive: [[docClick]]
+    })
+    const targetIcon = getIcon(null, "vxe-icon-funnel")
+    return filterIconFn(targetIcon())
 }
 
-export const getSlotHeaderSortIcon = (column: column) => {
 
+export const getSlotHeaderSortIcon = (_column: column) => {
+    const rowHeight = getColumnHeaderHeight(_column).value
+    const pRowheight = getPercentLength(rowHeight, 0.7)
+    const heightDiv = usePropsDiv({ style: { height: pRowheight, display: "flex", alignItems: 'center' } })
+    const upIcon = useCenterDiv({ style: { cursor: "pointer", height: "50%" }, onClick: () => { console.log('click') } })(getIcon({}, 'vxe-icon-caret-up')())
+    const downIcon = useCenterDiv({ style: { cursor: "pointer", height: "50%" }, onClick: () => { console.log('click') } })(getIcon({}, 'vxe-icon-caret-down')())
+    const style = { display: "flex", flexDirection: 'column', height: '100%' }
+    const innerDiv = getRenderFn('div', ({ style: style }))([upIcon, downIcon])
+    return heightDiv(innerDiv)
 }
 
 
@@ -217,13 +238,6 @@ export const getSortColmmnIcons = (props: propsConfig = {}, column: column) => {
     const style = { ...props.style, display: "flex", flexDirection: 'column', height: rowHeight }
     return getRenderFn('div', ({ ...props, style: style }))([upIcon, downIcon])
 }
-
-export const getColumnFilterRender = (column: column) => {
-    return computed(() => {
-        return {}
-    })
-}
-
 
 
 

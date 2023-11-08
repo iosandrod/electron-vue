@@ -8,15 +8,17 @@ import {
   VxeOptgroupProps,
   VxeOption,
   VxeTablePropTypes,
-  VxeTableInstance
+  VxeTableInstance,
+  VxeTableDefines
 } from "vxe-table"
 import { system, systemInstance } from "./system"
 import { StyleType, dialogConfig, pickKey, position, tableConfig, tableData, tableSchema } from "@/types/schema"
 import { column, createColumn } from "./column"
-import { getOptionsCellClassName, getOptionsCheckboxConfig, getOptionsColumns, getOptionsData, getOptionsFilterConfig, getOptionsHeight, getOptionsRowClassName, getOptionsRowConfig, getOptionsScrollX, getOptionsScrollY, getOptionsShowFooter, getOptionsTreeConfig, getTableRowConfig, getTableStyle } from "./tableFn"
+import { getOptionsCellClassName, getOptionsCheckboxConfig, getOptionsColumns, getOptionsData, getOptionsFilterConfig, getOptionsHeight, getOptionsRowClassName, getOptionsRowConfig, getOptionsScrollX, getOptionsScrollY, getOptionsShowFooter, getOptionsShowHeader, getOptionsTreeConfig, getTableRowConfig, getTableStyle } from "./tableFn"
 import { getRenderFn } from "./columnFn"
 import { } from 'rxjs'
 import { createDialog, dialog } from "./dialog"
+import { getDialogMaskHidden, tranPositionNumber } from "@/utils/utils"
 export class table extends base<tableSchema> {
   tableConfig: tableConfig = {
     columns: [],//列
@@ -30,6 +32,7 @@ export class table extends base<tableSchema> {
     headerConfig: {//表头配置
       rowHeight: "30px"//行高度
     },
+    showHeader: true,
     showCheckBoxColumn: true,//显示选择项
     showSeqColumn: true,//显示数字项目
     checkboxConfig: {
@@ -41,25 +44,25 @@ export class table extends base<tableSchema> {
   filterDialog?: dialog
   filterDialogConfig = {
     props: {
+      onShow: getDialogMaskHidden((params: any) => { }),
+      onHide: (params) => { },
+      showHeader: false,
       position: { top: '0px', left: '0px' } as any,
       lockView: false,
       type: "modal",
       height: '300px', width: '150px', mask: false,
       modelValue: false,
-      destroyOnClose: true,
-      maskClosable: true, onHide: () => { },
       modalData: {
-        table: this, loadData: [{ id: 10001, name: 'Test1', nickname: 'T1', role: 'Develop', sex: 'Man', age: 28, address: 'Shenzhen' },
-        { id: 10002, name: 'Test2', nickname: 'T2', role: 'Test', sex: 'Women', age: 22, address: 'Guangzhou' },
-        { id: 10003, name: 'Test3', nickname: 'T3', role: 'PM', sex: 'Man', age: 32, address: 'Shanghai' },
-        ],
-        loadColumns: [
-          { field: 'name', title: 'name', width: 100, showFilter: false },]
+        table: this, tableConfig: {
+          data: [{ id: 10001, name: 'Test1', nickname: 'T1', role: 'Develop', sex: 'Man', age: 28, address: 'Shenzhen' },
+          { id: 10002, name: 'Test2', nickname: 'T2', role: 'Test', sex: 'Women', age: 22, address: 'Guangzhou' },
+          { id: 10003, name: 'Test3', nickname: 'T3', role: 'PM', sex: 'Man', age: 32, address: 'Shanghai' },
+          ], columns: [
+            { field: 'name', title: '', width: 100, showHeader: false },],
+          showHeader: true,
+        } as pickKey<tableConfig>,
       }
     } as dialogConfig, context: {}, dialogName: 'columnFilter'
-  }
-  propsTableConfig: pickKey<tableConfig> = {
-
   }
   tableData: tableData = {
     showData: [],
@@ -138,6 +141,7 @@ export class table extends base<tableSchema> {
     gridOptions.checkboxConfig = getOptionsCheckboxConfig(this) as any
     gridOptions.height = getOptionsHeight(this) as any
     gridOptions.showFooter = getOptionsShowFooter(this) as any
+    gridOptions.showHeader = getOptionsShowHeader(this) as any
   }
   async setCurRow(row: any) {//设置当前行
     this.tableData.curRow = row
@@ -151,7 +155,6 @@ export class table extends base<tableSchema> {
     }
   }
   async openColumnFilter(field: string, position?: position) {
-    console.log(position)
     if (position) {
       this.filterDialogConfig.props.position = position
     }

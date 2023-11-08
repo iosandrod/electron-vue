@@ -9,6 +9,7 @@ body{
     --vxe-table-column-padding-default: 0px 0 ;
     --vxe-table-cell-padding-left: 0px;
     --vxe-table-cell-padding-right: 0px;
+    
 }
 
 .curRowClass{ 
@@ -21,3 +22,22 @@ body{
 .rowSelect{
     background:RGB(198, 198, 209);
 }
+.vxe-modal--wrapper .vxe-modal--content {
+    flex-grow: 1;
+    padding: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    white-space: pre-line;
+}
+.vxe-modal--content {
+    flex-grow: 1;
+    padding: 0 !important;
+    padding-top: 0 !important;
+    padding-right: 0 !important; 
+    padding-bottom: 0 !important;
+    padding-left: 0 !important;
+    white-space: pre-line;
+}
+

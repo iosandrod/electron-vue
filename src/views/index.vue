@@ -1,16 +1,17 @@
 <template>
     <div class="w-full h-full ">
+        <button-view @click="click1">
+            <template #default="button">
+                {{ button.buttonName }}
+            </template>
+        </button-view>
         <table-view :columns="columns" :data="data"></table-view>
-        <!-- <vxe-button content="多窗口、叠加窗口" @click="openAlert"></vxe-button> -->
-        <button-view>button</button-view>
     </div>
 </template>
  
 <script lang="ts" setup>
 import { reactive, ref, nextTick, h, onMounted } from 'vue';
 import { VxeButton, VxeGridPropTypes, VxeModalProps } from 'vxe-table';
-import VXETable from 'vxe-table';
-import { concatAny } from '@/types/schema'
 import { dialogPool, createDialog } from '@/schema/dialog'
 const columns = ref<VxeGridPropTypes.Columns>([
     { field: 'name', title: 'name' },
@@ -23,34 +24,10 @@ onMounted(() => {
     }, 100);
 })
 function openAlert() {
-    // const openConfig: concatAny<VxeModalProps> = reactive({
-    //     id: 'testModel', slots: {
-    //         default: (params) => {
-    //             return h('div', {}, [h('button', {
-    //                 onClick: () => {
-    //                     console.log(params)
-    //                 }
-    //             }, ['button'])])
-    //         }
-    //     }, lockView: false, mask: true, modelValue: false
-    // })
-    // VXETable.modal.open(openConfig)
-    // const dialog = createDialog({ type: "modal" }, {})
-    // const openConfig: any = reactive({ props: { type: "modal", modelValue: true } as concatAny<VxeModalProps>, dialogName: "codeEdit" })
-    // const dialog = dialogPool.openDialog(openConfig)
-    // setTimeout(() => {
-    //     dialog.open()
-    //     setTimeout(() => {
-    //         dialog.open()
-    //     }, 4000);
-    // }, 4000);
 }
-//打开弹框
-// setTimeout(() => {
-//     columns.value = columns.value.filter((col, i) => {
-//         return i < 2
-//     })
-// }, 5000);
+function click1() {
+    console.log(1)
+}
 const data = ref([
     { id: 10006, name: 'Test6', nickname: 'T6', role: 'Designer', sex: 'Women', age: 21, address: 'Shenzhen' },
     { id: 10007, name: 'Test7', nickname: 'T7', role: 'Test', sex: 'Man', age: 29, address: 'Shenzhen' },
@@ -69,6 +46,4 @@ const data = ref([
 
 </script>
 
-<style scoped lang="scss">
-/* @import url('@/style/vxe-table/index.scss'); */
-</style>
+<style scoped lang="scss"></style>

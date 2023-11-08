@@ -21,6 +21,28 @@ export const getWFullDiv = (props: propsConfig = {}) => {
     return getRenderFn('div', { class: _class, ...props })
 }
 
+export const tranPositionNumber = (position: position) => {
+    let left: any = position.left
+    let top: any = position.top
+    if (vxUtils.isString(left)) {
+        left = Number(`${left}`.replace('px', ''))
+    } else if (isNumber(left)) {
+        if (left < 1 && left > -1) {
+            const _left = document.body.clientWidth * left
+            left = _left
+        }
+    }
+    if (vxUtils.isString(top)) {
+        top = Number(`${top}`.replace('px', ''))
+    } else if (isNumber(top)) {
+        if (top < 1 && top > -1) {
+            const _top = document.body.clientHeight * top
+            top = _top
+        }
+    }
+    return { left, top }
+}
+
 
 export const tranPosition = (position: position) => {
     let left: any = position.left
@@ -75,4 +97,33 @@ export const resiterDocumentMousedownFn = (fn: Function) => {
             document.removeEventListener('mousedown', fn1)
         }
     } as Directive
+}
+
+export const getDialogMaskHidden = (fn: Function) => {
+    const fn1 = (params: any) => {
+        const $modal = params.$modal
+        const box = $modal.getBox()
+        if (box != null) {
+            box.addEventListener('click', (event: MouseEvent) => {
+                event.stopPropagation()
+            })
+        }
+        fn(params)
+    }
+    return fn1
+}
+
+
+export const getPercentLength = (length: string | number, percnet: number) => {
+    let _length: any = length
+    if (typeof length == 'string') {
+        let len = length.replace(/[px|rpx]/gi, '')
+        let nLen = `${Number(len) * percnet}px`
+        _length = nLen
+    }
+    if (typeof length == 'number') {
+        let _num = `${length * percnet}px`
+        _length = _num
+    }
+    return _length
 }

@@ -1,24 +1,34 @@
 import { concatAny } from "@/types/schema";
 import { base } from "./base";
-import { VxeButtonProps, VxeButton } from "vxe-table";
+import { VxeButtonProps, VxeButton, VxeButtonDefines, VxeButtonSlots } from "vxe-table";
 import { h, reactive, useSlots } from "vue";
+import * as buttonFn from './buttonFn'
 import { systemInstance } from "./system";
 export class button extends base {
     buttonConfig: concatAny<VxeButtonProps> = {}
+    buttonName = 'buttonName'
+    renderButton: VxeButtonProps & { slots?: VxeButtonProps } = {
+    }
     constructor(schema: any, context: any, system: any) {
         super(system, schema, context)
     }
     async initButton() {
-        await this.initComponent()
+        this.initRenderButton()
+        this.initComponent()
+    }
+    async initRenderButton() {
+        const renderButton = this.renderButton
+        renderButton.slots = buttonFn.getButtonSlots(this) as any
     }
     async initComponent() {
         const vNode = () => {
-            const slots = useSlots()
-            return h(VxeButton, {}, {
-                default: () => {
-                    const defaultSlot = slots.default
-                    return h('div', {}, ['buttonText'])
-                }
+            // const slots = useSlots()
+            const renderButton = this.renderButton
+            const slots = renderButton.slots! as any
+            return h(VxeButton, renderButton, {
+                default: slots.default,
+                icon: slots.icon,
+                dropdowns: slots.dropdowns
             })
         }
         this.component = vNode

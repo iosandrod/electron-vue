@@ -12,16 +12,14 @@ export const columnFilter: dialogComponent = {
     default: (dialog) => {
         const defaultDialogDivFn = defaultDialog.default!(dialog) as any
         const modalData = dialog.dialogConfig.modalData
-        const loadData = computed(() => {
-            return modalData.loadData || []
-        })
-        const loadColumns = computed(() => {
-            return modalData.loadColumns || []
-        })
-        const props = reactive({ data: loadData.value, columns: loadColumns.value })
+        const props = modalData.tableConfig
         const _talbeView = resolveComponent('table-view')
         const tableCom = h(_talbeView, props)
-        const node = defaultDialogDivFn(tableCom)
+        const node = h(defaultDialogDivFn(tableCom), {
+            onClick: (event: MouseEvent) => {
+                event.stopPropagation()
+            }
+        })
         return node
     },
     header: (dialog) => {

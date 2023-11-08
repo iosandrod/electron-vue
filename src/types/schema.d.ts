@@ -1,7 +1,7 @@
 import { column } from "@/schema/column"
 import { dialog } from "@/schema/dialog"
 import { ComputedRef, VNode } from "vue"
-import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines } from "vxe-table"
+import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps } from "vxe-table"
 
 export type schema = {
   componentType: string
@@ -34,7 +34,7 @@ export type mergeConfig = {
 export type tableConfig = {
   showCheckBoxColumn: boolean,
   showSeqColumn: boolean,
-  columns: column[]
+  columns: extendColumnConfig[]
   filterConfig: filterConfig[],
   mergeConfig: mergeConfig[],
   rowConfig: {
@@ -54,9 +54,19 @@ export type tableData = {
   curFilterColumn?: column
 }
 export type columnConfig = {
-  isEdit: boolean,
-  showFilter: boolean
+  isEdit?: boolean,
+  showFilter?: boolean
+  showSort?: boolean,
+  showHeader?: boolean,//是否显示头部
+  editConfig?: formItemConfig
 }
+
+export type formItemConfig = {
+
+}
+
+export type extendColumnConfig = VxeTableDefines.ColumnOptions & columnConfig
+
 
 export type pickRef<T = any> = {
   [key in keyof T]: ComputedRef<T[key]> | T[key]
@@ -87,4 +97,12 @@ export type dialogComponent = {
 export type position = {
   left: number,
   top: number
+}
+
+export type itemConfig = VxeFormItemProps & {
+  type?: string
+}
+
+export type formConfig = VxeFormProps & {
+
 }

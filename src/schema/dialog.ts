@@ -1,12 +1,13 @@
 import { isVNode, createApp, ComponentOptions, computed, defineComponent, h, nextTick, reactive, resolveComponent, watchEffect, App, VueElement } from "vue";
 import { base } from "./base";
 import { systemInstance, system } from "./system";
-import VXETable, { VxeModalProps, VxeModalDefines, globalStore, modal, VxeModal } from "vxe-table";
+import VXETable, { VxeModalProps, VxeModalDefines, globalStore, modal, VxeModal, VxeModalInstance } from "vxe-table";
 import { concatAny, dialogConfig } from "@/types/schema";
-import { getDialogDestroyOnClose, getDialogHeight, getDialogLockView, getDialogMaskClosable, getDialogMinHeight, getDialogMinMask, getDialogMinWidth, getDialogModelValue, getDialogOnHide, getDialogPosition, getDialogPrimaryId, getDialogResize, getDialogShowFooter, getDialogSlots, getDialogType, getDialogWidth } from "./dialogFn";
+import { getDialogDestroyOnClose, getDialogHeight, getDialogLockView, getDialogMaskClosable, getDialogMinHeight, getDialogMinMask, getDialogMinWidth, getDialogModelValue, getDialogOnHide, getDialogOnShow, getDialogPosition, getDialogPrimaryId, getDialogResize, getDialogShowFooter, getDialogSlots, getDialogType, getDialogWidth } from "./dialogFn";
 import { Subject } from "rxjs";
 import register from "@/plugin/register";
 import dialogComponent from "./dialogComponent";
+import { tranPosition, tranPositionNumber } from "@/utils/utils";
 export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     renderDialog: VxeModalDefines.ModalOptions = {}
     childDialog: dialog[] = []//子节点
@@ -14,6 +15,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     dialogPool?: DialogPool
     dialogComponent = dialogComponent
     subject = new Subject()//
+    modalInstance?: VxeModalInstance
     // dialogConfig: concatAny<VxeModalProps & { dialogPrimaryName?: string }> = {//modalData 是模态框的存储数据
     dialogConfig: dialogConfig = {
         position: 'center',
@@ -45,7 +47,6 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
             for (const key of Object.keys(schema)) {
                 const _value = schema[key]
                 if (_value != null) {
-                    console
                     this.effectPool[`dialog${key}Effect`] = watchEffect(() => {
                         this.dialogConfig[key] = schema[key]
                     })
@@ -60,6 +61,22 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
                 } else {
                     nextTick(() => {
                         this.close()
+                    })
+                }
+            })
+            //修改配置
+            this.effectPool['positionEffect'] = watchEffect(() => {
+                const position = this.dialogConfig.position
+                if (typeof position == 'object') {
+                    nextTick(() => {
+                        const modalInstance = this.modalInstance
+                        if (modalInstance != null) {
+                            const _position = tranPositionNumber(position as any)
+                            const box = modalInstance.getBox()
+                            if (box != null) {
+                                modalInstance.setPosition(_position.top, _position.left)
+                            }
+                        }
                     })
                 }
             })
@@ -87,6 +104,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         renderDialog.maskClosable = getDialogMaskClosable(this) as any
         renderDialog.modelValue = getDialogModelValue(this) as any
         renderDialog.onHide = getDialogOnHide(this) as any
+        renderDialog.onShow = getDialogOnShow(this) as any
         renderDialog.destroyOnClose = getDialogDestroyOnClose(this) as any
         renderDialog.lockView = getDialogLockView(this) as any
         renderDialog.position = getDialogPosition(this) as any
