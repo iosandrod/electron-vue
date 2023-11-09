@@ -108,6 +108,9 @@ export const getColumnSlot = (column: column) => {
         const header = getSlotHeader(column).value//表头的显示
         slots.default = _default
         slots.header = header
+        slots.content = () => {
+            return h('div', {}, ['123'])
+        }
         return slots
     })
 }

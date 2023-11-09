@@ -1,5 +1,7 @@
 import { column } from "@/schema/column"
 import { dialog } from "@/schema/dialog"
+import { table } from "@/schema/table"
+import { SelectProps } from "ant-design-vue"
 import { ComputedRef, VNode } from "vue"
 import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps } from "vxe-table"
 
@@ -32,6 +34,7 @@ export type mergeConfig = {
   mergeSpan: number//合并多少个
 }
 export type tableConfig = {
+  hiddenBorder?: boolean
   showCheckBoxColumn: boolean,
   showSeqColumn: boolean,
   columns: extendColumnConfig[]
@@ -106,3 +109,10 @@ export type itemConfig = VxeFormItemProps & {
 export type formConfig = VxeFormProps & {
 
 }
+
+
+export type selectConfig = pickKey<SelectProps & {
+  column?: column,//列
+  table?: table,//表格
+  modalValue?: string
+}>

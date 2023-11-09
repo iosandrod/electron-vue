@@ -2,11 +2,9 @@ import { createApp } from 'vue'
 import "./style.css"
 import App from './App.vue'
 import './samples/node-api'
-import "vxe-table/lib/style.css"
 import '@quasar/extras/material-icons/material-icons.css'
 import "@/style/index.scss"
 import "@/style/vxe-table/index.scss"
-// import 'quasar/src/css/index.sass'
 import "@/style.css"
 import VXETable from 'vxe-table'
 import router from './router'

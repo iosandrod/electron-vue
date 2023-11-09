@@ -29,6 +29,7 @@ export class table extends base<tableSchema> {
       rowHeight: "30px",//行高度
       currentEditRow: []//当前编辑的行配置
     },
+    hiddenBorder: false,
     headerConfig: {//表头配置
       rowHeight: "30px"//行高度
     },
@@ -105,7 +106,11 @@ export class table extends base<tableSchema> {
     const _vNode = () => {
       const options = this.gridOptions
       const vxeGrid = resolveComponent('vxe-grid')
-      const outSizeDiv = getRenderFn('div', { style: getTableStyle(this).value, class: ['f-full', 'w-full'] })
+      const _class = ['h-full', 'w-full']
+      _class.push('grid-border-none')
+      const outSizeDiv = getRenderFn('div', {
+        style: getTableStyle(this).value, class: _class
+      })
       const vxeGridCom = h(vxeGrid, {
         ...options, ref: 'vxeGrid', onCellClick: ({ row, column }: any) => {
           _this.setCurRow(row)
@@ -142,6 +147,7 @@ export class table extends base<tableSchema> {
     gridOptions.height = getOptionsHeight(this) as any
     gridOptions.showFooter = getOptionsShowFooter(this) as any
     gridOptions.showHeader = getOptionsShowHeader(this) as any
+    gridOptions.border = false
   }
   async setCurRow(row: any) {//设置当前行
     this.tableData.curRow = row

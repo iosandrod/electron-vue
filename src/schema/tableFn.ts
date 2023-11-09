@@ -125,9 +125,15 @@ export const getOptionsRowConfig = (table: table) => {
 export const getOptionsRowClassName = (table: table) => {
     return computed(() => {
         return ({ row }: any) => {
+            const arr = ['']
+            const tableConfig = table.tableConfig
+            const hiddenBorder = tableConfig.hiddenBorder
             const curRow = table.tableData.curRow
             if (curRow === row) {
-                return ['curRowClass']
+                arr.push('curRowClass')
+            }
+            if (hiddenBorder == true) {
+                arr.push('')
             }
             return ['notCurRowClass']
         }

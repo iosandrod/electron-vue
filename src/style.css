@@ -9,14 +9,42 @@ body{
     --vxe-table-column-padding-default: 0px 0 ;
     --vxe-table-cell-padding-left: 0px;
     --vxe-table-cell-padding-right: 0px;
-    
+    /* --vxe-table-border-color:none; */
+    /* --vxe-table-border-width:0 */
 }
-
+/* .border--default .vxe-footer--column{
+    background-image: linear-gradient(
+        var(red),
+        var(red)
+      );;
+} */
+/* .vxe-table--footer-wrapper {
+    border-top: none
+  }
+  .vxe-table--border-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+    border: none
+  } */
 .curRowClass{ 
     background:RGB(228, 228, 229);
+    
 }
- 
+.vxe-grid-hidden-border{
+   
+}
+
+.vxe-grid-hidden-border td{
+    background-image: none !important  ;
+}
+
 .notCurRowClass{
+   
     /* background: blue; */
 }
 .rowSelect{
@@ -41,3 +69,21 @@ body{
     white-space: pre-line;
 }
 
+
+
+/* .border--inner .vxe-table--border-line{
+      border-width: 0 0 3px 0;
+      border-color: red;
+} */
+
+.vxe-table .vxe-table--render-default .tid_3 .border--default{
+border: none;
+}
+
+/* .border--default{
+    border: none !important;
+    }
+
+    .vxe-table--render-default .border--default{
+        border: none !important;
+    } */
