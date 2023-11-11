@@ -71,19 +71,3 @@ body{
 
 
 
-/* .border--inner .vxe-table--border-line{
-      border-width: 0 0 3px 0;
-      border-color: red;
-} */
-
-.vxe-table .vxe-table--render-default .tid_3 .border--default{
-border: none;
-}
-
-/* .border--default{
-    border: none !important;
-    }
-
-    .vxe-table--render-default .border--default{
-        border: none !important;
-    } */

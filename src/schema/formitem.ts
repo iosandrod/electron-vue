@@ -32,7 +32,7 @@ export class formitem extends base {
     }
 }
 
-export const createFormItem = (schema: any, context: any) => {
+export const createFormItem = (schema: any, context?: any) => {
     const _formitem = reactive(new formitem(schema, context, systemInstance))
     _formitem.initFormItem()
     return _formitem

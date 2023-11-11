@@ -1,10 +1,11 @@
-import { ComputedRef, Directive, VNode, computed, h, isReactive, isRef, reactive, withDirectives } from "vue"
+import { ComputedRef, Directive, VNode, computed, h, isReactive, isRef, isVNode, reactive, withDirectives } from "vue"
 import { column } from "./column"
 import { StyleType } from "@/types/schema"
 import { getTableHeaderHeight, getTableRowHeight } from "./tableFn"
 import { isUndefined } from 'xe-utils'
 import { getIcon, propsConfig, useCenterDiv, useMousePoint, usePropsDiv } from "./icon"
 import { getMouseEventPosition, getPercentLength, registerDocumentClickFn } from "@/utils/utils"
+import { isString } from "lodash"
 // import { system } from "./system"
 export const getOutSizeDiv = (column: column, row: any) => {
     const table = column.table!
@@ -42,13 +43,19 @@ export const getInSizeDiv = (column: column, row: any) => {
 //directive 是指令注册
 export const getRenderFn = (node: string | VNode, props: any, directive?: Array<[Directive]>) => {
     return (nestNode?: any[] | any) => {
-        let _nestNode: any[] = []
+        let _nestNode: any = null
         if (Array.isArray(nestNode)) {
+            _nestNode = nestNode
+        } else if (isVNode(nestNode)) {
+            _nestNode = nestNode
+        } else if (isString(nestNode)) {
             _nestNode = [nestNode]
-        } else {
+        } else if (nestNode == null) {
+            _nestNode = []
+        } else if (typeof nestNode == 'object') {
             _nestNode = nestNode
         }
-        const vnode = h(node, props, nestNode)
+        const vnode = h(node, props, _nestNode)
         if (directive != null) {
             if (Array.isArray(directive)) {
                 return withDirectives(vnode, directive)

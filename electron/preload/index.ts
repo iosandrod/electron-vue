@@ -1,3 +1,6 @@
+
+import * as electron from 'electron'
+import { app } from 'electron'
 function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
   return new Promise((resolve) => {
     if (condition.includes(document.readyState)) {
@@ -88,5 +91,7 @@ domReady().then(appendLoading)
 window.onmessage = (ev) => {
   ev.data.payload === 'removeLoading' && removeLoading()
 }
+// window.electron = electron
+
 
 setTimeout(removeLoading, 4999)

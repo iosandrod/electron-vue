@@ -3,8 +3,9 @@ import { VxeTableProps, VxeGridProps, VxeGrid, Grid, VxeModalProps } from 'vxe-t
 import { SelectProps } from "ant-design-vue"
 import { createSelect } from "../selectEdit"
 export default defineComponent({
-    props: [] as Array<keyof SelectProps>,
+    props: ['options'] as Array<keyof SelectProps>,
     setup(props) {
+        console.log(props, 'testProps')
         const select: any = createSelect(props)
         return select.component
     },

@@ -1,9 +1,10 @@
 import { getRenderFn } from '@/schema/columnFn'
 import { propsConfig } from '@/schema/icon'
-import { position } from '@/types/schema'
+import { StyleType, position } from '@/types/schema'
 import { isNumber } from 'lodash'
 import { Directive } from 'vue'
 import XEUtils, * as vxUtils from 'xe-utils'
+import { StyleBuilder } from './styleBuilder'
 export const getMouseEventPosition = ($event: MouseEvent) => {
     // const left = $event.offsetX
     const left = $event.clientX
@@ -127,3 +128,4 @@ export const getPercentLength = (length: string | number, percnet: number) => {
     }
     return _length
 }
+export const styleBuilder = new StyleBuilder()

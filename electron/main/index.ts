@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain, session } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, IpcMain, session, ipcRenderer } from 'electron'
 import { release } from 'node:os'
 import { join, resolve } from 'node:path'
 // import electronDevtoolsInstaller, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
@@ -36,6 +36,8 @@ if (!app.requestSingleInstanceLock()) {
 // Read more on https://www.electronjs.org/docs/latest/tutorial/security
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
+
+
 let win: BrowserWindow | null = null
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js')
@@ -59,11 +61,20 @@ async function createWindow() {
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
     win.loadURL(url)
     // Open devTool if the app is not packaged
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools()
   } else {
     win.loadFile(indexHtml)
   }
-
+  // IpcMain.on('message-to-main', (event, arg) => {
+  //   // console.log(arg); // Output: 'Hello from renderer'
+  //   win.webContents.openDevTools()
+  //   // Perform actions in the main process based on the received message
+  // });
+  ipcMain.on('message-to-main', (params, value1) => {
+    const _params = params
+    console.log(value1)
+    win.emit('main-to-message', value1)
+  })
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString())

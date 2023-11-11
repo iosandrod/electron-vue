@@ -1,5 +1,6 @@
 import { column } from "@/schema/column"
 import { dialog } from "@/schema/dialog"
+import { formitem } from "@/schema/formitem"
 import { table } from "@/schema/table"
 import { SelectProps } from "ant-design-vue"
 import { ComputedRef, VNode } from "vue"
@@ -107,7 +108,7 @@ export type itemConfig = VxeFormItemProps & {
 }
 
 export type formConfig = VxeFormProps & {
-
+  items: formitem[]
 }
 
 
@@ -116,3 +117,5 @@ export type selectConfig = pickKey<SelectProps & {
   table?: table,//表格
   modalValue?: string
 }>
+
+
