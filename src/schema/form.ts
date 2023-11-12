@@ -1,9 +1,10 @@
-import { h, reactive, watchEffect } from "vue"
+import { h, reactive, resolveComponent, watchEffect } from "vue"
 import { base } from "./base"
 import { system, systemInstance } from "./system"
 import { VxeFormProps } from "vxe-table"
 import { formConfig } from "@/types/schema"
 import * as formFn from './formFn'
+import { styleBuilder } from "@/utils/utils"
 export class form extends base<formConfig> {
   formConfig: formConfig = {
     items: [],
@@ -12,7 +13,7 @@ export class form extends base<formConfig> {
   renderForm: VxeFormProps = {
   }
   constructor(schema: any, system: system) {
-    super(system)
+    super(system, schema)
   }
   async initForm() {
     const schema = this.schema!
@@ -26,15 +27,20 @@ export class form extends base<formConfig> {
         })
       }
     }
+    this.initRenderForm()
     this.initComponent()
   }
   async initRenderForm() {
     const renderForm = this.renderForm
     renderForm.items = formFn.getFormItems(this) as any
+    renderForm.data = formFn.getFormData(this) as any
   }
   async initComponent(): Promise<void> {
     const vNode = () => {
-      return h('div', {}, ['123'])
+      const formComponent = resolveComponent('vxe-form')
+      const formView = h(formComponent, this.renderForm, [])
+      const style = styleBuilder.setFull().getStyle()
+      return h('div', { style }, [formView])
     }
     this.component = vNode
   }

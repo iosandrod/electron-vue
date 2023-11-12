@@ -12,6 +12,9 @@ import 'xe-utils'
 import register from './plugin/register'
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
+
+
+
 createApp(App)
   .use(VXETable)
   .use(Antd)

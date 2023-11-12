@@ -71,3 +71,12 @@ body{
 
 
 
+.vxe-input{
+    height: 100%;
+}
+.vxe-form--item-content{
+    padding: 0!important;
+}
+.vxe-form--item{
+    padding: 0 !important;
+}

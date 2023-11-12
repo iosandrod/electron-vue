@@ -38,6 +38,18 @@ export class StyleBuilder {
     setFull() {
         return this.setFullHeight().setFullWidth()
     }
+    setFlexRow() {
+        const templateStyle = this.templateStyle
+        templateStyle.display = 'flex'
+        templateStyle.flexDirection = 'row'
+        return this
+    }
+    setFlexColumn() {
+        const templateStyle = this.templateStyle
+        templateStyle.display = 'flex'
+        templateStyle.flexDirection = 'column'
+        return this
+    }
     getStyle() {
         const style = this.templateStyle
         this.templateStyle = {}

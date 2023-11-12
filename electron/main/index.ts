@@ -50,9 +50,6 @@ async function createWindow() {
     icon: join(process.env.VITE_PUBLIC, 'favicon.ico'),
     webPreferences: {
       preload,
-      // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
-      // Consider using contextBridge.exposeInMainWorld
-      // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
       nodeIntegration: true,
       contextIsolation: false,
     },
@@ -60,26 +57,17 @@ async function createWindow() {
 
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
     win.loadURL(url)
-    // Open devTool if the app is not packaged
-    // win.webContents.openDevTools()
+    win.webContents.openDevTools()
   } else {
     win.loadFile(indexHtml)
   }
-  // IpcMain.on('message-to-main', (event, arg) => {
-  //   // console.log(arg); // Output: 'Hello from renderer'
-  //   win.webContents.openDevTools()
-  //   // Perform actions in the main process based on the received message
-  // });
   ipcMain.on('message-to-main', (params, value1) => {
-    const _params = params
-    console.log(value1)
-    win.emit('main-to-message', value1)
+    win.webContents.send('main-to-message', value1)
   })
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString())
   })
-
   // Make all links open with the browser, not with the application
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('https:')) shell.openExternal(url)
