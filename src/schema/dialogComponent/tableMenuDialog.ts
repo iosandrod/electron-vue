@@ -5,7 +5,7 @@ import { computed, h, reactive, resolveComponent } from "vue";
 import { defaultDialog } from "./defaultDialog";
 import tableView from "../schemaComponent/tableView";
 
-export const columnFilter: dialogComponent = {
+export const tableMenu: dialogComponent = {
     default: (dialog) => {
         const defaultDialogDivFn = defaultDialog.default!(dialog) as any
         const modalData = dialog.dialogConfig.modalData
@@ -24,4 +24,4 @@ export const columnFilter: dialogComponent = {
     }
 }
 
-export default columnFilter
+export default tableMenu

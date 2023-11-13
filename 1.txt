@@ -34,3 +34,71 @@ const filterOption = (input: string, option: any) => {
 
 const value = ref<string | undefined>(undefined);
 </script>
+
+
+
+
+const oArr = [
+  {
+    value: 1,
+  },
+  {
+    value: 2,
+  },
+  {
+    value: 3,
+  },
+  {
+    value: 4,
+  },
+  {
+    value: 5,
+  },
+  {
+    value: 6,
+  },
+  {
+    value: 7,
+  },
+  {
+    value: 8,
+  },
+  {
+    value: 9,
+  },
+  {
+    value: 10,
+  },
+]
+const testArr = ref(oArr)
+const _arr = toRaw(testArr.value)
+const _arr1 = toRaw(testArr.value)
+
+
+function testClick(params: any) {
+  electron.ipcRenderer.send('message-to-main', _arr1)
+}
+electron.ipcRenderer.on('main-to-message', (event, value) => {
+  console.log(JSON.stringify(_arr1) == JSON.stringify(value))
+})
+
+watchEffect(() => {
+  console.log(JSON.stringify(formData))
+})
+
+const submitEvent = () => {
+  VXETable.modal.message({ content: '保存成功', status: 'success' })
+}
+const resetEvent = () => {
+  VXETable.modal.message({ content: '重置事件', status: 'info' })
+}
+
+
+
+// const _item = formItems.value.reduce((res, item) => {
+//   const children = item.children
+
+// }, [])
+
+@submit="submitEvent"
+      @reset="resetEvent"

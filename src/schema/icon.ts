@@ -6,21 +6,27 @@ import lodash from 'lodash'
 export type propsConfig = {
     onClick?: (event: MouseEvent) => void,
     style?: StyleType,//
+    onMousedown?: (event: MouseEvent) => void
     class?: any//类型,
     directive?: Array<Array<Directive>>
     capture?: boolean
 }
 
 export const getIcon = (propsConfig: propsConfig | null = {}, iconName: string,) => {
-    const classArr = [iconName]
-    const style: StyleType = {
-        width: "100%"
+    const _props = {
+        style: {
+            width: '100%',
+        },
+        class: [iconName]
     }
-    const obj = { class: [...classArr, ...propsConfig?.class || []], style: { ...style, ...propsConfig?.style || {} } }
+    const obj = lodash.merge(propsConfig, _props)
     let fn = getRenderFn('span', obj)
     return fn
 }
 
+export const mergePropStyleClass = () => {
+
+}
 
 export const useMousePoint = (props: propsConfig = {}) => {
     const style: StyleType = {

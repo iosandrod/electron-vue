@@ -24,6 +24,11 @@ export class StyleBuilder {
         templateStyle.width = '100%'
         return this
     }
+    setMousePoint() {
+        const templateStyle = this.templateStyle
+        templateStyle.cursor = 'pointer'
+        return this
+    }
     setWidth(width: number | string | null) {
         let _width: any = null
         if (isString(width)) {

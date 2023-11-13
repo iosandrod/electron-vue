@@ -87,6 +87,11 @@ export const getTimeEditDiv = (column: column, row: any) => {
 
 export const getSlotDefault = (_column: column) => {
     return computed(() => {
+        const slots = _column.columnConfig.slots as any
+        const slotsDefault = slots?.default
+        if (typeof slotsDefault == 'function') {
+            return slotsDefault
+        }
         const fn = ({ row, rowIndex, column }: any) => {
             const outSizeDiv = getOutSizeDiv(_column, row)//外部的div
             return outSizeDiv
@@ -121,14 +126,6 @@ export const getColumnSlot = (column: column) => {
         return slots
     })
 }
-export const getSlotFilter = (column: column) => {
-    return computed(() => {
-        const fn = () => {
-            return h('div', {}, ['123123'])
-        }
-        return fn
-    })
-}
 
 export const getSlotHeader = (_column: column) => {
     return computed(() => {
@@ -148,8 +145,8 @@ export const getSlotHeader = (_column: column) => {
             const outSizeDiv = usePropsDiv({ style })
             const renderColumn = _column.renderColumn
             const title: string = renderColumn.title as string || 'title'
-            const _filterIcon = _column.columnConfig.showFilter == true ? getSlotHeaderFilterIcon(_column) : null
-            const sortIcon = _column.columnConfig.showSort == true ? getSlotHeaderSortIcon(_column) : null
+            const _filterIcon = _column.table?.tableConfig.showHeaderFilter == true && _column.columnConfig.showFilter == true ? getSlotHeaderFilterIcon(_column) : null
+            const sortIcon = _column.table?.tableConfig.showHeaderSort == true && _column.columnConfig.showSort == true ? getSlotHeaderSortIcon(_column) : null
             //排序图标
             return outSizeDiv([title, _filterIcon, sortIcon])
         }
@@ -254,5 +251,18 @@ export const getSortColmmnIcons = (props: propsConfig = {}, column: column) => {
 export const getColumnAlign = (column: column) => {
     return computed(() => {
         return column.columnConfig.align
+    })
+}
+
+export const getColumnResizable = (column: column) => {
+    return computed(() => {
+        const table = column.table
+        const tableConfig = table?.tableConfig
+        const resizable = tableConfig?.resizable
+        const columnConfig = column.columnConfig
+        if (resizable == true) {
+            return columnConfig.resizable
+        }
+        return false
     })
 }

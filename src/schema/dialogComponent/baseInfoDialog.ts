@@ -3,14 +3,17 @@ import { getRenderFn } from "../columnFn";
 import { table } from "../table";
 import { computed, h, reactive, resolveComponent } from "vue";
 import { defaultDialog } from "./defaultDialog";
-import tableView from "../schemaComponent/tableView";
+// import tableView from "../schemaComponent/tableView";
 
-export const columnFilter: dialogComponent = {
+
+
+
+export const baseInfo: dialogComponent = {
     default: (dialog) => {
         const defaultDialogDivFn = defaultDialog.default!(dialog) as any
         const modalData = dialog.dialogConfig.modalData
         const props = modalData.tableConfig
-        const _talbeView = resolveComponent('table-view')
+        const _talbeView = resolveComponent('table-view')//表格
         const tableCom = h(_talbeView, props)
         const node = h(defaultDialogDivFn(tableCom), {
             onClick: (event: MouseEvent) => {
@@ -24,4 +27,4 @@ export const columnFilter: dialogComponent = {
     }
 }
 
-export default columnFilter
+export default baseInfo

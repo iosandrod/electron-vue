@@ -4,7 +4,7 @@ import { formitem } from "@/schema/formitem"
 import { table } from "@/schema/table"
 import { SelectProps } from "ant-design-vue"
 import { ComputedRef, VNode } from "vue"
-import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps } from "vxe-table"
+import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps } from "vxe-table"
 
 export type schema = {
   componentType: string
@@ -35,21 +35,26 @@ export type mergeConfig = {
   mergeSpan: number//合并多少个
 }
 export type tableConfig = {
-  hiddenBorder?: boolean
-  showCheckBoxColumn: boolean,
-  showSeqColumn: boolean,
-  columns: extendColumnConfig[]
-  filterConfig: filterConfig[],
-  mergeConfig: mergeConfig[],
-  rowConfig: {
+  hiddenBorder?: boolean,
+  showCheckBoxColumn?: boolean,
+  showSeqColumn?: boolean,
+  columns: extendColumnConfig[] = [],
+  filterConfig?: filterConfig[],
+  mergeConfig?: mergeConfig[],
+  rowConfig?: {
     rowHeight: string,
     currentEditRow: any[]
   },
-  headerConfig: {
+  headerConfig?: {
+    // showSort: boolean,
+    // showFilter: boolean
     rowHeight: string
   },
+  resizable?: boolean,
+  showHeaderFilter?: boolean,
+  showHeaderSort?: boolean
   // [key in keyof ]:[]
-} & VxeTableProps
+} & VxeTableProps & VxeTableEventProps
 export type tableData = {
   data: any[],
   showData: any[],
@@ -104,7 +109,9 @@ export type position = {
 }
 
 export type itemConfig = VxeFormItemProps & {
-  type?: string
+  type?: string,
+  isFocus: boolean,
+  baseInfoTable: any
 }
 
 export type formConfig = VxeFormProps & {

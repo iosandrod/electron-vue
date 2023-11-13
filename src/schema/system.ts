@@ -11,6 +11,10 @@ export class system {
   async initSystemPermission() { }
   async initSystemHttp() { }
   async initSystemMenu() { }
+  async openBaseInfoTable()//打开参照弹框
+  {
+    console.log('打开参照弹框')
+  }
 }
 
 const systemInstance = reactive(new system())

@@ -1,7 +1,8 @@
 import { computed, isReactive } from "vue";
 import { table } from "./table";
-import { StyleType } from "@/types/schema";
+import { StyleType, position } from "@/types/schema";
 import { column, createColumn } from "./column";
+import { VxeGridProps } from "vxe-table";
 
 
 export const getTableRowConfig = (table: table) => {
@@ -17,7 +18,7 @@ export const getTableHeaderConfig = (table: table) => {
 
 export const getTableRowHeight = (table: table) => {
     return computed(() => {
-        const rowConfig = getTableRowConfig(table)
+        const rowConfig = getTableRowConfig(table)!
         const rowHeight = rowConfig.rowHeight
         return rowHeight
     })
@@ -25,7 +26,7 @@ export const getTableRowHeight = (table: table) => {
 
 export const getTableHeaderHeight = (table: table) => {
     return computed(() => {
-        const headerConfig = getTableHeaderConfig(table)
+        const headerConfig = getTableHeaderConfig(table)!
         const rowHeight = headerConfig.rowHeight
         return rowHeight
     })
@@ -49,7 +50,7 @@ export const getOptionsData = (table: table) => {
     return computed(() => {
         const showData = table.tableData.data
         const _data = showData.filter(row => {
-            const filterConfig = table.tableConfig.filterConfig
+            const filterConfig = table.tableConfig.filterConfig!
             const status = filterConfig.reduce((res, item: any) => {
                 if (res == false) {
                     return res
@@ -135,7 +136,7 @@ export const getOptionsRowClassName = (table: table) => {
             if (hiddenBorder == true) {
                 arr.push('')
             }
-            return ['notCurRowClass']
+            return arr
         }
     })
 }
@@ -197,4 +198,31 @@ export const getOptionsShowHeader = (table: table) => {
     return computed(() => {
         return table.tableConfig.showHeader
     })
+}
+
+export const openColumnFilter = (table: table, field: string, position?: position) => {
+    if (position) {
+        table.filterDialogConfig.props.position = position
+    }
+    table.filterDialog && table.filterDialog.open()
+}
+
+
+export const initGridOptions = (table: table) => {
+    const gridOptions = table.gridOptions as VxeGridProps
+    gridOptions.columns = getOptionsColumns(table) as any
+    gridOptions.data = getOptionsData(table) as any
+    gridOptions.treeConfig = getOptionsTreeConfig(table) as any
+    gridOptions.scrollX = getOptionsScrollX(table) as any
+    gridOptions.scrollY = getOptionsScrollY(table) as any
+    gridOptions.rowConfig = getOptionsRowConfig(table) as any
+    gridOptions.rowClassName = getOptionsRowClassName(table) as any
+    gridOptions.cellClassName = getOptionsCellClassName(table) as any
+    gridOptions.filterConfig = getOptionsFilterConfig(table) as any
+    gridOptions.checkboxConfig = getOptionsCheckboxConfig(table) as any
+    gridOptions.height = getOptionsHeight(table) as any
+    gridOptions.showFooter = getOptionsShowFooter(table) as any
+    gridOptions.showHeader = getOptionsShowHeader(table) as any
+    gridOptions.border = false
+    gridOptions.menuConfig = { enabled: true }
 }
