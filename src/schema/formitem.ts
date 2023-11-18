@@ -8,9 +8,15 @@ import * as formitemFn from './formitemFn'
 import { baseEdit } from "./baseEdit";
 import { createDialog, dialog } from "./dialog";
 import { getDialogMaskHidden } from "@/utils/utils";
+import { form } from "./form";
+import { getItemSlotsDefault } from "./formitemFn";
 export class formitem extends baseEdit<any> {
+    form?: form
     constructor(schema: any, context: any, system: system) {
         super(schema, system, context)
+    }
+    itemState: any = {
+        isFocus: false
     }
     column?: column
     itemConfig: itemConfig = {
@@ -21,7 +27,8 @@ export class formitem extends baseEdit<any> {
             tableName: '',//表名
             tableData: [],//表的数据
             columns: [],//表的列
-        }
+        },
+        options: []
     }
     baseInfoDialogConfig = {
         props: {
@@ -80,7 +87,7 @@ export class formitem extends baseEdit<any> {
     }
     async initRenderItem() {
         const renderItem = this.renderItem
-        renderItem.slots = formitemFn.getFormitemSlots(this) as any
+        renderItem.slots = formitemFn.getFormitemSlots(this).value as any
         renderItem.span = formitemFn.getFormitemSpan(this) as any
         renderItem.visible = formitemFn.getFormItemVisible(this) as any
         renderItem.folding = formitemFn.getFormItemFolding(this) as any
@@ -88,8 +95,9 @@ export class formitem extends baseEdit<any> {
     }
 }
 
-export const createFormItem = (schema: any, context?: any) => {
+export const createFormItem = (schema: any, form: any, context?: any) => {
     const _formitem = reactive(new formitem(schema, context, systemInstance))
+    _formitem.form = form
     _formitem.initFormItem()
     return _formitem
 }

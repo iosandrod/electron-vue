@@ -52,7 +52,7 @@ export class select extends baseEdit<selectConfig> {
     }
 }
 
-export const createSelect = (schema: any) => {
+export const createSelect = (schema: SelectProps) => {
     const _select = reactive(new select(schema, systemInstance))
     _select.initSelect()
     return _select

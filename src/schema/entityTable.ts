@@ -1,6 +1,6 @@
 import { reactive } from "vue"
-import { _system, system } from "./system"
-import { tableView } from "./table"
+// import { _system, system } from "./system"
+// import { tableView } from "./table"
 
 export class entityTable extends tableView {
   tableName?: string
@@ -13,7 +13,7 @@ export class entityTable extends tableView {
 
 export function createEntityTable(tableName: string) {//
   const table = reactive(new entityTable(_system, tableName))
-  table.initComponent()
-  table.initGridOptions()
+  // table.initComponent()
+  // table.initGridOptions()
   return table
 }

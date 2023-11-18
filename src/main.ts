@@ -12,14 +12,14 @@ import 'xe-utils'
 import register from './plugin/register'
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
-
-
+import VueGridLayout from 'vue-grid-layout'
 
 createApp(App)
   .use(VXETable)
   .use(Antd)
   .use(router)
   .use(register)
+  .use(VueGridLayout)
   .mount('#app')
   .$nextTick(() => {
     postMessage({ payload: 'removeLoading' }, '*')

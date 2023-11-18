@@ -11,3 +11,10 @@ export default {
         app.component('select-view', selectView)
     }
 }
+
+export const comVetor = {
+    tableView,
+    formView,
+    buttonView,
+    selectView,
+}

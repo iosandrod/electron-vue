@@ -90,6 +90,8 @@ export default defineConfig(({ command }) => {
       return {
         host: url.hostname,
         port: 3000,
+        cors: true,
+        open: true,
       }
     })(),
     clearScreen: false,

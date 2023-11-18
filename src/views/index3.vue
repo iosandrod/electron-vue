@@ -1,9 +1,6 @@
 <template>
   <div>
-    <!-- <vxe-button @click="buttonClick">button</vxe-button>
-    <template v-if="modalValue">
-      <form-view :items="formItems" :data="formData"></form-view>
-    </template> -->
+    <vxe-button @click="buttonClick"></vxe-button>
   </div>
 </template>
 
@@ -13,15 +10,14 @@ import { VXETable, VxeGridProps } from 'vxe-table'
 import * as electron from 'electron'
 import { tableConfig } from '@/types/schema'
 import { SelectProps } from 'ant-design-vue'
-const modalValue = ref(true)
-const formData = ref({
-  name: 'xiaofeng',
-  sex: '0',
-  role: 'shutiao',
-  job: 'teacher',
-})
+// const formData = ref({
+//   name: 'xiaofeng',
+//   sex: '0',
+//   role: 'shutiao',
+//   job: 'teacher',
+// })
 function buttonClick() {
-  modalValue.value = !modalValue.value
+  console.log('buttonClick')
 }
 // watchEffect(() => {
 //   console.log(JSON.stringify(formData.value))

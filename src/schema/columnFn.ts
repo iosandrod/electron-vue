@@ -1,4 +1,4 @@
-import { ComputedRef, Directive, VNode, computed, h, isReactive, isRef, isVNode, reactive, withDirectives } from "vue"
+import { ComputedRef, Directive, VNode, computed, h, isReactive, isRef, isVNode, reactive, watchEffect, withDirectives } from "vue"
 import { column } from "./column"
 import { StyleType } from "@/types/schema"
 import { getTableHeaderHeight, getTableRowHeight } from "./tableFn"
@@ -6,13 +6,12 @@ import { isUndefined } from 'xe-utils'
 import { getIcon, propsConfig, useCenterDiv, useMousePoint, usePropsDiv } from "./icon"
 import { getMouseEventPosition, getPercentLength, registerDocumentClickFn } from "@/utils/utils"
 import { isString } from "lodash"
+import defaultCom from "./tableColumnCom/defaultCom"
+import defaultHeaderCom from './tableColumnCom/defalutHeaderCom'
 // import { system } from "./system"
 export const getOutSizeDiv = (column: column, row: any) => {
-    const table = column.table!
-    const rowHeight = getTableRowHeight(table).value
     const style: StyleType = {//外部div的配置
         width: '100%',
-        height: rowHeight
     }
     const inSizeDiv = getInSizeDiv(column, row)
     const value = row[column.renderColumn.field as string]
@@ -44,6 +43,7 @@ export const getInSizeDiv = (column: column, row: any) => {
 export const getRenderFn = (node: string | VNode, props: any, directive?: Array<[Directive]>) => {
     return (nestNode?: any[] | any) => {
         let _nestNode: any = null
+        let vnode: any = null
         if (Array.isArray(nestNode)) {
             _nestNode = nestNode
         } else if (isVNode(nestNode)) {
@@ -55,7 +55,11 @@ export const getRenderFn = (node: string | VNode, props: any, directive?: Array<
         } else if (typeof nestNode == 'object') {
             _nestNode = nestNode
         }
-        const vnode = h(node, props, _nestNode)
+        if (isVNode(node)) {
+            vnode = node
+        } else {
+            vnode = h(node, props, _nestNode)
+        }
         if (directive != null) {
             if (Array.isArray(directive)) {
                 return withDirectives(vnode, directive)
@@ -67,6 +71,7 @@ export const getRenderFn = (node: string | VNode, props: any, directive?: Array<
 }
 
 export const getStringEditDiv = (column: column, row: any) => {
+    //字符串编辑div
 
 }
 
@@ -93,8 +98,12 @@ export const getSlotDefault = (_column: column) => {
             return slotsDefault
         }
         const fn = ({ row, rowIndex, column }: any) => {
-            const outSizeDiv = getOutSizeDiv(_column, row)//外部的div
-            return outSizeDiv
+            const _defaultCom = h(defaultCom, { column: _column, row: row })
+            return _defaultCom
+            // const columnCom=
+            // const outSizeDiv = getOutSizeDiv(column.params, row)//外部的div
+            // return outSizeDiv
+            // return h('123')
         }
         return fn
     })
@@ -104,7 +113,7 @@ export const getColumnSlot = (column: column) => {
     return computed(() => {
         const columnConfig = column.columnConfig
         const type = columnConfig.type
-        //使用默认插槽
+        // 使用默认插槽
         if (type == 'seq') {
             return {
                 header: () => {
@@ -120,35 +129,18 @@ export const getColumnSlot = (column: column) => {
         const header = getSlotHeader(column).value//表头的显示
         slots.default = _default
         slots.header = header
-        slots.content = () => {
-            return h('div', {}, ['123'])
-        }
+        // slots.content = () => {
+        //     return h('div', {}, ['123'])
+        // }
         return slots
     })
 }
 
 export const getSlotHeader = (_column: column) => {
     return computed(() => {
-        const fn = () => {
-            //过滤图标
-            const showHeader = _column.columnConfig.showHeader
-            if (showHeader == false) {
-                return
-            }
-            const headerHeight = getColumnRowHeight(_column).value
-            const style: StyleType = {
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                height: headerHeight,
-            }
-            const outSizeDiv = usePropsDiv({ style })
-            const renderColumn = _column.renderColumn
-            const title: string = renderColumn.title as string || 'title'
-            const _filterIcon = _column.table?.tableConfig.showHeaderFilter == true && _column.columnConfig.showFilter == true ? getSlotHeaderFilterIcon(_column) : null
-            const sortIcon = _column.table?.tableConfig.showHeaderSort == true && _column.columnConfig.showSort == true ? getSlotHeaderSortIcon(_column) : null
-            //排序图标
-            return outSizeDiv([title, _filterIcon, sortIcon])
+        const fn = (params: any) => {
+            //过滤图标 w4
+            return h(defaultHeaderCom, { column: _column })
         }
         return fn
     })
@@ -157,7 +149,8 @@ export const getSlotHeader = (_column: column) => {
 export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的图标
     const table = _column.table!
     const docClick = registerDocumentClickFn(() => {
-        table.closeColumnFilter()
+        table.closeDialog(table.dialogMap.filterDialog!)
+        // console.log('closeDialog')
     })
     const filterIconFn = useMousePoint({
         capture: true,
@@ -165,7 +158,8 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
             event.stopPropagation()
             const position = getMouseEventPosition(event)
             const table = _column.table!
-            table.openColumnFilter(_column.renderColumn?.field as string, position)//打开过滤器
+            const filterDialog = table.dialogMap.filterDialog!
+            table.openDialog(filterDialog, position)
         },
         directive: [[docClick]]
     })
@@ -175,6 +169,7 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
 
 
 export const getSlotHeaderSortIcon = (_column: column) => {
+    // const rowHeight = 30
     const rowHeight = getColumnHeaderHeight(_column).value
     const pRowheight = getPercentLength(rowHeight, 0.7)
     const heightDiv = usePropsDiv({ style: { height: pRowheight, display: "flex", alignItems: 'center' } })
@@ -198,36 +193,23 @@ export const getColumnVisiable = (column: column) => {
 }
 
 export const getColumnField = (column: column) => {
-    return computed<any>(() => {
-        const columnConfig = column.columnConfig
-        return columnConfig.field
-    })
+    return column.columnConfig.field
 }
 
 export const getColumnType = (column: column) => {
-    return computed<string>(() => {
-        const columnConfig = column.columnConfig
-        return columnConfig.type as string
+    return computed(() => {
+        return column.columnConfig.type!
     })
 }
 
 export const getColumnWidth = (column: column) => {
     return computed(() => {
-        const system = getColumnSystem(column).value!
-        const schema = column.columnConfig
-        const defaultColumnConfig = system.defaultColumnConfig
-        const defaultWidth = defaultColumnConfig.width
-        const width = schema.width || defaultWidth
+        const width = column.columnConfig.width
         return width
     })
 }
 
-export const getColumnSystem = (column: column) => {
-    return computed(() => {
-        const system = column.table?.system
-        return system
-    })
-}
+
 
 export const getColumnTitle = (column: column) => {
     return computed(() => {
@@ -265,4 +247,35 @@ export const getColumnResizable = (column: column) => {
         }
         return false
     })
+}
+
+export const initColumnConfig = (column: column) => {
+    const schema = column.schema!
+    const effectPool = column.effectPool
+
+
+
+    let columnConfig = column.columnConfig as any
+    for (const key of Object.keys(schema)) {
+        const value = schema[key]
+        if (value != null) {
+            effectPool[`column${key}Effect`] = watchEffect(() => {
+                columnConfig[key] = schema[key]
+            })
+        }
+    }
+    initRenderColumn(column)
+}
+
+export const initRenderColumn = (column: column) => {
+    let renderColumn = column.renderColumn
+    renderColumn.params = column
+    renderColumn.slots = getColumnSlot(column)
+    renderColumn.visible = getColumnVisiable(column)
+    renderColumn.field = getColumnField(column)
+    renderColumn.type = getColumnType(column).value as any
+    renderColumn.width = getColumnWidth(column) as any
+    renderColumn.title = getColumnTitle(column) as any
+    renderColumn.align = getColumnAlign(column) as any
+    renderColumn.resizable = getColumnResizable(column) as any
 }

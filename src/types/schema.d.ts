@@ -1,3 +1,4 @@
+import { pageTreeNode } from "@/schema/businessTable/pageTree"
 import { column } from "@/schema/column"
 import { dialog } from "@/schema/dialog"
 import { formitem } from "@/schema/formitem"
@@ -35,6 +36,9 @@ export type mergeConfig = {
   mergeSpan: number//合并多少个
 }
 export type tableConfig = {
+  showBodyMenuDialog?: boolean,
+  showHeaderMenuDialog?: boolean,
+  showFilterDialog?: boolean,
   hiddenBorder?: boolean,
   showCheckBoxColumn?: boolean,
   showSeqColumn?: boolean,
@@ -42,12 +46,11 @@ export type tableConfig = {
   filterConfig?: filterConfig[],
   mergeConfig?: mergeConfig[],
   rowConfig?: {
-    rowHeight: string,
+    background?: string,
+    rowHeight: number,
     currentEditRow: any[]
   },
   headerConfig?: {
-    // showSort: boolean,
-    // showFilter: boolean
     rowHeight: string
   },
   resizable?: boolean,
@@ -57,6 +60,7 @@ export type tableConfig = {
 } & VxeTableProps & VxeTableEventProps
 export type tableData = {
   data: any[],
+  editData: any[]
   showData: any[],
   curRow: any,
   curColumn?: column,
@@ -66,6 +70,7 @@ export type columnConfig = {
   isEdit?: boolean,
   showFilter?: boolean
   showSort?: boolean,
+  showFooter?: boolean,
   showHeader?: boolean,//是否显示头部
   editConfig?: formItemConfig
 }
@@ -111,7 +116,8 @@ export type position = {
 export type itemConfig = VxeFormItemProps & {
   type?: string,
   isFocus: boolean,
-  baseInfoTable: any
+  baseInfoTable: any,
+  options?: []
 }
 
 export type formConfig = VxeFormProps & {
@@ -126,3 +132,32 @@ export type selectConfig = pickKey<SelectProps & {
 }>
 
 
+export type openDialogConfig = {
+  key: string,
+  position?: position
+}
+
+
+export type dialogMap = {
+  filterDialog?: string,
+  headerMenuDialog?: string,
+  bodyMenuDialog?: string
+}
+
+
+export type layoutChildren = Array<pageTreeNode>
+export type layoutItem = {
+  nodeName?: string,
+  i: string
+  , x: number
+  , y: number, w: number, h: number
+}
+export type layoutConfig = {
+  layout?: Array<layoutItem>
+  colNum?: number,
+  rowHeight?: number,
+  isDraggable?: boolean,
+  isResizable?: boolean,
+  useCssTransform?: boolean,
+  verticalCompact?: boolean
+}

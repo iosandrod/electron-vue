@@ -3,6 +3,7 @@ import { formitem } from "./formitem";
 import { styleBuilder } from "@/utils/utils";
 import { getRenderFn } from "./columnFn";
 import * as formitemComFn from './formitemComFn'
+import { VxeInput } from "vxe-table";
 export const getFormitemSlots = (formitem: formitem) => {
     return computed(() => {
         const slots: any = {}
@@ -15,17 +16,17 @@ export const getFormitemSlots = (formitem: formitem) => {
 export const getItemSlotsDefault = (formitem: formitem) => {
     return computed(() => {
         return (params: any) => {
-            const title = formitem.itemConfig.title
+            const title = formitem.itemConfig.title//title
             const titleCom = getRenderFn('div', {})([title])
             const style = styleBuilder.setFull().setFlexRow().getStyle()
             const outSizeDivFn = getRenderFn('div', { style })
             const type = formitem.itemConfig.type as keyof typeof formitemComFn
-            let defaulRenderCom: any = h('div', {}, ['default'])
+            let defaultRenderCom: any = h('div', {}, ['default'])
             const renderFn = formitemComFn[type]
             if (typeof renderFn == 'function') {
-                defaulRenderCom = renderFn(formitem, params.data)
+                defaultRenderCom = renderFn(formitem, params.data)
             }
-            const editCom = outSizeDivFn([titleCom, defaulRenderCom])
+            const editCom = outSizeDivFn([titleCom, defaultRenderCom])
             return editCom
         }
     })

@@ -58,9 +58,8 @@ export const getDialogSlotsFooter = (dialog: dialog) => {
             return h('div', {}, [h(VxeButton, {
                 onClick: () => {
                     const modalData = dialog.dialogConfig.modalData
-                    console.log(dialog, 'testDialog')
                     const table: table = modalData.table
-                    table.filterFirstData()
+                    // table.filterFirstData()
                     dialog.close()
                 },
             }, {
@@ -194,13 +193,14 @@ export const getDialogOnShow = (dialog: dialog) => {
 export const getDialogOnHide = (dialog: dialog) => {
     return computed(() => {
         const fn = (params: any) => {
+            dialog.modalInstance = null as any
             const onHide = dialog.dialogConfig.onHide
             if (typeof onHide == 'function') {
                 onHide(params)
             }
-            const dialogConfig = dialog.dialogConfig
-            dialogConfig.modelValue = false
-            dialog.dialogConfig.hasOpen = true
+            // const dialogConfig = dialog.dialogConfig
+            // dialogConfig.modelValue = false
+            // dialog.dialogConfig.hasOpen = true
         }
         return fn
     },

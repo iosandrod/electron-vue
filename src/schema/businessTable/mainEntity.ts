@@ -1,4 +1,4 @@
-import { basicEntity } from "./basicEnitty"
+import { basicEntity } from "./basicEntiry"
 
 export class mainEntity extends basicEntity {
   constructor() {
@@ -6,4 +6,4 @@ export class mainEntity extends basicEntity {
   }
 }
 
-export function createMainEntity() {}
+export function createMainEntity() { }

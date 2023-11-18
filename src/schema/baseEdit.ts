@@ -7,7 +7,6 @@ export class baseEdit<T> extends base<T>{
     } = {
         }
     constructor(schema: any, system: system, context?: any) {
-        // super(system, schema)
         super(system, schema)
     }
     focus() {
@@ -16,5 +15,4 @@ export class baseEdit<T> extends base<T>{
             focusMethod()
         }
     }
-
 }

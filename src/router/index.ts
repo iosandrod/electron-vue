@@ -16,7 +16,7 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path: "/",
-    component: () => import('@/views/index.vue'),
+    component: () => import('@/views/index7.vue'),
     redirect: "/index",
     children: [
     ]
@@ -31,7 +31,7 @@ export const constantRoutes: RouteRecordRaw[] = [
 export const asyncRoutes: RouteRecordRaw[] = [
   {
     path: "/:pathMatch(.*)*", // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
-    component: () => import('@/views/index.vue'),
+    component: () => import('@/views/index8.vue'),
     meta: {
       hidden: true
     }

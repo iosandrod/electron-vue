@@ -10,7 +10,15 @@ export class StyleBuilder {
         const templateStyle = this.templateStyle
         templateStyle.display = 'flex'
         templateStyle.flexDirection = 'row'
-        templateStyle.justifyContent = 'cneter'
+        templateStyle.justifyContent = 'center'
+        templateStyle.alignItems = 'center'
+        return this
+    }
+    setFlexBetween() {
+        const templateStyle = this.templateStyle
+        templateStyle.display = 'flex'
+        templateStyle.flexDirection = 'row'
+        templateStyle.justifyContent = 'space-between'
         templateStyle.alignItems = 'center'
         return this
     }

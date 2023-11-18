@@ -1,8 +1,8 @@
 import { isVNode, createApp, ComponentOptions, computed, defineComponent, h, nextTick, reactive, resolveComponent, watchEffect, App, VueElement } from "vue";
 import { base } from "./base";
 import { systemInstance, system } from "./system";
-import VXETable, { VxeModalProps, VxeModalDefines, globalStore, modal, VxeModal, VxeModalInstance } from "vxe-table";
-import { concatAny, dialogConfig } from "@/types/schema";
+import VXETable, { VxeModalProps, VxeModalDefines, VxeModal, VxeModalInstance, VxeTable } from "vxe-table";
+import { concatAny, dialogConfig, openDialogConfig } from "@/types/schema";
 import { getDialogDestroyOnClose, getDialogHeight, getDialogLockView, getDialogMaskClosable, getDialogMinHeight, getDialogMinMask, getDialogMinWidth, getDialogModelValue, getDialogOnHide, getDialogOnShow, getDialogPosition, getDialogPrimaryId, getDialogResize, getDialogShowFooter, getDialogSlots, getDialogType, getDialogWidth } from "./dialogFn";
 import { Subject } from "rxjs";
 import register from "@/plugin/register";
@@ -14,14 +14,13 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     parentDialog?: dialog
     dialogPool?: DialogPool
     dialogComponent = dialogComponent
-    subject = new Subject()//
+    // subject = new Subject()//
     modalInstance?: VxeModalInstance
     // dialogConfig: concatAny<VxeModalProps & { dialogPrimaryName?: string }> = {//modalData 是模态框的存储数据
     dialogConfig: dialogConfig = {
         position: 'center',
         type: "modal",
-        // maskClosable: false,
-        maskClosable: false,
+        maskClosable: true,
         destroyOnClose: true,
         // height: '200px',
         height: "400px",
@@ -52,6 +51,10 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
                     })
                 }
             }
+            Object.entries(schema).forEach(([key, value]) => {
+                const _config = this.dialogConfig as any
+                _config[key] = value
+            })
             this.effectPool['openEffect'] = watchEffect(() => {
                 const modalValue = this.dialogConfig.modelValue
                 if (modalValue == true) {
@@ -105,17 +108,18 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         renderDialog.modelValue = getDialogModelValue(this) as any
         renderDialog.onHide = getDialogOnHide(this) as any
         renderDialog.onShow = getDialogOnShow(this) as any
-        renderDialog.destroyOnClose = getDialogDestroyOnClose(this) as any
+        // renderDialog.destroyOnClose = getDialogDestroyOnClose(this) as any
+        renderDialog.destroyOnClose = true
         renderDialog.lockView = getDialogLockView(this) as any
         renderDialog.position = getDialogPosition(this) as any
     }
     async initComponent(): Promise<void> {
-        const vNode = () => {
-            const vxeModel = resolveComponent('vxe-modal')
-            //返回虚拟节点
-            return h(vxeModel, {}, [])
-        }
-        this.component = vNode
+        // const vNode = () => {
+        //     const vxeModel = resolveComponent('vxe-modal')
+        //     //返回虚拟节点
+        //     return h(vxeModel, {}, [])
+        // }
+        // this.component = vNode
     }
     //打开弹框
     async open() {
@@ -133,8 +137,15 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         }
     }
     async close() {
-        const closeId = this.dialogConfig.dialogPrimaryName
-        VXETable.modal.close(closeId)
+        this.dialogConfig.modelValue = false
+        // this.dialogPool?.dialogArr.splice(0)
+        // this.dialogPool.dialogArr = []
+        // this.dialogPool = null as any
+        // this.modalInstance = null as any
+        // const effectPool = this.effectPool
+        // Object.values(effectPool).forEach((v: any) => {
+        //     v()
+        // })
     }
     //确认弹框
     async confirm() { }
@@ -156,16 +167,6 @@ export class DialogPool {
         this.vNode = new dialog(systemInstance, 'vNode', {})
         this.initVxeDynamics()//初始化app
         this.checkDynamic();//检测挂载
-    }
-    openDialog(_dialog: dialog | { props: concatAny<VxeModalProps>, dialogName: string }): dialog {
-        let _dialog2: any = null
-        if (_dialog instanceof dialog) {
-            this.dialogArr.push(_dialog)
-            return _dialog
-        } else {
-            _dialog2 = createDialog(_dialog.props, {}, _dialog.dialogName)
-            return this.openDialog(_dialog2 as any)
-        }
     }
     closeDialog() { }
     getActiveDialog() {
@@ -189,14 +190,14 @@ export class DialogPool {
     initVxeDynamics() {
         const VxeDynamics = defineComponent({
             setup() {
+                const modals = dialogPool.getActiveDialog();
                 return () => {
-                    const modals = dialogPool.getActiveDialog().value;
                     return h(
                         "div",
                         {
                             class: "vxe-dynamics--modal",
                         },
-                        modals.map((item) =>
+                        modals.value.map((item) =>
                             h(VxeModal, item)
                         )
                     );
@@ -206,6 +207,12 @@ export class DialogPool {
         this.dynamicApp = createApp(VxeDynamics)
         nextTick(() => {
             this.dynamicApp!.use(VXETable)
+            // Object.values(VXETable).forEach((value: any) => {
+            //     if (typeof value?.setup == 'function') {
+            //         console.log(value)
+            //         this.dynamicApp?.component(value.name, value)
+            //     }
+            // })
             this.dynamicApp!.use(register)
         })
     }
@@ -220,8 +227,57 @@ export const createDialog = (schema: concatAny<VxeModalProps & {
 }>, context: any, schemaName: string = 'codeEdit') => {
     //schemaName这个是弹框的名称
     const Dialog = reactive(new dialog(systemInstance, schemaName, schema))
-    Dialog.dialogPool = dialogPool//初始化
     Dialog.initDialog()
-    dialogPool.openDialog(Dialog as any)
+    addDialog(Dialog as any)
     return Dialog
-} 
+}
+
+export const addDialog = (dialog: dialog) => {
+    const dialogArr = dialogPool.dialogArr
+    const key = dialog.dialogConfig.dialogPrimaryName
+    const hasDialog = dialogArr.find(dia => dia.dialogConfig.dialogPrimaryName == key)
+    if (hasDialog) {
+        return
+    }
+    dialogArr.push(dialog as any)
+}
+
+export const openDialog = (config: openDialogConfig) => {
+    const key = config.key
+    const dialogArr = dialogPool.dialogArr
+    const targetDialog = dialogArr.find(dia => {
+        const primaryKey = dia.dialogConfig.dialogPrimaryName
+        return primaryKey != null && primaryKey == key
+    })
+    if (targetDialog) {
+        const position = config.position
+        if (position != null && typeof position == 'object') {
+            targetDialog.dialogConfig.position = position
+        }
+        targetDialog.dialogConfig.modelValue = true
+    }
+}
+
+export const closeDialog = (key: string) => {
+    const dialogArr = dialogPool.dialogArr
+    const targetDialog = dialogArr.find(dia => {
+        const primaryKey = dia.dialogConfig.dialogPrimaryName
+        return primaryKey != null && primaryKey == key
+    })
+    if (targetDialog) {
+        targetDialog.dialogConfig.modelValue = false
+    }
+}
+
+export const destroyDialog = (key: string) => {
+    closeDialog(key)
+    setTimeout(() => {
+        // dialogPool.dialogArr.splice()
+        const index = dialogPool.dialogArr.findIndex(dia => {
+            return dia.dialogConfig.dialogPrimaryName == key
+        })
+        if (index != -1) {
+            dialogPool.dialogArr.splice(index, 1)
+        }
+    }, 100);
+}
