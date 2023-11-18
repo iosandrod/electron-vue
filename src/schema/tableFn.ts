@@ -221,6 +221,7 @@ export const initGridOptions = (table: table) => {
     gridOptions.columnConfig = getOptionsColumnConfig(table) as any
     gridOptions.showOverflow = 'ellipsis'
     gridOptions.height = 'auto'
+    gridOptions.minHeight = '0px'
     gridOptions.showFooter = getOptionsShowFooter(table) as any
     gridOptions.showHeader = getOptionsShowHeader(table) as any
     gridOptions.border = false
@@ -339,8 +340,8 @@ export const initTableConfig = (table: table) => {
     // 最后才会初始化Component
     initGridOptions(table)
     initColumnFilter(table)
-    // initBodyMenuDialog(table)
-    // initHeaderMenuDialog(table)
+    initBodyMenuDialog(table)
+    initHeaderMenuDialog(table)
     initComponent(table)
 }
 
@@ -351,7 +352,11 @@ export const initBodyMenuDialog = (table: table) => {
     if (showBodyMenuDialog == false) {
         return
     }
-    // const bodyMenuDialogConfig = table.bodyMenuDialogConfig
+    const dialogMap = table.dialogMap
+    const bodyMenuDialog = dialogMap.bodyMenuDialog
+    if (bodyMenuDialog != null) {
+        return
+    }
     const bodyMenuDialogConfig = table.dialogConfig.bodyMenuDialogConfig
     const dialog = createDialog(bodyMenuDialogConfig.props as any, bodyMenuDialogConfig.context, bodyMenuDialogConfig.dialogName)//使用这个模态框
     table.dialogMap.bodyMenuDialog = (dialog.dialogConfig.dialogPrimaryName)
@@ -361,6 +366,11 @@ export const initHeaderMenuDialog = (table: table) => {
     const tableConfig = table.tableConfig
     const showHeaderMenuDialog = tableConfig.showHeaderMenuDialog
     if (showHeaderMenuDialog == false) {
+        return
+    }
+    const dialogMap = table.dialogMap
+    const headerMenuDialog = dialogMap.headerMenuDialog
+    if (headerMenuDialog != null) {
         return
     }
     const headerMenuDialogConfig = table.dialogConfig.headerMenuDialogConfig

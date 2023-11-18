@@ -18,18 +18,32 @@ export const getItemSlotsDefault = (formitem: formitem) => {
         return (params: any) => {
             const title = formitem.itemConfig.title//title
             const titleCom = getRenderFn('div', {})([title])
-            const style = styleBuilder.setFull().setFlexRow().getStyle()
-            const outSizeDivFn = getRenderFn('div', { style })
-            const type = formitem.itemConfig.type as keyof typeof formitemComFn
-            let defaultRenderCom: any = h('div', {}, ['default'])
-            const renderFn = formitemComFn[type]
-            if (typeof renderFn == 'function') {
-                defaultRenderCom = renderFn(formitem, params.data)
-            }
-            const editCom = outSizeDivFn([titleCom, defaultRenderCom])
+            // const style = styleBuilder.setFull().setFlexRow().getStyle()
+            // const outSizeDivFn = getRenderFn('div', { style })
+            // const type = formitem.itemConfig.type as keyof typeof formitemComFn
+            // let defaultRenderCom: any = h('div', {}, ['default'])
+            // const renderFn = formitemComFn[type]
+            // if (typeof renderFn == 'function') {
+            //     defaultRenderCom = renderFn(formitem, params.data)
+            // }
+            // const editCom = outSizeDivFn([titleCom, defaultRenderCom])
+            let editCom = getItemSlotsDefautlEditCom(formitem, params.data, titleCom)
             return editCom
         }
     })
+}
+
+export const getItemSlotsDefautlEditCom = (formitem: formitem, data?: any, titleCom?: any) => {
+    const style = styleBuilder.setFull().setFlexRow().getStyle()
+    const outSizeDivFn = getRenderFn('div', { style })
+    const type = formitem.itemConfig.type as keyof typeof formitemComFn
+    let defaultRenderCom: any = h('div', {}, ['default'])
+    const renderFn = formitemComFn[type]
+    if (typeof renderFn == 'function') {
+        defaultRenderCom = renderFn(formitem, data)
+    }
+    const editCom = outSizeDivFn([titleCom, defaultRenderCom])
+    return editCom
 }
 
 

@@ -20,19 +20,14 @@ export const initComponent = (layout: layoutGrid) => {
                     const renderCom = comVetor[nodeName]
                     if (renderCom) {
                         const modalData = chi.nodeData
-                        // const modalData = {
-                        //     columns: []
-                        // }
-                        // const mergeProps = {
-                        //     style: {
-                        //         width: '100%',
-                        //         height: "100%",
-                        //         overflow: 'hidden'
-                        //     } as StyleType
-                        // } 
-                        // lodash.merge(modalData, mergeProps)
-                        // const vxeGrid = resolveComponent('vxe-grid')
-                        defaultCom = h('div', {}, [h(tableView, modalData)])
+                        const mergeProps = {
+                            style: {
+                                width: '100%',
+                                height: "100%",
+                            } as StyleType
+                        }
+                        lodash.merge(modalData, mergeProps)
+                        defaultCom = h(renderCom, modalData)
                     } else {
                         defaultCom = h('div', { style: { background: 'red', height: '100%', width: '100%' } as StyleType }, ['123'])
                     }

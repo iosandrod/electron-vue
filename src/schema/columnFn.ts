@@ -100,10 +100,6 @@ export const getSlotDefault = (_column: column) => {
         const fn = ({ row, rowIndex, column }: any) => {
             const _defaultCom = h(defaultCom, { column: _column, row: row })
             return _defaultCom
-            // const columnCom=
-            // const outSizeDiv = getOutSizeDiv(column.params, row)//外部的div
-            // return outSizeDiv
-            // return h('123')
         }
         return fn
     })
@@ -129,9 +125,6 @@ export const getColumnSlot = (column: column) => {
         const header = getSlotHeader(column).value//表头的显示
         slots.default = _default
         slots.header = header
-        // slots.content = () => {
-        //     return h('div', {}, ['123'])
-        // }
         return slots
     })
 }
@@ -240,7 +233,7 @@ export const getColumnResizable = (column: column) => {
     return computed(() => {
         const table = column.table
         const tableConfig = table?.tableConfig
-        const resizable = tableConfig?.resizable
+        const resizable = tableConfig?.columnConfig?.resizable
         const columnConfig = column.columnConfig
         if (resizable == true) {
             return columnConfig.resizable
@@ -252,9 +245,6 @@ export const getColumnResizable = (column: column) => {
 export const initColumnConfig = (column: column) => {
     const schema = column.schema!
     const effectPool = column.effectPool
-
-
-
     let columnConfig = column.columnConfig as any
     for (const key of Object.keys(schema)) {
         const value = schema[key]
@@ -265,6 +255,23 @@ export const initColumnConfig = (column: column) => {
         }
     }
     initRenderColumn(column)
+    initRenderFormitem(column)
+}
+
+export const initRenderFormitem = (column: column) => {
+    const renderFormitem = column.renderFormitem
+    renderFormitem.type = computed(() => {
+        return column.columnConfig.editType || column.columnConfig.type
+    }) as any
+    renderFormitem.field = computed(() => {
+        return column.columnConfig.field
+    }) as any
+    renderFormitem.options = computed(() => {
+        return []
+    }) as any
+    renderFormitem.baseInfoTable = computed(() => {
+        return column.columnConfig.baseInfoTable
+    })
 }
 
 export const initRenderColumn = (column: column) => {

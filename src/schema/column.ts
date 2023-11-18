@@ -2,7 +2,7 @@ import { computed, h, reactive, toRef } from "vue"
 import { base } from "./base"
 import { systemInstance, system } from "./system"
 import { VxeColumnProps, VxeGridPropTypes, VxeColumn, VxeGridProps, VxeTableDefines } from "vxe-table"
-import { StyleType, columnConfig, pickRef } from "@/types/schema"
+import { StyleType, columnConfig, formItemConfig, pickRef } from "@/types/schema"
 import { isUndefined } from "xe-utils"
 import { table } from "./table"
 import * as columnFn from './columnFn'
@@ -23,13 +23,10 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
   sortConfig = {}
   renderColumn: pickRef<VxeTableDefines.ColumnOptions> = {
   }
+  renderFormitem: formItemConfig = {} as any
   constructor(system: system, schema?: any, table?: table) {
     super(system, schema)
     this.table = table
-    // Object.keys(schema).forEach((key) => {
-    //   const columnConfig = this.columnConfig as any
-    //   columnConfig[key] = toRef(schema, key)
-    // })
   }
   async initColumnConfig() {
     columnFn.initColumnConfig(this)

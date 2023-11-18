@@ -23,12 +23,11 @@ function btnClick() {
 }
 const nodeArr: Array<nodeConfig> = reactive([
   {
-    nodeConfig: { x: 0, y: 0, w: 2, h: 5, i: '0', nodeName: 'tableView' },
+    nodeConfig: { x: 0, y: 0, w: 2, h: 2, i: '0', nodeName: 'tableView' },
     nodeData: {
       onCellClick: () => {},
       onCellMenu: () => {},
       border: true,
-      height: '100px',
       columnConfig: {
         resizable: false,
       },

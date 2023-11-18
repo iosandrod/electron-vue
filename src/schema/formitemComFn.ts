@@ -52,3 +52,14 @@ export const bool = (formitem: formitem, data?: any) => {
 export const baseInfo = (formitem: formitem, data?: any) => {
     return h(baseInfoView, { formitem: formitem, data: data })
 }
+
+
+export const editPool = {
+    baseInfo,
+    bool,
+    string,
+    datetime,
+    date,
+    time,
+    select
+}

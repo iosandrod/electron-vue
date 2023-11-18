@@ -13,7 +13,7 @@ import {
 } from "vxe-table"
 import * as tableFn from './tableFn'
 import { system, systemInstance } from "./system"
-import { StyleType, dialogConfig, dialogMap, pickKey, position, tableConfig, tableData, tableSchema } from "@/types/schema"
+import { StyleType, dialogConfig, dialogMap, pickKey, position, tableConfig, tableData, tableSchema, tableState } from "@/types/schema"
 import { column, createColumn } from "./column"
 import { getOptionsCellClassName, getOptionsCheckboxConfig, getOptionsColumns, getOptionsData, getOptionsFilterConfig, getOptionsHeight, getOptionsRowClassName, getOptionsRowConfig, getOptionsScrollX, getOptionsScrollY, getOptionsShowFooter, getOptionsShowHeader, getOptionsTreeConfig, getTableRowConfig, getTableStyle } from "./tableFn"
 import { getRenderFn } from "./columnFn"
@@ -23,6 +23,7 @@ import { getDialogMaskHidden, tranPositionNumber } from "@/utils/utils"
 import { dialogPool } from "./dialog"
 import { createDialogConfig } from "./tableDialogConfig"
 export class table extends base<tableSchema> {
+  tableState: tableState = 'fullEdit'
   columnWeakMap = new WeakMap()
   tableConfig: tableConfig = {
     showFilterDialog: true,
@@ -45,6 +46,7 @@ export class table extends base<tableSchema> {
     showHeaderSort: true,
     showHeader: true,
     showCheckBoxColumn: true,//显示选择项
+    columnConfig: { resizable: true },
     showSeqColumn: true,//显示数字项目
     checkboxConfig: {
       range: true,

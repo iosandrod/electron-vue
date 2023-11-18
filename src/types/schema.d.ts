@@ -67,17 +67,19 @@ export type tableData = {
   curFilterColumn?: column
 }
 export type columnConfig = {
+  baseInfoTable?: any,
+  editType?: boolean,
+  options?: Array<{ label: string, value: string }>
   isEdit?: boolean,
   showFilter?: boolean
   showSort?: boolean,
   showFooter?: boolean,
   showHeader?: boolean,//是否显示头部
-  editConfig?: formItemConfig
-}
-
-export type formItemConfig = {
+  editDisable?: (params?: any) => boolean,
 
 }
+
+export type formItemConfig = itemConfig
 
 export type extendColumnConfig = VxeTableDefines.ColumnOptions & columnConfig
 
@@ -161,3 +163,6 @@ export type layoutConfig = {
   useCssTransform?: boolean,
   verticalCompact?: boolean
 }
+
+//一个或者多个
+type tableState = 'fullEdit' | 'singleRowEdit' | 'moreRowEdit' | 'scan' | ''

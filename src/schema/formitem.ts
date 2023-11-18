@@ -10,6 +10,7 @@ import { createDialog, dialog } from "./dialog";
 import { getDialogMaskHidden } from "@/utils/utils";
 import { form } from "./form";
 import { getItemSlotsDefault } from "./formitemFn";
+import { table } from "./table";
 export class formitem extends baseEdit<any> {
     form?: form
     constructor(schema: any, context: any, system: system) {
@@ -18,6 +19,7 @@ export class formitem extends baseEdit<any> {
     itemState: any = {
         isFocus: false
     }
+    table?: table
     column?: column
     itemConfig: itemConfig = {
         folding: false, //折叠
@@ -49,7 +51,6 @@ export class formitem extends baseEdit<any> {
             }
         } as dialogConfig, context: {}, dialogName: 'baseInfo'
     }
-    baseInfoDialog?: dialog
     renderItem: VxeFormItemProps = {
     }
     async initFormItem() {
@@ -73,8 +74,6 @@ export class formitem extends baseEdit<any> {
         if (type != 'baseInfo') {
             return
         }
-        const baseInfoDialogConfig = this.baseInfoDialogConfig
-        this.baseInfoDialog = createDialog(baseInfoDialogConfig.props, baseInfoDialogConfig.context, baseInfoDialogConfig.dialogName) as any
     }
     openBaseInfoDialog() {
         const pageRef = this.pageRef
