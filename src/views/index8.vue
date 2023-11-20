@@ -5,11 +5,11 @@
     <!-- <layoutGridView :pageTree="pageTree"></layoutGridView> -->
     <!-- <table-view v-bind="nodeArr[0].nodeData"></table-view> -->
     <!-- <component :is="com"></component> -->
-    <!-- <table-view :tableInstance="table"></table-view> -->
+    <table-view :tableInstance="table"></table-view>
     <!-- <form-view :items="formItems" :data="formData"></form-view> -->
     <template v-if="showValue">
       <template v-if="mainEntity.displayState != 'destroy'">
-        <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view>
+        <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
       </template>
     </template>
   </div>
@@ -23,13 +23,16 @@ import { createTable } from '@/schema/table'
 import { tableConfig } from '@/types/schema'
 import { h, onMounted, reactive, ref } from 'vue'
 import { createMainEntity } from '@/schema/businessTable/mainEntity'
+import { getTableConfig } from '@/api/httpApi'
 const showValue = ref(true)
-function btnClick() {
-  showValue.value = !showValue.value
+async function btnClick() {
+  // showValue.value = !showValue.value
+  let data = await getTableConfig('123')
+  console.log(data)
 }
 function btnClick1() {
   if (table.tableState == 'scan') {
-    table.tableState = 'moreRowEdit'
+    table.tableState = 'singleRowEdit'
   } else {
     table.tableState = 'scan'
   }

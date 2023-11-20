@@ -1,4 +1,6 @@
+//@ts-nocheck
 import { basicEntity } from "@/schema/businessTable/basicEntity";
+import { http } from "@/schema/http";
 import { layoutItem } from "@/types/schema";
 
 export const getTableInfo = async (entity: basicEntity) => {
@@ -116,7 +118,34 @@ export const getTableInfo = async (entity: basicEntity) => {
 
 
 
-
-export const getTableConfig = (tableName: string) => {
-
+const runFun = async function getOrderData() {
+    let _this = this
+    let body = _this.getReqBody()
+    let requestData = body.requestData
+    let axiosInstance = _this.getAxiosInstance('default')
+    let tableName = requestData.tableName
+    let companyId = requestData.companyId
+    let Authorization = requestData.Authorization
+    let url = `/api/builder/LoadTableInfo?tableName=${tableName}`
+    let config = {
+        headers: {
+            CompanyId: companyId,
+            Authorization: Authorization
+        }
+    }
+    let result = await axiosInstance.post(url, {}, config)
+    return result
+}
+export const getTableConfig = async (tableName?: string) => {
+    const nestAxios = http
+    try {
+        let _fn = runFun.toString()
+        let data = await nestAxios.post('/entity/runFunction', {
+            params: _fn,
+            requestData: { tableName: "t_SdOrder", companyId: '0018', Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxIiwiaWF0IjoiMTcwMDQ2MjcxNCIsIm5iZiI6IjE3MDA0NjI3MTQiLCJleHAiOiIxNzAwNTM0NzE0IiwiaXNzIjoidm9sLmNvcmUub3duZXIiLCJhdWQiOiJ2b2wuY29yZSJ9.5K-AtxKPbQeykCYQERFlkQj4hosnFT_mm-Aml1d28y4" }
+        })
+        return data
+    } catch (error) {
+        console.error(error.message)
+    }
 }

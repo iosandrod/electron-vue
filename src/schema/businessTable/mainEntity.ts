@@ -3,7 +3,7 @@ import { basicEntity } from "./basicEntity"
 import { systemInstance } from "../system"
 import { entityConfig } from "@/types/schema"
 import { createPage } from "./pageTree"
-import { getTableInfo } from "@/api/httpApi"
+import { getTableConfig, getTableInfo } from "@/api/httpApi"
 
 export class mainEntity extends basicEntity {
   //页面树
@@ -19,6 +19,8 @@ export class mainEntity extends basicEntity {
     this.displayState = 'show'
   }
   async initEntityConfig() {
+    const entityConfig = await getTableConfig('t_SdOrder')
+    console.log(entityConfig, 'testConfig')
   }
   initComponent() {
     super.initComponent()

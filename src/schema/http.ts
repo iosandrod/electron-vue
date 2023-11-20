@@ -56,28 +56,20 @@ export class Axios {
           this.loading.close()
           this.loading = undefined
         }
-        // const message = response.data?.success ?? response.data?.success
-        // if (message && this.options.message) {
-        //   ElMessage({
-        //     type: 'success',
-        //     message,
-        //     grouping: true,
-        //     duration: 2000,
-        //   })
-        // }
-        this.options = { loading: true, message: true, clearValidateError: true }
-        return response
+        let data = response.data || {}
+        let _data = data?.data || data
+        return _data
       },
       (error) => {
-        if (this.loading) {
-          this.loading.close()
-          this.loading = undefined
-        }
-        this.options = { loading: true, message: true, clearValidateError: true }
-        const {
-          response: { status, data },
-        } = error
-        const message = data.error ?? data.message
+        // if (this.loading) {
+        //   this.loading.close()
+        //   this.loading = undefined
+        // }
+        // this.options = { loading: true, message: true, clearValidateError: true }
+        // const {
+        //   response: { status, data },
+        // } = error
+        // const message = data.error ?? data.message
 
         switch (status) {
           // case HttpCodeEnum.UNAUTHORIZED:
@@ -108,7 +100,7 @@ export class Axios {
   }
 }
 export const http = new Axios({
-  baseURL: 'localhost:9000/api',
+  baseURL: 'http://127.0.0.1:9000/api',
   headers: {
     'Content-Type': "application/json"
   }
