@@ -177,7 +177,11 @@ export const getOptionsCheckboxConfig = (table: table) => {
 export const getOptionsHeight = (table: table) => {
     return computed(() => {
         const tableConfig = table.tableConfig
-        return tableConfig.height
+        let height = tableConfig.height
+        if (typeof height == 'number') {
+            height = `${height}px`
+        }
+        return height
     })
 }
 
@@ -220,8 +224,8 @@ export const initGridOptions = (table: table) => {
     gridOptions.checkboxConfig = getOptionsCheckboxConfig(table) as any
     gridOptions.columnConfig = getOptionsColumnConfig(table) as any
     gridOptions.showOverflow = 'ellipsis'
-    gridOptions.height = 'auto'
-    gridOptions.minHeight = '0px'
+    gridOptions.height = getOptionsHeight(table) as any
+    gridOptions.minHeight = '150px'
     gridOptions.showFooter = getOptionsShowFooter(table) as any
     gridOptions.showHeader = getOptionsShowHeader(table) as any
     gridOptions.border = false
@@ -272,6 +276,12 @@ export const initComponent = (table: table) => {
                 const onCellClick = tableConfig.onCellClick
                 if (typeof onCellClick == 'function') {
                     onCellClick({ row, column } as any)
+                }
+                let tableState = table.tableState
+                if (tableState == 'moreRowEdit') {
+                    table.tableData.editData = [...new Set([...table.tableData.editData, row])]
+                } else {
+                    table.tableData.editData.length && (table.tableData.editData = [])
                 }
             },
             onCellMenu: (params: any) => {
@@ -379,16 +389,16 @@ export const initHeaderMenuDialog = (table: table) => {
 }
 
 export const initColumnFilter = (table: table) => {
-    const tableConfig = table.tableConfig
-    const showFilterDialog = tableConfig.showFilterDialog
-    if (showFilterDialog == false) {
-        return
-    }
-    const dialogMap = table.dialogMap
-    const filterDialog = dialogMap.filterDialog
-    if (filterDialog == null) {
-        const filterDialogConfig = table.dialogConfig.filterDialogConfig
-        const dialog = createDialog(filterDialogConfig.props as any, filterDialogConfig.context, filterDialogConfig.dialogName)//使用这个模态框
-        table.dialogMap.filterDialog = (dialog.dialogConfig.dialogPrimaryName)
-    }
+    // const tableConfig = table.tableConfig
+    // const showFilterDialog = tableConfig.showFilterDialog
+    // if (showFilterDialog == false) {
+    //     return
+    // }
+    // const dialogMap = table.dialogMap
+    // const filterDialog = dialogMap.filterDialog
+    // if (filterDialog == null) {
+    //     const filterDialogConfig = table.dialogConfig.filterDialogConfig
+    //     const dialog = createDialog(filterDialogConfig.props as any, filterDialogConfig.context, filterDialogConfig.dialogName)//使用这个模态框
+    //     table.dialogMap.filterDialog = (dialog.dialogConfig.dialogPrimaryName)
+    // }
 }

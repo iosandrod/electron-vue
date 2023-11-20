@@ -16,14 +16,10 @@ import { system, systemInstance } from "./system"
 import { StyleType, dialogConfig, dialogMap, pickKey, position, tableConfig, tableData, tableSchema, tableState } from "@/types/schema"
 import { column, createColumn } from "./column"
 import { getOptionsCellClassName, getOptionsCheckboxConfig, getOptionsColumns, getOptionsData, getOptionsFilterConfig, getOptionsHeight, getOptionsRowClassName, getOptionsRowConfig, getOptionsScrollX, getOptionsScrollY, getOptionsShowFooter, getOptionsShowHeader, getOptionsTreeConfig, getTableRowConfig, getTableStyle } from "./tableFn"
-import { getRenderFn } from "./columnFn"
-import { } from 'rxjs'
 import { closeDialog, createDialog, destroyDialog, dialog, openDialog } from "./dialog"
-import { getDialogMaskHidden, tranPositionNumber } from "@/utils/utils"
-import { dialogPool } from "./dialog"
 import { createDialogConfig } from "./tableDialogConfig"
 export class table extends base<tableSchema> {
-  tableState: tableState = 'fullEdit'
+  tableState: tableState = 'scan'
   columnWeakMap = new WeakMap()
   tableConfig: tableConfig = {
     showFilterDialog: true,
@@ -36,7 +32,6 @@ export class table extends base<tableSchema> {
     rowConfig: {
       rowHeight: 30,//行高度
       background: 'red',
-      currentEditRow: []//当前编辑的行配置
     },
     hiddenBorder: false,
     headerConfig: {//表头配置
@@ -116,24 +111,15 @@ export class table extends base<tableSchema> {
     tableFn.initColumnFilter(this)
   }
   async initBodyMenuDialog() {
-    // const bodyMenuDialogConfig = this.bodyMenuDialogConfig
-    // const dialog = createDialog(bodyMenuDialogConfig.props, bodyMenuDialogConfig.context, bodyMenuDialogConfig.dialogName)
-    // this.bodyMenuDialog = dialog as any
+    tableFn.initBodyMenuDialog(this)
   }
   async initHeaderMenuDialog() {
-    // const headerMenuDialog = this.bodyMenuDialogConfig
-    // const dialog = createDialog(headerMenuDialog.props, headerMenuDialog.context, headerMenuDialog.dialogName)
-    // this.headerMenuDialog = dialog as any
+    tableFn.initHeaderMenuDialog(this)
   }
-  async filterFirstData() {
-    this.tableData.data = this.tableData.data.filter((row, i) => {
-      return i < 3
-    })
-  }
+
 }
 
 export function createTable(schema?: any, context?: any) {
-  // const system = systemInstance
   const system = {} as system
   const _table = reactive(new table(system, schema))
   _table.initTableConfig()

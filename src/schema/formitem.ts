@@ -25,12 +25,13 @@ export class formitem extends baseEdit<any> {
         folding: false, //折叠
         type: "string",
         isFocus: false,//是否聚焦
-        baseInfoTable: {
-            tableName: '',//表名
+        baseInfoTable: {//
+            tableName: '',//表名 
             tableData: [],//表的数据
             columns: [],//表的列
         },
-        options: []
+        options: [],
+        layout: undefined,
     }
     baseInfoDialogConfig = {
         props: {

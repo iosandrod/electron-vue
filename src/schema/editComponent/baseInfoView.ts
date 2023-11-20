@@ -35,23 +35,24 @@ export default defineComponent({
                 _data.value[field] = value
             }
         }) as any
-        formitem.effectPool['polldownEffect'] = watchEffect(() => {
-            const polldown = formitem.pageRef['polldown'] as VxePulldownInstance
-            if (polldown == null) {
-                return
-            }
-            if (formitem.itemConfig.isFocus == true) {
-                polldown.showPanel()
-            } else {
-                polldown.hidePanel()
-            }
-        })
+        // formitem.effectPool['polldownEffect'] = watchEffect(() => {
+        //     const polldown = formitem.pageRef['polldown'] as VxePulldownInstance
+        //     if (polldown == null) {
+        //         return
+        //     }
+        //     if (formitem.itemConfig.isFocus == true) {
+        //         polldown.showPanel()
+        //     } else {
+        //         polldown.hidePanel()
+        //     }
+        // })
         onUnmounted(() => {
-            formitem.effectPool['polldownEffect']()
+            // formitem.effectPool['polldownEffect']()
         })
 
         const tableConfig = reactive({
             showCheckBoxColumn: false,
+            height: "300px",
             data: [{ id: 10001, name: 'Test1', nickname: 'T1', role: 'Develop', sex: 'Man', age: 28, address: 'Shenzhen' },
             { id: 10002, name: 'Test2', nickname: 'T2', role: 'Test', sex: 'Women', age: 22, address: 'Guangzhou' },
             { id: 10003, name: 'Test3', nickname: 'T3', role: 'PM', sex: 'Man', age: 32, address: 'Shanghai' },
@@ -64,7 +65,9 @@ export default defineComponent({
                             return h('div', {}, [h(VxeButton, {
                                 onClick: () => {
                                 }
-                            }, ['button'])])
+                            }, () => {
+                                return h('div', {}, ['123'])
+                            })])
                         }
                     }
                 }],
@@ -77,18 +80,18 @@ export default defineComponent({
             const suffixIcon = getIcon({
                 style: suffStyle,
                 onClick: (event: MouseEvent) => {
-                    isClick = true
-                    setTimeout(() => {
-                        isClick = false
-                    }, 0);
+                    // isClick = true
+                    // setTimeout(() => {
+                    //     isClick = false
+                    // }, 0);
                     event.stopPropagation()
                 },
                 onMousedown: (event: MouseEvent) => {
-                    isMousedown = true
-                    setTimeout(() => {
-                        formitem.focus()
-                        isMousedown = false
-                    }, 0);
+                    // isMousedown = true
+                    // setTimeout(() => {
+                    //     formitem.focus()
+                    //     isMousedown = false
+                    // }, 0);
                     event.stopPropagation()
                 }
             }, 'vxe-icon-search')()
@@ -103,9 +106,12 @@ export default defineComponent({
                     },
                     ref: 'vxeinput',
                     onBlur: () => {
-                        if (isClick == false && isMousedown == false) {
-                            itemConfig.isFocus = false
-                        }
+                        // setTimeout(() => {
+
+                        //     if (isClick == false && isMousedown == false) {
+                        //         itemConfig.isFocus = false
+                        //     }
+                        // }, 0);
                     }
                 }, {
                 suffix: () => {
@@ -129,22 +135,35 @@ export default defineComponent({
                     }
                 }]])
             // return inputCom
+            const pullShow = computed({
+                set(value) {
+                    formitem.itemConfig.isFocus = value
+                },
+                get() {
+                    return formitem.itemConfig.isFocus as boolean
+                }
+            })
             return withDirectives(h(VxePulldown, {
-                onClick: (event: MouseEvent) => {
-                    isClick = true
-                    setTimeout(() => {
-                        isClick = false
-                    }, 0);
-                    event.stopPropagation()
+                transfer: true,
+                modelValue: pullShow.value as boolean,
+                ['onUpdate:modelValue']: (value1: any) => {
+                    pullShow.value = value1
                 },
-                onMousedown: (event: MouseEvent) => {
-                    isMousedown = true
-                    setTimeout(() => {
-                        formitem.focus()
-                        isMousedown = false
-                    }, 0);
-                    event.stopPropagation()
-                },
+                // onClick: (event: MouseEvent) => {
+                //     isClick = true
+                //     setTimeout(() => {
+                //         isClick = false
+                //     }, 0);
+                //     event.stopPropagation()
+                // },
+                // onMousedown: (event: MouseEvent) => {
+                //     isMousedown = true
+                //     setTimeout(() => {
+                //         formitem.focus()
+                //         isMousedown = false
+                //     }, 0);
+                //     event.stopPropagation()
+                // },
                 ref: 'polldown'
             }, {
                 default: (params: any) => {

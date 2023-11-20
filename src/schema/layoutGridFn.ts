@@ -57,6 +57,7 @@ export const initRenderLayout = (layoutGrid: layoutGrid) => {
             return nodeConfigArr
         }
     }) as any
+    renderLayout.colNum = 24
     renderLayout.isDraggable = true as any
     renderLayout.isResizable = true as any
     renderLayout.rowHeight = 30

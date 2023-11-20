@@ -1,11 +1,16 @@
 <template>
   <div>
     <vxe-button @click="btnClick">button</vxe-button>
+    <vxe-button @click="btnClick1">button</vxe-button>
+    <!-- <layoutGridView :pageTree="pageTree"></layoutGridView> -->
+    <!-- <table-view v-bind="nodeArr[0].nodeData"></table-view> -->
+    <!-- <component :is="com"></component> -->
+    <!-- <table-view :tableInstance="table"></table-view> -->
+    <!-- <form-view :items="formItems" :data="formData"></form-view> -->
     <template v-if="showValue">
-      <layoutGridView :pageTree="pageTree"></layoutGridView>
-      <!-- <table-view v-bind="nodeArr[0].nodeData"></table-view> -->
-      <!-- <component :is="com"></component> -->
-      <!-- <table-view :tableInstance="table"></table-view> -->
+      <template v-if="mainEntity.displayState != 'destroy'">
+        <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view>
+      </template>
     </template>
   </div>
 </template>
@@ -16,14 +21,22 @@ import layoutGridView from '@/schema/schemaComponent/layoutGridView'
 import tableView from '@/schema/schemaComponent/tableView'
 import { createTable } from '@/schema/table'
 import { tableConfig } from '@/types/schema'
-import { h, reactive, ref } from 'vue'
-const showValue = ref(false)
+import { h, onMounted, reactive, ref } from 'vue'
+import { createMainEntity } from '@/schema/businessTable/mainEntity'
+const showValue = ref(true)
 function btnClick() {
   showValue.value = !showValue.value
 }
+function btnClick1() {
+  if (table.tableState == 'scan') {
+    table.tableState = 'moreRowEdit'
+  } else {
+    table.tableState = 'scan'
+  }
+}
 const nodeArr: Array<nodeConfig> = reactive([
   {
-    nodeConfig: { x: 0, y: 0, w: 2, h: 2, i: '0', nodeName: 'tableView' },
+    nodeConfig: { x: 0, y: 0, w: 2, h: 2, i: '1', nodeName: 'tableView' },
     nodeData: {
       onCellClick: () => {},
       onCellMenu: () => {},
@@ -32,7 +45,7 @@ const nodeArr: Array<nodeConfig> = reactive([
         resizable: false,
       },
       columns: [
-        { field: 'name', title: 'name' },
+        { field: 'name', title: 'name', type: 'string', editType: 'baseInfo' },
         { field: 'sex', title: 'sex' },
         { field: 'address', title: 'Address' },
       ],
@@ -55,6 +68,33 @@ const nodeArr: Array<nodeConfig> = reactive([
           age: 35,
           address: 'Shenzhen',
         },
+        {
+          id: 10008,
+          name: 'Test8',
+          nickname: 'T8',
+          role: 'Develop',
+          sex: 'Man',
+          age: 35,
+          address: 'Shenzhen',
+        },
+        {
+          id: 10008,
+          name: 'Test8',
+          nickname: 'T8',
+          role: 'Develop',
+          sex: 'Man',
+          age: 35,
+          address: 'Shenzhen',
+        },
+        {
+          id: 10008,
+          name: 'Test8',
+          nickname: 'T8',
+          role: 'Develop',
+          sex: 'Man',
+          age: 35,
+          address: 'Shenzhen',
+        },
       ],
     } as tableConfig,
   },
@@ -66,29 +106,56 @@ const nodeArr: Array<nodeConfig> = reactive([
     nodeConfig: { x: 4, y: 0, w: 2, h: 5, i: '2', nodeName: '' },
     nodeData: {},
   },
-  //   { nodeConfig: { x: 6, y: 0, w: 2, h: 3, i: '3' }, nodeData: {} },
-  //   { nodeConfig: { x: 8, y: 0, w: 2, h: 3, i: '4' }, nodeData: {} },
-  //   { nodeConfig: { x: 10, y: 0, w: 2, h: 3, i: '5' }, nodeData: {} },
-  //   { nodeConfig: { x: 0, y: 5, w: 2, h: 5, i: '6' }, nodeData: {} },
-  //   { nodeConfig: { x: 2, y: 5, w: 2, h: 5, i: '7' }, nodeData: {} },
-  //   { nodeConfig: { x: 4, y: 5, w: 2, h: 5, i: '8' }, nodeData: {} },
-  //   { nodeConfig: { x: 6, y: 4, w: 2, h: 4, i: '9' }, nodeData: {} },
-  //   { nodeConfig: { x: 8, y: 4, w: 2, h: 4, i: '10' }, nodeData: {} },
-  //   { nodeConfig: { x: 10, y: 4, w: 2, h: 4, i: '11' }, nodeData: {} },
-  //   { nodeConfig: { x: 0, y: 10, w: 2, h: 5, i: '12' }, nodeData: {} },
-  //   { nodeConfig: { x: 2, y: 10, w: 2, h: 5, i: '13' }, nodeData: {} },
-  //   { nodeConfig: { x: 4, y: 8, w: 2, h: 4, i: '14' }, nodeData: {} },
-  //   { nodeConfig: { x: 6, y: 8, w: 2, h: 4, i: '15' }, nodeData: {} },
-  //   { nodeConfig: { x: 8, y: 10, w: 2, h: 5, i: '16' }, nodeData: {} },
-  //   { nodeConfig: { x: 10, y: 4, w: 2, h: 2, i: '17' }, nodeData: {} },
-  //   { nodeConfig: { x: 0, y: 9, w: 2, h: 3, i: '18' }, nodeData: {} },
-  //   { nodeConfig: { x: 2, y: 6, w: 2, h: 2, i: '19' }, nodeData: {} },
 ])
 const com = h(tableView, nodeArr[0].nodeData)
 const pageTree = createPage(nodeArr)
 const table = createTable(nodeArr[0].nodeData)
 //律师
 //回应
+const formData = ref({
+  name: 'xiaofeng',
+  sex: '0',
+  role: 'shutiao',
+  job: 'teacher',
+})
+const formItems = ref([
+  {
+    field: 'name',
+    title: '名称',
+    span: 8,
+    type: 'string',
+    placeholder: '请输入名称',
+    layout: { x: 0, y: 0, w: 2, h: 2, i: '0', nodeName: 'tableView' },
+  },
+  {
+    field: 'sex',
+    title: '性别',
+    type: 'select',
+    span: 8,
+    layout: { x: 2, y: 0, w: 2, h: 4, i: '1', nodeName: '' },
+    options: [
+      { value: '0', label: '女' },
+      { value: '1', label: '男' },
+    ],
+  },
+  {
+    field: 'role',
+    type: 'baseInfo',
+    title: '角色',
+    span: 8,
+    layout: { x: 4, y: 0, w: 2, h: 5, i: '2', nodeName: '' },
+  },
+  // {
+  //   field: 'job',
+  //   type: 'baseInfo',
+  //   title: '工作',
+  //   span: 8,
+  // },
+])
+
+const mainEntity = createMainEntity({})
+onMounted(() => {})
+console.log(mainEntity)
 </script>
 
 <style scoped></style>

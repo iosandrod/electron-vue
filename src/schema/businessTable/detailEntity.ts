@@ -1,4 +1,4 @@
-import { basicEntity } from "./basicEntiry"
+import { basicEntity } from "./basicEntity"
 
 export class detailEntity extends basicEntity {
   constructor() {

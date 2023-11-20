@@ -6,11 +6,6 @@ import { reactive, watchEffect } from "vue";
 import { pageTree } from "./businessTable/pageTree";
 import * as layoutGridFn from './layoutGridFn'
 export class layoutGrid extends base {
-    // layoutConfig: layoutConfig = {
-    //     layout: [],
-    //     isDraggable: false,
-    //     isResizable: false,
-    // }
     pageTree?: pageTree
     renderLayout: layoutConfig = {}
     constructor(pageTree: pageTree, system: system) {
@@ -36,7 +31,7 @@ export class layoutGrid extends base {
     }
 }
 
-export const createLayout = (pageTree: any) => {
+export const createLayout = (pageTree: any, schema?: any) => {
     const _layoutGrid = reactive(new layoutGrid(pageTree, systemInstance))
     _layoutGrid.initLayoutGrid()
     return _layoutGrid

@@ -1,11 +1,13 @@
-import { pageTreeNode } from "@/schema/businessTable/pageTree"
+import { detailEntity } from "@/schema/businessTable/detailEntity"
+import { nodeConfig, pageTreeNode } from "@/schema/businessTable/pageTree"
 import { column } from "@/schema/column"
 import { dialog } from "@/schema/dialog"
 import { formitem } from "@/schema/formitem"
+import { layoutGrid } from "@/schema/layoutGrid"
 import { table } from "@/schema/table"
 import { SelectProps } from "ant-design-vue"
 import { ComputedRef, VNode } from "vue"
-import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps } from "vxe-table"
+import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps, VxeColumnProps } from "vxe-table"
 
 export type schema = {
   componentType: string
@@ -48,7 +50,7 @@ export type tableConfig = {
   rowConfig?: {
     background?: string,
     rowHeight: number,
-    currentEditRow: any[]
+    // currentEditRow: any[]
   },
   headerConfig?: {
     rowHeight: string
@@ -66,7 +68,21 @@ export type tableData = {
   curColumn?: column,
   curFilterColumn?: column
 }
+
+export type roundType = {
+  iRoundAmout?: number
+  iRoundInt?: number
+  iRoundInvRate?: number
+  iRoundNorQty?: number
+  iRoundNum?: number
+  iRoundPersent?: number
+  iRoundQty?: number
+  iRoundUnitPrice?: number
+}
+
 export type columnConfig = {
+  formatFn?: ({ value, column, row }) => any
+  filterPulldownShow?: boolean,
   baseInfoTable?: any,
   editType?: boolean,
   options?: Array<{ label: string, value: string }>
@@ -76,7 +92,7 @@ export type columnConfig = {
   showFooter?: boolean,
   showHeader?: boolean,//是否显示头部
   editDisable?: (params?: any) => boolean,
-
+  roundType?: roundType
 }
 
 export type formItemConfig = itemConfig
@@ -119,7 +135,8 @@ export type itemConfig = VxeFormItemProps & {
   type?: string,
   isFocus: boolean,
   baseInfoTable: any,
-  options?: []
+  options?: [],
+  layout?: layoutItem
 }
 
 export type formConfig = VxeFormProps & {
@@ -166,3 +183,14 @@ export type layoutConfig = {
 
 //一个或者多个
 type tableState = 'fullEdit' | 'singleRowEdit' | 'moreRowEdit' | 'scan' | ''
+
+
+
+export type entityConfig = {
+  columns: Array<VxeColumnProps>
+  detailEntity?: Array<detailEntity>
+  tableName?: string
+  pageNode?: Array<nodeConfig>//节点数据
+}
+
+export type displayState = 'show' | 'hidden' | 'destroy'

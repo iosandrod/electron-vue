@@ -35,7 +35,28 @@ export default defineComponent({
             const _canEdit = canEdit.value
             let editCom: any = null
             if (_canEdit == true) {
-                editCom = getItemSlotsDefautlEditCom(formitem, row.value, null)
+                let editState = column.value.table?.tableState
+                if (editState == 'singleRowEdit') {
+                    let _row = row.value
+                    let curRow = column.value.table?.tableData.curRow
+                    if (_row === curRow) {
+                        editCom = getItemSlotsDefautlEditCom(formitem, row.value, null)
+                    } else {
+                        editCom = getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
+                    }
+                } else if (editState == 'fullEdit') {
+                    editCom = getItemSlotsDefautlEditCom(formitem, row.value, null)
+                } else if (editState == 'moreRowEdit') {
+                    let _row = row.value
+                    let editData = column.value.table?.tableData.editData
+                    if (editData?.includes(_row)) {
+                        editCom = getItemSlotsDefautlEditCom(formitem, row.value, null)
+                    } else {
+                        editCom = getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
+                    }
+                } else {
+                    editCom = getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
+                }
                 return editCom
             }
             const style = {

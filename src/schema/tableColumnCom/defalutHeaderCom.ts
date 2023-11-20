@@ -3,6 +3,8 @@ import { column } from '../column'
 import { getOutSizeDiv, getSlotHeaderFilterIcon, getSlotHeaderSortIcon } from '../columnFn'
 import { StyleType } from '@/types/schema'
 import { usePropsDiv } from '../icon'
+import { Pulldown } from 'vxe-table'
+import { styleBuilder } from '@/utils/utils'
 
 export default defineComponent({
     props: ['column', 'row'],
@@ -10,6 +12,14 @@ export default defineComponent({
         //行与列
         const column = computed(() => {
             return props.column as column
+        })
+        const pulldownShow = computed({
+            get() {
+                return column.value.columnConfig.filterPulldownShow
+            },
+            set(value) {
+                column.value.columnConfig.filterPulldownShow = value
+            }
         })
         return () => {
             const showHeader = column.value.columnConfig.showHeader
@@ -30,7 +40,23 @@ export default defineComponent({
             const _filterIcon = column.value.columnConfig.showFilter == true ? getSlotHeaderFilterIcon(column.value) : null
             const sortIcon = column.value.columnConfig.showSort == true ? getSlotHeaderSortIcon(column.value) : null
             //排序图标
-            return outSizeDiv([title, _filterIcon, sortIcon])
+            let headerCom = outSizeDiv([title, _filterIcon, sortIcon])
+            let pulldown = h(Pulldown, {
+                transfer: true,
+                modelValue: pulldownShow.value as boolean,
+                ['onUpdate:modelValue']: (value1: any) => {
+                    pulldownShow.value = value1
+                },
+            }, {
+                default: () => {
+                    return headerCom
+                },
+                dropdown: () => {
+                    const style: StyleType = styleBuilder.setFlexColumn().getStyle()
+                    return h('div', { style }, Array(1000).fill(1).map(v => v))
+                }
+            })
+            return pulldown
         }
     }
 })

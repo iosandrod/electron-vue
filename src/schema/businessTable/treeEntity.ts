@@ -1,4 +1,4 @@
-import { basicEntity } from "./basicEntiry"
+import { basicEntity } from "./basicEntity"
 
 export class treeEntity extends basicEntity {
   constructor() {

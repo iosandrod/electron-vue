@@ -143,16 +143,16 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
     const table = _column.table!
     const docClick = registerDocumentClickFn(() => {
         table.closeDialog(table.dialogMap.filterDialog!)
-        // console.log('closeDialog')
     })
     const filterIconFn = useMousePoint({
         capture: true,
         onClick: (event: MouseEvent) => {
             event.stopPropagation()
-            const position = getMouseEventPosition(event)
-            const table = _column.table!
-            const filterDialog = table.dialogMap.filterDialog!
-            table.openDialog(filterDialog, position)
+            // const position = getMouseEventPosition(event)
+            // const table = _column.table!
+            // const filterDialog = table.dialogMap.filterDialog!
+            // table.openDialog(filterDialog, position)
+            _column.columnConfig.filterPulldownShow = true
         },
         directive: [[docClick]]
     })

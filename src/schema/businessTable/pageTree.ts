@@ -2,11 +2,11 @@ import { StyleType, layoutConfig, layoutItem } from "@/types/schema"
 import { Subject } from "rxjs"
 import XEUtils from "xe-utils"
 import lodash from 'lodash'
-import { reactive } from "vue"
+import { reactive, watchEffect } from "vue"
 import { comVetor } from "@/plugin/register"
 export class pageTree {//    视图页面数，基于业务的树
-    constructor(children: Array<nodeConfig>, treeConfig?: layoutConfig,) {
-        lodash.merge(this.treeConfig, treeConfig || {})
+    constructor(children: Array<nodeConfig>, treeConfig?: layoutConfig,) {//子节点
+        // lodash.merge(this.treeConfig, treeConfig || {})
         this.children = children as any
     }
     children: pageTreeNode[] = []
@@ -35,7 +35,7 @@ export class pageTree {//    视图页面数，基于业务的树
 //Azure
 //核心是数据+动作
 //主表实例|按钮组合|tab标签
-export type nodeName = 'mainEntity' | 'buttonGroup' | 'tab' | 'table' | 'pageTree'
+export type nodeName = 'mainEntity' | 'buttonGroup' | 'tab' | 'table' | 'detailEntity' | 'entityTab'
 export type nodeConfig = {
     nodeConfig: layoutItem,//样式数据
     nodeData: any//配置数据
@@ -64,7 +64,7 @@ export class pageTreeNode {
 }
 
 
-export const createPage = (nodeArr: any) => {
+export const createPage = (nodeArr: any, treeConfig?: any) => {
     const page = reactive(new pageTree(nodeArr))
     page.initTree()
     return page

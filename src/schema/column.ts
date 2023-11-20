@@ -9,13 +9,24 @@ import * as columnFn from './columnFn'
 import { getColumnAlign, getColumnField, getColumnResizable, getColumnSlot, getColumnTitle, getColumnType, getColumnVisiable, getColumnWidth, getInSizeDiv, getOutSizeDiv, getSlotDefault } from "./columnFn"
 
 export class column extends base<VxeTableDefines.ColumnOptions> {
-  columnConfig: pickRef<VxeTableDefines.ColumnOptions & columnConfig> = {
+  columnConfig: VxeTableDefines.ColumnOptions & columnConfig = {
     isEdit: false,
     type: 'string' as any,
-    showFilter: true,
+    showFilter: true,//显示filter
     showSort: true,
     resizable: true,
-    width: 100
+    roundType: {//小数点后面的位数
+      iRoundAmout: 2,
+      iRoundInt: 0,
+      iRoundInvRate: 6,
+      iRoundNorQty: 3,
+      iRoundNum: 0,
+      iRoundPersent: 6,
+      iRoundQty: 4,
+      iRoundUnitPrice: 2,
+    },
+    width: 100,
+    filterPulldownShow: false,
   } //渲染组件配置
   table?: table
   filterConfig = {
