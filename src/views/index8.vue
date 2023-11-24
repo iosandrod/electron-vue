@@ -5,13 +5,13 @@
     <vxe-button @click="btnClick2">button</vxe-button>
     <!-- <layoutGridView :pageTree="pageTree"></layoutGridView> -->
     <!-- <form-view :items="formItems" :data="formData"></form-view> -->
-    <div style="width: 400px; height: 100px;" v-if="showValue">
+    <div style="width: 100%; height: 100px;" v-if="showValue">
       <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
       <!-- <gantt></gantt> -->
       <!-- <component :is="com"></component> -->
-      <component :is="table.component"></component>
+      <!-- <component :is="table.component"></component> -->
       <!-- <table-view :tableInstance="table"></table-view> -->
-      <!-- <entity-view ref="entity"></entity-view> -->
+      <entity-view ref="entity"></entity-view>
       <!-- <component :is="vNode"></component> -->
       <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
       <!-- <template v-if="mainEntity.displayState != 'destroy'"></template> -->
@@ -60,12 +60,12 @@ function btnClick1() {
   }
   //@ts-nocheck
 
-  // const _entity: any = instance?.$refs.entity
-  // const _entity1 = _entity.entity as mainEntity
+  const _entity: any = instance?.$refs.entity
+  const _entity1 = _entity.entity as mainEntity
   // console.log(_entity1, 'testEntity')
   // console.log(_entity)
-  // _entity1.layoutConfig.isDraggable = true
-  // _entity1.layoutConfig.isResizable = true
+  _entity1.layoutConfig.isDraggable = !_entity1.layoutConfig.isDraggable
+  _entity1.layoutConfig.isResizable = !_entity1.layoutConfig.isResizable
   // pageTree
 }
 Mousetrap.bind('ctrl+left', function () {

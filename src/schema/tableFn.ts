@@ -257,7 +257,7 @@ export const getOptionsColumnConfig = (table: table) => {
     return computed(() => {
         return {
             useKey: true,
-            minWidth: 200
+            minWidth: 100
         }
     })
 }
@@ -266,7 +266,6 @@ export const initComponent = (table: table) => {
     const _vNode = () => {
         // const com = ref(null)
         const options = table.gridOptions
-        const vxeGrid = resolveComponent('vxe-grid')
         const _class = ['h-full', 'w-full']
         _class.push('grid-border-none')
         const outSizeDiv = getRenderFn('div',
@@ -277,12 +276,6 @@ export const initComponent = (table: table) => {
             },
             [[{
                 mounted(div) {
-                    // const { focused } = useFocus(div)
-                    // table.effectPool['focusEffect'] = watchEffect(() => {
-                    //     console.log(focused.value)
-                    //     table.isFocus = focused.value
-                    // })
-
                 }, unmounted() {
                     const dialogMap = table.dialogMap
                     Object.values(dialogMap).forEach(value => {

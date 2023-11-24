@@ -6,17 +6,16 @@ import { layoutItem } from "@/types/schema";
 import { tableData, tableInfo } from "./data";
 import { table } from "@/schema/table";
 import XEUtils from "xe-utils";
-import { _columns } from "@/schema/entityColumn";
+import { _columns, _columns1 } from "@/schema/entityColumn";
 export const getTableInfo = async (entity: basicEntity) => {
     const columns = _columns()
     //模拟销售订单的表格数据
     let tableObj = {
-        tableName: "t_SdOrder",
+        tableName: "t_SdOrder",// 
         entityName: 't_SdOrder',//
         componentName: "layoutGrid",//这个对应
-        columns: _columns,
+        columns: _columns(),
         nodeArr: [{
-            id: 2,
             nodeName: "tableView",
             nodeData: {
                 columns: columns,
@@ -25,13 +24,82 @@ export const getTableInfo = async (entity: basicEntity) => {
             nodeConfig: {
                 x: 0,
                 y: 0,
-                w: 4,
+                w: 24,
                 h: 4,
                 i: XEUtils.uniqueId(),
             } as layoutItem,//节点配置,
         },
-        {
-            id: 2,
+        ]//节点数据
+    }//节点数据
+    return tableObj
+}
+
+export const getDetailTableInfo = async (entity: any) => {
+    const columns = _columns1()
+    let tableObj = {
+        tableName: "t_SdOrderEntry",
+        entityName: "t_SdOrder",
+        componentName: 'layoutGrid',
+        nodeArr: [{
+            nodeName: "tableView",
+            nodeData: {
+                columns: columns,
+                data: tableData
+            },
+            nodeConfig: {
+                x: 0,
+                y: 0,
+                w: 24,
+                h: 4,
+                i: XEUtils.uniqueId(),
+            } as layoutItem,//节点配置,
+        },]//节点数据
+    }
+    return tableObj
+}
+
+const runFun = async function getOrderData() {
+    let _this = this
+    let body = _this.getReqBody()
+    let requestData = body.requestData
+    let axiosInstance = _this.getAxiosInstance('default')
+    let tableName = requestData.tableName
+    let companyId = requestData.companyId
+    let Authorization = requestData.Authorization
+    let url = `/api/builder/LoadTableInfo?tableName=${tableName}`
+    let config = {
+        headers: {
+            CompanyId: companyId,
+            Authorization: Authorization
+        }
+    }
+    let result = await axiosInstance.post(url, {}, config)
+    return result
+}
+export const getTableConfig = async (tableName?: string) => {
+    const nestAxios = http
+    try {
+        const _info = tableInfo
+        return _info
+        // let _fn = runFun.toString() 
+        // let data = await nestAxios.post('/entity/runFunction', {
+        //     params: _fn,
+        //     requestData: { tableName: "t_SdOrder", companyId: '0018', Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxIiwiaWF0IjoiMTcwMDQ2MjcxNCIsIm5iZiI6IjE3MDA0NjI3MTQiLCJleHAiOiIxNzAwNTM0NzE0IiwiaXNzIjoidm9sLmNvcmUub3duZXIiLCJhdWQiOiJ2b2wuY29yZSJ9.5K-AtxKPbQeykCYQERFlkQj4hosnFT_mm-Aml1d28y4" }
+        // })
+        // return data
+    } catch (error) {
+        console.error(error.message)
+    }
+}
+
+export const getTableData = (table: table) => {
+    return { url: '', params: {} }
+}
+
+
+/* 
+
+{
             nodeName: "formView",
             nodeData: {
                 items: [
@@ -76,47 +144,5 @@ export const getTableInfo = async (entity: basicEntity) => {
                 h: 4,
                 i: XEUtils.uniqueId(),
             } as layoutItem,//节点配置,
-        }]//节点数据
-    }
-    return tableObj
-}
-
-
-
-const runFun = async function getOrderData() {
-    let _this = this
-    let body = _this.getReqBody()
-    let requestData = body.requestData
-    let axiosInstance = _this.getAxiosInstance('default')
-    let tableName = requestData.tableName
-    let companyId = requestData.companyId
-    let Authorization = requestData.Authorization
-    let url = `/api/builder/LoadTableInfo?tableName=${tableName}`
-    let config = {
-        headers: {
-            CompanyId: companyId,
-            Authorization: Authorization
         }
-    }
-    let result = await axiosInstance.post(url, {}, config)
-    return result
-}
-export const getTableConfig = async (tableName?: string) => {
-    const nestAxios = http
-    try {
-        const _info = tableInfo
-        return _info
-        // let _fn = runFun.toString()
-        // let data = await nestAxios.post('/entity/runFunction', {
-        //     params: _fn,
-        //     requestData: { tableName: "t_SdOrder", companyId: '0018', Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxIiwiaWF0IjoiMTcwMDQ2MjcxNCIsIm5iZiI6IjE3MDA0NjI3MTQiLCJleHAiOiIxNzAwNTM0NzE0IiwiaXNzIjoidm9sLmNvcmUub3duZXIiLCJhdWQiOiJ2b2wuY29yZSJ9.5K-AtxKPbQeykCYQERFlkQj4hosnFT_mm-Aml1d28y4" }
-        // })
-        // return data
-    } catch (error) {
-        console.error(error.message)
-    }
-}
-
-export const getTableData = (table: table) => {
-    return { url: '', params: {} }
-}
+*/

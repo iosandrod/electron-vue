@@ -6,10 +6,11 @@ import layoutGridView from "../schemaComponent/layoutGridView"
 import { http } from "../http"
 import { tableMethod } from "../tableMethod"
 import { table } from "../table"
-import { getTableData } from "@/api/httpApi"
+import { getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData } from "@/api/data"
 import { layoutConfig, tableConfig } from "@/types/schema"
 import { entityColumn } from "../entityColumn"
+import { createPage } from "./pageTree"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   sub = new Subject()//动作发射器
   http = http
@@ -19,6 +20,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     useCssTransform: true,
     verticalCompact: true
   }
+  entityType = ''
   entityName = ''
   pageRef: {
     vxeGrid: table
@@ -43,9 +45,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   constructor(schema: any, system: any) {
     super(schema, system)
   }
-  async initEntity() {
-    await this.initNode()
-  }
+
   initComponent() {
     const vNode = () => {
       let pageTree = this.pageTree
@@ -53,11 +53,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
     this.component = vNode
   }
-  initPageTree() {
-    const entityConfig = this.schema
-  }
   async initNode() {
-
+    const nodeConfig = this.schema.nodeConfig
+    console.log('initNodeConfig', nodeConfig)
   }
   async initRenderTableInfo() {
     const renderTableInfo = this.renderTableInfo() as tableConfig
@@ -69,7 +67,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         return _col
       })
       return _columns
-    }) as any
+    }) as any//处理表格
     renderTableInfo.data = computed(() => {
       return this.tableData.data
     }) as any
@@ -145,11 +143,47 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     throw new Error("Method not implemented.")
   }
   async getTableConfig() {
-
+    console.log('getTableConfig')
   }
-  addItem()//添加一个节点
-  { }
-
+  //添加一个节点
+  addItem() {
+    console.log('addItem')
+  }
+  async initEntity(initConfig?: any): Promise<void> {//
+    this.displayState = 'destroy'//显示状态
+    await this.initNode()
+    await this.initEntityConfig()
+    await this.initPageTree()
+    this.initComponent()
+    const show = initConfig.show
+    if (show != false) {
+      this.displayState = 'show'
+    }
+  }
+  async initPageTree() {
+    const schema = await getTableInfo(this)
+    const renderLayout = this.renderLayout
+    renderLayout.isDraggable = computed(() => {
+      return this.layoutConfig.isDraggable
+    }) as any
+    renderLayout.isResizable = computed(() => {
+      return this.layoutConfig.isResizable
+    }) as any
+    renderLayout.useCssTransform = computed(() => {
+      return this.layoutConfig.useCssTransform
+    }) as any
+    renderLayout.verticalCompact = computed(() => {
+      return this.layoutConfig.verticalCompact
+    }) as any
+    // console.log(renderLayout, 'testRenderLayout')
+    //节点数据
+    const pagetree = createPage(schema.nodeArr, renderLayout)//虚拟子节点 生成树 
+    this.pageTree = pagetree as any
+  }
+  async initEntityConfig() {
+    const entityConfig = await getTableConfig('t_SdOrder')
+    this.tableInfo = entityConfig
+  }
 }
 
 export const createBasicEntity = async () => {

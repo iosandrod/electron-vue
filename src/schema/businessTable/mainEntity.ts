@@ -4,50 +4,24 @@ import { systemInstance } from "../system"
 import { entityConfig } from "@/types/schema"
 import { createPage } from "./pageTree"
 import { getTableConfig, getTableInfo } from "@/api/httpApi"
+import { detailEntity } from "./detailEntity"
 
 export class mainEntity extends basicEntity {
+  detailTable: detailEntity[] = []
   //页面树
   constructor(schema: any, entityName: string, system: any) {
     super(schema, system);
     this.entityName = entityName
   }
-  async initEntity(): Promise<void> {//
-    this.displayState = 'destroy'
-    await super.initEntity()
-    await this.initEntityConfig()
-    await this.initPageTree()
-    this.initComponent()
-    this.displayState = 'show'
+  async initEntity() {
+    await super.initEntity({ show: false })
   }
-  async initEntityConfig() {
-    const entityConfig = await getTableConfig('t_SdOrder')
-    this.tableInfo = entityConfig
-  }
-  initComponent() {
+  initComponent() {//初始化节点
     super.initComponent()
   }
-  async getTableData() { }
-  async getTableInfo() {
-
-  }
-  async initPageTree() {
-    const schema = await getTableInfo(this)
-    const renderLayout = this.renderLayout
-    renderLayout.isDraggable = computed(() => {
-      return this.layoutConfig.isDraggable
-    }) as any
-    renderLayout.isResizable = computed(() => {
-      return this.layoutConfig.isResizable
-    }) as any
-    renderLayout.useCssTransform = computed(() => {
-      return this.layoutConfig.useCssTransform
-    }) as any
-    renderLayout.verticalCompact = computed(() => {
-      return this.layoutConfig.verticalCompact
-    }) as any
-    // console.log(renderLayout, 'testRenderLayout')
-    const pagetree = createPage(schema.nodeArr, renderLayout)//虚拟子节点 生成树 
-    this.pageTree = pagetree as any
+  initDetailEntity() {
+    const schema = this.schema
+    const detailTable = schema.detailTable//子表 是一个数组
   }
 }
 

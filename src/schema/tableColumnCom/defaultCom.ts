@@ -74,15 +74,9 @@ export default defineComponent({
             }
             return getRenderFn('div', { style: { ...style } })([showValue.value])
         })
-        // defineExpose({
-        //     formitem: formitem
-        // })
-        return () => {
-            return renderCom.value
-        }
-        // return { formitem: formitem, renderCom: renderCom }
+        return { formitem: formitem, renderCom: renderCom }
     },
     render() {
-        // return this.renderCom
+        return this.renderCom
     }
 })

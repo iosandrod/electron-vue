@@ -1,4 +1,4 @@
-import { tableData, tableInfo } from "@/api/data";
+import { tableData, tableInfo, tableinfo1 } from "@/api/data";
 import { columnConfig } from "@/types/schema";
 
 const alignType = {
@@ -246,7 +246,7 @@ export class entityColumn {
 }
 
 const columns = tableInfo.tableColumns
-
+const columns1 = tableinfo1.tableColumns
 
 export const _columns = () => {
 
@@ -255,4 +255,13 @@ export const _columns = () => {
         _col.initColumn(col)
         return _col
     })
-} 
+}
+
+
+export const _columns1 = () => {
+    return columns1.map(col => {
+        const _col = new entityColumn()
+        _col.initColumn(col)
+        return _col
+    })
+}
