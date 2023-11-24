@@ -8,6 +8,7 @@ import { getMouseEventPosition, getPercentLength, registerDocumentClickFn } from
 import { isString } from "lodash"
 import defaultCom from "./tableColumnCom/defaultCom"
 import defaultHeaderCom from './tableColumnCom/defalutHeaderCom'
+import { Dropdown } from "ant-design-vue"
 // import { system } from "./system"
 export const getOutSizeDiv = (column: column, row: any) => {
     const style: StyleType = {//外部div的配置
@@ -100,6 +101,8 @@ export const getSlotDefault = (_column: column) => {
         const fn = ({ row, rowIndex, column }: any) => {
             const _defaultCom = h(defaultCom, { column: _column, row: row })
             return _defaultCom
+            // const _defaultCom = h('div', {}, ['123'])
+            // return _defaultCom
         }
         return fn
     })
@@ -142,22 +145,30 @@ export const getSlotHeader = (_column: column) => {
 export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的图标
     const table = _column.table!
     const docClick = registerDocumentClickFn(() => {
-        table.closeDialog(table.dialogMap.filterDialog!)
     })
     const filterIconFn = useMousePoint({
         capture: true,
         onClick: (event: MouseEvent) => {
             event.stopPropagation()
-            // const position = getMouseEventPosition(event)
-            // const table = _column.table!
-            // const filterDialog = table.dialogMap.filterDialog!
-            // table.openDialog(filterDialog, position)
             _column.columnConfig.filterPulldownShow = true
         },
         directive: [[docClick]]
     })
     const targetIcon = getIcon(null, "vxe-icon-funnel")
-    return filterIconFn(targetIcon())
+    return h(Dropdown, {
+        trigger: ['click'],
+        open: _column.columnConfig.filterPulldownShow,
+        'onUpdate:open': (value) => {
+            _column.columnConfig.filterPulldownShow = value
+        }
+    }, {
+        default: () => {
+            return filterIconFn(targetIcon())
+        },
+        overlay: () => {
+            return h('div', { style: { width: "100px", height: '200px', background: "red" } })
+        }
+    })
 }
 
 
@@ -268,10 +279,10 @@ export const initRenderFormitem = (column: column) => {
     }) as any
     renderFormitem.options = computed(() => {
         return []
-    }) as any
+    }) as any//下拉框的数据绑定
     renderFormitem.baseInfoTable = computed(() => {
         return column.columnConfig.baseInfoTable
-    })
+    }) as any//baseInfoTable
 }
 
 export const initRenderColumn = (column: column) => {
@@ -280,6 +291,7 @@ export const initRenderColumn = (column: column) => {
     renderColumn.slots = getColumnSlot(column)
     renderColumn.visible = getColumnVisiable(column)
     renderColumn.field = getColumnField(column)
+    renderColumn.minWidth = 100//最小宽度
     renderColumn.type = getColumnType(column).value as any
     renderColumn.width = getColumnWidth(column) as any
     renderColumn.title = getColumnTitle(column) as any

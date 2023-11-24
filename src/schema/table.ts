@@ -1,5 +1,5 @@
 import { base } from "./base"
-import { resolveComponent, computed, h, reactive, shallowRef, useAttrs, VNodeProps, ComponentPropsOptions, toRef, watchEffect, isReactive } from "vue"
+import { resolveComponent, computed, h, reactive, shallowRef, useAttrs, VNodeProps, ComponentPropsOptions, toRef, watchEffect, isReactive, nextTick } from "vue"
 import {
   VxeFormPropTypes,
   VxeGridInstance,
@@ -13,22 +13,54 @@ import {
 } from "vxe-table"
 import * as tableFn from './tableFn'
 import { system, systemInstance } from "./system"
-import { StyleType, dialogConfig, dialogMap, pickKey, position, tableConfig, tableData, tableSchema, tableState } from "@/types/schema"
+import { StyleType, dialogConfig, dialogMap, pickKey, position, scrollConfig, tableConfig, tableData, tableSchema, tableState } from "@/types/schema"
 import { column, createColumn } from "./column"
 import { getOptionsCellClassName, getOptionsCheckboxConfig, getOptionsColumns, getOptionsData, getOptionsFilterConfig, getOptionsHeight, getOptionsRowClassName, getOptionsRowConfig, getOptionsScrollX, getOptionsScrollY, getOptionsShowFooter, getOptionsShowHeader, getOptionsTreeConfig, getTableRowConfig, getTableStyle } from "./tableFn"
 import { closeDialog, createDialog, destroyDialog, dialog, openDialog } from "./dialog"
 import { createDialogConfig } from "./tableDialogConfig"
-export class table extends base<tableSchema> {
+import { tableMethod } from "./tableMethod"
+
+
+export class table extends base<tableSchema> implements tableMethod {
   tableState: tableState = 'scan'
+  isFocus: boolean = false
   columnWeakMap = new WeakMap()
+  menuConfig = {
+    headerMenu: {
+      position: {
+        left: 0,
+        top: 0
+      },
+      show: false,
+      list: [
+        { context: '' }
+      ]
+    },
+    bodyMenu: {
+      position: {
+        left: 0,
+        top: 0
+      },
+      show: false,
+      list: [
+        {}
+      ]
+    }
+  }
+  scrollConfig: scrollConfig = {
+    scrollLeft: 0,
+    scrollTop: 0,
+    scrollWidth: 0
+  }
   tableConfig: tableConfig = {
     showFilterDialog: true,
-    showBodyMenuDialog: false,
-    showHeaderMenuDialog: false,
+    showBodyMenuDialog: true,
+    showHeaderMenuDialog: true,
     columns: [],//列
     filterConfig: [{ field: 'name', value: 'Test1' }],//过滤配置
     mergeConfig: [],//合并配置
     height: 'auto',
+    limitSize: 100,
     rowConfig: {
       rowHeight: 30,//行高度
       background: 'red',
@@ -56,9 +88,9 @@ export class table extends base<tableSchema> {
     filterConfig: []
   }
   dialogMap: dialogMap = {
-    filterDialog: undefined,
-    headerMenuDialog: undefined,
-    bodyMenuDialog: undefined
+    // filterDialog: undefined,
+    // headerMenuDialog: undefined,
+    // bodyMenuDialog: undefined
   }
   dialogConfig = createDialogConfig(this)
   tableData: tableData = {
@@ -69,10 +101,13 @@ export class table extends base<tableSchema> {
     curColumn: undefined,
     curFilterColumn: undefined
   }
-  gridOptions: any = {}
+  gridOptions: VxeGridProps = {}
   constructor(system: system, schema?: tableSchema, parent?: any) {
     //父级节点
     super(system, schema)
+  }
+  getCurRow() {
+    return this.tableData.curRow
   }
   initTableConfig() {
     tableFn.initTableConfig(this)
@@ -107,6 +142,20 @@ export class table extends base<tableSchema> {
       dialogMap[_key!] = null
     }
   }
+  openBodyMenu(position: position) {
+    this.menuConfig.bodyMenu.show = false
+    nextTick(() => {
+      this.menuConfig.bodyMenu.position = position
+      this.menuConfig.bodyMenu.show = true
+    })
+  }
+  openHeaderMenu(position: position) {
+    this.menuConfig.headerMenu.show = false
+    nextTick(() => {
+      this.menuConfig.headerMenu.position = position
+      this.menuConfig.headerMenu.show = true
+    })
+  }
   async initColumnFilter() {
     tableFn.initColumnFilter(this)
   }
@@ -116,7 +165,14 @@ export class table extends base<tableSchema> {
   async initHeaderMenuDialog() {
     tableFn.initHeaderMenuDialog(this)
   }
-
+  async scrollToPosition(left: any, top: any) {
+    try {
+      const vxeGrid = this.pageRef.vxeGrid as VxeGridInstance
+      vxeGrid.scrollTo(left, top)
+    } catch (error) {
+      console.error('没有找到vxeGrid实例')
+    }
+  }
 }
 
 export function createTable(schema?: any, context?: any) {
@@ -125,3 +181,5 @@ export function createTable(schema?: any, context?: any) {
   _table.initTableConfig()
   return _table
 }
+/* 
+*/

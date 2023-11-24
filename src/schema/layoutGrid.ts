@@ -8,6 +8,13 @@ import * as layoutGridFn from './layoutGridFn'
 export class layoutGrid extends base {
     pageTree?: pageTree
     renderLayout: layoutConfig = {}
+    layoutConfig: layoutConfig = {
+        isDraggable: false,
+        isResizable: false,
+        useCssTransform: true,
+        verticalCompact: true,
+        colNum: 24
+    }
     constructor(pageTree: pageTree, system: system) {
         super(system, {})
         this.pageTree = pageTree

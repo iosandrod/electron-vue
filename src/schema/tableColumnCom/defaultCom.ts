@@ -1,4 +1,4 @@
-import { computed, defineComponent, h } from 'vue'
+import { computed, defineComponent, h, defineExpose } from 'vue'
 import { column } from '../column'
 import { getOutSizeDiv } from '../columnFn'
 import { StyleType, tableState } from '@/types/schema'
@@ -17,8 +17,11 @@ export default defineComponent({
         const row = computed(() => {
             return props.row! as any
         })
-        const formitem = createFormItem(column.value.renderFormitem, null)
+        let formitem = createFormItem(column.value.renderFormitem, null)
         formitem.table = column.value.table as any
+        if (column.value.columnConfig.editType == null) {
+            formitem = null as any
+        }//如果没有编辑类型,那么置空
         const showValue = computed(() => {
             const field = column.value.renderColumn.field!
             const value = row.value[field as string]
@@ -31,10 +34,17 @@ export default defineComponent({
             }
             return false
         })
+        const editDisable = computed(() => {
+            return false
+        })
         const renderCom = computed(() => {
             const _canEdit = canEdit.value
+            const _editDisable = editDisable.value
             let editCom: any = null
-            if (_canEdit == true) {
+            if (_canEdit == true && _editDisable == false) {//表可编辑+行可编辑
+                if (formitem == null) {
+                    return getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
+                }
                 let editState = column.value.table?.tableState
                 if (editState == 'singleRowEdit') {
                     let _row = row.value
@@ -64,8 +74,15 @@ export default defineComponent({
             }
             return getRenderFn('div', { style: { ...style } })([showValue.value])
         })
+        // defineExpose({
+        //     formitem: formitem
+        // })
         return () => {
             return renderCom.value
         }
+        // return { formitem: formitem, renderCom: renderCom }
+    },
+    render() {
+        // return this.renderCom
     }
 })

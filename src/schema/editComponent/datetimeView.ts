@@ -1,6 +1,7 @@
 import { computed, defineComponent, h } from 'vue'
 import { formitem } from '../formitem'
 import { DatePicker, DatePickerProps } from 'ant-design-vue'
+import { VxeInput, VxeInputProps } from 'vxe-table'
 import { PanelMode } from 'ant-design-vue/es/vc-picker/interface'
 
 export default defineComponent({
@@ -17,19 +18,22 @@ export default defineComponent({
                 _data.value[field!] = value
             },
             get() {
-                return _data.value[itemConfig.field!] as any
+                const value = '2020-06-12 15:00:15'
+                // const value = _data.value[itemConfig.field!] as any
+                return value
             }
         })
         const datePickerRender = computed(() => {
             const mode = itemConfig.type
-            const datePicker: DatePickerProps = {
-                value: bindValue.value as any,
-                mode: mode as PanelMode
+            const datePicker: VxeInputProps = {
+                modelValue: bindValue.value as any,
+                type: mode as any,
+                transfer: true,
             }
             return datePicker
         })
         return () => {
-            const pickCom = h(DatePicker, { ...datePickerRender.value as any, style: {} })
+            const pickCom = h(VxeInput, { ...datePickerRender.value as any, style: {} })
             return h('div', {}, [pickCom])
         }
     }

@@ -1,72 +1,38 @@
+
 //@ts-nocheck
 import { basicEntity } from "@/schema/businessTable/basicEntity";
 import { http } from "@/schema/http";
 import { layoutItem } from "@/types/schema";
-
+import { tableData, tableInfo } from "./data";
+import { table } from "@/schema/table";
+import XEUtils from "xe-utils";
+import { _columns } from "@/schema/entityColumn";
 export const getTableInfo = async (entity: basicEntity) => {
+    const columns = _columns()
     //模拟销售订单的表格数据
     let tableObj = {
         tableName: "t_SdOrder",
-        entityName: 't_SdOrder',
+        entityName: 't_SdOrder',//
         componentName: "layoutGrid",//这个对应
-        columns: [
-            {
-                field: "",
-                type: "",
-                editType: '',
-                baseInfoTable: {},//json数据结构
-                options: {},//下拉框数据,json数据结构
-            }
-        ],
+        columns: _columns,
         nodeArr: [{
             id: 2,
+            nodeName: "tableView",
             nodeData: {
-                columns: [
-                    { field: 'name', title: 'name', type: 'string', editType: 'baseInfo' },
-                    { field: 'sex', title: 'sex' },
-                    { field: 'address', title: 'Address' },
-                ],
-                data: [
-                    {
-                        id: 10007,
-                        name: 'Test7',
-                        nickname: 'T7',
-                        role: 'Test',
-                        sex: 'Man',
-                        age: 29,
-                        address: 'Shenzhen',
-                    },
-                    {
-                        id: 10008,
-                        name: 'Test8',
-                        nickname: 'T8',
-                        role: 'Develop',
-                        sex: 'Man',
-                        age: 35,
-                        address: 'Shenzhen',
-                    },
-                    {
-                        id: 10008,
-                        name: 'Test8',
-                        nickname: 'T8',
-                        role: 'Develop',
-                        sex: 'Man',
-                        age: 35,
-                        address: 'Shenzhen',
-                    },
-                ]
+                columns: columns,
+                data: tableData
             },
             nodeConfig: {
                 x: 0,
                 y: 0,
                 w: 4,
                 h: 4,
-                i: '1',
-                nodeName: "tableView"
+                i: XEUtils.uniqueId(),
             } as layoutItem,//节点配置,
         },
         {
             id: 2,
+            nodeName: "formView",
             nodeData: {
                 items: [
                     {
@@ -104,12 +70,11 @@ export const getTableInfo = async (entity: basicEntity) => {
                 }
             },
             nodeConfig: {
-                x: 4,
-                y: 4,
+                x: 0,
+                y: 0,
                 w: 4,
                 h: 4,
-                i: '2',
-                nodeName: "formView"
+                i: XEUtils.uniqueId(),
             } as layoutItem,//节点配置,
         }]//节点数据
     }
@@ -139,13 +104,19 @@ const runFun = async function getOrderData() {
 export const getTableConfig = async (tableName?: string) => {
     const nestAxios = http
     try {
-        let _fn = runFun.toString()
-        let data = await nestAxios.post('/entity/runFunction', {
-            params: _fn,
-            requestData: { tableName: "t_SdOrder", companyId: '0018', Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxIiwiaWF0IjoiMTcwMDQ2MjcxNCIsIm5iZiI6IjE3MDA0NjI3MTQiLCJleHAiOiIxNzAwNTM0NzE0IiwiaXNzIjoidm9sLmNvcmUub3duZXIiLCJhdWQiOiJ2b2wuY29yZSJ9.5K-AtxKPbQeykCYQERFlkQj4hosnFT_mm-Aml1d28y4" }
-        })
-        return data
+        const _info = tableInfo
+        return _info
+        // let _fn = runFun.toString()
+        // let data = await nestAxios.post('/entity/runFunction', {
+        //     params: _fn,
+        //     requestData: { tableName: "t_SdOrder", companyId: '0018', Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxIiwiaWF0IjoiMTcwMDQ2MjcxNCIsIm5iZiI6IjE3MDA0NjI3MTQiLCJleHAiOiIxNzAwNTM0NzE0IiwiaXNzIjoidm9sLmNvcmUub3duZXIiLCJhdWQiOiJ2b2wuY29yZSJ9.5K-AtxKPbQeykCYQERFlkQj4hosnFT_mm-Aml1d28y4" }
+        // })
+        // return data
     } catch (error) {
         console.error(error.message)
     }
+}
+
+export const getTableData = (table: table) => {
+    return { url: '', params: {} }
 }

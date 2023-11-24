@@ -8,9 +8,11 @@ export class pageTree {//    视图页面数，基于业务的树
     constructor(children: Array<nodeConfig>, treeConfig?: layoutConfig,) {//子节点
         // lodash.merge(this.treeConfig, treeConfig || {})
         this.children = children as any
+        this.treeConfig = treeConfig
+        console.log(treeConfig, 'testConfig')
     }
     children: pageTreeNode[] = []
-    treeConfig: any
+    treeConfig?: layoutConfig
     sub = new Subject()//指令发射器
     vNode?: pageTreeNode
     pageConfig: layoutConfig = {
@@ -23,9 +25,20 @@ export class pageTree {//    视图页面数，基于业务的树
         verticalCompact: true
     }
     initTree() {
+        const treeConfig: any = this.treeConfig || {}
+        for (const key of Object.keys(treeConfig)) {
+            if (['layout'].includes(key)) {
+                continue
+            }
+            let _config: any = this.pageConfig
+            watchEffect(() => {
+                _config[key] = treeConfig[key]
+            })//页面树 
+        }
         const children = this.children
         this.children = children.map((chi: any) => {
-            const node = new pageTreeNode(chi.nodeConfig, chi.nodeData)
+            const nodeName = chi.nodeName
+            const node = new pageTreeNode(nodeName, chi.nodeConfig, chi.nodeData)
             node.initNode()
             return node
         }) as any
@@ -35,7 +48,7 @@ export class pageTree {//    视图页面数，基于业务的树
 //Azure
 //核心是数据+动作
 //主表实例|按钮组合|tab标签
-export type nodeName = 'mainEntity' | 'buttonGroup' | 'tab' | 'table' | 'detailEntity' | 'entityTab'
+export type nodeName = 'mainEntity' | 'buttonGroup' | 'tab' | 'tableView' | 'detailEntity' | 'entityTab'
 export type nodeConfig = {
     nodeConfig: layoutItem,//样式数据
     nodeData: any//配置数据
@@ -43,7 +56,7 @@ export type nodeConfig = {
 export class pageTreeNode {
     sub = new Subject()
     uniKey = ''//唯一的主键
-    nodeName: nodeName = 'table'//
+    nodeName: nodeName = 'tableView'//
     children: pageTreeNode[] = []//子节点
     nodeData: any = {}//节点数据
     nodeConfig: layoutItem = {
@@ -53,9 +66,10 @@ export class pageTreeNode {
         w: 0,
         h: 0
     }//节点配置
-    constructor(nodeConfig: layoutItem, nodeData: any,) {
+    constructor(nodeName: nodeName, nodeConfig: layoutItem, nodeData: any,) {
         this.nodeConfig = nodeConfig
         this.nodeData = nodeData
+        this.nodeName = nodeName
     }
     initNode() {
     }
@@ -65,7 +79,7 @@ export class pageTreeNode {
 
 
 export const createPage = (nodeArr: any, treeConfig?: any) => {
-    const page = reactive(new pageTree(nodeArr))
+    const page = reactive(new pageTree(nodeArr, treeConfig))
     page.initTree()
     return page
 }

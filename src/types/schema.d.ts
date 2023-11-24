@@ -38,6 +38,7 @@ export type mergeConfig = {
   mergeSpan: number//合并多少个
 }
 export type tableConfig = {
+  limitSize?: number
   showBodyMenuDialog?: boolean,
   showHeaderMenuDialog?: boolean,
   showFilterDialog?: boolean,
@@ -81,6 +82,7 @@ export type roundType = {
 }
 
 export type columnConfig = {
+  filterOptions?: []
   formatFn?: ({ value, column, row }) => any
   filterPulldownShow?: boolean,
   baseInfoTable?: any,
@@ -132,9 +134,14 @@ export type position = {
 }
 
 export type itemConfig = VxeFormItemProps & {
+  isPulldownFocus?: boolean
   type?: string,
   isFocus: boolean,
-  baseInfoTable: any,
+  baseInfoTable?: {
+    tableData: Array<any>,
+    tableName: string,
+    columns?: Array<any>//表格的列数据
+  },
   options?: [],
   layout?: layoutItem
 }
@@ -194,3 +201,11 @@ export type entityConfig = {
 }
 
 export type displayState = 'show' | 'hidden' | 'destroy'
+
+export type scrollConfig = {
+  scrollLeft: number,
+  scrollWidth: number,
+  scrollTop: number,
+  bodyHeight?: number,
+  bodyWidth?: number
+}

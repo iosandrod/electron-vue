@@ -108,7 +108,6 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         renderDialog.modelValue = getDialogModelValue(this) as any
         renderDialog.onHide = getDialogOnHide(this) as any
         renderDialog.onShow = getDialogOnShow(this) as any
-        // renderDialog.destroyOnClose = getDialogDestroyOnClose(this) as any
         renderDialog.destroyOnClose = true
         renderDialog.lockView = getDialogLockView(this) as any
         renderDialog.position = getDialogPosition(this) as any

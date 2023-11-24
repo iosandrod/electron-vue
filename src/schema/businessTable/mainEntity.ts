@@ -1,4 +1,4 @@
-import { h, reactive, vShow, } from "vue"
+import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { systemInstance } from "../system"
 import { entityConfig } from "@/types/schema"
@@ -7,8 +7,9 @@ import { getTableConfig, getTableInfo } from "@/api/httpApi"
 
 export class mainEntity extends basicEntity {
   //页面树
-  constructor(schema: any, system: any) {
+  constructor(schema: any, entityName: string, system: any) {
     super(schema, system);
+    this.entityName = entityName
   }
   async initEntity(): Promise<void> {//
     this.displayState = 'destroy'
@@ -20,7 +21,7 @@ export class mainEntity extends basicEntity {
   }
   async initEntityConfig() {
     const entityConfig = await getTableConfig('t_SdOrder')
-    console.log(entityConfig, 'testConfig')
+    this.tableInfo = entityConfig
   }
   initComponent() {
     super.initComponent()
@@ -31,13 +32,27 @@ export class mainEntity extends basicEntity {
   }
   async initPageTree() {
     const schema = await getTableInfo(this)
-    const pagetree = createPage(schema.nodeArr)//虚拟子节点 生成树
+    const renderLayout = this.renderLayout
+    renderLayout.isDraggable = computed(() => {
+      return this.layoutConfig.isDraggable
+    }) as any
+    renderLayout.isResizable = computed(() => {
+      return this.layoutConfig.isResizable
+    }) as any
+    renderLayout.useCssTransform = computed(() => {
+      return this.layoutConfig.useCssTransform
+    }) as any
+    renderLayout.verticalCompact = computed(() => {
+      return this.layoutConfig.verticalCompact
+    }) as any
+    // console.log(renderLayout, 'testRenderLayout')
+    const pagetree = createPage(schema.nodeArr, renderLayout)//虚拟子节点 生成树 
     this.pageTree = pagetree as any
   }
 }
 
-export const createMainEntity = (tableInfo: any) => {
-  const entity = reactive(new mainEntity(tableInfo, systemInstance))
+export const createMainEntity = (entityName: string, tableInfo: any) => {
+  const entity = reactive(new mainEntity(tableInfo, entityName, systemInstance))
   entity.initEntity()
   return entity
 }

@@ -12,12 +12,20 @@ export const initComponent = (layout: layoutGrid) => {
         const renderLayout = layout.renderLayout
         return h(layoutCom, { ...renderLayout }, () => layout.pageTree?.children.map(chi => {
             const renderLayoutItem = chi.nodeConfig
+            const nodeName = chi.nodeName
+            const dragDiv = computed(() => {
+                let drag = renderLayout.isDraggable && renderLayout.isResizable
+                if (drag == true) {
+                    return h('div', { style: { position: "absolute", top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType })
+                }
+                return null
+            })
             return h(layoutItemCom, { ...renderLayoutItem },
                 () => {
                     let defaultCom: any = null
-                    const nodeName = renderLayoutItem.nodeName
+                    const _nodeName = nodeName || renderLayoutItem.nodeName
                     //@ts-ignore
-                    const renderCom = comVetor[nodeName]
+                    const renderCom = comVetor[_nodeName]
                     if (renderCom) {
                         const modalData = chi.nodeData
                         const mergeProps = {
@@ -27,9 +35,9 @@ export const initComponent = (layout: layoutGrid) => {
                             } as StyleType
                         }
                         lodash.merge(modalData, mergeProps)
-                        defaultCom = h(renderCom, modalData)
+                        defaultCom = h('div', { style: { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType }, [h(renderCom, modalData), dragDiv.value])
                     } else {
-                        defaultCom = h('div', { style: { background: 'red', height: '100%', width: '100%' } as StyleType }, ['123'])
+                        defaultCom = h('div', { style: { position: "relative", background: 'red', height: '100%', width: '100%' } as StyleType }, ['123'])
                     }
                     return defaultCom
                 }
@@ -42,8 +50,6 @@ export const initComponent = (layout: layoutGrid) => {
 
 export const initRenderLayout = (layoutGrid: layoutGrid) => {
     let renderLayout = layoutGrid.renderLayout
-    // renderLayout.isDraggable = getGridLayout(layoutGrid) as any
-    // renderLayout.isResizable = getGridResizable(layoutGrid) as any
     const pageTree = layoutGrid.pageTree
     renderLayout.layout = computed({
         set(value) {
@@ -58,11 +64,21 @@ export const initRenderLayout = (layoutGrid: layoutGrid) => {
         }
     }) as any
     renderLayout.colNum = 24
-    renderLayout.isDraggable = true as any
-    renderLayout.isResizable = true as any
-    renderLayout.rowHeight = 30
-    renderLayout.useCssTransform = true
-    renderLayout.verticalCompact = true
+    renderLayout.isDraggable = computed(() => {
+        return layoutGrid.pageTree?.pageConfig.isDraggable
+    }) as any
+    renderLayout.isResizable = computed(() => {
+        return layoutGrid.pageTree?.pageConfig.isResizable
+    }) as any
+    renderLayout.rowHeight = computed(() => {
+        return layoutGrid.pageTree?.pageConfig.rowHeight || 30
+    }) as any
+    renderLayout.useCssTransform = computed(() => {
+        return layoutGrid.pageTree?.pageConfig.useCssTransform
+    }) as any
+    renderLayout.verticalCompact = computed(() => {
+        return layoutGrid.pageTree?.pageConfig.verticalCompact
+    }) as any
 }
 
 export const getGridResizable = (layoutGrid: layoutGrid) => {

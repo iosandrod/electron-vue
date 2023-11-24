@@ -1,10 +1,11 @@
-import { computed, defineComponent, h } from 'vue'
+import { computed, defineComponent, h, withDirectives } from 'vue'
 import { column } from '../column'
 import { getOutSizeDiv, getSlotHeaderFilterIcon, getSlotHeaderSortIcon } from '../columnFn'
 import { StyleType } from '@/types/schema'
-import { usePropsDiv } from '../icon'
+import { propsConfig, usePropsDiv } from '../icon'
 import { Pulldown } from 'vxe-table'
-import { styleBuilder } from '@/utils/utils'
+import { getMouseEventPosition, styleBuilder } from '@/utils/utils'
+import { Dropdown } from 'ant-design-vue'
 
 export default defineComponent({
     props: ['column', 'row'],
@@ -27,36 +28,26 @@ export default defineComponent({
                 return
             }
             const headerHeight = 30
-            // const headerHeight = getColumnRowHeight(column.value).value
             const style: StyleType = {
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 height: `${headerHeight}px`,
             }
-            const outSizeDiv = usePropsDiv({ style })
+            const outSizeDiv = usePropsDiv({
+                style, onContextmenu: (event: MouseEvent) => {
+                    const position = getMouseEventPosition(event)
+                    column.value.table!.openHeaderMenu(position)
+                    console.log('menuClick')
+                }
+            })
             const renderColumn = column.value.renderColumn
             const title: string = renderColumn.title as string || 'title'
             const _filterIcon = column.value.columnConfig.showFilter == true ? getSlotHeaderFilterIcon(column.value) : null
             const sortIcon = column.value.columnConfig.showSort == true ? getSlotHeaderSortIcon(column.value) : null
             //排序图标
             let headerCom = outSizeDiv([title, _filterIcon, sortIcon])
-            let pulldown = h(Pulldown, {
-                transfer: true,
-                modelValue: pulldownShow.value as boolean,
-                ['onUpdate:modelValue']: (value1: any) => {
-                    pulldownShow.value = value1
-                },
-            }, {
-                default: () => {
-                    return headerCom
-                },
-                dropdown: () => {
-                    const style: StyleType = styleBuilder.setFlexColumn().getStyle()
-                    return h('div', { style }, Array(1000).fill(1).map(v => v))
-                }
-            })
-            return pulldown
+            return headerCom
         }
     }
 })

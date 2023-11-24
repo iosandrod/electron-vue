@@ -2,16 +2,20 @@
   <div>
     <vxe-button @click="btnClick">button</vxe-button>
     <vxe-button @click="btnClick1">button</vxe-button>
+    <vxe-button @click="btnClick2">button</vxe-button>
     <!-- <layoutGridView :pageTree="pageTree"></layoutGridView> -->
-    <!-- <table-view v-bind="nodeArr[0].nodeData"></table-view> -->
-    <!-- <component :is="com"></component> -->
-    <table-view :tableInstance="table"></table-view>
     <!-- <form-view :items="formItems" :data="formData"></form-view> -->
-    <template v-if="showValue">
-      <template v-if="mainEntity.displayState != 'destroy'">
-        <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
-      </template>
-    </template>
+    <div style="width: 400px; height: 100px;" v-if="showValue">
+      <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
+      <!-- <gantt></gantt> -->
+      <!-- <component :is="com"></component> -->
+      <component :is="table.component"></component>
+      <!-- <table-view :tableInstance="table"></table-view> -->
+      <!-- <entity-view ref="entity"></entity-view> -->
+      <!-- <component :is="vNode"></component> -->
+      <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
+      <!-- <template v-if="mainEntity.displayState != 'destroy'"></template> -->
+    </div>
   </div>
 </template>
 
@@ -20,23 +24,53 @@ import { createPage, nodeConfig } from '@/schema/businessTable/pageTree'
 import layoutGridView from '@/schema/schemaComponent/layoutGridView'
 import tableView from '@/schema/schemaComponent/tableView'
 import { createTable } from '@/schema/table'
-import { tableConfig } from '@/types/schema'
-import { h, onMounted, reactive, ref } from 'vue'
+import { StyleType, tableConfig } from '@/types/schema'
+import { getCurrentInstance, h, onMounted, reactive, ref } from 'vue'
+import gantt from '@/components/gantt/GanttPlayground.vue'
 import { createMainEntity } from '@/schema/businessTable/mainEntity'
 import { getTableConfig } from '@/api/httpApi'
+import { Keyboard } from 'vxe-table'
+import { KeyboardEvent } from 'electron'
+import { _columns } from '@/schema/entityColumn'
+import { mainEntity } from '@/schema/businessTable/mainEntity'
+import Mousetrap from 'mousetrap'
+import { tableData, tableData2 } from '@/api/data'
+import { tableData3 } from '@/api/data2'
+// console.log(_columns, 'testColumns')
+const entity = ref(null)
+const { proxy: instance } = getCurrentInstance()!
+// onMounted(() => {
+//   console.log(instance.$refs.tableView1, 'testTableDiv')
+// })
 const showValue = ref(true)
 async function btnClick() {
-  // showValue.value = !showValue.value
-  let data = await getTableConfig('123')
-  console.log(data)
+  showValue.value = !showValue.value
+  // let data = await getTableConfig('123')
+}
+function btnClick2() {
+  nodeArr[0].nodeData.columns.forEach((col: any) => {
+    col.changeEditType()
+  })
 }
 function btnClick1() {
   if (table.tableState == 'scan') {
-    table.tableState = 'singleRowEdit'
+    table.tableState = 'fullEdit'
   } else {
     table.tableState = 'scan'
   }
+  //@ts-nocheck
+
+  // const _entity: any = instance?.$refs.entity
+  // const _entity1 = _entity.entity as mainEntity
+  // console.log(_entity1, 'testEntity')
+  // console.log(_entity)
+  // _entity1.layoutConfig.isDraggable = true
+  // _entity1.layoutConfig.isResizable = true
+  // pageTree
 }
+Mousetrap.bind('ctrl+left', function () {
+  console.log('ctrl a')
+})
 const nodeArr: Array<nodeConfig> = reactive([
   {
     nodeConfig: { x: 0, y: 0, w: 2, h: 2, i: '1', nodeName: 'tableView' },
@@ -44,61 +78,12 @@ const nodeArr: Array<nodeConfig> = reactive([
       onCellClick: () => {},
       onCellMenu: () => {},
       border: true,
+      height: '400px',
       columnConfig: {
-        resizable: false,
+        resizable: true,
       },
-      columns: [
-        { field: 'name', title: 'name', type: 'string', editType: 'baseInfo' },
-        { field: 'sex', title: 'sex' },
-        { field: 'address', title: 'Address' },
-      ],
-      data: [
-        {
-          id: 10007,
-          name: 'Test7',
-          nickname: 'T7',
-          role: 'Test',
-          sex: 'Man',
-          age: 29,
-          address: 'Shenzhen',
-        },
-        {
-          id: 10008,
-          name: 'Test8',
-          nickname: 'T8',
-          role: 'Develop',
-          sex: 'Man',
-          age: 35,
-          address: 'Shenzhen',
-        },
-        {
-          id: 10008,
-          name: 'Test8',
-          nickname: 'T8',
-          role: 'Develop',
-          sex: 'Man',
-          age: 35,
-          address: 'Shenzhen',
-        },
-        {
-          id: 10008,
-          name: 'Test8',
-          nickname: 'T8',
-          role: 'Develop',
-          sex: 'Man',
-          age: 35,
-          address: 'Shenzhen',
-        },
-        {
-          id: 10008,
-          name: 'Test8',
-          nickname: 'T8',
-          role: 'Develop',
-          sex: 'Man',
-          age: 35,
-          address: 'Shenzhen',
-        },
-      ],
+      columns: _columns(),
+      data: tableData3,
     } as tableConfig,
   },
   {
@@ -111,7 +96,7 @@ const nodeArr: Array<nodeConfig> = reactive([
   },
 ])
 const com = h(tableView, nodeArr[0].nodeData)
-const pageTree = createPage(nodeArr)
+// const pageTree = createPage(nodeArr)
 const table = createTable(nodeArr[0].nodeData)
 //律师
 //回应
@@ -156,9 +141,37 @@ const formItems = ref([
   // },
 ])
 
-const mainEntity = createMainEntity({})
+// const mainEntity = createMainEntity({})
 onMounted(() => {})
-console.log(mainEntity)
+const vNode = h(
+  'div',
+  {
+    ref: 'testDiv',
+    style: { width: '100px', height: '100px', background: 'red' } as StyleType,
+    class: ['h-10', 'w-10', 'bg-red'],
+    onVnodeMounted: [
+      (vNode) => {
+        // const { proxy: instance } = getCurrentInstance()!
+        // const instance = getCurrentInstance()!
+        // console.log(instance, 'testInstance')
+        console.log(vNode, 'testVNode')
+        // const $refs = instance?.$refs as any
+        // const testDiv = $refs.testDiv
+        // console.log(testDiv)
+        // console.log('mounted')
+      },
+    ],
+  },
+  [
+    h(tableView, {
+      ...nodeArr[0].nodeData,
+      onVnodeMounted: (vNode: any) => {
+        console.log('testTableVNode', vNode)
+      },
+    }),
+  ],
+)
+// console.log(mainEntity)
 </script>
 
 <style scoped></style>

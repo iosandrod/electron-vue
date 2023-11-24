@@ -12,13 +12,7 @@ export const columnFilter: dialogComponent = {
         const modalData = dialog.dialogConfig.modalData
         const props = modalData.tableConfig
         const show = ref(false)
-        // const tableCom = h('div', {}, [h(VxeButton, {
-        //     onClick: () => {
-        //         show.value = !show.value
-        //     }
-        // }, ['button']), h(tableView, { ...props, style: { display: show.value == true ? 'flex' : 'none' } })])
         const arr = Array(1000).map((v, i) => i)
-        // const tableCom = h('div', {}, [arr.map(v => h('div', {}, [v]))])
         const tableCom = h(columnFilterVue, { name: 'xiaofeng' })
         const node = h(defaultDialogDivFn(tableCom), {
             onClick: (event: MouseEvent) => {

@@ -1,12 +1,14 @@
-import { computed, h, isReactive, resolveComponent, watchEffect, withDirectives } from "vue";
+import { computed, getCurrentInstance, h, isReactive, nextTick, ref, resolveComponent, watch, watchEffect, withDirectives } from "vue";
 import { table } from "./table";
 import { StyleType, position, tableSchema } from "@/types/schema";
 import { column, createColumn } from "./column";
-import { VxeGridProps } from "vxe-table";
+import { VxeGridProps, VxeGrid } from "vxe-table";
 import { getRenderFn } from "./columnFn";
 import { getDialogPosition } from "./dialogFn";
 import { getMouseEventPosition } from "@/utils/utils";
 import { createDialog } from "./dialog";
+import tableBodyMenu from "./tableColumnCom/tableBodyMenu";
+import tableHeaderMenu from "./tableColumnCom/tableHeaderMenu";
 
 
 export const getTableRowConfig = (table: table) => {
@@ -69,8 +71,11 @@ export const getOptionsData = (table: table) => {
             }, true)
             return status
         })
-        table.tableData.showData = _data
-        return _data
+        const limitSize = table.tableConfig.limitSize
+        // const _data1 = _data.slice(0, limitSize)
+        const _data1 = _data.slice(0)
+        table.tableData.showData = _data1
+        return _data1
     })
 }
 
@@ -78,7 +83,7 @@ export const getOptionsColumns = (table: table) => {
     return computed(() => {
         const tableConfig = table.tableConfig
         const checkBoxColumn = tableConfig.showCheckBoxColumn == true ? { type: 'checkbox', width: 50, field: 'checkboxField', align: 'center' } : null
-        const seqColumn = tableConfig.showSeqColumn == true ? { type: "seq", width: 30, align: 'center' } : null
+        const seqColumn = tableConfig.showSeqColumn == true ? { type: "seq", width: 100, align: 'center' } : null
         const defaultColumns = [seqColumn, checkBoxColumn].filter(col => col != null)
         const columns = [
             ...defaultColumns,
@@ -86,8 +91,13 @@ export const getOptionsColumns = (table: table) => {
         return columns
     })
 }
+//leader
 
-
+//手下
+//掌管  
+//部门
+//大学生
+//未成年
 
 
 export const getOptionsTreeConfig = (table: table) => {
@@ -100,19 +110,31 @@ export const getOptionsTreeConfig = (table: table) => {
 export const getOptionsScrollX = (table: table) => {
     return computed(() => {
         return {
-            enable: true,
-            gt: 30,
-            oSize: 0,
+            enabled: true,
+            mode: 'default',
+            gt: 50
         }
     })
 }
-
+/* 
+ scrollY: {
+                enabled: true,
+                mode: 'default',
+                gt: 200
+            },
+            //横向滚动
+            scrollX: {
+                enabled: true,
+                mode: 'default',
+                gt: 50
+            },
+*/
 export const getOptionsScrollY = (table: table) => {
     return computed(() => {
         return {
-            enable: true,
-            gt: 0,
-            oSize: 0,
+            enabled: true,
+            mode: 'default',
+            gt: 0
         }
     })
 }
@@ -242,16 +264,24 @@ export const getOptionsColumnConfig = (table: table) => {
 export const initComponent = (table: table) => {
     const _this = table
     const _vNode = () => {
+        // const com = ref(null)
         const options = table.gridOptions
         const vxeGrid = resolveComponent('vxe-grid')
         const _class = ['h-full', 'w-full']
         _class.push('grid-border-none')
         const outSizeDiv = getRenderFn('div',
             {
-                style: getTableStyle(table).value, class: _class
+                tabIndex: '0',
+                style: getTableStyle(table).value, class: _class,
+                ref: 'div'
             },
             [[{
-                mounted() {
+                mounted(div) {
+                    // const { focused } = useFocus(div)
+                    // table.effectPool['focusEffect'] = watchEffect(() => {
+                    //     console.log(focused.value)
+                    //     table.isFocus = focused.value
+                    // })
 
                 }, unmounted() {
                     const dialogMap = table.dialogMap
@@ -267,8 +297,9 @@ export const initComponent = (table: table) => {
                 }
             }]]
         )
-        const vxeGridCom = h(vxeGrid, {
-            ...options, ref: 'vxeGrid',
+        const xeinstacne = ref(null)
+        const vxeGridCom = withDirectives(h(VxeGrid, {
+            ...options, ref: xeinstacne,
             onCellClick: ({ row, column }: any) => {
                 _this.setCurRow(row)
                 _this.setCurColumn(column)
@@ -284,31 +315,37 @@ export const initComponent = (table: table) => {
                     table.tableData.editData.length && (table.tableData.editData = [])
                 }
             },
+            onScroll: (params: any) => {
+                const { scrollTop, scrollWidth, bodyWidth, bodyHeight, scrollLeft } = params
+                table.scrollConfig.scrollTop = scrollTop
+                table.scrollConfig.scrollWidth = scrollWidth
+                table.scrollConfig.bodyHeight = bodyHeight
+                table.scrollConfig.bodyWidth = bodyWidth
+                table.scrollConfig.scrollLeft = scrollLeft
+            },
             onCellMenu: (params: any) => {
                 const { row, column, $event } = params
                 const position = getMouseEventPosition($event)
                 const tableConfig = _this.tableConfig
-                const menuKey = table.dialogMap.bodyMenuDialog
-                if (menuKey != null) {
-                    table.openDialog(menuKey, position)
-                }
+                table.openBodyMenu(position)
                 const onCellMenu = tableConfig.onCellMenu
                 if (typeof onCellMenu == 'function') {
                     onCellMenu({ row, column } as any)
                 }
             }
-        })
-        const vxeGridDiv = getRenderFn(vxeGridCom, {}, [[{
+        }), [[{
             mounted: (el, node) => {
-                table.initColumnFilter()
-                const instance = node.instance
-                table.pageRef.vxeGrid = instance?.$refs.vxeGrid
+                table.pageRef.vxeGrid = xeinstacne.value
+                const scrollConfig = table.scrollConfig
+                table.scrollToPosition(scrollConfig.scrollLeft, scrollConfig.scrollTop)
             },
             unmounted: () => {
                 table.pageRef.vxeGrid = null
-            }
+            },
         }]])
-        const inSizeGrid = outSizeDiv(vxeGridDiv())
+        const bodyMenu = table.tableConfig.showBodyMenuDialog == true ? h(tableBodyMenu, { table: table }) : null
+        const headerMenu = table.tableConfig.showHeaderMenuDialog == true ? h(tableHeaderMenu, { table: table }) : null
+        const inSizeGrid = outSizeDiv([vxeGridCom, bodyMenu, headerMenu])
         return inSizeGrid
     }
     table.component = _vNode
@@ -349,56 +386,13 @@ export const initTableConfig = (table: table) => {
     }
     // 最后才会初始化Component
     initGridOptions(table)
-    initColumnFilter(table)
-    initBodyMenuDialog(table)
-    initHeaderMenuDialog(table)
     initComponent(table)
 }
 
 
-export const initBodyMenuDialog = (table: table) => {
-    const tableConfig = table.tableConfig
-    const showBodyMenuDialog = tableConfig.showBodyMenuDialog
-    if (showBodyMenuDialog == false) {
-        return
-    }
-    const dialogMap = table.dialogMap
-    const bodyMenuDialog = dialogMap.bodyMenuDialog
-    if (bodyMenuDialog != null) {
-        return
-    }
-    const bodyMenuDialogConfig = table.dialogConfig.bodyMenuDialogConfig
-    const dialog = createDialog(bodyMenuDialogConfig.props as any, bodyMenuDialogConfig.context, bodyMenuDialogConfig.dialogName)//使用这个模态框
-    table.dialogMap.bodyMenuDialog = (dialog.dialogConfig.dialogPrimaryName)
-}
+export const initBodyMenuDialog = (table: table) => { }
 
-export const initHeaderMenuDialog = (table: table) => {
-    const tableConfig = table.tableConfig
-    const showHeaderMenuDialog = tableConfig.showHeaderMenuDialog
-    if (showHeaderMenuDialog == false) {
-        return
-    }
-    const dialogMap = table.dialogMap
-    const headerMenuDialog = dialogMap.headerMenuDialog
-    if (headerMenuDialog != null) {
-        return
-    }
-    const headerMenuDialogConfig = table.dialogConfig.headerMenuDialogConfig
-    const dialog = createDialog(headerMenuDialogConfig.props as any, headerMenuDialogConfig.context, headerMenuDialogConfig.dialogName)//使用这个模态框
-    table.dialogMap.headerMenuDialog = (dialog.dialogConfig.dialogPrimaryName)
-}
+export const initHeaderMenuDialog = (table: table) => { }
 
-export const initColumnFilter = (table: table) => {
-    // const tableConfig = table.tableConfig
-    // const showFilterDialog = tableConfig.showFilterDialog
-    // if (showFilterDialog == false) {
-    //     return
-    // }
-    // const dialogMap = table.dialogMap
-    // const filterDialog = dialogMap.filterDialog
-    // if (filterDialog == null) {
-    //     const filterDialogConfig = table.dialogConfig.filterDialogConfig
-    //     const dialog = createDialog(filterDialogConfig.props as any, filterDialogConfig.context, filterDialogConfig.dialogName)//使用这个模态框
-    //     table.dialogMap.filterDialog = (dialog.dialogConfig.dialogPrimaryName)
-    // }
-}
+export const initColumnFilter = (table: table) => { }
+

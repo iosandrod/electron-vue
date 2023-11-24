@@ -1,4 +1,4 @@
-import { Directive, isProxy, computed, defineComponent, h, reactive, withDirectives, watchEffect, toRef, onUnmounted } from 'vue'
+import { Directive, isProxy, computed, defineComponent, h, reactive, withDirectives, watchEffect, toRef, onUnmounted, ref, nextTick } from 'vue'
 import { getOutSizeEditDiv } from '../formitemComFn'
 import { styleBuilder } from '@/utils/utils'
 import { getIcon } from '../icon'
@@ -6,22 +6,30 @@ import { VxeButton, VxeInput, VxeInputInstance, VxePulldown, VxePulldownInstance
 import { pickKey, tableConfig } from '@/types/schema'
 import tableView from '../schemaComponent/tableView'
 import { formitem } from '../formitem'
+import { column } from '../column'
 export default defineComponent({
     props: ['formitem', 'baseInfoItem', 'form', 'data'],
     setup(props, context) {
         const _data = computed(() => {
             return props.data
         })
-        const formitem = props.formitem
+        const formitem: formitem = props.formitem
         // // const outSizeDivFn = getOutSizeEditDiv(formitem)
         const suffStyle = styleBuilder.setMousePoint().getStyle()
-        let isClick = false
-        let isMousedown = false
         const itemConfig = formitem.itemConfig
-        const field = itemConfig.field
-
+        const field = itemConfig.field!
+        const baseInfoData = computed(() => {
+            let data = formitem.itemConfig.baseInfoTable?.tableData || []
+            return data
+        })
         const showValue = computed(() => {
-            return 'showValue'
+            const field = formitem.itemConfig.field!
+            const value = _data.value[field]
+            let showValue: any = baseInfoData.value.find(v => v.value == value)?.label
+            if (showValue == null) {
+                showValue = value
+            }
+            return showValue
         })
         const value = computed({
             get() {
@@ -35,21 +43,10 @@ export default defineComponent({
                 _data.value[field] = value
             }
         }) as any
-        // formitem.effectPool['polldownEffect'] = watchEffect(() => {
-        //     const polldown = formitem.pageRef['polldown'] as VxePulldownInstance
-        //     if (polldown == null) {
-        //         return
-        //     }
-        //     if (formitem.itemConfig.isFocus == true) {
-        //         polldown.showPanel()
-        //     } else {
-        //         polldown.hidePanel()
-        //     }
-        // })
         onUnmounted(() => {
             // formitem.effectPool['polldownEffect']()
         })
-
+        let isMousedown = false
         const tableConfig = reactive({
             showCheckBoxColumn: false,
             height: "300px",
@@ -76,6 +73,7 @@ export default defineComponent({
             showHeaderFilter: false,
             showHeaderSort: false,
         }) as pickKey<tableConfig>
+
         return () => {
             const suffixIcon = getIcon({
                 style: suffStyle,
@@ -106,12 +104,18 @@ export default defineComponent({
                     },
                     ref: 'vxeinput',
                     onBlur: () => {
+                        if (isMousedown == false) {
+                            formitem.itemConfig.isFocus = false
+                        }
                         // setTimeout(() => {
 
+                        // console.log(formitem.itemConfig.isPulldownFocus)
+                        // }, 0);
+                        // setTimeout(() => {
                         //     if (isClick == false && isMousedown == false) {
                         //         itemConfig.isFocus = false
                         //     }
-                        // }, 0);
+                        // }, 100);
                     }
                 }, {
                 suffix: () => {
@@ -137,7 +141,7 @@ export default defineComponent({
             // return inputCom
             const pullShow = computed({
                 set(value) {
-                    formitem.itemConfig.isFocus = value
+                    formitem.itemConfig.isFocus = value as any
                 },
                 get() {
                     return formitem.itemConfig.isFocus as boolean
@@ -149,28 +153,45 @@ export default defineComponent({
                 ['onUpdate:modelValue']: (value1: any) => {
                     pullShow.value = value1
                 },
-                // onClick: (event: MouseEvent) => {
-                //     isClick = true
-                //     setTimeout(() => {
-                //         isClick = false
-                //     }, 0);
-                //     event.stopPropagation()
-                // },
-                // onMousedown: (event: MouseEvent) => {
-                //     isMousedown = true
-                //     setTimeout(() => {
-                //         formitem.focus()
-                //         isMousedown = false
-                //     }, 0);
-                //     event.stopPropagation()
-                // },
+                onClick: (event: MouseEvent) => {
+                    // isClick = true
+                    // setTimeout(() => {
+                    //     formitem.focus()
+                    //     isClick = false
+                    // }, 0);
+                    // event.stopPropagation()
+                },
+                onMousedown: (event: MouseEvent) => {
+                    // isMousedown = true
+                    // setTimeout(() => {
+                    //     formitem.focus()
+                    //     isMousedown = false
+                    // }, 0);
+                    // event.stopPropagation()
+                },
                 ref: 'polldown'
             }, {
                 default: (params: any) => {
                     return inputCom
                 },
                 dropdown: (params: any) => {
-                    return h(tableView, tableConfig,)
+                    const style = styleBuilder.setFull()
+                    return withDirectives(h('div', {
+                        ref: 'pulldownDiv', style: style, onMousedown: () => {
+                            isMousedown = true
+                            setTimeout(() => {
+                                isMousedown = false
+                                formitem.focus()
+                            }, 0)//
+                        }
+                    }, [h(tableView, tableConfig,)]), [[{
+                        mounted(div, node) {
+
+                        },
+                        unmounted() {
+                            // formitem.effectPool['pulldownFocus']()
+                        }
+                    }]])
                 },
             },), [[{
                 mounted: (div, node) => {

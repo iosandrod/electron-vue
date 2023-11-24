@@ -1,11 +1,13 @@
-import { h, nextTick, onMounted, ref, Directive, withDirectives } from "vue"
+import { h, nextTick, onMounted, ref, Directive, withDirectives, VNode } from "vue"
 import { getRenderFn } from "./columnFn"
 import { StyleType } from "@/types/schema"
 import lodash from 'lodash'
+import { styleBuilder } from "@/utils/utils"
 
 export type propsConfig = {
     onClick?: (event: MouseEvent) => void,
     style?: StyleType,//
+    onContextmenu?: (event: MouseEvent) => void,
     onMousedown?: (event: MouseEvent) => void
     class?: any//类型,
     directive?: Array<Array<Directive>>
@@ -72,4 +74,10 @@ export const useCenterDiv = (props?: propsConfig) => {
     }
     const _props1 = lodash.merge(_props, { style })
     return getRenderFn('div', { ..._props1 })
+}
+
+export const createMenu = (node: VNode) => {
+    // const outSizeStyle = styleBuilder.getStyle()
+    // outSizeStyle.display = 'fixed'
+    // const outSizeDiv = h('div')
 }

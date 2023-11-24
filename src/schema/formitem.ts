@@ -22,6 +22,7 @@ export class formitem extends baseEdit<any> {
     table?: table
     column?: column
     itemConfig: itemConfig = {
+        isPulldownFocus: false,
         folding: false, //折叠
         type: "string",
         isFocus: false,//是否聚焦
