@@ -27,9 +27,11 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   } = {
       vxeGrid: {} as table
     }
-  entityConfig = {
-    wheres: [],//query
-    entityName: '',
+  tableConfig: any = {
+    //表格配置
+  }
+  entityConfig: any = {
+    nodeArr: []//节点数据  包括nodename nodedata
   }
   pageConfig: any = {}
   tableInfo?: any = {}//远程获取的数据
@@ -70,7 +72,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }) as any//处理表格
     renderTableInfo.data = computed(() => {
       return this.tableData.data
-    }) as any
+    }) as any//行与列
   }
   async getPageData() {//获取页面数据,与实体相关的
     try {
@@ -161,7 +163,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
   }
   async initPageTree() {
-    const schema = await getTableInfo(this)
     const renderLayout = this.renderLayout
     renderLayout.isDraggable = computed(() => {
       return this.layoutConfig.isDraggable
@@ -177,12 +178,14 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }) as any
     // console.log(renderLayout, 'testRenderLayout')
     //节点数据
-    const pagetree = createPage(schema.nodeArr, renderLayout)//虚拟子节点 生成树 
+    const pagetree = createPage(this.entityConfig.nodeArr, renderLayout)//虚拟子节点 生成树 
     this.pageTree = pagetree as any
   }
-  async initEntityConfig() {
-    const entityConfig = await getTableConfig('t_SdOrder')
-    this.tableInfo = entityConfig
+  async initEntityConfig() {//初始化页面节点数据
+    const entityConfig: any = await getTableInfo(this.entityName)
+    this.entityConfig = entityConfig
+    const tableConfig = await getTableConfig(this.entityName)
+    this.tableConfig = tableConfig
   }
 }
 

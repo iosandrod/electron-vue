@@ -4,7 +4,7 @@ import { systemInstance } from "../system"
 import { entityConfig } from "@/types/schema"
 import { createPage } from "./pageTree"
 import { getTableConfig, getTableInfo } from "@/api/httpApi"
-import { detailEntity } from "./detailEntity"
+import { createDetailEntity, detailEntity } from "./detailEntity"
 
 export class mainEntity extends basicEntity {
   detailTable: detailEntity[] = []
@@ -19,9 +19,12 @@ export class mainEntity extends basicEntity {
   initComponent() {//初始化节点
     super.initComponent()
   }
-  initDetailEntity() {
+  async initDetailEntity() {
     const schema = this.schema
-    const detailTable = schema.detailTable//子表 是一个数组
+    const detailTable: [] = schema.detailTable || []//子表 是一个数组
+    const detaialEntity = detailTable.map(table => {
+      // return createDetailEntity('t_SdOrderEntry')
+    })
   }
 }
 

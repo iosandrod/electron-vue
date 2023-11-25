@@ -1,3 +1,4 @@
+import { tableinfo1 } from "@/api/data"
 import { detailEntity } from "@/schema/businessTable/detailEntity"
 import { nodeConfig, pageTreeNode } from "@/schema/businessTable/pageTree"
 import { column } from "@/schema/column"
@@ -193,12 +194,12 @@ type tableState = 'fullEdit' | 'singleRowEdit' | 'moreRowEdit' | 'scan' | ''
 
 
 
-export type entityConfig = {
-  columns: Array<VxeColumnProps>
-  detailEntity?: Array<detailEntity>
-  tableName?: string
-  pageNode?: Array<nodeConfig>//节点数据
-}
+// export type entityConfig = {
+//   columns: Array<VxeColumnProps>
+//   detailEntity?: Array<detailEntity>
+//   tableName?: string
+//   pageNode?: Array<nodeConfig>//节点数据
+// }
 
 export type displayState = 'show' | 'hidden' | 'destroy'
 
@@ -209,3 +210,6 @@ export type scrollConfig = {
   bodyHeight?: number,
   bodyWidth?: number
 }
+
+
+export type entityConfig = typeof tableinfo1

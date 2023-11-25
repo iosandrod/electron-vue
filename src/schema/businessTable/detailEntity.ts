@@ -31,7 +31,7 @@ export class detailEntity extends basicEntity {
 
   }
   async initPageTree() {//初始化树节点
-    const schema = await getTableInfo(this)
+    const schema: any = await getTableInfo('t_SdOrderEntry')
     const renderLayout = this.renderLayout
     renderLayout.isDraggable = computed(() => {
       return this.layoutConfig.isDraggable
