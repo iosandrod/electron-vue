@@ -14,14 +14,6 @@ export default defineComponent({
         const column = computed(() => {
             return props.column as column
         })
-        const pulldownShow = computed({
-            get() {
-                return column.value.columnConfig.filterPulldownShow
-            },
-            set(value) {
-                column.value.columnConfig.filterPulldownShow = value
-            }
-        })
         return () => {
             const showHeader = column.value.columnConfig.showHeader
             if (showHeader == false) {
@@ -38,7 +30,6 @@ export default defineComponent({
                 style, onContextmenu: (event: MouseEvent) => {
                     const position = getMouseEventPosition(event)
                     column.value.table!.openHeaderMenu(position)
-                    console.log('menuClick')
                 }
             })
             const renderColumn = column.value.renderColumn

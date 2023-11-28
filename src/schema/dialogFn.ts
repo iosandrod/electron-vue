@@ -59,7 +59,6 @@ export const getDialogSlotsFooter = (dialog: dialog) => {
                 onClick: () => {
                     const modalData = dialog.dialogConfig.modalData
                     const table: table = modalData.table
-                    // table.filterFirstData()
                     dialog.close()
                 },
             }, {

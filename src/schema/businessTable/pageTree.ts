@@ -33,7 +33,7 @@ export class pageTree {//    视图页面数，基于业务的树
             let _config: any = this.pageConfig
             watchEffect(() => {
                 _config[key] = treeConfig[key]
-            })//页面树 
+            })//页面树
         }
         const children = this.children
         this.children = children.map((chi: any) => {

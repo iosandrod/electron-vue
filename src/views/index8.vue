@@ -11,7 +11,7 @@
       <!-- <component :is="com"></component> -->
       <!-- <component :is="table.component"></component> -->
       <!-- <table-view :tableInstance="table"></table-view> -->
-      <entity-view ref="entity"></entity-view>
+      <entity-view ref="entity" :entityInstance="_entity"></entity-view>
       <!-- <component :is="vNode"></component> -->
       <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
       <!-- <template v-if="mainEntity.displayState != 'destroy'"></template> -->
@@ -38,6 +38,7 @@ import { tableData, tableData2 } from '@/api/data'
 import { tableData3 } from '@/api/data2'
 // console.log(_columns, 'testColumns')
 const entity = ref(null)
+const _entity = createMainEntity('t_SdOrder', null)
 const { proxy: instance } = getCurrentInstance()!
 // onMounted(() => {
 //   console.log(instance.$refs.tableView1, 'testTableDiv')
@@ -48,9 +49,8 @@ async function btnClick() {
   // let data = await getTableConfig('123')
 }
 function btnClick2() {
-  nodeArr[0].nodeData.columns.forEach((col: any) => {
-    col.changeEditType()
-  })
+  const _entity = instance?.$refs.entity?.entity
+  _entity.getPageData()
 }
 function btnClick1() {
   if (table.tableState == 'scan') {
@@ -64,6 +64,14 @@ function btnClick1() {
   const _entity1 = _entity.entity as mainEntity
   // console.log(_entity1, 'testEntity')
   // console.log(_entity)
+  // _entity1.layoutConfig.isDraggable = !_entity1.layoutConfig.isDraggable
+  // _entity1.layoutConfig.isResizable = !_entity1.layoutConfig.isResizable
+  let tableState = _entity1.pageRef.vxeGrid.tableState
+  if (tableState == 'scan') {
+    _entity1.pageRef.vxeGrid.setTableEdit('fullEdit')
+  } else {
+    _entity1.pageRef.vxeGrid.setTableEdit('scan')
+  }
   _entity1.layoutConfig.isDraggable = !_entity1.layoutConfig.isDraggable
   _entity1.layoutConfig.isResizable = !_entity1.layoutConfig.isResizable
   // pageTree

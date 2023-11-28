@@ -26,7 +26,7 @@ export default defineComponent({
         const position = computed(() => {
             return menuConfig.bodyMenu.position
         })
-        const items = computed(() => {
+        const items = computed(() => {//
             return [
                 {
                     key: '1',

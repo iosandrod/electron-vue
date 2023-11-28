@@ -9,6 +9,7 @@ import { isString } from "lodash"
 import defaultCom from "./tableColumnCom/defaultCom"
 import defaultHeaderCom from './tableColumnCom/defalutHeaderCom'
 import { Dropdown } from "ant-design-vue"
+import columnFilterCom from "./tableColumnCom/columnFilterCom"
 // import { system } from "./system"
 export const getOutSizeDiv = (column: column, row: any) => {
     const style: StyleType = {//外部div的配置
@@ -143,16 +144,15 @@ export const getSlotHeader = (_column: column) => {
 }
 
 export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的图标
-    const table = _column.table!
-    const docClick = registerDocumentClickFn(() => {
-    })
+    // const table = _column.table!
+    // const docClick = registerDocumentClickFn(() => {
+    // }) 
     const filterIconFn = useMousePoint({
         capture: true,
         onClick: (event: MouseEvent) => {
             event.stopPropagation()
             _column.columnConfig.filterPulldownShow = true
         },
-        directive: [[docClick]]
     })
     const targetIcon = getIcon(null, "vxe-icon-funnel")
     return h(Dropdown, {
@@ -166,7 +166,7 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
             return filterIconFn(targetIcon())
         },
         overlay: () => {
-            return h('div', { style: { width: "100px", height: '200px', background: "red" } })
+            return h('div', { style: { width: "100px", height: '200px', background: "red" } }, [h(columnFilterCom, { column: _column })])
         }
     })
 }
@@ -199,10 +199,16 @@ export const getColumnVisiable = (column: column) => {
 export const getColumnField = (column: column) => {
     return column.columnConfig.field
 }
-
+let typeArr = ['seq', 'checkbox', 'radio', 'expand', 'html']
 export const getColumnType = (column: column) => {
     return computed(() => {
-        return column.columnConfig.type!
+        const type: any = column.columnConfig.type
+        if (typeArr.includes(type)) {
+            return type
+        } else {
+            return 'html'
+        }
+        // return column.columnConfig.type!
     })
 }
 
@@ -291,7 +297,7 @@ export const initRenderColumn = (column: column) => {
     renderColumn.slots = getColumnSlot(column)
     renderColumn.visible = getColumnVisiable(column)
     renderColumn.field = getColumnField(column)
-    renderColumn.minWidth = 100//最小宽度
+    renderColumn.minWidth = 50//最小宽度
     renderColumn.type = getColumnType(column).value as any
     renderColumn.width = getColumnWidth(column) as any
     renderColumn.title = getColumnTitle(column) as any

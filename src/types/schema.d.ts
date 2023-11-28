@@ -116,8 +116,11 @@ export type pickKey<T = any> = {
   [key in keyof T]?: T[key]
 }
 
-
-export type dialogConfig = concatAny<VxeModalDefines.ModalOptions & { dialogPrimaryName?: string, hasOpen?: boolean, modalData: any }>
+export type dialogButton = {
+  btnFun: (dialog: dialog) => Promise<void>,//立即执行函数
+  text: string,
+}
+export type dialogConfig = concatAny<VxeModalDefines.ModalOptions & { dialogPrimaryName?: string, hasOpen?: boolean, modalData?: any, buttons?: dialogButton[] }>
 
 
 export type dialogComponent = {
@@ -173,11 +176,21 @@ export type dialogMap = {
 
 
 export type layoutChildren = Array<pageTreeNode>
+
+export type layoutItemConfig = {
+  //节点render数据初始化函数 ,固定死的
+  renderFunName?: string,//渲染函数名称,返回一个render数据,的函数名称
+  renderComName?: string
+  renderFun?: (entity) => any//自定义渲染函数 返回一个虚拟节点
+  renderCom?: (entity) => any//都是函数
+}
 export type layoutItem = {
   nodeName?: string,
   i: string
   , x: number
-  , y: number, w: number, h: number
+  , y: number, w: number, h: number,
+  layoutItemConfig?: layoutItemConfig,
+  component?: any
 }
 export type layoutConfig = {
   layout?: Array<layoutItem>

@@ -1,4 +1,4 @@
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, h } from "vue";
 import { column } from "../column";
 
 export default defineComponent({
@@ -20,7 +20,7 @@ export default defineComponent({
             return columnConfig.filterOptions
         })
         return () => {
-            // return h()
+            return h('div', ['123'])
         }
     }
 })

@@ -18,6 +18,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     modalInstance?: VxeModalInstance
     // dialogConfig: concatAny<VxeModalProps & { dialogPrimaryName?: string }> = {//modalData 是模态框的存储数据
     dialogConfig: dialogConfig = {
+        buttons: [],
         position: 'center',
         type: "modal",
         maskClosable: true,
@@ -206,12 +207,6 @@ export class DialogPool {
         this.dynamicApp = createApp(VxeDynamics)
         nextTick(() => {
             this.dynamicApp!.use(VXETable)
-            // Object.values(VXETable).forEach((value: any) => {
-            //     if (typeof value?.setup == 'function') {
-            //         console.log(value)
-            //         this.dynamicApp?.component(value.name, value)
-            //     }
-            // })
             this.dynamicApp!.use(register)
         })
     }
@@ -223,7 +218,7 @@ export const createDialog = (schema: concatAny<VxeModalProps & {
     table?: any,
     openBefore?: () => Promise<boolean> | void,//打开之前
     closeBefore?: () => Promise<void> | void//关闭之前
-}>, context: any, schemaName: string = 'codeEdit') => {
+}>, schemaName: string = 'codeEdit') => {
     //schemaName这个是弹框的名称
     const Dialog = reactive(new dialog(systemInstance, schemaName, schema))
     Dialog.initDialog()
@@ -271,7 +266,6 @@ export const closeDialog = (key: string) => {
 export const destroyDialog = (key: string) => {
     closeDialog(key)
     setTimeout(() => {
-        // dialogPool.dialogArr.splice()
         const index = dialogPool.dialogArr.findIndex(dia => {
             return dia.dialogConfig.dialogPrimaryName == key
         })
@@ -280,3 +274,18 @@ export const destroyDialog = (key: string) => {
         }
     }, 100);
 }
+
+
+export const confirm = async (confirmConfig: any) => {
+    const buttons = [{ btnFun: async (dialog: any) => { }, text: "确认" }]
+    const _confirmConfig: dialogConfig = Object.assign({
+        type: "modal",
+        buttons: buttons,
+        height: 200,
+        width: 200,//正方形的弹框
+    } as dialogConfig, confirmConfig)
+    const dia = createDialog(_confirmConfig, 'confirmDialog')
+    dia.open()
+    // console.log(confirmConfig, 'testConfig')
+    // console.log(_confirmConfig)
+}  

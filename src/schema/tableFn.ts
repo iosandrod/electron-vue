@@ -2,7 +2,7 @@ import { computed, getCurrentInstance, h, isReactive, nextTick, ref, resolveComp
 import { table } from "./table";
 import { StyleType, position, tableSchema } from "@/types/schema";
 import { column, createColumn } from "./column";
-import { VxeGridProps, VxeGrid } from "vxe-table";
+import { VxeGridProps, VxeGrid, VxeColumnProps } from "vxe-table";
 import { getRenderFn } from "./columnFn";
 import { getDialogPosition } from "./dialogFn";
 import { getMouseEventPosition } from "@/utils/utils";
@@ -82,8 +82,8 @@ export const getOptionsData = (table: table) => {
 export const getOptionsColumns = (table: table) => {
     return computed(() => {
         const tableConfig = table.tableConfig
-        const checkBoxColumn = tableConfig.showCheckBoxColumn == true ? { type: 'checkbox', width: 50, field: 'checkboxField', align: 'center' } : null
-        const seqColumn = tableConfig.showSeqColumn == true ? { type: "seq", width: 100, align: 'center' } : null
+        const checkBoxColumn = tableConfig.showCheckBoxColumn == true ? { type: 'checkbox', width: 50, field: 'checkboxField', align: 'center', resizable: true } as VxeColumnProps : null
+        const seqColumn = tableConfig.showSeqColumn == true ? { type: "seq", width: 100, align: 'center', resizable: true } as VxeColumnProps : null
         const defaultColumns = [seqColumn, checkBoxColumn].filter(col => col != null)
         const columns = [
             ...defaultColumns,
@@ -145,7 +145,7 @@ export const getOptionsRowConfig = (table: table) => {
         const rowHeight = rowConfig?.rowHeight
         return {
             height: rowHeight,
-            isHover: true
+            isHover: true,
         }
     })
 }
@@ -276,17 +276,23 @@ export const initComponent = (table: table) => {
             },
             [[{
                 mounted(div) {
+                    const effectPool = table.effectPool
+                    if (Object.keys(effectPool).length == 0) {
+                        table.initTableConfig()
+                    }
                 }, unmounted() {
                     const dialogMap = table.dialogMap
                     Object.values(dialogMap).forEach(value => {
                         table.destroyDialog(value)
                     })
                     const effectPool = table.effectPool
-                    Object.values(effectPool).forEach((effect: any) => {
+                    Object.entries(effectPool).forEach(([key, effect]: any) => {
                         if (effect) {
                             effect()
+                            delete effectPool[key]
                         }
                     })
+
                 }
             }]]
         )
@@ -367,7 +373,7 @@ export const initTableConfig = (table: table) => {
                 table.effectPool[`table${key}Effect`] = watchEffect(() => {
                     const tableData = table.tableData
                     const _tableConfig = table.tableConfig as any
-                    if (['data', 'columns'].includes(key)) {
+                    if (['data',].includes(key)) {
                         tableData.data = schema['data'] as any || []
                         tableData.showData = schema['data'] as any || []
                     } else {

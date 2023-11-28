@@ -156,6 +156,11 @@ export class table extends base<tableSchema> implements tableMethod {
       this.menuConfig.headerMenu.show = true
     })
   }
+  setTableEdit(editType: tableState) {
+    if (['fullEdit', 'singleRowEdit', 'moreRowEdit', 'scan',].includes(editType)) {
+      this.tableState = editType
+    }
+  }
   async initColumnFilter() {
     tableFn.initColumnFilter(this)
   }
