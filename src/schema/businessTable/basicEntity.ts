@@ -6,7 +6,7 @@ import layoutGridView from "../schemaComponent/layoutGridView"
 import { http } from "../http"
 import { tableMethod } from "../tableMethod"
 import { table } from "../table"
-import { getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
+import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
 import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo } from "@/types/schema"
 import { entityColumn } from "../entityColumn"
@@ -19,20 +19,23 @@ import { tableData3 } from "@/api/data2"
 import { withDirectives } from 'vue'
 import { pageloadMiddleware } from "@/middleware/pageloadMiddleware"
 import { confirmMiddleware } from "@/middleware/confirmMiddleware"
+import { detailEntity } from "./detailEntity"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   sub = new Subject()//动作发射器
+  detailTable?: detailEntity[] = []
   http = http
+  entityType = 'main'//这里默认是主表
   layoutConfig: layoutConfig = {
     rowHeight: 30,
     isDraggable: false,
     isResizable: false,
     useCssTransform: true,
-    verticalCompact: true// 
+    verticalCompact: true//
+
     //
   }
   originTableInfo?: any
   schema?: Array<layoutItem> = []
-  entityType = ''
   entityName = ''
   pageRef: {
     vxeGrid: table
@@ -42,9 +45,10 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   tableConfig: any = {//表格配置
     //表格配置
   }
-  entityConfig: any = {
-    nodeArr: []//节点数据  包括nodename nodedata   
+  detailEntityConfig = {
+    curDetailKey: ''
   }
+  entityConfig?: any
   pageConfig: any = {}
   tableInfo?: mainTableInfo = {} as any//远程获取的数据
   renderLayout: layoutConfig = {}//渲染节点数据
@@ -54,7 +58,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   renderSearchForm: any = {}//渲染查询表格
   renderButtonGroup: any = {}//初始化按钮  
   renderDetailTable: any = {}//渲染子表配置
-  renderEditDetailTable: any = {}//渲染编辑表的子表配置  一个对象存所有东西 
+  renderEditTable: any = {}//渲染编辑表格配置 
   nodeArr: [] = []
   renderTableInfo: any = {}
   util: any
@@ -91,14 +95,14 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       const layoutCom = resolveComponent('grid-layout')
       const layoutItemCom = resolveComponent('grid-item')
       const renderLayout = this.renderLayout
-
-      return h(layoutCom, { ...renderLayout }, () => this.schema!.map(item => {
+      const schema = this.entityConfig!
+      return h(layoutCom, { ...renderLayout, style: { height: '100%' } as StyleType }, () => schema!.map((item: any) => {
         return h(layoutItemCom, item,
           () => {
             let renderCom: any = null
             let defaultCom: any = null
-            const component = item.component
-            if (component != null) {
+            const component = item.component//
+            if (component != null) {//
               renderCom = withDirectives(component(), [[{
                 mounted(div, node) { },
                 unmounted() { }
@@ -241,7 +245,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     renderLayout.colNum = 24
     renderLayout.layout = computed({
       get: () => {
-        return this.schema
+        return this.entityConfig
       },
       set: (value) => {
         console.log(value)
@@ -249,12 +253,15 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }) as any
   }
   async initEntityConfig() {//初始化页面节点数据
-    if (this.schema == null) {
-      this.schema = await getTableInfo(this.entityName) as any
+    if (this.entityConfig == null) {
+      //使用entityConfig
+      this.entityConfig = await getEntityConfig(this) as any
     }
-    const schema = this.schema!
+    //为什么要覆盖schema
+    //
+    const schema = this.entityConfig!
     const _this: any = this
-    await Promise.all(schema.map(async item => {//这是个数组 节点数组
+    await Promise.all(schema.map(async (item: any) => {//这是个数组 节点数组
       const itemConfig = item.layoutItemConfig!
       const renderFunName = itemConfig.renderFunName
       let renderComName = itemConfig.renderComName as keyof typeof comVetor
@@ -289,7 +296,18 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
   }
   async initRenderDetailEntity() {
-    await entityRenderFn.getRenderDetailEntity()
+    return await entityRenderFn.getRenderDetailEntity(this as any)
+  }
+  getDetailEntity(entityName: string) {
+    const detailTable = this.detailTable
+    const targetTable = detailTable?.find(table => {
+      return table.entityName == entityName
+    })
+    return targetTable!
+  }
+  setCurrentEntityDesign(status: boolean) {
+    this.layoutConfig.isDraggable = Boolean(status)
+    this.layoutConfig.isResizable = Boolean(status)
   }
 }
 

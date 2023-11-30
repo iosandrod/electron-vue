@@ -5,6 +5,7 @@ import buttonView from '@/schema/schemaComponent/buttonView'
 import selectView from '@/schema/editComponent/selectView'
 import layoutGridView from '@/schema/schemaComponent/layoutGridView'
 import entityView from '@/schema/schemaComponent/entityView'
+import detailEntityView from '@/schema/schemaComponent/detailEntityView'
 export default {
     install(app: App) {
         app.component('table-view', tableView)
@@ -21,5 +22,6 @@ export const comVetor = {
     formView,
     buttonView,
     selectView,
-    layoutGridView
+    layoutGridView,
+    detailEntityView: detailEntityView,
 }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <vxe-button @click="btnClick">button</vxe-button>
-    <vxe-button @click="btnClick1">button</vxe-button>
+    <vxe-button @click="btnClick1">btnClick1</vxe-button>
     <vxe-button @click="btnClick2">btnClick2</vxe-button>
     <vxe-button @click="btnClick3">button</vxe-button>
     <!-- <layoutGridView :pageTree="pageTree"></layoutGridView> -->
@@ -55,12 +55,13 @@ function btnClick2() {
   const _entity1 = _entity?.entity
   _entity1.getPageData()
 }
+let state = false
 function btnClick1() {
-  if (table.tableState == 'scan') {
-    table.tableState = 'fullEdit'
-  } else {
-    table.tableState = 'scan'
-  }
+  // if (table.tableState == 'scan') {
+  //   table.tableState = 'fullEdit'
+  // } else {
+  //   table.tableState = 'scan'
+  // }
   //@ts-nocheck
 
   const _entity: any = instance?.$refs.entity
@@ -69,15 +70,18 @@ function btnClick1() {
   // console.log(_entity)
   // _entity1.layoutConfig.isDraggable = !_entity1.layoutConfig.isDraggable
   // _entity1.layoutConfig.isResizable = !_entity1.layoutConfig.isResizable
-  let tableState = _entity1.pageRef.vxeGrid.tableState
-  if (tableState == 'scan') {
-    _entity1.pageRef.vxeGrid.setTableEdit('fullEdit')
-  } else {
-    _entity1.pageRef.vxeGrid.setTableEdit('scan')
-  }
-  _entity1.layoutConfig.isDraggable = !_entity1.layoutConfig.isDraggable
-  _entity1.layoutConfig.isResizable = !_entity1.layoutConfig.isResizable
+  // let tableState = _entity1.pageRef.vxeGrid.tableState
+  // if (tableState == 'scan') {
+  //   _entity1.pageRef.vxeGrid.setTableEdit('fullEdit')
+  // } else {
+  //   _entity1.pageRef.vxeGrid.setTableEdit('scan')
+  // }
+  // _entity1.layoutConfig.isDraggable = !_entity1.layoutConfig.isDraggable
+  // _entity1.layoutConfig.isResizable = !_entity1.layoutConfig.isResizable
+  // const dEntity=_entity
   // pageTree
+  const dEntity = _entity1.getDetailEntity('t_SdOrderEntry')
+  dEntity.setCurrentEntityDesign(!state)
 }
 Mousetrap.bind('ctrl+left', function () {
   console.log('ctrl a')
@@ -160,7 +164,7 @@ function btnClick3() {
   // })
   // console.log(_dialog, 'testDialog')
   // _dialog.open()
-  confirm({})
+  // confirm({})
 }
 // const mainEntity = createMainEntity({})
 onMounted(() => {})

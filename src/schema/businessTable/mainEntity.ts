@@ -7,17 +7,10 @@ import { getTableConfig, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
 
 export class mainEntity extends basicEntity {
-  detailTable: detailEntity[] = []
   //页面树
-
   constructor(schema: any, entityName: string, system: any) {//schema 是entity的数据
 
     super(schema, system);//外部的数据应该是静态数据
-    /* 
-        如何描述这种数据呢,layout:[{
-          x,y,h,w,i,slot:? 或者是什么
-        }]
-     */
     this.entityName = entityName
   }
   async initEntity() {
@@ -37,6 +30,7 @@ export class mainEntity extends basicEntity {
       return dTable
     }))
     this.detailTable = detailEntity as any//业务逻辑类型的子组件
+    this.detailEntityConfig.curDetailKey = this.detailTable?.[0]?.tableInfo?.tableName || ''
   }
 }
 

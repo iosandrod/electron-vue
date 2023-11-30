@@ -79,3 +79,6 @@ body{
 .vxe-form--item{
     padding: 0 !important;
 }
+.ant-tabs-content {
+    height: 100%;
+}

@@ -8,6 +8,7 @@ import { formitem } from "@/schema/formitem"
 import { layoutGrid } from "@/schema/layoutGrid"
 import { table } from "@/schema/table"
 import { SelectProps } from "ant-design-vue"
+import { CSSProperties } from "ant-design-vue/es/_util/cssinjs/hooks/useStyleRegister"
 import { ComputedRef, VNode } from "vue"
 import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps, VxeColumnProps } from "vxe-table"
 
@@ -24,7 +25,8 @@ export type concatAny<T> = T & { [key: string]: any }
 
 export type componentConfig = {}
 
-export type StyleType = UnUnique<CSSStyleDeclaration>
+// export type StyleType = UnUnique<CSSProperties>
+export type StyleType = CSSProperties
 
 export type UnUnique<T> = {
   [key in keyof T]?: T[key]

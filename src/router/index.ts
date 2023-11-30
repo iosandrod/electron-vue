@@ -32,7 +32,7 @@ export const asyncRoutes: RouteRecordRaw[] = [
   {
     path: "/:pathMatch(.*)*", // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
     // component: () => import('@/views/index8.vue'),
-    component: () => import('@/views/index10.vue'),
+    component: () => import('@/views/index8.vue'),
     meta: {
       hidden: true
     }

@@ -17,47 +17,7 @@ export default defineComponent({
         const pageShow = computed(() => {
             const state = entity.displayState
             return state == 'show'
-            // return false
         })
-        const _div = h('div', { style: { position: "absolute", top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType })
-        const dragDiv = computed(() => {
-            let drag = entity.renderLayout.isDraggable && entity.renderLayout.isResizable
-
-            if (drag == true) {
-                return _div
-            }
-            return null
-        })
-        const vNode = () => {
-            const layoutCom = resolveComponent('grid-layout')
-            const layoutItemCom = resolveComponent('grid-item')
-            const renderLayout = entity.renderLayout
-
-            return h(layoutCom, { ...renderLayout }, () => entity.schema!.map((item: any) => {
-                return h(layoutItemCom, item,
-                    () => {
-                        let renderCom: any = null
-                        let defaultCom: any = null
-                        const component = item.component
-                        if (component != null) {
-                            renderCom = withDirectives(component(), [[{
-                                mounted(div, node) {
-                                },
-                                unmounted() { }
-                            }]])
-                        }
-                        if (renderCom) {
-                            defaultCom = h('div', { style: { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType }, [renderCom,
-                                dragDiv.value
-                            ])
-                        } else {
-                            defaultCom = h('div', { style: { position: "relative", background: 'red', height: '100%', width: '100%' } as StyleType }, ['默认节点'])
-                        }
-                        return defaultCom
-                    }
-                )
-            }))
-        }
         const component = computed(() => {
             const show = pageShow.value
             if (show == false) {
