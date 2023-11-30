@@ -28,17 +28,19 @@ export class mainEntity extends basicEntity {
   async initComponent() {//初始化节点
     await super.initComponent()
   }
+  //初始化子表数据
   async initDetailEntity() {
-    const schema = this.schema
-    const originTableInfo = this.originTableInfo
-    debugger
-    // const detailTable: [] = schema.detailTable || []//子表 是一个数组
-    // const detaialEntity = detailTable.map(table => {
-    // return createDetailEntity('t_SdOrderEntry')
-    // })
+    const tableInfo = this.tableInfo
+    const detailTable = tableInfo?.detailTable! || []
+    const detailEntity = await Promise.all(detailTable.map(async (table) => {
+      const dTable = await createDetailEntity(table.tableName, table)//表名
+      return dTable
+    }))
+    this.detailTable = detailEntity as any//业务逻辑类型的子组件
   }
 }
 
+//业务
 export const createMainEntity = (entityName: string, tableInfo: any) => {
   const entity = reactive(new mainEntity(tableInfo, entityName, systemInstance))
   entity.initEntity()

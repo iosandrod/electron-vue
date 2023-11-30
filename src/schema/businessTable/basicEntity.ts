@@ -8,7 +8,7 @@ import { tableMethod } from "../tableMethod"
 import { table } from "../table"
 import { getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo } from "@/types/schema"
 import { entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -46,7 +46,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     nodeArr: []//节点数据  包括nodename nodedata   
   }
   pageConfig: any = {}
-  tableInfo?: any = {}//远程获取的数据
+  tableInfo?: mainTableInfo = {} as any//远程获取的数据
   renderLayout: layoutConfig = {}//渲染节点数据
   renderLayoutItems: Array<layoutItem> = []
   renderTable: any = {}//渲染表格的数据
@@ -132,7 +132,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         const url = payload.url
         const entity = payload.entity
         // const data=await http.post()//这里模拟获取数据
-        const data = JSON.parse(JSON.stringify(tableData2))//这里是数据 
+        const data = JSON.parse(JSON.stringify(tableData2))//这里是数据  
         this.tableData.data = data
         await next()
       }
@@ -280,12 +280,19 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     if (index < middlewares.length) {
       const currentMiddleware = middlewares[index];
       await currentMiddleware(payload, async () => {
-        await this.runMiddlewares(payload, middlewares, index + 1);
+        try {
+          await this.runMiddlewares(payload, middlewares, index + 1);
+        } catch (error: any) {
+          return payload.error = error
+        }
       });
     }
+  }
+  async initRenderDetailEntity() {
+    await entityRenderFn.getRenderDetailEntity()
   }
 }
 
 export const createBasicEntity = async () => {
-  // const entity = reactive(new basicEntity())
+  return
 }

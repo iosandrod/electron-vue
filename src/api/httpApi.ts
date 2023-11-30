@@ -14,8 +14,14 @@ export const getTableInfo = async (entity?: string) => {
             renderComName: "tableView",//组件
             renderFunName: 'initRenderTable',//数据初始化函数
         } as layoutItemConfig,
+    }, {
+        x: 0, y: 10, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
+            renderFunName: "initRenderDetailEntity",
+        } as layoutItemConfig
     },]
-    return itemArr
+    const _itemArr = JSON.parse(JSON.stringify(itemArr))
+    return _itemArr
 }
 
 export const getDetailTableInfo = async (entity: any) => {
@@ -46,15 +52,16 @@ const runFun = async function getOrderData() {
     let result = await axiosInstance.post(url, {}, config)
     return result
 }
-export const getTableConfig = async (tableName?: string) => {
+export const getTableConfig = async (tableName?: string, origin = false) => {//获取配置
     try {
-        if (tableName == 't_SdOrder') {
-            const _info = await formatTableInfo(tableInfo) as mainTableInfo
-            const xTableInfo = _info.xTableInfo
+        if (tableName == 't_SdOrder') {//这个是表的数据
+            let _tableInfo = JSON.parse(JSON.stringify(tableInfo))
+            const _info = await formatTableInfo(_tableInfo) as mainTableInfo
+            const xTableInfo = _info.xTableInfo//
             const detailTable = xTableInfo?.detailTable || []
             const _detailTable = await Promise.all(detailTable?.map(async (table) => {
                 return await getTableConfig(table.tableName)
-            }))
+            }))//子表配置
             _info.detailTable = _detailTable
             return _info
         } else if (tableName == 't_SdOrderEntry') {
