@@ -28,7 +28,7 @@
     "@quasar/vite-plugin": "^1.6.0",
     "@vitejs/plugin-vue": "^4.3.3",
     "autoprefixer": "^10.4.16",
-    "electron": "^26.0.0",
+    "electron": "^27.1.2",
     "electron-builder": "^24.6.3",
     "postcss": "^8.4.31",
     "sass": "^1.69.5",
