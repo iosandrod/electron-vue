@@ -6,7 +6,6 @@ import { dialogConfig, itemConfig, pickKey, tableConfig } from "@/types/schema";
 import { column } from "./column";
 import * as formitemFn from './formitemFn'
 import { baseEdit } from "./baseEdit";
-import { createDialog, dialog } from "./dialog";
 import { getDialogMaskHidden } from "@/utils/utils";
 import { form } from "./form";
 import { getItemSlotsDefault } from "./formitemFn";

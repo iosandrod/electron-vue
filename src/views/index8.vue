@@ -2,7 +2,8 @@
   <div>
     <vxe-button @click="btnClick">button</vxe-button>
     <vxe-button @click="btnClick1">button</vxe-button>
-    <vxe-button @click="btnClick2">button</vxe-button>
+    <vxe-button @click="btnClick2">btnClick2</vxe-button>
+    <vxe-button @click="btnClick3">button</vxe-button>
     <!-- <layoutGridView :pageTree="pageTree"></layoutGridView> -->
     <!-- <form-view :items="formItems" :data="formData"></form-view> -->
     <div style="width: 100%; height: 100px;" v-if="showValue">
@@ -36,6 +37,7 @@ import { mainEntity } from '@/schema/businessTable/mainEntity'
 import Mousetrap from 'mousetrap'
 import { tableData, tableData2 } from '@/api/data'
 import { tableData3 } from '@/api/data2'
+import { createDialog, confirm } from '@/schema/dialog'
 // console.log(_columns, 'testColumns')
 const entity = ref(null)
 const _entity = createMainEntity('t_SdOrder', null)
@@ -49,8 +51,9 @@ async function btnClick() {
   // let data = await getTableConfig('123')
 }
 function btnClick2() {
-  const _entity = instance?.$refs.entity?.entity
-  _entity.getPageData()
+  let _entity: any = instance?.$refs.entity
+  const _entity1 = _entity?.entity
+  _entity1.getPageData()
 }
 function btnClick1() {
   if (table.tableState == 'scan') {
@@ -91,7 +94,7 @@ const nodeArr: Array<nodeConfig> = reactive([
         resizable: true,
       },
       columns: _columns(),
-      data: tableData3,
+      data: tableData2,
     } as tableConfig,
   },
   {
@@ -148,7 +151,17 @@ const formItems = ref([
   //   span: 8,
   // },
 ])
-
+function btnClick3() {
+  // console.log('btnClick3')
+  // const _dialog = createDialog('confirmBox', {
+  //   message: '是否执行',
+  //   height: '200px',
+  //   width: '200px',
+  // })
+  // console.log(_dialog, 'testDialog')
+  // _dialog.open()
+  confirm({})
+}
 // const mainEntity = createMainEntity({})
 onMounted(() => {})
 const vNode = h(

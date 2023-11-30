@@ -40,14 +40,17 @@ export const getDialogSlotsHeader = (dialog: dialog) => {
 export const getDialogSlotsDefault = (dialog: dialog) => {
     return computed(() => {
         return (params: ModalDefaultSlotParams) => {
+            let com: any = null
             const dialogComponent = dialog.dialogComponent
             const dialogName = dialog.dialogName! as keyof typeof dialogComponent
-            const defaultComFn = dialogComponent[dialogName]?.default
-            if (defaultComFn != null) {
-                const com = defaultComFn(dialog)
-                return h(com)
+            const defaultCom = dialogComponent[dialogName]?.default
+            if (defaultCom != null) {
+                const modalData = dialog.dialogConfig.modalData
+                com = h(defaultCom, { dialog: dialog, modalData: modalData })
+            } else {
+                com = h('div', ['default'])
             }
-            return h("div", {}, ['default'])
+            return com
         }
     })
 }
@@ -55,17 +58,17 @@ export const getDialogSlotsDefault = (dialog: dialog) => {
 export const getDialogSlotsFooter = (dialog: dialog) => {
     return computed(() => {
         return (params: ModalDefaultSlotParams) => {
-            return h('div', {}, [h(VxeButton, {
-                onClick: () => {
-                    const modalData = dialog.dialogConfig.modalData
-                    const table: table = modalData.table
-                    dialog.close()
-                },
-            }, {
-                default: () => {
-                    return h('div', {}, ['button'])
-                }
-            })])
+            let com: any = null
+            const dialogComponent = dialog.dialogComponent
+            const dialogName = dialog.dialogName! as keyof typeof dialogComponent
+            const defaultCom = dialogComponent[dialogName]?.footer
+            if (defaultCom != null) {
+                const modalData = dialog.dialogConfig.modalData
+                com = h(defaultCom, { dialog: dialog, modalData: modalData })
+            } else {
+                com = h('div', ['footer'])
+            }
+            return com
         }
     })
 }

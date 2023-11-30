@@ -2,12 +2,13 @@ import { isVNode, createApp, ComponentOptions, computed, defineComponent, h, nex
 import { base } from "./base";
 import { systemInstance, system } from "./system";
 import VXETable, { VxeModalProps, VxeModalDefines, VxeModal, VxeModalInstance, VxeTable } from "vxe-table";
-import { concatAny, dialogConfig, openDialogConfig } from "@/types/schema";
+import { concatAny, confirmConfig, dialogConfig, openDialogConfig } from "@/types/schema";
 import { getDialogDestroyOnClose, getDialogHeight, getDialogLockView, getDialogMaskClosable, getDialogMinHeight, getDialogMinMask, getDialogMinWidth, getDialogModelValue, getDialogOnHide, getDialogOnShow, getDialogPosition, getDialogPrimaryId, getDialogResize, getDialogShowFooter, getDialogSlots, getDialogType, getDialogWidth } from "./dialogFn";
 import { Subject } from "rxjs";
 import register from "@/plugin/register";
 import dialogComponent from "./dialogComponent";
 import { tranPosition, tranPositionNumber } from "@/utils/utils";
+import { message } from 'ant-design-vue'
 export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     renderDialog: VxeModalDefines.ModalOptions = {}
     childDialog: dialog[] = []//子节点
@@ -18,7 +19,8 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     modalInstance?: VxeModalInstance
     // dialogConfig: concatAny<VxeModalProps & { dialogPrimaryName?: string }> = {//modalData 是模态框的存储数据
     dialogConfig: dialogConfig = {
-        buttons: [],
+        modelValue: false,//默认是不打开弹框
+        buttons: [],//
         position: 'center',
         type: "modal",
         maskClosable: true,
@@ -37,7 +39,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         modalData: {}
     }
     dialogName?: string
-    constructor(system: system, dialogName: string = 'codeEdit', schema: concatAny<VxeModalProps>) {
+    constructor(dialogName: string = 'codeEdit', schema: concatAny<VxeModalProps>, system: system) {
         super(system, schema)
         this.dialogName = dialogName
     }
@@ -56,19 +58,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
                 const _config = this.dialogConfig as any
                 _config[key] = value
             })
-            this.effectPool['openEffect'] = watchEffect(() => {
-                const modalValue = this.dialogConfig.modelValue
-                if (modalValue == true) {
-                    nextTick(() => {
-                        this.open()
-                    })
-                } else {
-                    nextTick(() => {
-                        this.close()
-                    })
-                }
-            })
-            //修改配置
+            //修改配置 
             this.effectPool['positionEffect'] = watchEffect(() => {
                 const position = this.dialogConfig.position
                 if (typeof position == 'object') {
@@ -123,32 +113,25 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     }
     //打开弹框
     async open() {
+        this.dialogConfig.modelValue = true
         const modelValue = this.dialogConfig.modelValue
         if (modelValue == true) {
             return
             //已经打开过了就无法再打开了
         }
-        this.renderDialog.key = `${Math.floor(Math.random() * 10000)}`
         this.dialogConfig.modelValue = true
-        if (this.dialogConfig.hasOpen != true) {
-            this.dialogConfig.hasOpen = true
-        } else {
-            this.renderDialog.modelValue = true
-        }
     }
     async close() {
         this.dialogConfig.modelValue = false
-        // this.dialogPool?.dialogArr.splice(0)
-        // this.dialogPool.dialogArr = []
-        // this.dialogPool = null as any
-        // this.modalInstance = null as any
-        // const effectPool = this.effectPool
-        // Object.values(effectPool).forEach((v: any) => {
-        //     v()
-        // })
     }
     //确认弹框
-    async confirm() { }
+    async confirm() {
+        console.log('confirm')
+    }
+    async destroy() {
+        this.dialogConfig.modelValue = false
+        await destroyDialog(this.dialogConfig.dialogPrimaryName!)
+    }
     getTableView() {
         const modalData = this.dialogConfig.modalData
         return modalData.table
@@ -164,7 +147,7 @@ export class DialogPool {
     dynamicApp?: App<Element>
     constructor() { }
     initDialogPool() {
-        this.vNode = new dialog(systemInstance, 'vNode', {})
+        this.vNode = new dialog('vNode', {}, systemInstance)
         this.initVxeDynamics()//初始化app
         this.checkDynamic();//检测挂载
     }
@@ -214,13 +197,13 @@ export class DialogPool {
 export const dialogPool = reactive(new DialogPool())
 dialogPool.initDialogPool()
 
-export const createDialog = (schema: concatAny<VxeModalProps & {
+export const createDialog = (schemaName: string = 'codeEdit', schema: concatAny<VxeModalProps & {
     table?: any,
     openBefore?: () => Promise<boolean> | void,//打开之前
     closeBefore?: () => Promise<void> | void//关闭之前
-}>, schemaName: string = 'codeEdit') => {
+}>,) => {
     //schemaName这个是弹框的名称
-    const Dialog = reactive(new dialog(systemInstance, schemaName, schema))
+    const Dialog = reactive(new dialog(schemaName, schema, systemInstance))
     Dialog.initDialog()
     addDialog(Dialog as any)
     return Dialog
@@ -265,27 +248,40 @@ export const closeDialog = (key: string) => {
 
 export const destroyDialog = (key: string) => {
     closeDialog(key)
-    setTimeout(() => {
+    nextTick(() => {
         const index = dialogPool.dialogArr.findIndex(dia => {
             return dia.dialogConfig.dialogPrimaryName == key
         })
         if (index != -1) {
             dialogPool.dialogArr.splice(index, 1)
         }
-    }, 100);
+    });
 }
 
 
-export const confirm = async (confirmConfig: any) => {
-    const buttons = [{ btnFun: async (dialog: any) => { }, text: "确认" }]
+export const confirm = async (confirmConfig: confirmConfig) => {
+    let createFn = () => async () => { }
+    let callback = confirmConfig.callback || createFn()
+    let cancelCallback = confirmConfig.cancelCallback || createFn()
+    const buttons = [{
+        btnFun: async (dialog: dialog) => {
+            await callback(dialog)
+            dialog.destroy()
+        }, text: "确认"
+    }, {
+        btnFun: async (dialog: dialog) => {
+            await cancelCallback(dialog)
+            dialog.destroy()
+        }, text: "取消"
+    }]
     const _confirmConfig: dialogConfig = Object.assign({
+        message: "确认提示",
         type: "modal",
         buttons: buttons,
         height: 200,
-        width: 200,//正方形的弹框
+        width: 350,//正方形的弹框
     } as dialogConfig, confirmConfig)
-    const dia = createDialog(_confirmConfig, 'confirmDialog')
+    const dia = createDialog('confirm', _confirmConfig)
     dia.open()
-    // console.log(confirmConfig, 'testConfig')
-    // console.log(_confirmConfig)
+    return dia
 }  

@@ -22,6 +22,7 @@ export class mainEntity extends basicEntity {
   }
   async initEntity() {
     await super.initEntity({ show: false })
+    await this.initDetailEntity()
     this.displayState = 'show'
   }
   async initComponent() {//初始化节点
@@ -29,6 +30,8 @@ export class mainEntity extends basicEntity {
   }
   async initDetailEntity() {
     const schema = this.schema
+    const originTableInfo = this.originTableInfo
+    debugger
     // const detailTable: [] = schema.detailTable || []//子表 是一个数组
     // const detaialEntity = detailTable.map(table => {
     // return createDetailEntity('t_SdOrderEntry')

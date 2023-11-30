@@ -7,7 +7,7 @@ import { http } from "../http"
 import { tableMethod } from "../tableMethod"
 import { table } from "../table"
 import { getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
-import { tableData } from "@/api/data"
+import { tableData, tableData2 } from "@/api/data"
 import { layoutConfig, tableConfig, layoutItem, StyleType } from "@/types/schema"
 import { entityColumn } from "../entityColumn"
 import lodash from "lodash"
@@ -17,6 +17,8 @@ import * as entityRenderFn from './basicEntityFn'
 import { mainEntity } from "./mainEntity"
 import { tableData3 } from "@/api/data2"
 import { withDirectives } from 'vue'
+import { pageloadMiddleware } from "@/middleware/pageloadMiddleware"
+import { confirmMiddleware } from "@/middleware/confirmMiddleware"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   sub = new Subject()//动作发射器
   http = http
@@ -65,6 +67,16 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     this.displayState = 'destroy'
     this.schema = schema
   }
+  getTableKey() {
+    //获取表格主键
+    const originTableInfo = this.originTableInfo
+    return originTableInfo.cKeyColumn
+  }
+  getTableKeyCode() {
+    //获取表格必录字段 
+    const originTableInfo = this.originTableInfo
+    return originTableInfo.cCodeColumn
+  }
   initComponent() {
     const _div = h('div', { style: { position: "absolute", top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType })
     const dragDiv = computed(() => {
@@ -107,24 +119,38 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     this.component = vNode as any
   }
   async initNode() {
-    console.log('initNode')
   }
   //
+  async dispatch(eventName = '') {//触发某个函数
+
+  }
   async getPageData() {//获取页面数据,与实体相关的
     try {
-      this.setPageLoading(true)
-      let curRow = this.getCurRow()
+      const payload = { entity: this, params: {}, url: '' }
+      const fn = async (payload: any, next: any) => {
+        const params = payload.params
+        const url = payload.url
+        const entity = payload.entity
+        // const data=await http.post()//这里模拟获取数据
+        const data = JSON.parse(JSON.stringify(tableData2))//这里是数据 
+        this.tableData.data = data
+        await next()
+      }
+      const middleArr = [pageloadMiddleware, confirmMiddleware, fn]//两个中间件
+      await this.runMiddlewares(payload, middleArr, 0)
+      // this.setPageLoading(true) 
+      // let curRow = this.getCurRow()
       // console.log(curRow, 'testCurRow')
       // let { url, params } = await this.util.httpServe.getPageData(this)
-      let { url, params } = {} as any
-      let otherParams = {}
+      // let { url, params } = {} as any
+      // let otherParams = {}
       // await this.getRunBefore('getTableData', params, url, otherParams)
-      let { params: newParams, url: newUrl } = otherParams as any
-      params = newParams || params
-      url = newUrl || url
-      await this.setDataPermission(params)
-      const data = tableData3
-      this.tableData.data = data as any//获取数据 
+      // let { params: newParams, url: newUrl } = otherParams as any
+      // params = newParams || params
+      // url = newUrl || url
+      // await this.setDataPermission(params)
+      // const data = tableData3
+      // this.tableData.data = data as any//获取数据 
       // const { status, msg, dtMain: rows, total, data } =
       //   let _rows = rows
       //   let _total = total
@@ -249,6 +275,14 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       }
       return item
     }))
+  }
+  async runMiddlewares(payload: any, middlewares: any, index: any) {
+    if (index < middlewares.length) {
+      const currentMiddleware = middlewares[index];
+      await currentMiddleware(payload, async () => {
+        await this.runMiddlewares(payload, middlewares, index + 1);
+      });
+    }
   }
 }
 

@@ -31,15 +31,11 @@ export const getRenderTable = async <T extends basicEntity>(entity: T) => {
     }) as any//行与列
     renderTable.onVnodeMounted = [
         (vnode: any) => {
-            // const table = vnode?.component?.devtoolsRawSetupState?.table
-            // console.log(table === entity.pageRef.vxeGrid, 'testIsTrue')
-            // entity.pageRef.vxeGrid = table
+
         }
     ]
     renderTable.onVnodeUnmounted = [
-        // (vnode: any) => {
-        //     entity.pageRef.vxeGrid = null as any
-        // } 
+
     ]
     const table = createTable(renderTable)
     entity.pageRef.vxeGrid = table//只初始化一次 

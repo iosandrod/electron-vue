@@ -3,6 +3,7 @@ import { detailEntity } from "@/schema/businessTable/detailEntity"
 import { nodeConfig, pageTreeNode } from "@/schema/businessTable/pageTree"
 import { column } from "@/schema/column"
 import { dialog } from "@/schema/dialog"
+import { entityColumn } from "@/schema/entityColumn"
 import { formitem } from "@/schema/formitem"
 import { layoutGrid } from "@/schema/layoutGrid"
 import { table } from "@/schema/table"
@@ -226,3 +227,207 @@ export type scrollConfig = {
 
 
 export type entityConfig = typeof tableinfo1
+
+
+export type confirmConfig = {
+  callback: (dialog: dialog) => Promise<void>,
+  cancelCallback: (dialog: dialog) => Promise<void>,
+  message: string,
+  height?: number,
+  width?: number
+}
+export type rowState = 'Unchanged' | 'Modified' | 'Deleted' | 'Added'
+export type detailTableObj = {
+  "keyCodeColumn": string,
+  "clsKey": string,
+  "keyCode": string,
+  "cnName": string,
+  "tableName": string,
+  "foreignKey": string,
+  "needData": boolean,
+}
+export type Print = {
+  "IbillTypeID": string,
+  "importTable": string,
+  "dataTable": string,
+  "dtMain": string,
+  "dtDetail": string,
+  "detailAddwhere": string,
+  "dtDetail2": string,
+  "detail2Addwhere": string,
+  "dtDetail3": string,
+  "detail3Addwhere": string,
+  "dtDetail4": string,
+  "detail4Addwhere": string,
+  "dtDetail5": string,
+  "detail5Addwhere": string,
+  "Type": string,
+}
+export type xTableInfo = {
+  "key": string,
+  "keyCode": string,
+  "footer": string,
+  "cnName": string,
+  "name": string,
+  "url": string,
+  "sortName": string,
+  "sortOrder": string,
+  "detailTable"?: detailTableObj[
+  ],
+  "Print": Print,
+  "template": string,
+  "paginationRow": number,
+  "tableNameAs": string
+}
+
+export type mainTableInfo = {
+  rowState: rowState,
+  table_Id: string,
+  parentId: string,
+  tableName: string,
+  tableTrueName: string,
+  tableEntity: string,
+  columnCnName: string,
+  namespace: string,
+  folderName: string,
+  dataTableType: string,
+  editorType: string,
+  orderNo: number,
+  uploadField: string,
+  uploadMaxCount: string,
+  richText: string,
+  expressField: string,
+  dbServer: string,
+  sortName: string,
+  detailCnName: string,
+  detailName: string,
+  enable: string,
+  cnName: string,
+  iBillTypeID: string,
+  cAddWhere: string,
+  detail2Name: string,
+  detail2CnName: string,
+  detail3Name: string,
+  detail3CnName: string,
+  cGetMainSql: string,
+  cMainTableAs: string,
+  cOrderBy: string,
+  sortOrder: string,
+  cKeyColumn: string,
+  cCodeColumn: string,
+  cPageType: string,
+  cClsTableName: string,
+  cClsNo: string,
+  cParentClsNo: string,
+  cClsTableCnName: string,
+  cClsKey: string,
+  cClsTitle: string,
+  tableNote: string,
+  xTableInfo: xTableInfo,
+  xExtend: Array<() => void>,
+  xVueOption: string,
+  xTreeMenuData: string,
+  cTemplate: string,
+  tableColumns: columnObj[],
+  detailTable?: mainTableInfo[]
+}
+
+
+export type columnObj = {
+  "rowState": rowState,
+  "table_Id": string,
+  "columnId": string,
+  "columnName": string,
+  "columnCnName": string,
+  "columnType": string,
+  "tableName": string,
+  "maxlength": string,
+  "isNull": string,
+  "isRequired": string,
+  "isDisplay": string,
+  "isKey": string,
+  "columnformat": string,
+  "script": string,
+  "dropNo": string,
+  "editTitle": string,
+  "isImage": string,
+  "sortable": string,
+  "columnWidth": string,
+  "searchRowNo": string,
+  "searchColNo": string,
+  "searchOrderNo": string,
+  "searchColSize": string,
+  "searchTitle": string,
+  "searchDropNo": string,
+  "searchScope": string,
+  "sMultiple": string,
+  "sBaseInfoTableName": string,
+  "sBaseInfoTableWhere": string,
+  "sBaseInfoTreeWhere": string,
+  "sBaseInfoData": string,
+  "sGetColumnNameSQL": string,
+  "sBindField": string,
+  "sOperator": string,
+  "sCustomSql": string,
+  "searchType": string,
+  "editOrderNo": string,
+  "editRowNo": string,
+  "editColNo": string,
+  "editType": string,
+  "editColSize": string,
+  "isReadDataset": string,
+  "enable": string,
+  "apiInPut": string,
+  "apiIsNull": string,
+  "apiOutPut": string,
+  "createID": string,
+  "creator": string,
+  "createDate": string,
+  "modifyID": string,
+  "modifier": string,
+  "modifyDate": string,
+  "orderNo": string,
+  "isColumnData": string,
+  "cRelateColumn": string,
+  "pagination": string,
+  "paginationNo": string,
+  "isEditable": string,
+  "isEditWrite": string,
+  "editTabId": string,
+  "editTabName": string,
+  "baseInfoTableName": string,
+  "baseInfoTableWhere": string,
+  "baseInfoTreeWhere": string,
+  "baseInfoData": string,
+  "getColumnNameSQL": string,
+  "isSummaryCol": string,
+  "cDefaultValue": string,
+  "cCheckRules": string,
+  "normalColor": string,
+  "cellStyleType": string,
+  "reportType": string,
+  "renderFun": string,
+  "align": string,
+  "cFixed": string,
+  "cSort": string,
+}
+
+export type buttonObj = {
+  "cButtonID": string,
+  "cButtonName": string,
+  "cButtonText": string,
+  "cFunName": string,
+  "cBtnCategory": string,
+  "cIcon": string,
+  "bHidden": string,
+  "bDisabled": string,
+  "bOrder": string,
+  "bImportHidden": string,
+}
+
+export type btnCategory = 'ViewGrid' | 'ViewFormGridEdit'
+
+export type tableButton = {
+  "category": btnCategory,
+  "buttons": buttonObj[]
+}
