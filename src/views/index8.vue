@@ -63,7 +63,6 @@ function btnClick1() {
   //   table.tableState = 'scan'
   // }
   //@ts-nocheck
-
   const _entity: any = instance?.$refs.entity
   const _entity1 = _entity.entity as mainEntity
   // console.log(_entity1, 'testEntity')
