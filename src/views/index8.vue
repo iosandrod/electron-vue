@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="w-full h-full overflow-hidden">
     <vxe-button @click="btnClick">button</vxe-button>
     <vxe-button @click="btnClick1">btnClick1</vxe-button>
     <vxe-button @click="btnClick2">btnClick2</vxe-button>
-    <vxe-button @click="btnClick3">button</vxe-button>
+    <vxe-button @click="btnClick3">btnClick3</vxe-button>
     <!-- <layoutGridView :pageTree="pageTree"></layoutGridView> -->
     <!-- <form-view :items="formItems" :data="formData"></form-view> -->
-    <div style="width: 100%; height: 100px;" v-if="showValue">
+    <div style="width: 100%;" v-if="showValue">
       <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
       <!-- <gantt></gantt> -->
       <!-- <component :is="com"></component> -->
@@ -22,7 +22,6 @@
 
 <script setup lang="ts">
 import { createPage, nodeConfig } from '@/schema/businessTable/pageTree'
-import layoutGridView from '@/schema/schemaComponent/layoutGridView'
 import tableView from '@/schema/schemaComponent/tableView'
 import { createTable } from '@/schema/table'
 import { StyleType, tableConfig } from '@/types/schema'
@@ -30,7 +29,6 @@ import { getCurrentInstance, h, onMounted, reactive, ref } from 'vue'
 import gantt from '@/components/gantt/GanttPlayground.vue'
 import { createMainEntity } from '@/schema/businessTable/mainEntity'
 import { getTableConfig } from '@/api/httpApi'
-import { Keyboard } from 'vxe-table'
 import { KeyboardEvent } from 'electron'
 import { _columns } from '@/schema/entityColumn'
 import { mainEntity } from '@/schema/businessTable/mainEntity'
@@ -38,7 +36,6 @@ import Mousetrap from 'mousetrap'
 import { tableData, tableData2 } from '@/api/data'
 import { tableData3 } from '@/api/data2'
 import { createDialog, confirm } from '@/schema/dialog'
-// console.log(_columns, 'testColumns')
 const entity = ref(null)
 const _entity = createMainEntity('t_SdOrder', null)
 const { proxy: instance } = getCurrentInstance()!
@@ -48,7 +45,6 @@ const { proxy: instance } = getCurrentInstance()!
 const showValue = ref(true)
 async function btnClick() {
   showValue.value = !showValue.value
-  // let data = await getTableConfig('123')
 }
 function btnClick2() {
   let _entity: any = instance?.$refs.entity
@@ -77,8 +73,6 @@ function btnClick1() {
   // }
   // _entity1.layoutConfig.isDraggable = !_entity1.layoutConfig.isDraggable
   // _entity1.layoutConfig.isResizable = !_entity1.layoutConfig.isResizable
-  // const dEntity=_entity
-  // pageTree
   const dEntity = _entity1.getDetailEntity('t_SdOrderEntry')
   dEntity.setCurrentEntityDesign(!state)
 }
@@ -165,37 +159,6 @@ function btnClick3() {
   // _dialog.open()
   // confirm({})
 }
-// const mainEntity = createMainEntity({})
-onMounted(() => {})
-const vNode = h(
-  'div',
-  {
-    ref: 'testDiv',
-    style: { width: '100px', height: '100px', background: 'red' } as StyleType,
-    class: ['h-10', 'w-10', 'bg-red'],
-    onVnodeMounted: [
-      (vNode) => {
-        // const { proxy: instance } = getCurrentInstance()!
-        // const instance = getCurrentInstance()!
-        // console.log(instance, 'testInstance')
-        console.log(vNode, 'testVNode')
-        // const $refs = instance?.$refs as any
-        // const testDiv = $refs.testDiv
-        // console.log(testDiv)
-        // console.log('mounted')
-      },
-    ],
-  },
-  [
-    h(tableView, {
-      ...nodeArr[0].nodeData,
-      onVnodeMounted: (vNode: any) => {
-        console.log('testTableVNode', vNode)
-      },
-    }),
-  ],
-)
-// console.log(mainEntity)
 </script>
 
 <style scoped></style>

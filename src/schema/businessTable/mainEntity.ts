@@ -12,6 +12,7 @@ export class mainEntity extends basicEntity {
 
     super(schema, system);//外部的数据应该是静态数据
     this.entityName = entityName
+    this.buttonCategory = 'ViewGrid'
   }
   async initEntity() {
     await super.initEntity({ show: false })

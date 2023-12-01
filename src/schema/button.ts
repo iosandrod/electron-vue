@@ -4,13 +4,13 @@ import { VxeButtonProps, VxeButton, VxeButtonDefines, VxeButtonSlots } from "vxe
 import { h, reactive, useSlots } from "vue";
 import * as buttonFn from './buttonFn'
 import { systemInstance } from "./system";
-export class button extends base {
+export class button extends base<VxeButtonProps> {
     buttonConfig: concatAny<VxeButtonProps> = {}
     buttonName = 'buttonName'
     renderButton: VxeButtonProps & { slots?: VxeButtonProps } = {
     }
-    constructor(schema: any, context: any, system: any) {
-        super(system, schema, context)
+    constructor(schema: any, system: any) {
+        super(system, schema)
     }
     async initButton() {
         this.initRenderButton()

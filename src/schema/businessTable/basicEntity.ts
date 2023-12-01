@@ -8,7 +8,7 @@ import { tableMethod } from "../tableMethod"
 import { table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory } from "@/types/schema"
 import { entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -20,6 +20,7 @@ import { withDirectives } from 'vue'
 import { pageloadMiddleware } from "@/middleware/pageloadMiddleware"
 import { confirmMiddleware } from "@/middleware/confirmMiddleware"
 import { detailEntity } from "./detailEntity"
+import { createEntityButton } from "../entityButton"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   sub = new Subject()//动作发射器
   detailTable?: detailEntity[] = []
@@ -48,15 +49,16 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   detailEntityConfig = {
     curDetailKey: ''
   }
+  buttonCategory: btnCategory = ''
   entityConfig?: any
-  pageConfig: any = {}
+  pageConfig: any = {}//页面配置
   tableInfo?: mainTableInfo = {} as any//远程获取的数据
   renderLayout: layoutConfig = {}//渲染节点数据
   renderLayoutItems: Array<layoutItem> = []
   renderTable: any = {}//渲染表格的数据
   renderEditForm: any = {}//渲染编辑表格
   renderSearchForm: any = {}//渲染查询表格
-  renderButtonGroup: any = {}//初始化按钮  
+  renderButtonGroup: any = []//初始化按钮   
   renderDetailTable: any = {}//渲染子表配置
   renderEditTable: any = {}//渲染编辑表格配置 
   nodeArr: [] = []
@@ -294,6 +296,30 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         }
       });
     }
+  }
+  initRenderButtonGroup() {
+    // const renderButtonGroup = this.renderButtonGroup//渲染当前按钮组
+    const tableInfo = this.tableInfo
+    const buttons = tableInfo?.tableButtons!//
+    const buttonCategory = this.buttonCategory
+    const entityName = this.entityName
+    let _button = buttons?.find((btn) => {
+      const category = btn.category
+      const tableName = btn.tableName
+      if (category == buttonCategory && entityName == tableName) {
+        return true
+      }
+    })
+    _button = _button || buttons?.find((btn) => {
+      const category = btn.category
+      return category == buttonCategory
+    })
+    const targetButtons = _button?.buttons || []//获取到这个东西
+    this.renderButtonGroup = targetButtons?.map(btn => {
+      const _btn = createEntityButton(btn)
+      return _btn
+    })
+    return { entity: this, renderButtons: this.renderButtonGroup }
   }
   async initRenderDetailEntity() {
     return await entityRenderFn.getRenderDetailEntity(this as any)

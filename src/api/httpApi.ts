@@ -11,6 +11,11 @@ import { formatTableInfo } from "@/utils/utils";
 export const getTableInfo = async (entity?: basicEntity) => {
     const itemArr: layoutItem = [{
         x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            renderComName: "buttonGroup",//组件
+            renderFunName: 'initRenderButtonGroup',//数据初始化函数
+        } as layoutItemConfig,
+    }, {
+        x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
             renderComName: "tableView",//组件
             renderFunName: 'initRenderTable',//数据初始化函数
         } as layoutItemConfig,

@@ -331,7 +331,8 @@ export type mainTableInfo = {
   xTreeMenuData: string,
   cTemplate: string,
   tableColumns: columnObj[],
-  detailTable?: mainTableInfo[]
+  detailTable?: mainTableInfo[],
+  tableButtons?: tableButton[]
 }
 
 
@@ -414,22 +415,36 @@ export type columnObj = {
   "cSort": string,
 }
 
+
+
+export type btnCategory = 'ViewGrid' | 'ViewFormGridEdit' | 'ViewDetailTable' | ''
+
+
 export type buttonObj = {
   "cButtonID": string,
   "cButtonName": string,
   "cButtonText": string,
+  "bShowText": string,
+  "cHelpInfo": string,
+  "bVisible": string,
+  "cPicture": string,
+  "iDefKeyType": string,
+  "iDefKey1": string,
+  "iDefKey2": string,
   "cFunName": string,
   "cBtnCategory": string,
   "cIcon": string,
   "bHidden": string,
   "bDisabled": string,
+  "_X_ROW_KEY"
+  "checkboxField:string,": string,
   "bOrder": string,
-  "bImportHidden": string,
 }
-
-export type btnCategory = 'ViewGrid' | 'ViewFormGridEdit'
 
 export type tableButton = {
   "category": btnCategory,
-  "buttons": buttonObj[]
+  "buttons": buttonObj[],
+  "tableName": string
 }
+
+export type tableButtons = Array<tableButton>

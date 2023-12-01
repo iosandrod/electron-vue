@@ -146,6 +146,7 @@ export const getOptionsRowConfig = (table: table) => {
         return {
             height: rowHeight,
             isHover: true,
+            useKey: true
         }
     })
 }
@@ -246,6 +247,7 @@ export const initGridOptions = (table: table) => {
     gridOptions.checkboxConfig = getOptionsCheckboxConfig(table) as any
     gridOptions.columnConfig = getOptionsColumnConfig(table) as any
     gridOptions.showOverflow = 'ellipsis'
+    gridOptions.showHeaderOverflow = 'ellipsis'
     gridOptions.height = getOptionsHeight(table) as any
     gridOptions.minHeight = '150px'
     gridOptions.showFooter = getOptionsShowFooter(table) as any

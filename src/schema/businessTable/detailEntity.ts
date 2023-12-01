@@ -15,6 +15,7 @@ export class detailEntity extends basicEntity {
     this.entityType = 'detail'//子表类型
     this.entityName = entityName
     this.tableInfo = schema
+    this.buttonCategory = ''
   }
 
   async initEntity() {
