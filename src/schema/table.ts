@@ -167,15 +167,6 @@ export class table extends base<tableSchema> implements tableMethod {
       this.tableState = editType
     }
   }
-  async initColumnFilter() {
-    tableFn.initColumnFilter(this)
-  }
-  async initBodyMenuDialog() {
-    tableFn.initBodyMenuDialog(this)
-  }
-  async initHeaderMenuDialog() {
-    tableFn.initHeaderMenuDialog(this)
-  }
   async scrollToPosition(left: any, top: any) {
     try {
       const vxeGrid = this.pageRef.vxeGrid as VxeGridInstance

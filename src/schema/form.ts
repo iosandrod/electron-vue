@@ -1,4 +1,4 @@
-import { h, reactive, resolveComponent, watchEffect } from "vue"
+import { computed, h, reactive, resolveComponent, vShow, watchEffect, withDirectives } from "vue"
 import { base } from "./base"
 import { system, systemInstance } from "./system"
 import { VxeFormItem, VxeFormProps } from "vxe-table"
@@ -47,22 +47,15 @@ export class form extends base<formConfig> {
     renderForm.data = formFn.getFormData(this) as any
   }
   async initComponent(): Promise<void> {
+    const show = computed(() => {
+      return this.displayState == 'show'
+    })
     const vNode = () => {
       const formComponent = resolveComponent('vxe-form')
       const formView = h(formComponent, this.renderForm,
-        //   () => {
-        //   return this.formConfig.items.map((v: formitem) => {
-        //     return h(VxeFormItem, { ...v.renderItem }, {
-        //       default: (params: any) => {
-        //         let _default = v.renderItem.slots?.default as Function
-        //         return _default(params)
-        //       }
-        //     })
-        //   })
-        // } 
       )
       const style = styleBuilder.setFull().getStyle()
-      return h('div', { style }, [formView])
+      return withDirectives(h('div', { style }, [formView]), [[vShow, show.value]])
     }
     this.component = vNode
   }

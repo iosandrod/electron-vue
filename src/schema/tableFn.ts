@@ -1,4 +1,4 @@
-import { computed, getCurrentInstance, h, isReactive, nextTick, ref, resolveComponent, watch, watchEffect, withDirectives } from "vue";
+import { computed, getCurrentInstance, h, isReactive, nextTick, ref, resolveComponent, vShow, watch, watchEffect, withDirectives } from "vue";
 import { table } from "./table";
 import { StyleType, position, tableSchema } from "@/types/schema";
 import { column, createColumn } from "./column";
@@ -265,8 +265,10 @@ export const getOptionsColumnConfig = (table: table) => {
 }
 export const initComponent = (table: table) => {
     const _this = table
+    const show = computed(() => {
+        return table.displayState == 'show'
+    })
     const _vNode = () => {
-        // const com = ref(null)
         const options = table.gridOptions
         const _class = ['h-full', 'w-full']
         _class.push('grid-border-none')
@@ -274,7 +276,6 @@ export const initComponent = (table: table) => {
             {
                 tabIndex: '0',
                 style: getTableStyle(table).value, class: _class,
-                ref: 'div'
             },
             [[{
                 mounted(div) {
@@ -347,7 +348,8 @@ export const initComponent = (table: table) => {
         const bodyMenu = table.tableConfig.showBodyMenuDialog == true ? h(tableBodyMenu, { table: table }) : null
         const headerMenu = table.tableConfig.showHeaderMenuDialog == true ? h(tableHeaderMenu, { table: table }) : null
         const inSizeGrid = outSizeDiv([vxeGridCom, bodyMenu, headerMenu])
-        return inSizeGrid
+        const _inSizeGrid = withDirectives(inSizeGrid, [[vShow, show.value]])
+        return _inSizeGrid
     }
     table.component = _vNode
 }
@@ -355,10 +357,6 @@ export const initComponent = (table: table) => {
 
 export const initTableConfig = (table: table) => {
     const schema: tableSchema = table.schema as any
-    // Object.entries(schema).forEach(([key, value]) => {
-    //     table.tableConfig[key] = value
-    //     table.tableData.data = schema.data
-    // })
     if (schema != null && Object.keys(schema).length > 0) {
         for (const key of Object.keys(schema)) {
             let tableConfig: any = table.tableConfig
@@ -391,9 +389,4 @@ export const initTableConfig = (table: table) => {
 }
 
 
-export const initBodyMenuDialog = (table: table) => { }
-
-export const initHeaderMenuDialog = (table: table) => { }
-
-export const initColumnFilter = (table: table) => { }
 
