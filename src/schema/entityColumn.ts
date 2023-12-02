@@ -229,6 +229,8 @@ const columnObj = [
     new Translate('sBindField', 'sBindField')
 ]
 export class entityColumn {
+    editType: string = ''
+    field: string = ''
     initColumn(column: any) {
         const _this: any = this
         let _column = column

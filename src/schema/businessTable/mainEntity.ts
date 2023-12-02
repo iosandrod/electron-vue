@@ -28,10 +28,14 @@ export class mainEntity extends basicEntity {
     const detailTable = tableInfo?.detailTable! || []
     const detailEntity = await Promise.all(detailTable.map(async (table) => {
       const dTable = await createDetailEntity(table.tableName, table)//表名
+      dTable.mainEntity = this as any
       return dTable
     }))
     this.detailTable = detailEntity as any//业务逻辑类型的子组件
     this.detailEntityConfig.curDetailKey = this.detailTable?.[0]?.tableInfo?.tableName || ''
+  }
+  getMainEntity() {
+    return this
   }
 }
 

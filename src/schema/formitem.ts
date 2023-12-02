@@ -32,6 +32,7 @@ export class formitem extends baseEdit<any> {
         },
         options: [],
         layout: undefined,
+        visible: true
     }
     baseInfoDialogConfig = {
         props: {

@@ -54,7 +54,6 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
     let columnConfig = this.columnConfig
     let field = columnConfig.field
     let type = columnConfig.type!
-
   }
 }
 const formats = { datetime: 'yyyy-MM-dd HH:mm:ss', date: 'yyyy-MM-dd', time: 'HH:mm:ss' };

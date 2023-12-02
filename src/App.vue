@@ -7,7 +7,8 @@
 import { onMounted, ref } from 'vue'
 import { systemInstance } from './schema/system'
 const show = ref(false)
-onMounted(() => {
+onMounted(async () => {
+  await systemInstance.systemInit()
   show.value = true
 })
 </script>

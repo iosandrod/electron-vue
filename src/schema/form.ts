@@ -8,8 +8,7 @@ import { styleBuilder } from "@/utils/utils"
 import { createFormItem, formitem } from "./formitem"
 export class form extends base<formConfig> {
   formConfig: formConfig = {
-    items: [],
-
+    items: [],//编辑项
   }
   renderForm: VxeFormProps = {
   }

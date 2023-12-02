@@ -46,7 +46,7 @@ export const getFormitemSpan = (formitem: formitem) => {
 }
 export const getFormItemVisible = (formitem: formitem) => {
     return computed(() => {
-        return true
+        return formitem.itemConfig.visible
     })
 }
 

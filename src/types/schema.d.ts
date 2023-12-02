@@ -143,14 +143,15 @@ export type position = {
 export type itemConfig = VxeFormItemProps & {
   isPulldownFocus?: boolean
   type?: string,
-  isFocus: boolean,
+  isFocus?: boolean,
   baseInfoTable?: {
     tableData: Array<any>,
     tableName: string,
     columns?: Array<any>//表格的列数据
   },
   options?: [],
-  layout?: layoutItem
+  layout?: layoutItem,
+  disable?: boolean
 }
 
 export type formConfig = VxeFormProps & {

@@ -92,7 +92,7 @@ export class table extends base<tableSchema> implements tableMethod {
     // headerMenuDialog: undefined,
     // bodyMenuDialog: undefined
   }
-  dialogConfig = createDialogConfig(this)
+  // dialogConfig = createDialogConfig(this)  
   tableData: tableData = {
     showData: [],
     data: [],
@@ -105,6 +105,12 @@ export class table extends base<tableSchema> implements tableMethod {
   constructor(system: system, schema?: tableSchema, parent?: any) {
     //父级节点
     super(system, schema)
+  }
+  getTableKey() {
+    throw new Error("Method not implemented.")
+  }
+  getTableKeyCode() {
+    throw new Error("Method not implemented.")
   }
   getCurRow() {
     return this.tableData.curRow

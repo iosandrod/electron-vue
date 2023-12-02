@@ -1,4 +1,4 @@
-import { computed, defineComponent, h, onMounted, reactive, render, resolveComponent, withDirectives } from 'vue'
+import { computed, defineComponent, h, onMounted, reactive, ref, render, resolveComponent, vShow, withDirectives } from 'vue'
 import { createMainEntity } from '../businessTable/mainEntity'
 import { StyleType } from '@/types/schema'
 
@@ -16,7 +16,7 @@ export default defineComponent({
         }
         const pageShow = computed(() => {
             const state = entity.displayState
-            return state == 'show'
+            return state !== 'destroy'
         })
         const component = computed(() => {
             const show = pageShow.value
@@ -24,13 +24,17 @@ export default defineComponent({
                 return () => h('div')
             } else {
                 return entity.component
-                // return vNode
             }
         })
-        return { entity: entity, com: component }
+        // const testShow = ref(false)
+        // setInterval(() => {
+        //     testShow.value = !testShow.value
+        // }, 2000)
+        return { entity: entity, com: component, }
     },
     render() {
         const com = this.com!
         return com()
+        // return withDirectives(h('div', { style: { height: '200px', width: '200px', background: "red" } as StyleType }), [[vShow, this.testShow]])
     }
 })

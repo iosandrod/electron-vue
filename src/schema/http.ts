@@ -1,6 +1,4 @@
-import router from '@/plugins/router'
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
-import { ElLoading, ElMessage } from 'element-plus'
 interface IOptions {
   loading?: boolean
   message?: boolean
@@ -70,30 +68,6 @@ export class Axios {
         //   response: { status, data },
         // } = error
         // const message = data.error ?? data.message
-
-        switch (status) {
-          // case HttpCodeEnum.UNAUTHORIZED:
-          //   storage.remove(CacheEnum.TOKEN_NAME)
-          //   router.push({ name: RouteEnum.LOGIN })
-          //   break
-          // case HttpCodeEnum.UNPROCESSABLE_ENTITY:
-          //   useErrorStore().setErrors(error.response.data.errors ?? error.response.data)
-          //   break
-          // case HttpCodeEnum.FORBIDDEN:
-          //   ElMessage({ type: 'error', message: message ?? '没有操作权限' })
-          //   break
-          // case HttpCodeEnum.NOT_FOUND:
-          //   ElMessage.error('请求资源不存在')
-          //   router.push({ name: RouteEnum.HOME })
-          //   break
-          // case HttpCodeEnum.TOO_MANY_REQUESTS:
-          //   ElMessage({ type: 'error', message: '请求过于频繁，请稍候再试' })
-          //   break
-          // default:
-          //   if (message) {
-          //     ElMessage({ type: 'error', message: message ?? '服务器错误' })
-          //   }
-        }
         return Promise.reject(error)
       },
     )

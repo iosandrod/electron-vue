@@ -22,8 +22,11 @@ export class button extends base<VxeButtonProps> {
     }
     async initComponent() {
         const vNode = () => {
-            // const slots = useSlots()
+            // const slots = useSlots()  
             const renderButton = this.renderButton
+            if (this.displayState == 'destroy') {
+                return h('div')
+            }
             const slots = renderButton.slots! as any
             return h(VxeButton, renderButton, {
                 default: slots.default,
@@ -35,8 +38,8 @@ export class button extends base<VxeButtonProps> {
     }
 }
 
-export const createButton = (schema: concatAny<VxeButtonProps>, context: any) => {
-    const _button = reactive(new button(schema, context, systemInstance))
+export const createButton = (schema: concatAny<VxeButtonProps>) => {
+    const _button = reactive(new button(schema, systemInstance))
     _button.initButton()
     return _button
 }

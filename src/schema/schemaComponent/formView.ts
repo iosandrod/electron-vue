@@ -5,13 +5,15 @@ import { VxeTableProps, VxeGridProps, VxeGrid, Grid, VxeFormProps } from 'vxe-ta
 import { createForm } from "../form"
 import { createDesignForm } from '../designForm'
 export default defineComponent({
-  props: ['items', 'data', 'design'] as Array<(keyof VxeFormProps) | 'design'>,
+  props: ['items', 'data', 'design', 'formInstance'] as Array<(keyof VxeFormProps) | 'design' | 'formInstance'>,
   setup(props, context) {
     let form: any = null
-    if (props.design == true) {
-      form = createDesignForm(props)
+    if (props.formInstance != null) {
+      form = props.formInstance
+    } else if (props.design == true) {
+      form = form || createDesignForm(props)
     } else {
-      form = createForm(props)
+      form = form || createForm(props)
     }
     defineExpose({
       form

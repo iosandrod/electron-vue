@@ -5,10 +5,10 @@ import { pageTree } from "./pageTree"
 import layoutGridView from "../schemaComponent/layoutGridView"
 import { http } from "../http"
 import { tableMethod } from "../tableMethod"
-import { table } from "../table"
+import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig } from "@/types/schema"
 import { entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -16,11 +16,12 @@ import { getRenderTable } from "./basicEntityFn"
 import * as entityRenderFn from './basicEntityFn'
 import { mainEntity } from "./mainEntity"
 import { tableData3 } from "@/api/data2"
-import { withDirectives } from 'vue'
+import { withDirectives, vShow } from 'vue'
 import { pageloadMiddleware } from "@/middleware/pageloadMiddleware"
 import { confirmMiddleware } from "@/middleware/confirmMiddleware"
 import { detailEntity } from "./detailEntity"
 import { createEntityButton } from "../entityButton"
+import { createForm, form } from "../form"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   sub = new Subject()//动作发射器
   detailTable?: detailEntity[] = []
@@ -35,13 +36,16 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
 
     //
   }
+  mainEntity?: mainEntity
   originTableInfo?: any
   schema?: Array<layoutItem> = []
   entityName = ''
   pageRef: {
-    vxeGrid: table
+    vxeGrid?: table,
+    vxeForm?: form,
   } = {
-      vxeGrid: {} as table
+      vxeGrid: undefined,
+      vxeForm: undefined
     }
   tableConfig: any = {//表格配置
     //表格配置
@@ -56,7 +60,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   renderLayout: layoutConfig = {}//渲染节点数据
   renderLayoutItems: Array<layoutItem> = []
   renderTable: any = {}//渲染表格的数据
-  renderEditForm: any = {}//渲染编辑表格
+  renderEditForm: formConfig = {} as any //渲染编辑表格 
+  renderEditEntity: any = {}
   renderSearchForm: any = {}//渲染查询表格
   renderButtonGroup: any = []//初始化按钮   
   renderDetailTable: any = {}//渲染子表配置
@@ -98,7 +103,11 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       const layoutItemCom = resolveComponent('grid-item')
       const renderLayout = this.renderLayout
       const schema = this.entityConfig!
-      return h(layoutCom, { ...renderLayout, style: { height: '100%' } as StyleType }, () => schema!.map((item: any) => {
+      const _this = this
+      const show = computed(() => {
+        return _this.displayState == 'show'
+      })
+      return withDirectives(h(layoutCom, { ...renderLayout, style: { height: '100%' } as StyleType, }, () => schema!.map((item: any) => {
         return h(layoutItemCom, item,
           () => {
             let renderCom: any = null
@@ -120,7 +129,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
             return defaultCom
           }
         )
-      }))
+      })), [[vShow, show.value]])
     }
     this.component = vNode as any
   }
@@ -138,7 +147,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         const url = payload.url
         const entity = payload.entity
         // const data=await http.post()//这里模拟获取数据
-        const data = JSON.parse(JSON.stringify(tableData2))//这里是数据  
+        const data = JSON.parse(JSON.stringify(tableData3))//这里是数据  
         this.tableData.data = data
         await next()
       }
@@ -215,10 +224,29 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   //添加一个节点
   addItem() { }
   async initRenderTable() {
-    return await entityRenderFn.getRenderTable(this)
+    // return await entityRenderFn.getRenderTable(this)
+    const entity = this
+    const renderTable = entity.renderTable//这个是渲染表格的数据
+    renderTable.columns = computed(() => {
+      const columns: any = entity.tableInfo!.tableColumns
+      const _columns = columns.map((col: any) => {
+        let _col = new entityColumn()
+        _col.initColumn(col)
+        return _col
+      })
+      return _columns
+      // return []
+    }) as any//处理表格 
+    renderTable.data = computed(() => {
+      return entity.tableData.data
+    }) as any//行与列
+    const table = createTable(renderTable)
+    entity.pageRef.vxeGrid = table//只初始化一次   
+    return { tableInstance: table }
   }
   async initEntity(initConfig?: any): Promise<void> {//
     this.displayState = 'destroy'//显示状态
+    await this.initTableInfo()
     await this.initEntityConfig()//这个函数才是最重要的
     await this.initRenderLayout()//初始化layout的需要制定
     this.initComponent()//初始化普通的component
@@ -226,6 +254,40 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     if (show != false) {
       this.displayState = 'show'
     }
+  }
+  async initRenderEditForm() {
+    const tableInfo = this.tableInfo
+    const renderEditForm = this.renderEditForm
+    renderEditForm.data = computed(() => {
+      return {}
+    }) as any
+    renderEditForm.items = computed(() => {
+      const tableColumns = tableInfo?.tableColumns.filter(col => Boolean(col.editType) != false).map((col: any) => {
+        const _col = new entityColumn()
+        _col.initColumn(col)
+        return _col
+      })
+      const tableEditItems = tableColumns?.map(col => {
+        const disable = false//编辑的东西
+        const config: formItemConfig = {
+          type: col.editType,
+          disable: disable,
+          span: 6,
+          field: col.field,
+          title: '标题'
+        }
+        return config
+      })
+      return tableEditItems
+    }) as any
+    const vxeForm = createForm(renderEditForm)
+    this.pageRef.vxeForm = vxeForm
+    return { formInstance: vxeForm }
+  }
+  async initTableInfo() {
+    const tableInfo = await getTableConfig(this.entityName)//相当于表名吧,这个函数具有副作用
+    // entity.originTableInfo = JSON.parse(JSON.stringify(tableInfo))//原始的表格数据 
+    this.tableInfo = tableInfo
   }
   async initRenderLayout() {
     const renderLayout = this.renderLayout
@@ -297,10 +359,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       });
     }
   }
+  getMainTable() {
+    return this.mainEntity || this
+  }
   initRenderButtonGroup() {
-    // const renderButtonGroup = this.renderButtonGroup//渲染当前按钮组
-    const tableInfo = this.tableInfo
-    const buttons = tableInfo?.tableButtons!//
+    const entity = this.getMainTable()
+    const tableInfo = entity.tableInfo
+    const buttons = tableInfo?.tableButtons! || []//
     const buttonCategory = this.buttonCategory
     const entityName = this.entityName
     let _button = buttons?.find((btn) => {
@@ -316,10 +381,10 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     })
     const targetButtons = _button?.buttons || []//获取到这个东西
     this.renderButtonGroup = targetButtons?.map(btn => {
-      const _btn = createEntityButton(btn)
+      const _btn = createEntityButton(btn, this)
       return _btn
     })
-    return { entity: this, renderButtons: this.renderButtonGroup }
+    return { entity: this, buttons: this.renderButtonGroup }
   }
   async initRenderDetailEntity() {
     return await entityRenderFn.getRenderDetailEntity(this as any)
@@ -330,6 +395,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       return table.entityName == entityName
     })
     return targetTable!
+  }
+  initRenderEditEntity() {
+    //初始化编辑的entity
   }
   setCurrentEntityDesign(status: boolean) {
     this.layoutConfig.isDraggable = Boolean(status)

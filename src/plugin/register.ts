@@ -6,6 +6,7 @@ import selectView from '@/schema/editComponent/selectView'
 import layoutGridView from '@/schema/schemaComponent/layoutGridView'
 import entityView from '@/schema/schemaComponent/entityView'
 import detailEntityView from '@/schema/schemaComponent/detailEntityView'
+import buttonGroupView from '@/schema/schemaComponent/buttonGroupView'
 export default {
     install(app: App) {
         app.component('table-view', tableView)
@@ -24,4 +25,5 @@ export const comVetor = {
     selectView,
     layoutGridView,
     detailEntityView: detailEntityView,
+    buttonGroupView: buttonGroupView
 }

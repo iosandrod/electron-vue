@@ -1,10 +1,5 @@
 <template>
-  <div>
-    <!-- <vxe-button @click="buttonClick">button</vxe-button>
-    <template v-if="modalValue">
-      <form-view :items="formItems" :data="formData"></form-view>
-    </template> -->
-  </div>
+  <div></div>
 </template>
 
 <script setup lang="ts">

@@ -11,7 +11,7 @@ import { formatTableInfo } from "@/utils/utils";
 export const getTableInfo = async (entity?: basicEntity) => {
     const itemArr: layoutItem = [{
         x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-            renderComName: "buttonGroup",//组件
+            renderComName: "buttonGroupView",//组件 
             renderFunName: 'initRenderButtonGroup',//数据初始化函数
         } as layoutItemConfig,
     }, {
@@ -31,17 +31,32 @@ export const getTableInfo = async (entity?: basicEntity) => {
 
 
 export const getEntityConfig = async (entity?: basicEntity) => {
-    const itemArr: layoutItem = [{
-        x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-            renderComName: "tableView",//组件
-            renderFunName: 'initRenderTable',//数据初始化函数
-        } as layoutItemConfig,
-    }, {
-        x: 0, y: 10, h: 20, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-            renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
-            renderFunName: "initRenderDetailEntity",
-        } as layoutItemConfig
-    },]
+    const itemArr: layoutItem = [
+        {
+            x: 0, y: 0, h: 3, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "buttonGroupView",//组件
+                renderFunName: 'initRenderButtonGroup',//数据初始化函数
+            } as layoutItemConfig,
+        },
+        {
+            x: 0, y: 3, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "formView",//组件
+                renderFunName: 'initRenderEditForm',//数据初始化函数 初始化编辑的表单的
+            } as layoutItemConfig,
+        },
+        {
+            x: 0, y: 10, h: 5, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "tableView",//组件
+                renderFunName: 'initRenderTable',//数据初始化函数
+            } as layoutItemConfig,
+        },
+        {
+            x: 0, y: 15, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
+                renderFunName: "initRenderDetailEntity",
+            } as layoutItemConfig
+        },
+    ]
     const _itemArr = JSON.parse(JSON.stringify(itemArr))
     if (entity?.entityType == 'detail') {
         _itemArr.pop()
@@ -85,7 +100,9 @@ export const getTableConfig = async (tableName?: string, origin = false) => {//�
             const xTableInfo = _info.xTableInfo//
             const detailTable = xTableInfo?.detailTable || []
             const _detailTable = await Promise.all(detailTable?.map(async (table) => {
-                return await getTableConfig(table.tableName)
+                let _config = await getTableConfig(table.tableName)
+                _config.tableButtons = JSON.parse(JSON.stringify(_info.tableButtons))
+                return _config
             }))//子表配置
             _info.detailTable = _detailTable
             return _info

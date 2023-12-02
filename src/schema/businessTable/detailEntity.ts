@@ -9,7 +9,7 @@ export class detailEntity extends basicEntity {
   detailTable: detailEntity[] = []
   renderDetailTab: TabPaneProps = {}
   //页面树
-  mainEntity?: mainEntity
+  // mainEntity?: mainEntity
   constructor(entityName: string, schema: any, system: any) {//schema 是entity的数据
     super(schema, system);//外部的数据应该是静态数据
     this.entityType = 'detail'//子表类型

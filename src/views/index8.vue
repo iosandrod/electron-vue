@@ -1,11 +1,14 @@
 <template>
-  <div class="w-full h-full overflow-hidden">
+  <div class="w-full h-full overflow-auto">
     <vxe-button @click="btnClick">button</vxe-button>
     <vxe-button @click="btnClick1">btnClick1</vxe-button>
     <vxe-button @click="btnClick2">btnClick2</vxe-button>
     <vxe-button @click="btnClick3">btnClick3</vxe-button>
+    <vxe-button @click="btnClick4">btnClick4</vxe-button>
     <!-- <layoutGridView :pageTree="pageTree"></layoutGridView> -->
     <!-- <form-view :items="formItems" :data="formData"></form-view> -->
+    <!-- <div class="w-10 h-10 bg-red-700">123</div> -->
+    <!-- <component :is="vNode"></component> -->
     <div style="width: 100%;" v-if="showValue">
       <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
       <!-- <gantt></gantt> -->
@@ -25,7 +28,15 @@ import { createPage, nodeConfig } from '@/schema/businessTable/pageTree'
 import tableView from '@/schema/schemaComponent/tableView'
 import { createTable } from '@/schema/table'
 import { StyleType, tableConfig } from '@/types/schema'
-import { getCurrentInstance, h, onMounted, reactive, ref } from 'vue'
+import {
+  getCurrentInstance,
+  h,
+  onMounted,
+  reactive,
+  ref,
+  vShow,
+  withDirectives,
+} from 'vue'
 import gantt from '@/components/gantt/GanttPlayground.vue'
 import { createMainEntity } from '@/schema/businessTable/mainEntity'
 import { getTableConfig } from '@/api/httpApi'
@@ -43,8 +54,32 @@ const { proxy: instance } = getCurrentInstance()!
 //   console.log(instance.$refs.tableView1, 'testTableDiv')
 // })
 const showValue = ref(true)
+const vNode = withDirectives(
+  h('div', { class: ['h-10 w-10 bg-red-700'] }, ['123']),
+  // [[vShow, showValue]],
+  [
+    [
+      {
+        mounted(div, node) {
+          console.log(div, node)
+        },
+      },
+    ],
+  ],
+)
+// const vNode = h('div', {
+//   // 通过directives属性设置v-show指令
+//   class: ['h-10 w-10 bg-red-700'],
+//   directives: [
+//     {
+//       name: 'v-show',
+//       value: showValue.value,
+//     },
+//   ],
+// })
 async function btnClick() {
   showValue.value = !showValue.value
+  console.log(showValue.value)
 }
 function btnClick2() {
   let _entity: any = instance?.$refs.entity
@@ -59,8 +94,6 @@ function btnClick1() {
   //   table.tableState = 'scan'
   // }
   //@ts-nocheck
-  const _entity: any = instance?.$refs.entity
-  const _entity1 = _entity.entity as mainEntity
   // console.log(_entity1, 'testEntity')
   // console.log(_entity)
   // _entity1.layoutConfig.isDraggable = !_entity1.layoutConfig.isDraggable
@@ -71,10 +104,31 @@ function btnClick1() {
   // } else {
   //   _entity1.pageRef.vxeGrid.setTableEdit('scan')
   // }
-  // _entity1.layoutConfig.isDraggable = !_entity1.layoutConfig.isDraggable
-  // _entity1.layoutConfig.isResizable = !_entity1.layoutConfig.isResizable
-  const dEntity = _entity1.getDetailEntity('t_SdOrderEntry')
-  dEntity.setCurrentEntityDesign(!state)
+  // _entity1.tableInfo?.tableColumns.forEach((col) => {
+  //   col.editType = 'string'
+  // })
+  // _entity.tableInfo.tableColumns = _entity.tableInfo?.tableColumns.slice(0, 4)
+  // console.log(_entity1.tableInfo?.tableColumns, 'testColumns')
+  const _entity: any = instance?.$refs.entity
+  const _entity1 = _entity.entity as mainEntity
+  _entity1.layoutConfig.isDraggable = !_entity1.layoutConfig.isDraggable
+  _entity1.layoutConfig.isResizable = !_entity1.layoutConfig.isResizable
+  // const dEntity = _entity1.getDetailEntity('t_SdOrderEntry')
+  // dEntity.setCurrentEntityDesign(!state)
+}
+function btnClick4() {
+  const _entity: any = instance?.$refs.entity
+  const _entity1 = _entity.entity as mainEntity
+  if (_entity1.displayState == 'show') {
+    _entity1.displayState = 'hidden'
+  } else {
+    _entity1.displayState = 'show'
+  }
+  console.log(_entity1.displayState)
+  // _entity1.layoutConfig.isDraggable = false
+  // _entity1.layoutConfig.isResizable = false
+  // const dEntity = _entity1.getDetailEntity('t_SdOrderEntry')
+  // dEntity.setCurrentEntityDesign(!state)
 }
 Mousetrap.bind('ctrl+left', function () {
   console.log('ctrl a')
