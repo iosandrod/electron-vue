@@ -15,11 +15,11 @@ export default defineComponent({
     } else {
       form = form || createForm(props)
     }
-    defineExpose({
-      form
-    })
-    return form.component
+    return { form }
   },
+  render() {
+    return this.form.component()
+  }
 })
 
 

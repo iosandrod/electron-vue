@@ -5,6 +5,7 @@ import vue from '@vitejs/plugin-vue'
 import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 import { notBundle } from 'vite-plugin-electron/plugin'
+import AutoImport from 'unplugin-auto-import/vite'
 import pkg from './package.json'
 import { resolve } from 'path'
 
@@ -25,6 +26,15 @@ export default defineConfig(({ command }) => {
       }
     },
     plugins: [
+      AutoImport(
+        {
+          imports: [
+            'vue',
+            'vue-router',
+            'pinia'
+          ]
+        }
+      ),
       vue(),
       quasar({
         sassVariables: 'src/quasar-variables.sass'

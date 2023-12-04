@@ -54,19 +54,6 @@ const { proxy: instance } = getCurrentInstance()!
 //   console.log(instance.$refs.tableView1, 'testTableDiv')
 // })
 const showValue = ref(true)
-const vNode = withDirectives(
-  h('div', { class: ['h-10 w-10 bg-red-700'] }, ['123']),
-  // [[vShow, showValue]],
-  [
-    [
-      {
-        mounted(div, node) {
-          console.log(div, node)
-        },
-      },
-    ],
-  ],
-)
 // const vNode = h('div', {
 //   // 通过directives属性设置v-show指令
 //   class: ['h-10 w-10 bg-red-700'],
@@ -119,12 +106,16 @@ function btnClick1() {
 function btnClick4() {
   const _entity: any = instance?.$refs.entity
   const _entity1 = _entity.entity as mainEntity
-  if (_entity1.displayState == 'show') {
-    _entity1.displayState = 'hidden'
+  const vxeGrid = _entity1.pageRef.vxeGrid!
+  if (vxeGrid.displayState == 'show') {
+    // if (_entity1.displayState == 'show') {
+    // _entity1.displayState = 'hidden'
+    vxeGrid.displayState = 'destroy'
   } else {
-    _entity1.displayState = 'show'
+    vxeGrid.displayState = 'show'
+    // _entity1.displayState = 'show'
   }
-  console.log(_entity1.displayState)
+  // console.log(_entity1.displayState)
   // _entity1.layoutConfig.isDraggable = false
   // _entity1.layoutConfig.isResizable = false
   // const dEntity = _entity1.getDetailEntity('t_SdOrderEntry')
@@ -134,20 +125,6 @@ Mousetrap.bind('ctrl+left', function () {
   console.log('ctrl a')
 })
 const nodeArr: Array<nodeConfig> = reactive([
-  {
-    nodeConfig: { x: 0, y: 0, w: 2, h: 2, i: '1', nodeName: 'tableView' },
-    nodeData: {
-      onCellClick: () => {},
-      onCellMenu: () => {},
-      border: true,
-      height: '400px',
-      columnConfig: {
-        resizable: true,
-      },
-      columns: _columns(),
-      data: tableData2,
-    } as tableConfig,
-  },
   {
     nodeConfig: { x: 2, y: 0, w: 2, h: 4, i: '1', nodeName: '' },
     nodeData: {},

@@ -50,11 +50,17 @@ export class form extends base<formConfig> {
     const show = computed(() => {
       return this.displayState == 'show'
     })
+    const destroy = computed(() => {
+      return this.displayState == 'destroy'
+    })
     const vNode = () => {
       const formComponent = resolveComponent('vxe-form')
       const formView = h(formComponent, this.renderForm,
       )
       const style = styleBuilder.setFull().getStyle()
+      if (destroy.value == true) {
+        return null
+      }
       return withDirectives(h('div', { style }, [formView]), [[vShow, show.value]])
     }
     this.component = vNode

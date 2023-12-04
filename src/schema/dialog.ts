@@ -1,4 +1,4 @@
-import { isVNode, createApp, ComponentOptions, computed, defineComponent, h, nextTick, reactive, resolveComponent, watchEffect, App, VueElement } from "vue";
+import { isVNode, createApp, ComponentOptions, computed, defineComponent, h, nextTick, reactive, resolveComponent, watchEffect, App, VueElement, shallowRef } from "vue";
 import { base } from "./base";
 import { systemInstance, system } from "./system";
 import VXETable, { VxeModalProps, VxeModalDefines, VxeModal, VxeModalInstance, VxeTable } from "vxe-table";
@@ -14,8 +14,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     childDialog: dialog[] = []//子节点
     parentDialog?: dialog
     dialogPool?: DialogPool
-    dialogComponent = dialogComponent
-    // subject = new Subject()//
+    dialogComponent = shallowRef(dialogComponent)
     modalInstance?: VxeModalInstance
     // dialogConfig: concatAny<VxeModalProps & { dialogPrimaryName?: string }> = {//modalData 是模态框的存储数据
     dialogConfig: dialogConfig = {
@@ -162,12 +161,12 @@ export class DialogPool {
         })
     }
     checkDynamic() {
-        let dynamicContainerElem = this.dynamicContainerElem
+        let dynamicContainerElem = this.dynamicContainerElem//这个是异步的app
         if (!dynamicContainerElem) {
-            dynamicContainerElem = document.createElement("div");
-            dynamicContainerElem.className = "vxe-dynamics";
-            document.body.appendChild(dynamicContainerElem);
-            this.dynamicApp!.mount(dynamicContainerElem);
+            dynamicContainerElem = (document.createElement("div")) as any;
+            dynamicContainerElem!.className = "vxe-dynamics";
+            document.body.appendChild(dynamicContainerElem!);
+            this.dynamicApp!.mount(dynamicContainerElem!);
         }
     }
     initVxeDynamics() {
@@ -180,14 +179,15 @@ export class DialogPool {
                         {
                             class: "vxe-dynamics--modal",
                         },
-                        modals.value.map((item) =>
-                            h(VxeModal, item)
+                        modals.value.map((item) => {
+                            return h(VxeModal, item)
+                        }
                         )
                     );
                 };
             },
         });
-        this.dynamicApp = createApp(VxeDynamics)
+        this.dynamicApp = shallowRef(createApp(VxeDynamics)) as any
         nextTick(() => {
             this.dynamicApp!.use(VXETable)
             this.dynamicApp!.use(register)

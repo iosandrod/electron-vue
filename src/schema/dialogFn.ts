@@ -1,4 +1,4 @@
-import { computed, h, withCtx, createSlots, defineSlots, slot } from "vue";
+import { computed, h, withCtx, createSlots, defineSlots, slot, shallowRef } from "vue";
 import { dialog } from "./dialog";
 import { ModalDefaultSlotParams } from 'vxe-table'
 import { VxeButton } from "vxe-table";
@@ -61,7 +61,8 @@ export const getDialogSlotsFooter = (dialog: dialog) => {
             let com: any = null
             const dialogComponent = dialog.dialogComponent
             const dialogName = dialog.dialogName! as keyof typeof dialogComponent
-            const defaultCom = dialogComponent[dialogName]?.footer
+            const _com = dialogComponent[dialogName] as any
+            const defaultCom = _com?.footer
             if (defaultCom != null) {
                 const modalData = dialog.dialogConfig.modalData
                 com = h(defaultCom, { dialog: dialog, modalData: modalData })
@@ -88,8 +89,6 @@ export const getDialogShowFooter = (dialog: dialog) => {
         return showFooter
     })
 }
-
-
 export const getDialogHeight = (dialog: dialog) => {
     return computed(() => {
         const dialogConfig = dialog.dialogConfig
@@ -110,22 +109,18 @@ export const getDialogResize = (dialog: dialog) => {
     })
 
 }
-
 export const getDialogMinWidth = (dialog: dialog) => {
     return computed(() => {
         const dialogConfig = dialog.dialogConfig
         return dialogConfig.minWidth
     })
 }
-
 export const getDialogMinHeight = (dialog: dialog) => {
     return computed(() => {
         const dialogConfig = dialog.dialogConfig
         return dialogConfig.minHeight
     })
 }
-
-
 export const getDialogMinMask = (dialog: dialog) => {
     return computed(() => {
         const dialogConfig = dialog.dialogConfig
@@ -183,7 +178,7 @@ export const getDialogOnShow = (dialog: dialog) => {
     return computed(() => {
         return (params: any) => {
             const $modal = params.$modal
-            dialog.modalInstance = $modal
+            dialog.modalInstance = ($modal)
             const onShow = dialog.dialogConfig.onShow
             if (typeof onShow == 'function') {
                 onShow(params)

@@ -268,10 +268,16 @@ export const initComponent = (table: table) => {
     const show = computed(() => {
         return table.displayState == 'show'
     })
+    const destroy = computed(() => {
+        return table.displayState == 'destroy'
+    })
     const _vNode = () => {
         const options = table.gridOptions
         const _class = ['h-full', 'w-full']
         _class.push('grid-border-none')
+        if (destroy.value == true) {
+            return null
+        }
         const outSizeDiv = getRenderFn('div',
             {
                 tabIndex: '0',

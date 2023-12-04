@@ -8,7 +8,7 @@ import { tableMethod } from "../tableMethod"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig } from "@/types/schema"
 import { entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -107,8 +107,25 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       const show = computed(() => {
         return _this.displayState == 'show'
       })
+      const destroy = computed(() => {
+        return _this.displayState == 'destroy'
+      })
+      if (destroy.value == true) {
+        return null
+      }
       return withDirectives(h(layoutCom, { ...renderLayout, style: { height: '100%' } as StyleType, }, () => schema!.map((item: any) => {
-        return h(layoutItemCom, item,
+        const _item = {
+          x: item.x, y: item.y, h: item.h, w: item.w, i: item.i, onMove: (i: any, newx: any, newy: any) => {
+            item.x = newx
+            item.y = newy
+          },
+          onResize: (i: any, newH: any, newW: any, newHPx: any, newWPx: any) => {
+            item.h = newH
+            item.w = newW
+          }
+        } as layoutItem
+
+        return h(layoutItemCom, _item,
           () => {
             let renderCom: any = null
             let defaultCom: any = null
@@ -303,18 +320,32 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     renderLayout.verticalCompact = computed(() => {
       return this.layoutConfig.verticalCompact
     }) as any
+    // renderLayout.responsive = true
+    // renderLayout.useCssTransform = false
+    // renderLayout.verticalCompact = false
     renderLayout.rowHeight = computed(() => {
       return this.layoutConfig.rowHeight
     }) as any
     renderLayout.colNum = 24
     renderLayout.layout = computed({
       get: () => {
-        return this.entityConfig
+        const _layout = this.entityConfig.map((item: any) => {
+          return {
+            x: item.x, y: item.y, h: item.h, w: item.w,
+            i: item.i
+          } as layoutItem
+        })
+        return _layout
+        // return this.entityConfig
       },
       set: (value) => {
-        console.log(value)
+        console.log(value, 'changeLayout')
       }
     }) as any
+    //@ts-ignore
+    // renderLayout['onUpdate:layout'] = (layout: any, item) => {
+    //   console.log(layout, 'testLayout')
+    // } 
   }
   async initEntityConfig() {//初始化页面节点数据
     if (this.entityConfig == null) {

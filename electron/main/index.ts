@@ -30,7 +30,8 @@ if (!app.requestSingleInstanceLock()) {
   app.quit()
   process.exit(0)
 }
-
+const _env: any = process.env
+_env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 // Remove electron security warnings
 // This warning only shows in development mode
 // Read more on https://www.electronjs.org/docs/latest/tutorial/security
