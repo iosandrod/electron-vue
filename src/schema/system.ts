@@ -1,5 +1,6 @@
 import { reactive } from "vue"
 import { VxeTableDefines } from "vxe-table"
+import { base } from "./base"
 
 
 
@@ -9,13 +10,15 @@ import { VxeTableDefines } from "vxe-table"
 
 
 
-export class system {
+export class system extends base {
   defaultTableConfig = {}
   defaultColumnConfig: VxeTableDefines.ColumnOptions = {
     width: 180
   }//一些默认配置
   renderMenu: any = {}
-  constructor() { }
+  constructor() {
+    super({} as any, {})
+  }
   async systemInit() {
     await this.initRenderMenu()//渲染menu的数据
   }
