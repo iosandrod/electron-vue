@@ -115,6 +115,7 @@ export const getDialogMinWidth = (dialog: dialog) => {
         return dialogConfig.minWidth
     })
 }
+
 export const getDialogMinHeight = (dialog: dialog) => {
     return computed(() => {
         const dialogConfig = dialog.dialogConfig
@@ -195,13 +196,9 @@ export const getDialogOnHide = (dialog: dialog) => {
             if (typeof onHide == 'function') {
                 onHide(params)
             }
-            // const dialogConfig = dialog.dialogConfig
-            // dialogConfig.modelValue = false
-            // dialog.dialogConfig.hasOpen = true
         }
         return fn
     },
     )
 }
 
-// export const getDialog

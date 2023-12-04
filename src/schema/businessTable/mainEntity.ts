@@ -24,15 +24,15 @@ export class mainEntity extends basicEntity {
   }
   //初始化子表数据
   async initDetailEntity() {
-    // const tableInfo = this.tableInfo
-    // const detailTable = tableInfo?.detailTable! || []
-    // const detailEntity = await Promise.all(detailTable.map(async (table) => {
-    //   const dTable = await createDetailEntity(table.tableName, table)//表名
-    //   dTable.mainEntity = this as any
-    //   return dTable
-    // }))
-    // this.detailTable = detailEntity as any//业务逻辑类型的子组件
-    // this.detailEntityConfig.curDetailKey = this.detailTable?.[0]?.tableInfo?.tableName || ''
+    const tableInfo = this.tableInfo
+    const detailTable = tableInfo?.detailTable! || []
+    const detailEntity = await Promise.all(detailTable.map(async (table) => {
+      const dTable = await createDetailEntity(table.tableName, table)//表名
+      dTable.mainEntity = this as any
+      return dTable
+    }))
+    this.detailTable = detailEntity as any//业务逻辑类型的子组件
+    this.detailEntityConfig.curDetailKey = this.detailTable?.[0]?.tableInfo?.tableName || ''
   }
   getMainEntity() {
     return this
