@@ -22,10 +22,10 @@ export const constantRoutes: RouteRecordRaw[] = [
         path: "/home",
         component: () => import('@/views/home.vue')
       },
-      {
-        path: "/index8",
-        component: () => import("@/views/index8.vue")
-      }
+      // {
+      //   path: "/index8",
+      //   component: () => import("@/views/index8.vue")
+      // }
     ]
   },
 ]

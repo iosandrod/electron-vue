@@ -76,8 +76,8 @@ export const useCenterDiv = (props?: propsConfig) => {
     return getRenderFn('div', { ..._props1 })
 }
 
-export const createMenu = (node: VNode) => {
+// export const createMenu = (node: VNode) => {
     // const outSizeStyle = styleBuilder.getStyle()
     // outSizeStyle.display = 'fixed'
     // const outSizeDiv = h('div')
-}
+// }

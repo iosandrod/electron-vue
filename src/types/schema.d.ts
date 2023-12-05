@@ -6,8 +6,9 @@ import { dialog } from "@/schema/dialog"
 import { entityColumn } from "@/schema/entityColumn"
 import { formitem } from "@/schema/formitem"
 import { layoutGrid } from "@/schema/layoutGrid"
+import { menuItem } from "@/schema/menu"
 import { table } from "@/schema/table"
-import { SelectProps } from "ant-design-vue"
+import { MenuProps, SelectProps } from "ant-design-vue"
 import { CSSProperties } from "ant-design-vue/es/_util/cssinjs/hooks/useStyleRegister"
 import { ComputedRef, VNode } from "vue"
 import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps, VxeColumnProps } from "vxe-table"
@@ -449,3 +450,16 @@ export type tableButton = {
 }
 
 export type tableButtons = Array<tableButton>
+type _menuConfig = {
+  collapseAll?: boolean,
+  data?: [],
+  parentKey?: string,
+  vNode?: menuItem,
+  rootKey?: string,
+  key?: string,
+  titleKey?: string,
+  inputValue?: string,
+  rootTitle?: string,
+  showInput?: boolean
+}
+export type menuConfig = MenuProps & _menuConfig 

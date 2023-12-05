@@ -5,18 +5,23 @@
     <vxe-button @click="btnClick2">btnClick2</vxe-button>
     <vxe-button @click="btnClick3">btnClick3</vxe-button>
     <vxe-button @click="btnClick4">btnClick4</vxe-button>
+    <!-- <vxe-input
+      @change="inputChange"
+      v-model="_menu.menuConfig.inputValue"
+    ></vxe-input> -->
     <!-- <layoutGridView :pageTree="pageTree"></layoutGridView> -->
     <!-- <form-view :items="formItems" :data="formData"></form-view> -->
     <!-- <div class="w-10 h-10 bg-red-700">123</div> -->
     <!-- <component :is="vNode"></component> -->
-    <div style="width: 100%;" v-if="showValue">
+    <div style="width: 50%;" v-if="showValue">
       <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
       <!-- <gantt></gantt> -->
       <!-- <component :is="com"></component> -->
       <!-- <component :is="table.component"></component> -->
       <!-- <table-view :tableInstance="table"></table-view> -->
-      <entity-view ref="entity" :entityInstance="_entity"></entity-view>
+      <!-- <entity-view ref="entity" :entityInstance="_entity"></entity-view> -->
       <!-- <component :is="vNode"></component> -->
+      <menu-view :menu="_menu"></menu-view>
       <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
       <!-- <template v-if="mainEntity.displayState != 'destroy'"></template> -->
     </div>
@@ -37,19 +42,34 @@ import {
   vShow,
   withDirectives,
 } from 'vue'
-import gantt from '@/components/gantt/GanttPlayground.vue'
 import { createMainEntity } from '@/schema/businessTable/mainEntity'
 import { getTableConfig } from '@/api/httpApi'
-import { KeyboardEvent } from 'electron'
 import { _columns } from '@/schema/entityColumn'
 import { mainEntity } from '@/schema/businessTable/mainEntity'
 import Mousetrap from 'mousetrap'
 import { tableData, tableData2 } from '@/api/data'
 import { tableData3 } from '@/api/data2'
 import { createDialog, confirm } from '@/schema/dialog'
+import { createMenu } from '@/schema/menu'
+import { menuData } from '@/api/data3'
+// import { createMenu } from '@/schema/icon'
 const entity = ref(null)
 const _entity = createMainEntity('t_SdOrder', null)
 const { proxy: instance } = getCurrentInstance()!
+const _menu = createMenu({
+  data: menuData,
+  key: 'id',
+  parentKey: 'parentId', //
+  titleKey: 'menuName',
+  rootKey: '0',
+  rootTitle: '系统菜单',
+} as any)
+
+function inputChange({ value }: any) {
+  // console.log(value)
+  _menu.inputChange()
+}
+console.log(_menu, 'testMenu')
 // onMounted(() => {
 //   console.log(instance.$refs.tableView1, 'testTableDiv')
 // })
@@ -139,6 +159,7 @@ const com = h(tableView, nodeArr[0].nodeData)
 const table = createTable(nodeArr[0].nodeData)
 //律师
 //回应
+
 const formData = ref({
   name: 'xiaofeng',
   sex: '0',

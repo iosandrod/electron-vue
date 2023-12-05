@@ -25,3 +25,7 @@ createApp(App)
   .$nextTick(() => {
     postMessage({ payload: 'removeLoading' }, '*')
   })
+
+const arr = [1, 2, 4]
+// arr[]
+  // const value=arr

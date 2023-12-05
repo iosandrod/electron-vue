@@ -1,66 +1,96 @@
 <template>
   <div>
-    <div :style="{ marginBottom: '16px' }">
-      <a-button @click="add">ADD</a-button>
-    </div>
-    <a-tabs
-      v-model:activeKey="activeKey"
-      hide-add
-      type="editable-card"
-      @edit="onEdit"
+    <a-switch :checked="state.mode === 'vertical'" @change="changeMode" />
+    Change Mode
+    <span class="ant-divider" style="margin: 0 1em;" />
+    <a-switch :checked="state.theme === 'dark'" @change="changeTheme" />
+    Change Theme
+    <br />
+    <br />
+    <a-menu
+      v-model:openKeys="state.openKeys"
+      v-model:selectedKeys="state.selectedKeys"
+      style="width: 256px;"
+      :mode="state.mode"
+      :theme="state.theme"
     >
-      <a-tab-pane
-        v-for="pane in panes"
-        :key="pane.key"
-        :tab="pane.title"
-        :closable="pane.closable"
-      >
-        {{ pane.content }}
-      </a-tab-pane>
-    </a-tabs>
+      <template v-for="item in items">
+        <template v-if="item.children">
+          <a-sub-menu :title="item.label" v-bind="item">
+            <template v-for="item1 in item.children">
+              <a-menu-item v-bind="item1">
+                {{ item1.label }}
+              </a-menu-item>
+            </template>
+          </a-sub-menu>
+        </template>
+        <template v-else>
+          <a-menu-item v-bind="item">
+            {{ item.label }}
+          </a-menu-item>
+        </template>
+      </template>
+    </a-menu>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { h, reactive } from 'vue'
+import {
+  MailOutlined,
+  CalendarOutlined,
+  AppstoreOutlined,
+  SettingOutlined,
+} from '@ant-design/icons-vue'
+import type { MenuMode, MenuTheme } from 'ant-design-vue'
+import { ItemType } from 'ant-design-vue'
 
-const panes = ref<
-  { title: string; content: string; key: string; closable?: boolean }[]
->(
-  new Array(2).fill(null).map((_, index) => {
-    const id = String(index + 1)
-    return { title: `Tab ${id}`, content: `Content of Tab Pane ${id}`, key: id }
-  }),
-)
-const activeKey = ref(panes.value[0].key)
-const newTabIndex = ref(0)
+const state = reactive({
+  mode: 'inline' as MenuMode,
+  theme: 'light' as MenuTheme,
+  selectedKeys: ['1'],
+  openKeys: ['sub1'],
+})
 
-const add = () => {
-  activeKey.value = `newTab${newTabIndex.value++}`
-  panes.value.push({
-    title: `New Tab ${activeKey.value}`,
-    content: `Content of new Tab ${activeKey.value}`,
-    key: activeKey.value,
-  })
+function getItem(
+  label: string,
+  key: string,
+  icon?: any,
+  children?: ItemType[],
+  type?: 'group',
+): ItemType {
+  return {
+    key,
+    icon,
+    children,
+    label,
+    type,
+  } as ItemType
 }
 
-const remove = (targetKey: string) => {
-  let lastIndex = 0
-  panes.value.forEach((pane, i) => {
-    if (pane.key === targetKey) {
-      lastIndex = i - 1
-    }
-  })
-  panes.value = panes.value.filter((pane) => pane.key !== targetKey)
-  if (panes.value.length && activeKey.value === targetKey) {
-    if (lastIndex >= 0) {
-      activeKey.value = panes.value[lastIndex].key
-    } else {
-      activeKey.value = panes.value[0].key
-    }
-  }
+const items: any[] = reactive([
+  getItem('Navigation One', '1', h(MailOutlined)),
+  getItem('Navigation Two', '2', h(CalendarOutlined)),
+  getItem('Navigation Two', 'sub1', h(AppstoreOutlined), [
+    getItem('Option 3', '3'),
+    getItem('Option 4', '4'),
+    getItem('Submenu', 'sub1-2', null, [
+      getItem('Option 5', '5'),
+      getItem('Option 6', '6'),
+    ]),
+  ]),
+  getItem('Navigation Three', 'sub2', h(SettingOutlined), [
+    getItem('Option 7', '7'),
+    getItem('Option 8', '8'),
+    getItem('Option 9', '9'),
+    getItem('Option 10', '10'),
+  ]),
+])
+console.log(items, 'testItems')
+const changeMode = (checked: boolean) => {
+  state.mode = checked ? 'vertical' : 'inline'
 }
 
-const onEdit = (targetKey: string) => {
-  remove(targetKey)
+const changeTheme = (checked: boolean) => {
+  state.theme = checked ? 'dark' : 'light'
 }
 </script>
