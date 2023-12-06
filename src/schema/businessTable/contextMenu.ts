@@ -3,6 +3,7 @@ import { base } from "../base";
 import { systemInstance } from "../system";
 import { Dropdown, Menu } from "ant-design-vue";
 import { position } from "@/types/schema";
+import { getMouseEventPosition } from "@/utils/utils";
 
 export class contextMenu extends base {
     contextMenuConfig = {
@@ -22,6 +23,11 @@ export class contextMenu extends base {
             })
         })
         this.initComponent()
+    }
+    openContext(event: MouseEvent) {
+        const position = getMouseEventPosition(event)//获取位置
+        this.contextMenuConfig.position = position
+        this.contextMenuConfig.modalValue = true
     }
     initComponent() {
         const contextMenuConfig = this.contextMenuConfig

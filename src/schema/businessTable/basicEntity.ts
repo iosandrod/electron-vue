@@ -120,12 +120,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   initComponent() {
     const _divStyle = { position: "absolute", top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType
+    const contextInstance = this.pageRef.contextMenu
     const _div = h('div', {
       style: _divStyle, onContextmenu(event) {
 
       },
     } as propsConfig, [
-      // h(contextMenuView,{contextMenuInstance})
+      h(contextMenuView, { contextMenuInstance: contextInstance })
     ])
     const dragDiv = computed(() => {
       let drag = this.renderLayout.isDraggable && this.renderLayout.isResizable
@@ -314,8 +315,10 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const contextMenu = createContextMenu({ list: list }) as any
     this.pageRef.contextMenu = contextMenu
   }
-  openContext(entityItem: any) {//打开右键菜单
-
+  //打开右键菜单
+  openContext(event: MouseEvent, entityItem?: any) {
+    const contextInstance = this.pageRef.contextMenu
+    contextInstance?.openContext(event)
   }
   async initRenderEditForm() {
     const tableInfo = this.tableInfo
