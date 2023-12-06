@@ -23,6 +23,8 @@ import { detailEntity } from "./detailEntity"
 import { createEntityButton } from "../entityButton"
 import { createForm, form } from "../form"
 import { propsConfig } from "../icon"
+import contextMenuView from "../schemaComponent/contextMenuView"
+import { contextMenu, createContextMenu } from "./contextMenu"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   sub = new Subject()//动作发射器
   detailTable?: detailEntity[] = []
@@ -34,7 +36,34 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     isResizable: false,
     useCssTransform: false,
     verticalCompact: false,//
-    list: []
+    list: [{
+      key: '1',
+      // icon: () => h(MailOutlined),
+      label: 'Navigation One',
+      title: 'Navigation One',
+      onClick: () => {
+        console.log(this)
+      }
+    },
+    {
+      key: 'sub1',
+      // icon: () => h(AppstoreOutlined),
+      label: 'Navigation Three',
+      title: 'Navigation Three',
+      onClick: () => {
+        console.log(this)
+      },
+      children: [
+        {
+          key: '3',
+          label: 'Option 3',
+          title: 'Option 3',
+          onClick: () => {
+            console.log(this)
+          }
+        },
+      ],
+    },]
   }
   mainEntity?: mainEntity
   originTableInfo?: any
@@ -43,6 +72,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   pageRef: {
     vxeGrid?: table,
     vxeForm?: form,
+    contextMenu?: contextMenu,
   } = {
       vxeGrid: undefined,
       vxeForm: undefined
@@ -92,8 +122,11 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const _divStyle = { position: "absolute", top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType
     const _div = h('div', {
       style: _divStyle, onContextmenu(event) {
+
       },
-    } as propsConfig, [])
+    } as propsConfig, [
+      // h(contextMenuView,{contextMenuInstance})
+    ])
     const dragDiv = computed(() => {
       let drag = this.renderLayout.isDraggable && this.renderLayout.isResizable
       if (drag == true) {
@@ -140,12 +173,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
                 unmounted() { }
               }]])
             }
+            const renderStyle = { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType
             if (renderCom) {
-              defaultCom = h('div', { style: { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType }, [renderCom,
+              defaultCom = h('div', { style: renderStyle }, [renderCom,
                 dragDiv.value
               ])
             } else {
-              defaultCom = h('div', { style: { position: "relative", background: 'red', height: '100%', width: '100%' } as StyleType }, ['默认节点'])
+              defaultCom = h('div', { style: renderStyle }, ['默认节点'])
             }
             return defaultCom
           }
@@ -239,9 +273,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   setGetTableDataPermission(arg0: boolean) {
   }
-  async getTableConfig() {
-    console.log('getTableConfig')
-  }
+  async getTableConfig() { }
   //添加一个节点
   addItem() { }
   async initRenderTable() {
@@ -270,11 +302,20 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     await this.initTableInfo()
     await this.initEntityConfig()//这个函数才是最重要的
     await this.initRenderLayout()//初始化layout的需要制定
+    await this.initRenderContext()
     this.initComponent()//初始化普通的component
     const show = initConfig.show//显示的东西
     if (show != false) {
       this.displayState = 'show'
     }
+  }
+  initRenderContext() {
+    const list = this.layoutConfig.list
+    const contextMenu = createContextMenu({ list: list }) as any
+    this.pageRef.contextMenu = contextMenu
+  }
+  openContext(entityItem: any) {//打开右键菜单
+
   }
   async initRenderEditForm() {
     const tableInfo = this.tableInfo

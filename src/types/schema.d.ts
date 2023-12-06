@@ -206,7 +206,7 @@ export type layoutConfig = {
   isResizable?: boolean,
   useCssTransform?: boolean,
   verticalCompact?: boolean,
-  list?: []
+  list?: any[]
 }
 
 //一个或者多个

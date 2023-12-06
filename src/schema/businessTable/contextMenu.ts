@@ -81,4 +81,5 @@ export class contextMenu extends base {
 export const createContextMenu = (schema: any) => {
     const menu = reactive(new contextMenu(schema, systemInstance))
     menu.initContextMenu()
+    return menu
 }
