@@ -8,7 +8,7 @@ import { formitem } from "@/schema/formitem"
 import { layoutGrid } from "@/schema/layoutGrid"
 import { menuItem } from "@/schema/menu"
 import { table } from "@/schema/table"
-import { MenuProps, SelectProps } from "ant-design-vue"
+import { MenuProps, SelectProps, TabPaneProps, TabsProps } from "ant-design-vue"
 import { CSSProperties } from "ant-design-vue/es/_util/cssinjs/hooks/useStyleRegister"
 import { ComputedRef, VNode } from "vue"
 import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps, VxeColumnProps } from "vxe-table"
@@ -198,13 +198,15 @@ export type layoutItem = {
   component?: any
 }
 export type layoutConfig = {
+  contextMenuPosition?: position
   layout?: Array<layoutItem>
   colNum?: number,
   rowHeight?: number,
   isDraggable?: boolean,
   isResizable?: boolean,
   useCssTransform?: boolean,
-  verticalCompact?: boolean
+  verticalCompact?: boolean,
+  list?: []
 }
 
 //一个或者多个
@@ -462,4 +464,12 @@ type _menuConfig = {
   rootTitle?: string,
   showInput?: boolean
 }
-export type menuConfig = MenuProps & _menuConfig 
+export type menuConfig = MenuProps & _menuConfig
+
+export type tabItem = TabPaneProps & {
+  title?: string//标题
+}
+
+export type tabConfig = TabsProps & {
+  tabItems?: []
+}

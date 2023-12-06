@@ -70,7 +70,7 @@ export class menu extends base<MenuProps> {
         renderMenu.multiple = computed(() => {
             const inputValue = menuConfig.inputValue!
             if (inputValue?.length > 0) {
-                return true
+                return false
             }
             return false
         }) as any
@@ -110,15 +110,11 @@ export class menu extends base<MenuProps> {
             if (typeof _openChange == 'function') {
                 _openChange(value)
             }
-            // const collapseAll = renderMenu.collapseAll
             let collapseAll: boolean = menuConfig?.inputValue!?.length > 0
             if (collapseAll == false) {
                 collapseAll = menuConfig.collapseAll!
             }
             if (collapseAll == true) {
-                // return _this.getFlatItem().map((row: any) => {
-                //     return row.renderMenuItem.key
-                // })
                 return
             }
             const lastKey = menuConfig.openKeys! || []//上一次的openKey
@@ -135,8 +131,6 @@ export class menu extends base<MenuProps> {
             }
             renderMenu.openKeys = keyArr
         }
-        // renderMenu.inlineCollapsed = true
-        // renderMenu.multiple = false
         renderMenu.inlineCollapsed = computed(() => {
             return menuConfig.inlineCollapsed
         }) as any

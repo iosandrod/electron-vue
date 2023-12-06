@@ -2,9 +2,9 @@ import { defineComponent } from 'vue'
 import { menu } from '../menu'
 
 export default defineComponent({
-    props: ['menuInstance'],
+    props: ['tabInstance'],
     setup(props) {
-        const _menu = props.menuInstance as menu
-        return _menu.component
+        const _tab = props.tabInstance as menu
+        return _tab.component
     }
 })

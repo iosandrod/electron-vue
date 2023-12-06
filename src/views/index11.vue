@@ -32,15 +32,7 @@
           background: '#fff',
           minHeight: '280px',
         }"
-      >
-        <div class="flex flex-col w-full h-full">
-          <div class="w-full bg-gray-400 h-7"></div>
-          <div class="flex-1 w-full">
-            <router-view></router-view>
-          </div>
-          <!-- is tab -->
-        </div>
-      </a-layout-content>
+      ></a-layout-content>
     </a-layout>
   </a-layout>
 </template>

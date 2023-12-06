@@ -45,28 +45,6 @@ export default defineComponent({
                             label: 'Option 3',
                             title: 'Option 3',
                         },
-                        {
-                            key: '4',
-                            label: 'Option 4',
-                            title: 'Option 4',
-                        },
-                        {
-                            key: 'sub1-2',
-                            label: 'Submenu',
-                            title: 'Submenu',
-                            children: [
-                                {
-                                    key: '5',
-                                    label: 'Option 5',
-                                    title: 'Option 5',
-                                },
-                                {
-                                    key: '6',
-                                    label: 'Option 6',
-                                    title: 'Option 6',
-                                },
-                            ],
-                        },
                     ],
                 },
                 {
@@ -79,21 +57,6 @@ export default defineComponent({
                             key: '7',
                             label: 'Option 7',
                             title: 'Option 7',
-                        },
-                        {
-                            key: '8',
-                            label: 'Option 8',
-                            title: 'Option 8',
-                        },
-                        {
-                            key: '9',
-                            label: 'Option 9',
-                            title: 'Option 9',
-                        },
-                        {
-                            key: '10',
-                            label: 'Option 10',
-                            title: 'Option 10',
                         },
                     ],
                 },
@@ -126,20 +89,11 @@ export default defineComponent({
                         }
                     })
                 },
-                // dropdown: (params: any) => {
-                //     return menu
-                // }
                 overlay: () => {
                     return menu
                 }
             })
             return h('div', {
-                // style: {
-                //     width: "250px",
-                //     position: "fixed",
-                //     left: `${position.value.left}px`,
-                //     top: `${position.value.top}px`
-                // } as StyleType
             }, [polldown
             ])
         }

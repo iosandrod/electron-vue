@@ -13,15 +13,15 @@
     <!-- <form-view :items="formItems" :data="formData"></form-view> -->
     <!-- <div class="w-10 h-10 bg-red-700">123</div> -->
     <!-- <component :is="vNode"></component> -->
-    <div style="width: 50%;" v-if="showValue">
+    <div style="" class="w-full" v-if="showValue">
       <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
       <!-- <gantt></gantt> -->
       <!-- <component :is="com"></component> -->
       <!-- <component :is="table.component"></component> -->
       <!-- <table-view :tableInstance="table"></table-view> -->
-      <!-- <entity-view ref="entity" :entityInstance="_entity"></entity-view> -->
+      <entity-view ref="entity" :entityInstance="_entity"></entity-view>
       <!-- <component :is="vNode"></component> -->
-      <menu-view :menu="_menu"></menu-view>
+      <!-- <menu-view :menuInstance="_menu"></menu-view> -->
       <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
       <!-- <template v-if="mainEntity.displayState != 'destroy'"></template> -->
     </div>
@@ -57,7 +57,7 @@ const entity = ref(null)
 const _entity = createMainEntity('t_SdOrder', null)
 const { proxy: instance } = getCurrentInstance()!
 const _menu = createMenu({
-  data: menuData,
+  data: JSON.parse(JSON.stringify(menuData)),
   key: 'id',
   parentKey: 'parentId', //
   titleKey: 'menuName',

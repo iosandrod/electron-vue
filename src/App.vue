@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="h-screen" style="width: 99vw;">
+  <div v-if="show" class="w-screen h-screen" style="">
     <router-view></router-view>
   </div>
 </template>

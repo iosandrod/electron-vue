@@ -22,19 +22,19 @@ import { confirmMiddleware } from "@/middleware/confirmMiddleware"
 import { detailEntity } from "./detailEntity"
 import { createEntityButton } from "../entityButton"
 import { createForm, form } from "../form"
+import { propsConfig } from "../icon"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   sub = new Subject()//动作发射器
   detailTable?: detailEntity[] = []
   http = http
   entityType = 'main'//这里默认是主表
   layoutConfig: layoutConfig = {
-    rowHeight: 30,
+    rowHeight: 10,
     isDraggable: false,
     isResizable: false,
-    useCssTransform: true,
-    verticalCompact: true//
-
-    //
+    useCssTransform: false,
+    verticalCompact: false,//
+    list: []
   }
   mainEntity?: mainEntity
   originTableInfo?: any
@@ -89,7 +89,11 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     return originTableInfo.cCodeColumn
   }
   initComponent() {
-    const _div = h('div', { style: { position: "absolute", top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType })
+    const _divStyle = { position: "absolute", top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType
+    const _div = h('div', {
+      style: _divStyle, onContextmenu(event) {
+      },
+    } as propsConfig, [])
     const dragDiv = computed(() => {
       let drag = this.renderLayout.isDraggable && this.renderLayout.isResizable
       if (drag == true) {
@@ -327,58 +331,52 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       return this.layoutConfig.rowHeight
     }) as any
     renderLayout.colNum = 24
-    renderLayout.layout = computed({
-      get: () => {
-        const _layout = this.entityConfig.map((item: any) => {
-          return {
-            x: item.x, y: item.y, h: item.h, w: item.w,
-            i: item.i
-          } as layoutItem
-        })
-        return _layout
-        // return this.entityConfig
-      },
-      set: (value) => {
-        console.log(value, 'changeLayout')
-      }
+    renderLayout.layout = computed(() => {
+      const _layout = this.entityConfig.map((item: any) => {
+        return {
+          x: item.x, y: item.y, h: item.h, w: item.w,
+          i: item.i
+        } as layoutItem
+      })
+      return _layout
     }) as any
-    //@ts-ignore
-    // renderLayout['onUpdate:layout'] = (layout: any, item) => {
-    //   console.log(layout, 'testLayout')
-    // } 
   }
   async initEntityConfig() {//初始化页面节点数据
     if (this.entityConfig == null) {
       //使用entityConfig
       this.entityConfig = await getEntityConfig(this) as any
     }
-    //为什么要覆盖schema
-    //
     const schema = this.entityConfig!
-    const _this: any = this
     await Promise.all(schema.map(async (item: any) => {//这是个数组 节点数组
-      const itemConfig = item.layoutItemConfig!
-      const renderFunName = itemConfig.renderFunName
-      let renderComName = itemConfig.renderComName as keyof typeof comVetor
-      let renderCom: any = h('div', ['123'])
-      let renderData: any = {
-        columns: [],
-        data: []
-      }
-      if (renderFunName != null && _this[renderFunName]) {//初始化渲染数据
-        const _this: any = this
-        renderData = await _this[renderFunName](_this)//渲染函数数据 这个是函数来的
-      }
-      if (renderComName != null && comVetor[renderComName]) {
-        renderCom = comVetor[renderComName]
-      }
-      item.component = () => {
-        return h(renderCom, { ...renderData, style: { height: "100%", width: '100%' } })//使用闭包 
-      }
-      return item
+      return await this.resolveEntityItem(item)
     }))
   }
-  async runMiddlewares(payload: any, middlewares: any, index: any) {
+  addEntityItem() { }
+  removeEntityItem() { }
+  async resolveEntityItem(item: any) {
+    const _this = this
+    const itemConfig = item.layoutItemConfig!
+    const renderFunName = itemConfig.renderFunName
+    let renderComName = itemConfig.renderComName as keyof typeof comVetor
+    let renderCom: any = h('div', ['123'])
+    let renderData: any = {
+      columns: [],
+      data: []
+    }
+    //@ts-ignore
+    if (renderFunName != null && _this[renderFunName]) {//初始化渲染数据
+      const _this: any = this
+      renderData = await _this[renderFunName](_this)//渲染函数数据 这个是函数来的
+    }
+    if (renderComName != null && comVetor[renderComName]) {
+      renderCom = comVetor[renderComName]
+    }
+    item.component = () => {
+      return h(renderCom, { ...renderData, style: { height: "100%", width: '100%' } })//使用闭包 
+    }
+    return item
+  }
+  async runMiddlewares(payload: any, middlewares: any[], index: any) {
     if (index < middlewares.length) {
       const currentMiddleware = middlewares[index];
       await currentMiddleware(payload, async () => {
