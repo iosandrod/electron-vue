@@ -238,7 +238,6 @@ export const getOptionsShowHeader = (table: table) => {
 export const initGridOptions = (table: table) => {
     const gridOptions = table.gridOptions as VxeGridProps
     gridOptions.columns = getOptionsColumns(table) as any
-    gridOptions.stripe = true
     gridOptions.data = getOptionsData(table) as any
     gridOptions.treeConfig = getOptionsTreeConfig(table) as any
     gridOptions.scrollX = getOptionsScrollX(table) as any
@@ -255,7 +254,7 @@ export const initGridOptions = (table: table) => {
     gridOptions.minHeight = '150px'
     gridOptions.showFooter = getOptionsShowFooter(table) as any
     gridOptions.showHeader = getOptionsShowHeader(table) as any
-    gridOptions.border = false
+    gridOptions.stripe = true
     gridOptions.border = true
     gridOptions.menuConfig = { enabled: true }
 }
@@ -311,7 +310,7 @@ export const initComponent = (table: table) => {
                 mounted(div) {
                     const effectPool = table.effectPool
                     if (Object.keys(effectPool).length == 0) {
-                        table.initTableConfig()
+                        initSchema(table)
                     }
                 }, unmounted() {
                     const dialogMap = table.dialogMap
@@ -392,8 +391,7 @@ export const initComponent = (table: table) => {
     table.component = _vNode
 }
 
-
-export const initTableConfig = (table: table) => {
+export const initSchema = (table: table) => {
     const schema: tableSchema = table.schema as any
     if (schema != null && Object.keys(schema).length > 0) {
         for (const key of Object.keys(schema)) {
@@ -421,6 +419,10 @@ export const initTableConfig = (table: table) => {
             }
         }
     }
+}
+
+export const initTableConfig = (table: table) => {
+
     // 最后才会初始化Component
     initTableMenu(table)
     initGridOptions(table)

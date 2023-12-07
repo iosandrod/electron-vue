@@ -64,6 +64,7 @@ export class table extends base<tableSchema> implements tableMethod {
     filterConfig: [{ field: 'name', value: 'Test1' }],//过滤配置
     mergeConfig: [
     ],//合并配置
+    sortconfig: [],//处理排序
     height: 'auto',
     limitSize: 100,
     rowConfig: {
@@ -122,9 +123,6 @@ export class table extends base<tableSchema> implements tableMethod {
   }
   initTableConfig() {
     tableFn.initTableConfig(this)
-    setTimeout(() => {
-      this.setMergeConfig()
-    }, 1000);
   }
   async initGridOptions() {
     tableFn.initGridOptions(this)
@@ -177,17 +175,17 @@ export class table extends base<tableSchema> implements tableMethod {
       console.error('没有找到vxeGrid实例')
     }
   }
-  async setMergeConfig(rowArr?: any, colArr?: any) {//行
-    // const showData = this.gridOptions.data//压入一个数组
-    // const rowArr = showData?.slice(0, 10)//合并的数据
-    // const _rowArr = showData?.slice(4, 8)
-    // this.tableConfig.mergeConfig?.push({
-    //   rowArr: rowArr,
-    //   colArr: ['sex']
-    // }, {
-    //   rowArr: _rowArr,
-    //   colArr: ['address']
-    // }) 
+  async setMergeConfig(rows?: any[], cols?: any[]) {//行
+    const showData = this.gridOptions.data//压入一个数组
+    const rowArr = showData?.slice(0, 10)//合并的数据
+    const _rowArr = showData?.slice(4, 8)
+    this.tableConfig.mergeConfig?.push({
+      rowArr: rowArr,
+      colArr: ['sex']
+    }, {
+      rowArr: _rowArr,
+      colArr: ['address']
+    })
   }
 }
 

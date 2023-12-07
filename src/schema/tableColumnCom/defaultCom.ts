@@ -41,6 +41,10 @@ export default defineComponent({
         const table = column.value.table
         const mergeDiv = computed(() => {
             const mergeConfig = table?.tableConfig.mergeConfig!//合并配置
+            let _canEdit = canEdit.value
+            if (_canEdit == true) {
+                return getRenderFn('div', { class: ['h-full w-full'] })
+            }
             if (mergeConfig && mergeConfig.length == 0) {
                 return getRenderFn('div', { class: ['h-full w-full'] })
             }
@@ -111,6 +115,7 @@ export default defineComponent({
             const defaultComFn = getRenderFn('div', { style: { wdith: '100%', height: "100%", background: "" } as StyleType })
             const mergeComFn = mergeDiv.value!//合并的行节点
             defaultCom = defaultComFn([mergeComFn([showValue.value])])
+            // defaultCom = defaultComFn([showValue.value])
             if (_canEdit == true && _editDisable == false) {//表可编辑+行可编辑
                 if (formitem == null) {
                     return getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])

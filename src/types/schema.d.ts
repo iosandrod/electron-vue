@@ -38,13 +38,15 @@ export type tableSchema = concatAny<UnUnique<VxeGridProps>>
 
 export type filterConfig = {}
 export type mergeConfig = {
-  row?: any,//哪一行
-  lastRow?: any
-  field?: string,//哪一列 
-  colSpan?: number//合并多少个 
   rowArr?: any[]
   colArr?: any[]
 }
+
+export type sortconfig = {
+  //排序配置
+
+}
+
 export type tableConfig = {
   limitSize?: number
   showBodyMenuDialog?: boolean,
@@ -56,6 +58,7 @@ export type tableConfig = {
   columns: extendColumnConfig[] = [],
   filterConfig?: filterConfig[],
   mergeConfig?: mergeConfig[],
+  sortconfig?: []
   rowConfig?: {
     background?: string,
     rowHeight: number,
