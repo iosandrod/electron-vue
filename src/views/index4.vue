@@ -90,7 +90,6 @@ const options = reactive({
     resizable: false,
   },
   columns: [
-    { type: 'seq', width: 50 },
     { field: 'name', title: 'name' },
     { field: 'sex', title: 'sex' },
     { field: 'address', title: 'Address' },

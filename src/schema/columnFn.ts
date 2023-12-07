@@ -58,6 +58,7 @@ export const getRenderFn = (node: string | VNode, props: any, directive?: Array<
             _nestNode = nestNode
         }
         if (isVNode(node)) {
+            // node.children
             vnode = node
         } else {
             vnode = h(node, props, _nestNode)

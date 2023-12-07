@@ -1,10 +1,14 @@
 <template>
-  <div class="w-full h-full overflow-auto">
+  <div
+    @contextmenu="contextMenu.openContext($event)"
+    class="w-full h-full overflow-auto"
+  >
     <vxe-button @click="btnClick">button</vxe-button>
     <vxe-button @click="btnClick1">btnClick1</vxe-button>
     <vxe-button @click="btnClick2">btnClick2</vxe-button>
     <vxe-button @click="btnClick3">btnClick3</vxe-button>
     <vxe-button @click="btnClick4">btnClick4</vxe-button>
+    <vxe-button @click="btnClick5">btnClick5</vxe-button>
     <!-- <vxe-input
       @change="inputChange"
       v-model="_menu.menuConfig.inputValue"
@@ -14,12 +18,13 @@
     <!-- <div class="w-10 h-10 bg-red-700">123</div> -->
     <!-- <component :is="vNode"></component> -->
     <div style="" class="w-full" v-if="showValue">
+      <!-- <context-menu-view :contextMenuInstance="contextMenu"></context-menu-view> -->
       <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
       <!-- <gantt></gantt> -->
       <!-- <component :is="com"></component> -->
       <!-- <component :is="table.component"></component> -->
-      <!-- <table-view :tableInstance="table"></table-view> -->
-      <entity-view ref="entity" :entityInstance="_entity"></entity-view>
+      <table-view :tableInstance="table"></table-view>
+      <!-- <entity-view ref="entity" :entityInstance="_entity"></entity-view> -->
       <!-- <component :is="vNode"></component> -->
       <!-- <menu-view :menuInstance="_menu"></menu-view> -->
       <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
@@ -51,7 +56,8 @@ import { tableData, tableData2 } from '@/api/data'
 import { tableData3 } from '@/api/data2'
 import { createDialog, confirm } from '@/schema/dialog'
 import { createMenu } from '@/schema/menu'
-import { menuData } from '@/api/data3'
+import { menuData, tableMenuData, testTableViewData } from '@/api/data3'
+import { createContextMenu } from '@/schema/businessTable/contextMenu'
 // import { createMenu } from '@/schema/icon'
 const entity = ref(null)
 const _entity = createMainEntity('t_SdOrder', null)
@@ -64,7 +70,10 @@ const _menu = createMenu({
   rootKey: '0',
   rootTitle: '系统菜单',
 } as any)
-
+const contextMenu = createContextMenu({
+  list: JSON.parse(JSON.stringify(tableMenuData)),
+})
+console.log(contextMenu)
 function inputChange({ value }: any) {
   // console.log(value)
   _menu.inputChange()
@@ -123,6 +132,9 @@ function btnClick1() {
   // const dEntity = _entity1.getDetailEntity('t_SdOrderEntry')
   // dEntity.setCurrentEntityDesign(!state)
 }
+function btnClick5() {
+  table.setMergeConfig()
+}
 function btnClick4() {
   const _entity: any = instance?.$refs.entity
   const _entity1 = _entity.entity as mainEntity
@@ -156,7 +168,7 @@ const nodeArr: Array<nodeConfig> = reactive([
 ])
 const com = h(tableView, nodeArr[0].nodeData)
 // const pageTree = createPage(nodeArr)
-const table = createTable(nodeArr[0].nodeData)
+const table = createTable(testTableViewData)
 //律师
 //回应
 

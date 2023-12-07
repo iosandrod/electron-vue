@@ -1,8 +1,8 @@
-import { computed, h, nextTick, reactive, watchEffect } from "vue";
+import { computed, h, isProxy, nextTick, reactive, toRef, watchEffect } from "vue";
 import { base } from "../base";
 import { systemInstance } from "../system";
 import { Dropdown, Menu } from "ant-design-vue";
-import { position } from "@/types/schema";
+import { StyleType, position } from "@/types/schema";
 import { getMouseEventPosition } from "@/utils/utils";
 
 export class contextMenu extends base {
@@ -31,32 +31,34 @@ export class contextMenu extends base {
     }
     initComponent() {
         const contextMenuConfig = this.contextMenuConfig
-        const modelValue = computed({
-            set: (value) => {
-                contextMenuConfig.modalValue = value
-            },
-            get: () => {
-                return contextMenuConfig.modalValue
-            }
-        })
-        const items = computed(() => {
-            return contextMenuConfig.list
-        })
+
         const position = computed(() => {
             return contextMenuConfig.position
         })
+        const _this = this
+        const modelValue = computed({
+            set: (value) => {
+                _this.contextMenuConfig.modalValue = value
+            },
+            get: () => {
+                const show = _this.contextMenuConfig.modalValue
+                return show
+            }
+        })
+        const menu = h(Menu, {
+            onClick: (item: any) => {
+                nextTick(() => {
+                    modelValue.value = false
+                })
+            },
+            mode: 'vertical',
+            items: contextMenuConfig.list,
+        })
         const vNode = () => {
-            const menu = h(Menu, {
-                onClick: (item: any) => {
-                    nextTick(() => {
-                        modelValue.value = false
-                    })
-                },
-                mode: 'vertical',
-                items: items.value,
-            })
+
+
             const polldown = h(Dropdown, {
-                trigger: ['contextmenu', 'hover'],
+                trigger: ['contextmenu',],
                 "onUpdate:open": (value) => {
                     modelValue.value = value
                 },
@@ -68,9 +70,10 @@ export class contextMenu extends base {
                             width: "250px",
                             position: "fixed",
                             left: `${position.value.left}px`,
-                            top: `${position.value.top}px`
-                        }
-                    })
+                            top: `${position.value.top}px`,
+                            background: 'red'
+                        } as StyleType
+                    }, [])
                 },
                 overlay: () => {
                     return menu

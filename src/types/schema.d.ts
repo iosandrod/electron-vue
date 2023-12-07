@@ -38,9 +38,12 @@ export type tableSchema = concatAny<UnUnique<VxeGridProps>>
 
 export type filterConfig = {}
 export type mergeConfig = {
-  row: any,
-  field: string,
-  mergeSpan: number//合并多少个
+  row?: any,//哪一行
+  lastRow?: any
+  field?: string,//哪一列 
+  colSpan?: number//合并多少个 
+  rowArr?: any[]
+  colArr?: any[]
 }
 export type tableConfig = {
   limitSize?: number
@@ -87,6 +90,7 @@ export type roundType = {
 }
 
 export type columnConfig = {
+  field?: string
   filterOptions?: []
   formatFn?: ({ value, column, row }) => any
   filterPulldownShow?: boolean,
@@ -100,6 +104,7 @@ export type columnConfig = {
   showHeader?: boolean,//是否显示头部
   editDisable?: (params?: any) => boolean,
   roundType?: roundType
+  columnConfig?: columnConfig
 }
 
 export type formItemConfig = itemConfig

@@ -19,11 +19,19 @@ import { getOptionsCellClassName, getOptionsCheckboxConfig, getOptionsColumns, g
 import { closeDialog, createDialog, destroyDialog, dialog, openDialog } from "./dialog"
 import { createDialogConfig } from "./tableDialogConfig"
 import { tableMethod } from "./tableMethod"
+import { tableMenuData } from "@/api/data3"
+import { contextMenu } from "./businessTable/contextMenu"
+import { getMouseEventPosition } from "@/utils/utils"
 
 
 export class table extends base<tableSchema> implements tableMethod {
   tableState: tableState = 'scan'
   isFocus: boolean = false
+  pageRef: {
+    vxeGrid?: VxeGridInstance,
+    headerContext?: contextMenu,
+    bodyContext?: contextMenu
+  } = {}
   columnWeakMap = new WeakMap()
   menuConfig = {
     headerMenu: {
@@ -32,9 +40,7 @@ export class table extends base<tableSchema> implements tableMethod {
         top: 0
       },
       show: false,
-      list: [
-        { context: '' }
-      ]
+      list: JSON.parse(JSON.stringify(tableMenuData))
     },
     bodyMenu: {
       position: {
@@ -42,9 +48,7 @@ export class table extends base<tableSchema> implements tableMethod {
         top: 0
       },
       show: false,
-      list: [
-        {}
-      ]
+      list: JSON.parse(JSON.stringify(tableMenuData))
     }
   }
   scrollConfig: scrollConfig = {
@@ -58,7 +62,8 @@ export class table extends base<tableSchema> implements tableMethod {
     showHeaderMenuDialog: true,
     columns: [],//列
     filterConfig: [{ field: 'name', value: 'Test1' }],//过滤配置
-    mergeConfig: [],//合并配置
+    mergeConfig: [
+    ],//合并配置
     height: 'auto',
     limitSize: 100,
     rowConfig: {
@@ -117,6 +122,9 @@ export class table extends base<tableSchema> implements tableMethod {
   }
   initTableConfig() {
     tableFn.initTableConfig(this)
+    setTimeout(() => {
+      this.setMergeConfig()
+    }, 1000);
   }
   async initGridOptions() {
     tableFn.initGridOptions(this)
@@ -148,19 +156,13 @@ export class table extends base<tableSchema> implements tableMethod {
       dialogMap[_key!] = null
     }
   }
-  openBodyMenu(position: position) {
-    this.menuConfig.bodyMenu.show = false
-    nextTick(() => {
-      this.menuConfig.bodyMenu.position = position
-      this.menuConfig.bodyMenu.show = true
-    })
+  openBodyMenu($event: MouseEvent) {
+    const bodyContext = this.pageRef.bodyContext!
+    bodyContext.openContext($event)
   }
-  openHeaderMenu(position: position) {
-    this.menuConfig.headerMenu.show = false
-    nextTick(() => {
-      this.menuConfig.headerMenu.position = position
-      this.menuConfig.headerMenu.show = true
-    })
+  openHeaderMenu($event: MouseEvent) {
+    const headerContext = this.pageRef.headerContext!
+    headerContext.openContext($event)
   }
   setTableEdit(editType: tableState) {
     if (['fullEdit', 'singleRowEdit', 'moreRowEdit', 'scan',].includes(editType)) {
@@ -174,6 +176,18 @@ export class table extends base<tableSchema> implements tableMethod {
     } catch (error) {
       console.error('没有找到vxeGrid实例')
     }
+  }
+  async setMergeConfig(rowArr?: any, colArr?: any) {//行
+    // const showData = this.gridOptions.data//压入一个数组
+    // const rowArr = showData?.slice(0, 10)//合并的数据
+    // const _rowArr = showData?.slice(4, 8)
+    // this.tableConfig.mergeConfig?.push({
+    //   rowArr: rowArr,
+    //   colArr: ['sex']
+    // }, {
+    //   rowArr: _rowArr,
+    //   colArr: ['address']
+    // }) 
   }
 }
 

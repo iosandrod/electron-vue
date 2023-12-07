@@ -9,6 +9,8 @@ import { getMouseEventPosition } from "@/utils/utils";
 import { createDialog } from "./dialog";
 import tableBodyMenu from "./tableColumnCom/tableBodyMenu";
 import tableHeaderMenu from "./tableColumnCom/tableHeaderMenu";
+import { createContextMenu } from "./businessTable/contextMenu";
+import contextMenuView from "./schemaComponent/contextMenuView";
 
 
 export const getTableRowConfig = (table: table) => {
@@ -24,8 +26,8 @@ export const getTableHeaderConfig = (table: table) => {
 
 export const getTableRowHeight = (table: table) => {
     return computed(() => {
-        const rowConfig = getTableRowConfig(table)!
-        const rowHeight = rowConfig?.rowHeight
+        const rowConfig = table.tableConfig.rowConfig
+        const rowHeight = rowConfig?.rowHeight || 30
         return rowHeight
     })
 }
@@ -174,10 +176,10 @@ export const getOptionsCellClassName = (table: table) => {
         return ({ row, column }: any) => {
             const curRow = table.tableData.curRow
             const curColumn = table.tableData.curColumn
-            if (row == curRow && column?.params == curColumn && column?.field != null) {
-                return ['rowSelect']
+            if (row == curRow && column.field == curColumn?.columnConfig.field && column?.field != null) {
+                return ['rowSelect', 'cellDefaultClass']
             }
-            return []
+            return ['cellDefaultClass']
         }
     })
 }
@@ -236,6 +238,7 @@ export const getOptionsShowHeader = (table: table) => {
 export const initGridOptions = (table: table) => {
     const gridOptions = table.gridOptions as VxeGridProps
     gridOptions.columns = getOptionsColumns(table) as any
+    gridOptions.stripe = true
     gridOptions.data = getOptionsData(table) as any
     gridOptions.treeConfig = getOptionsTreeConfig(table) as any
     gridOptions.scrollX = getOptionsScrollX(table) as any
@@ -253,6 +256,7 @@ export const initGridOptions = (table: table) => {
     gridOptions.showFooter = getOptionsShowFooter(table) as any
     gridOptions.showHeader = getOptionsShowHeader(table) as any
     gridOptions.border = false
+    gridOptions.border = true
     gridOptions.menuConfig = { enabled: true }
 }
 export const getOptionsColumnConfig = (table: table) => {
@@ -271,6 +275,26 @@ export const initComponent = (table: table) => {
     const destroy = computed(() => {
         return table.displayState == 'destroy'
     })
+    const bodyMenu = computed(() => {
+        let com: any = null
+        if (table.tableConfig.showBodyMenuDialog == true) {
+            // com = table.pageRef.bodyContext!.component!()
+            com = h(contextMenuView, { contextMenuInstance: table.pageRef.bodyContext })
+        } else {
+            com = null
+        }
+        return com
+    })
+    const headerMenu = computed(() => {
+        let com: any = null
+        if (table.tableConfig.showHeaderMenuDialog == true) {
+            // com = table.pageRef.bodyContext!.component!()
+            com = h(contextMenuView, { contextMenuInstance: table.pageRef.headerContext })
+        } else {
+            com = null
+        }
+        return com
+    })
     const _vNode = () => {
         const options = table.gridOptions
         const _class = ['h-full', 'w-full']
@@ -281,7 +305,7 @@ export const initComponent = (table: table) => {
         const outSizeDiv = getRenderFn('div',
             {
                 tabIndex: '0',
-                style: getTableStyle(table).value, class: _class,
+                class: _class,
             },
             [[{
                 mounted(div) {
@@ -333,9 +357,10 @@ export const initComponent = (table: table) => {
             },
             onCellMenu: (params: any) => {
                 const { row, column, $event } = params
-                const position = getMouseEventPosition($event)
+                // console.log(table.pageRef)
+                // const position = getMouseEventPosition($event)
                 const tableConfig = _this.tableConfig
-                table.openBodyMenu(position)
+                table.openBodyMenu($event)
                 const onCellMenu = tableConfig.onCellMenu
                 if (typeof onCellMenu == 'function') {
                     onCellMenu({ row, column } as any)
@@ -343,17 +368,24 @@ export const initComponent = (table: table) => {
             }
         }), [[{
             mounted: (el, node) => {
-                table.pageRef.vxeGrid = xeinstacne.value
+                table.pageRef.vxeGrid = xeinstacne.value as any
                 const scrollConfig = table.scrollConfig
                 table.scrollToPosition(scrollConfig.scrollLeft, scrollConfig.scrollTop)
             },
             unmounted: () => {
-                table.pageRef.vxeGrid = null
+                table.pageRef.vxeGrid = null as any
             },
         }]])
-        const bodyMenu = table.tableConfig.showBodyMenuDialog == true ? h(tableBodyMenu, { table: table }) : null
-        const headerMenu = table.tableConfig.showHeaderMenuDialog == true ? h(tableHeaderMenu, { table: table }) : null
-        const inSizeGrid = outSizeDiv([vxeGridCom, bodyMenu, headerMenu])
+        // const _bodyMenu = table.tableConfig.showBodyMenuDialog == true ? h(tableBodyMenu, { table: table }) : null
+        // const _headerMenu = table.tableConfig.showHeaderMenuDialog == true ? h(tableHeaderMenu, { table: table }) : null
+        // const _bodyMenu = table.tableConfig.showBodyMenuDialog == true ? h(contextMenuView, { contextMenuInstance: table.pageRef.bodyContext }) : null
+        // const _headerMenu = table.tableConfig.showHeaderMenuDialog == true ? h(contextMenuView, { contextMenuInstance: table.pageRef.headerContext }) : null
+        let _bodyMenu = bodyMenu.value
+        let _headerMenu = headerMenu.value
+        const inSizeGrid = outSizeDiv([vxeGridCom,
+            _bodyMenu,
+            _headerMenu
+        ])
         const _inSizeGrid = withDirectives(inSizeGrid, [[vShow, show.value]])
         return _inSizeGrid
     }
@@ -390,8 +422,22 @@ export const initTableConfig = (table: table) => {
         }
     }
     // 最后才会初始化Component
+    initTableMenu(table)
     initGridOptions(table)
     initComponent(table)
+}
+export const initTableMenu = (table: table) => {
+    //只初始化一次
+    if (table.pageRef.bodyContext != null || table.pageRef.headerContext != null) {
+        return
+    }
+    const menuConfig = table.menuConfig
+    const headerList = menuConfig.headerMenu.list
+    const bodyList = menuConfig.bodyMenu.list
+    const headerContext = createContextMenu({ list: headerList })
+    const bodyContext = createContextMenu({ list: bodyList })
+    table.pageRef.headerContext = headerContext
+    table.pageRef.bodyContext = bodyContext
 }
 
 

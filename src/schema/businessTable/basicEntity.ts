@@ -75,7 +75,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     contextMenu?: contextMenu,
   } = {
       vxeGrid: undefined,
-      vxeForm: undefined
+      vxeForm: undefined,
+      contextMenu: undefined,
     }
   tableConfig: any = {//表格配置
     //表格配置
@@ -91,7 +92,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   renderLayoutItems: Array<layoutItem> = []
   renderTable: any = {}//渲染表格的数据
   renderEditForm: formConfig = {} as any //渲染编辑表格 
-  renderEditEntity: any = {}
+  renderEditEntity: any = {}//初始化编辑表格
   renderSearchForm: any = {}//渲染查询表格
   renderButtonGroup: any = []//初始化按钮   
   renderDetailTable: any = {}//渲染子表配置
@@ -121,10 +122,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   initComponent() {
     const _divStyle = { position: "absolute", top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType
     const contextInstance = this.pageRef.contextMenu
+    const _this = this
     const _div = h('div', {
-      style: _divStyle, onContextmenu(event) {
-
-      },
+      style: _divStyle,
     } as propsConfig, [
       h(contextMenuView, { contextMenuInstance: contextInstance })
     ])
@@ -133,7 +133,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       if (drag == true) {
         return _div
       }
-      return null
+      return {}
     })
     const vNode = () => {
       //这里如果有虚拟节点必须使用虚拟节点
@@ -177,7 +177,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
             const renderStyle = { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType
             if (renderCom) {
               defaultCom = h('div', { style: renderStyle }, [renderCom,
-                dragDiv.value
+                h(dragDiv.value, {
+                  onContextmenu: (event: MouseEvent) => {
+                    _this.openContext(event, _item)
+                    event.preventDefault()
+                    event.stopPropagation()
+                  },
+                })
               ])
             } else {
               defaultCom = h('div', { style: renderStyle }, ['默认节点'])
@@ -479,5 +485,5 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
 }
 
 export const createBasicEntity = async () => {
-  return
+  return null
 }

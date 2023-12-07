@@ -32,7 +32,7 @@ body{
     border: none
   } */
 .curRowClass{ 
-    background:RGB(228, 228, 229);
+    background:RGB(139, 199, 255) !important;
 }
 .vxe-grid-hidden-border{
    
@@ -47,7 +47,7 @@ body{
     /* background: blue; */
 }
 .rowSelect{
-    background:RGB(198, 198, 209);
+    background:RGB(139, 199, 200);
 }
 .vxe-modal--wrapper .vxe-modal--content {
     flex-grow: 1;
@@ -81,4 +81,12 @@ body{
 }
 .ant-tabs-content {
     height: 100%;
+}
+
+
+
+
+
+.c--ellipsis{
+    height:inherit !important
 }
