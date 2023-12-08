@@ -214,8 +214,10 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         this.tableData.data = data
         await next()
       }
-      const middleArr = [pageloadMiddleware, confirmMiddleware, fn]//两个中间件
-      await this.runMiddlewares(payload, middleArr, 0)
+      const data = JSON.parse(JSON.stringify(mergeData))//这里是数据  
+      this.tableData.data = data
+      // const middleArr = [pageloadMiddleware, confirmMiddleware, fn]//两个中间件
+      // await this.runMiddlewares(payload, middleArr, 0)
       // this.setPageLoading(true) 
       // let curRow = this.getCurRow()
       // console.log(curRow, 'testCurRow')

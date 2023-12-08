@@ -426,7 +426,7 @@ export const initSchema = (table: table) => {
 }
 
 export const initTableConfig = (table: table) => {
-
+    initSchema(table)
     // 最后才会初始化Component
     initTableMenu(table)
     initGridOptions(table)

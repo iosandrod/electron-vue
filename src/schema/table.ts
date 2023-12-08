@@ -22,6 +22,7 @@ import { tableMethod } from "./tableMethod"
 import { tableMenuData } from "@/api/data3"
 import { contextMenu } from "./businessTable/contextMenu"
 import { getMouseEventPosition } from "@/utils/utils"
+import { mergeConfig } from "@/api/data4"
 
 
 export class table extends base<tableSchema> implements tableMethod {
@@ -174,18 +175,27 @@ export class table extends base<tableSchema> implements tableMethod {
     } catch (error) {
       console.error('没有找到vxeGrid实例')
     }
+    JSON.stringify
   }
-  async setMergeConfig(rows?: any[], cols?: any[]) {//行
-    const showData = this.gridOptions.data//压入一个数组
-    const rowArr = showData?.slice(0, 10)//合并的数据
-    const _rowArr = showData?.slice(4, 8)
-    this.tableConfig.mergeConfig?.push({
-      rowArr: rowArr,
-      colArr: ['sex']
-    }, {
-      rowArr: _rowArr,
-      colArr: ['address']
-    })
+  async setMergeConfig(rows?: any[], cols?: any[]) {//行 
+    // if (this.tableConfig.mergeConfig!?.length > 0) {
+    //   this.tableConfig.mergeConfig = [] as any
+    // } else {
+    //   const _mergeConfig = mergeConfig
+    //   const showData = this.tableData.data
+    //   const _mergeConfig1 = _mergeConfig.map(row => {
+    //     const rowArr = row.rowArr
+    //     const start = rowArr[0]
+    //     const end = rowArr[1] + rowArr[0]
+    //     const _rowArr = showData.slice(start, end)
+    //     const colArr = row.colArr
+    //     return {
+    //       rowArr: _rowArr,
+    //       colArr: colArr
+    //     } 
+    //   })
+    //   this.tableConfig.mergeConfig = _mergeConfig1
+    // }
   }
 }
 

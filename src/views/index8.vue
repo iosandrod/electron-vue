@@ -18,7 +18,7 @@
     <!-- <form-view :items="formItems" :data="formData"></form-view> -->
     <!-- <div class="w-10 h-10 bg-red-700">123</div> -->
     <!-- <component :is="vNode"></component> -->
-    <div style="" class="w-full" v-if="!showValue">
+    <div style="" class="w-full" v-if="showValue">
       <!-- <context-menu-view :contextMenuInstance="contextMenu"></context-menu-view> -->
       <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
       <!-- <gantt></gantt> -->

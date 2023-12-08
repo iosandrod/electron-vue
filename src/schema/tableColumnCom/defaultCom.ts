@@ -39,8 +39,10 @@ export default defineComponent({
             return false
         })
         const table = column.value.table
+        const tableConfig = table?.tableConfig!
+        const tableData = table?.tableData!
         const mergeDiv = computed(() => {
-            const mergeConfig = table?.tableConfig.mergeConfig!//合并配置
+            const mergeConfig = tableConfig.mergeConfig!//合并配置
             let _canEdit = canEdit.value
             if (_canEdit == true) {
                 return getRenderFn('div', { class: ['h-full w-full'] })
@@ -62,13 +64,14 @@ export default defineComponent({
             }
             let rowArr = targetConfig.rowArr
             let length = rowArr?.length!
-            let rowHeight = table?.tableConfig.rowConfig?.rowHeight!
+            // let rowHeight = table?.tableConfig.rowConfig?.rowHeight!
+            const rowHeight = 30
             let totalHeight = rowHeight * length
             let rowIndex = rowArr?.findIndex(item => item == _row)!
             let marginTop = rowIndex * rowHeight//marginTop的东西
             let paddingTop = Math.abs((length / 2 - rowIndex) * rowHeight)
-            let curRow = table?.tableData.curRow
-            let curColumnField = table?.tableData.curColumn?.columnConfig.field
+            let curRow = tableData.curRow
+            let curColumnField = tableData.curColumn?.columnConfig.field
             let style = {
                 marginTop: `-${marginTop}px`,
                 height: `${totalHeight}px`,
