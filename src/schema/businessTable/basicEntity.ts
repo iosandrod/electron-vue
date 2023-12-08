@@ -25,6 +25,7 @@ import { createForm, form } from "../form"
 import { propsConfig } from "../icon"
 import contextMenuView from "../schemaComponent/contextMenuView"
 import { contextMenu, createContextMenu } from "./contextMenu"
+import { mergeData } from "@/api/data4"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   sub = new Subject()//动作发射器
   detailTable?: detailEntity[] = []
@@ -209,7 +210,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         const url = payload.url
         const entity = payload.entity
         // const data=await http.post()//这里模拟获取数据
-        const data = JSON.parse(JSON.stringify(tableData3))//这里是数据  
+        const data = JSON.parse(JSON.stringify(mergeData))//这里是数据  
         this.tableData.data = data
         await next()
       }
@@ -301,7 +302,10 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       return entity.tableData.data
     }) as any//行与列
     const table = createTable(renderTable)
-    entity.pageRef.vxeGrid = table//只初始化一次   
+    entity.pageRef.vxeGrid = table//只初始化一次
+    // console.log(table.gridOptions)
+    // return reactive({ ...table.gridOptions })
+    // return renderTable
     return { tableInstance: table }
   }
   async initEntity(initConfig?: any): Promise<void> {//
@@ -481,6 +485,10 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   setCurrentEntityDesign(status: boolean) {
     this.layoutConfig.isDraggable = Boolean(status)
     this.layoutConfig.isResizable = Boolean(status)
+  }
+  setMergeConfig() {
+    const vxeGrid = this.pageRef.vxeGrid
+    vxeGrid?.setMergeConfig()
   }
 }
 

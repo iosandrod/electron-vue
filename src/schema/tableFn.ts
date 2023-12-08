@@ -114,7 +114,7 @@ export const getOptionsScrollX = (table: table) => {
         return {
             enabled: true,
             mode: 'default',
-            gt: 50
+            gt: 0
         }
     })
 }
@@ -148,7 +148,7 @@ export const getOptionsRowConfig = (table: table) => {
         return {
             height: rowHeight,
             isHover: true,
-            useKey: true
+            useKey: false
         }
     })
 }
@@ -242,6 +242,10 @@ export const initGridOptions = (table: table) => {
     gridOptions.treeConfig = getOptionsTreeConfig(table) as any
     gridOptions.scrollX = getOptionsScrollX(table) as any
     gridOptions.scrollY = getOptionsScrollY(table) as any
+    // gridOptions.rowConfig = {
+    //     height: 30,
+    //     useKey: false
+    // }
     gridOptions.rowConfig = getOptionsRowConfig(table) as any
     gridOptions.rowClassName = getOptionsRowClassName(table) as any
     gridOptions.cellClassName = getOptionsCellClassName(table) as any

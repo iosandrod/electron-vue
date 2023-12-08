@@ -9,6 +9,7 @@
     <vxe-button @click="btnClick3">btnClick3</vxe-button>
     <vxe-button @click="btnClick4">btnClick4</vxe-button>
     <vxe-button @click="btnClick5">btnClick5</vxe-button>
+    <vxe-button @click="btnClick6">merge</vxe-button>
     <!-- <vxe-input
       @change="inputChange"
       v-model="_menu.menuConfig.inputValue"
@@ -17,14 +18,44 @@
     <!-- <form-view :items="formItems" :data="formData"></form-view> -->
     <!-- <div class="w-10 h-10 bg-red-700">123</div> -->
     <!-- <component :is="vNode"></component> -->
-    <div style="" class="w-full" v-if="showValue">
+    <div style="" class="w-full" v-if="!showValue">
       <!-- <context-menu-view :contextMenuInstance="contextMenu"></context-menu-view> -->
       <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
       <!-- <gantt></gantt> -->
       <!-- <component :is="com"></component> -->
       <!-- <component :is="table.component"></component> -->
-      <table-view :tableInstance="table"></table-view>
-      <!-- <entity-view ref="entity" :entityInstance="_entity"></entity-view> -->
+      <!-- <table-view :tableInstance="table"></table-view> -->
+      <!-- <table-view
+        :columns="table.tableConfig.columns.map((col) => col.renderColumn)"
+        :data="table.tableData.data"
+        :height="100"
+        :scrollX="{
+          enabled: true,
+          mode: 'default',
+          gt: 0,
+        }"
+        :scrollY="{
+          enabled: true,
+          mode: 'default',
+          gt: 0,
+        }"
+      ></table-view> -->
+      <!-- <table-view
+        :columns="testTableViewData.columns"
+        :data="testTableViewData.data"
+        :scrollX="{
+          enabled: true,
+          mode: 'default',
+          gt: 0,
+        }"
+        :scrollY="{
+          enabled: true,
+          mode: 'default',
+          gt: 0,
+        }"
+        :height="100"
+      ></table-view> -->
+      <entity-view ref="entity" :entityInstance="_entity"></entity-view>
       <!-- <component :is="vNode"></component> -->
       <!-- <menu-view :menuInstance="_menu"></menu-view> -->
       <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
@@ -37,7 +68,6 @@
 import { createPage, nodeConfig } from '@/schema/businessTable/pageTree'
 import tableView from '@/schema/schemaComponent/tableView'
 import { createTable } from '@/schema/table'
-import { StyleType, tableConfig } from '@/types/schema'
 import {
   getCurrentInstance,
   h,
@@ -78,10 +108,6 @@ function inputChange({ value }: any) {
   // console.log(value)
   _menu.inputChange()
 }
-console.log(_menu, 'testMenu')
-// onMounted(() => {
-//   console.log(instance.$refs.tableView1, 'testTableDiv')
-// })
 const showValue = ref(true)
 // const vNode = h('div', {
 //   // 通过directives属性设置v-show指令
@@ -95,7 +121,6 @@ const showValue = ref(true)
 // })
 async function btnClick() {
   showValue.value = !showValue.value
-  console.log(showValue.value)
 }
 function btnClick2() {
   let _entity: any = instance?.$refs.entity
@@ -134,6 +159,9 @@ function btnClick1() {
 }
 function btnClick5() {
   table.setMergeConfig()
+}
+function btnClick6() {
+  _entity.setMergeConfig()
 }
 function btnClick4() {
   const _entity: any = instance?.$refs.entity

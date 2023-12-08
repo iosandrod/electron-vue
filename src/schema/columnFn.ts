@@ -103,8 +103,6 @@ export const getSlotDefault = (_column: column) => {
         const fn = ({ row, rowIndex, column }: any) => {
             const _defaultCom = h(defaultCom, { column: _column, row: row })
             return _defaultCom
-            // const _defaultCom = h('div', {}, ['123'])
-            // return _defaultCom
         }
         return fn
     })

@@ -44,10 +44,13 @@ export type mergeConfig = {
 
 export type sortconfig = {
   //排序配置
-
+  field: string,//排序字段
+  type: 'desc' | 'asc'
+  order: number,//排序的顺序
 }
 
 export type tableConfig = {
+  globalWhere?: string
   limitSize?: number
   showBodyMenuDialog?: boolean,
   showHeaderMenuDialog?: boolean,
@@ -58,7 +61,7 @@ export type tableConfig = {
   columns: extendColumnConfig[] = [],
   filterConfig?: filterConfig[],
   mergeConfig?: mergeConfig[],
-  sortconfig?: []
+  sortconfig?: sortconfig[]
   rowConfig?: {
     background?: string,
     rowHeight: number,
@@ -93,6 +96,7 @@ export type roundType = {
 }
 
 export type columnConfig = {
+  visible?: boolean
   field?: string
   filterOptions?: []
   formatFn?: ({ value, column, row }) => any

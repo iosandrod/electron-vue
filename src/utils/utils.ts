@@ -6,6 +6,7 @@ import { Directive } from 'vue'
 import XEUtils, * as vxUtils from 'xe-utils'
 import { StyleBuilder } from './styleBuilder'
 import json5 from 'json5'
+import * as equal from './equal'
 import _ from 'lodash'
 export const getMouseEventPosition = ($event: MouseEvent) => {
     // const left = $event.offsetX
@@ -233,3 +234,59 @@ export const formatFunction = (str: any) => {
     }
     return fn
 }
+
+
+export const quickSort = (arr: any[], field: string): any[] => {
+    if (arr.length <= 1) {
+        return arr;
+    }
+    return arr.sort((a, b) => {
+        return a[field] - b[field]
+    })
+}
+
+export const combineAdjacentEqualElements = (arr: any[], field: string, num: number, type: string): any[][] => {
+    if (num > 0) {
+        return arr.map(v => {
+            if (Array.isArray(v)) {
+                return combineAdjacentEqualElements(v, field, num - 1, type)
+            }
+            return v
+        }) as any
+    }
+    const sortedArr = arr.sort((a, b) => {
+        return a[field] - b[field]
+    }) as any
+    // 使用快速排序
+    const result: any[][] = [];
+    const equFn = equal[type as keyof typeof equal]
+    for (let i = 0; i < sortedArr.length; i++) {
+        let combined: any[] = [sortedArr[i]];
+        // 检查相邻元素是否相等/
+        //sortedArr[i][field] === sortedArr[i + 1][field]
+        //@ts-ignore
+        while (i + 1 < sortedArr.length && equFn(sortedArr[i][field], sortedArr[i + 1][field])) {
+            combined.push(sortedArr[i + 1]);
+            i++;
+        }
+        result.push(combined);
+    }
+    return result.map(item => {
+        if (item.length == 1) {
+            return item[0]
+        }
+        return item
+    });
+}
+
+// const equal = {
+//     string: (v1: string, v2: string) => {
+//         return v1 > v2 ? 1 : -1
+//     },
+//     num: (v1: number, v2: number) => {
+//         return v1 - v2
+//     },
+//     float: (v1: number, v2: number) => {
+//         return v1 - v2
+//     }
+// }

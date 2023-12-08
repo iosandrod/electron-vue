@@ -7,7 +7,7 @@ import { getTableStyle } from "../tableFn"
 import { destroyDialog } from "../dialog"
 import { getMouseEventPosition } from "@/utils/utils"
 export default defineComponent({
-  props: ['tableInstance', 'resizable', 'onCellMenu', 'showHeaderFilter', 'onCellClick', 'onCellDblclick', 'showSeqColumn', 'hiddenBorder', 'showHeader', 'height', 'showCheckBoxColumn', 'align', 'animat', 'columns', 'columnConfig', 'data', 'showFilterDialog', 'showHeaderMenuDialog', 'showBodyMenuDialog'] as Array<keyof VxeGridProps>,
+  props: ['tableInstance', 'resizable', 'scrollX', 'scrollY', 'onCellMenu', 'showHeaderFilter', 'onCellClick', 'onCellDblclick', 'showSeqColumn', 'hiddenBorder', 'showHeader', 'height', 'showCheckBoxColumn', 'align', 'animat', 'columns', 'columnConfig', 'data', 'showFilterDialog', 'showHeaderMenuDialog', 'showBodyMenuDialog'] as Array<keyof VxeGridProps>,
   setup(props, context) {
     const _props: any = props
     const tableInstance = _props.tableInstance
@@ -18,8 +18,6 @@ export default defineComponent({
       table = tableInstance
     }
     return { table: table }
-    // const table = createTable(props, context)
-    // return table.component
   },
   render() {
     const table = this.table
