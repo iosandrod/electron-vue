@@ -93,25 +93,42 @@ const runFun = async function getOrderData() {
     return result
 }
 export const getTableConfig = async (tableName?: string, origin = false) => {//获取配置
+    // try {
+    //     if (tableName == 't_SdOrder') {//这个是表的数据
+    //         let _tableInfo = JSON.parse(JSON.stringify(tableInfo))
+    //         const _info = await formatTableInfo(_tableInfo) as mainTableInfo
+    //         const xTableInfo = _info.xTableInfo//
+    //         const detailTable = xTableInfo?.detailTable || []
+    //         const _detailTable = await Promise.all(detailTable?.map(async (table) => {
+    //             let _config = await getTableConfig(table.tableName)
+    //             _config.tableButtons = JSON.parse(JSON.stringify(_info.tableButtons))
+    //             return _config
+    //         }))//子表配置
+    //         _info.detailTable = _detailTable
+    //         return _info
+    //     } else if (tableName == 't_SdOrderEntry') {
+    //         const _info1 = await formatTableInfo(tableinfo1) as mainTableInfo
+    //         return _info1
+    //     }
+    // } catch (error) {
+    //     console.error(error.message)
+    // }
     try {
-        if (tableName == 't_SdOrder') {//这个是表的数据
-            let _tableInfo = JSON.parse(JSON.stringify(tableInfo))
-            const _info = await formatTableInfo(_tableInfo) as mainTableInfo
-            const xTableInfo = _info.xTableInfo//
-            const detailTable = xTableInfo?.detailTable || []
-            const _detailTable = await Promise.all(detailTable?.map(async (table) => {
-                let _config = await getTableConfig(table.tableName)
-                _config.tableButtons = JSON.parse(JSON.stringify(_info.tableButtons))
-                return _config
-            }))//子表配置
-            _info.detailTable = _detailTable
-            return _info
-        } else if (tableName == 't_SdOrderEntry') {
-            const _info1 = await formatTableInfo(tableinfo1) as mainTableInfo
-            return _info1
-        }
+        const tableInfo = await http.postZkapsApi(`/api/builder/LoadTableInfo?tableName=${tableName}&bDesign=1`)
+        const _tableInfo = tableInfo.data
+        const _info = await formatTableInfo(_tableInfo) as mainTableInfo
+        console.log(_info)
+        const xTableInfo = _info.xTableInfo//
+        const detailTable = xTableInfo?.detailTable || []
+        const _detailTable = await Promise.all(detailTable?.map(async (table) => {
+            let _config = await getTableConfig(table.tableName)
+            _config.tableButtons = JSON.parse(JSON.stringify(_info.tableButtons))
+            return _config
+        }))//子表配置
+        _info.detailTable = _detailTable
+        return _info
     } catch (error) {
-        console.error(error.message)
+        console.log(error)
     }
 }
 

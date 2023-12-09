@@ -37,6 +37,7 @@
           <div class="w-full bg-gray-400 h-7"></div>
           <div class="flex-1 w-full">
             <router-view></router-view>
+            <!-- 路由组件 -->
           </div>
           <!-- is tab -->
         </div>

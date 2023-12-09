@@ -1,9 +1,10 @@
 import { Subject } from "rxjs"
-import { reactive, h, computed, resolveComponent } from "vue"
+import { reactive, h, computed, resolveComponent, Suspense, Teleport } from "vue"
 import { base } from "../base"
 import { pageTree } from "./pageTree"
 import layoutGridView from "../schemaComponent/layoutGridView"
 import { http } from "../http"
+
 import { tableMethod } from "../tableMethod"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
@@ -121,13 +122,28 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     return originTableInfo.cCodeColumn
   }
   initComponent() {
-    const _divStyle = { position: "absolute", top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType
+    const _divStyle = { position: 'absolute', top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType
     const contextInstance = this.pageRef.contextMenu
     const _this = this
     const _div = h('div', {
       style: _divStyle,
     } as propsConfig, [
-      h(contextMenuView, { contextMenuInstance: contextInstance })
+      // h(contextMenuView, { contextMenuInstance: contextInstance })
+      // h(Teleport,{to})
+      h(Teleport, {
+        to: 'body', style: {
+          position: "fixed",
+          left: "0px",
+          top: '0px',
+          zIndex: 9999
+        } as StyleType
+      }, {
+        // default: () => h(contextMenuView, { contextMenuInstance: contextInstance })
+        default: () => {
+          return h('div', { style: { height: '100vh', width: '100vw', background: 'red', position: "fixed" } as StyleType }, Array(1000).fill(1))
+        }
+      })
+
     ])
     const dragDiv = computed(() => {
       let drag = this.renderLayout.isDraggable && this.renderLayout.isResizable
@@ -402,8 +418,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       //使用entityConfig
       this.entityConfig = await getEntityConfig(this) as any
     }
-    const schema = this.entityConfig!
-    await Promise.all(schema.map(async (item: any) => {//这是个数组 节点数组
+    const entityConfig = this.entityConfig!//这个是节点配置
+    await Promise.all(entityConfig.map(async (item: any) => {//这是个数组 节点数组
       return await this.resolveEntityItem(item)
     }))
   }

@@ -135,7 +135,7 @@ export const getOptionsScrollY = (table: table) => {
     return computed(() => {
         return {
             enabled: true,
-            mode: 'default',
+            mode: 'wheel',
             gt: 0
         }
     })

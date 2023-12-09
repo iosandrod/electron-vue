@@ -3,12 +3,15 @@ import { VxeTableDefines } from "vxe-table"
 import { base } from "./base"
 import { createMenu } from "./menu"
 import { menuData } from "@/api/data3"
-import { menuConfig, tabConfig } from "@/types/schema"
+import { localStorageValue, menuConfig, tabConfig } from "@/types/schema"
+import { useLocalStorage } from '@vueuse/core'
+import { createMainEntity } from "./businessTable/mainEntity"
 
 
 
 export class system extends base {
   defaultTableConfig = {}
+  localStorage: localStorageValue = {}
   defaultColumnConfig: VxeTableDefines.ColumnOptions = {
     width: 180
   }//一些默认配置
@@ -25,15 +28,16 @@ export class system extends base {
     super({} as any, {})
     this.displayState = 'destroy'
   }
+  //都是使用entity作为路由基础组件
   async systemInit() {
     //初始化menu 实例数据
-    await this.initRenderMenu()//渲染menu的数据
+    await this.initLocalStorage()
+    await this.initRenderMenu()//渲染menu的数据  
     this.displayState = 'show'
   }
   async initSystemPermission() { }
   async initRenderMenu() {//菜单数据
     const data = JSON.parse(JSON.stringify(menuData))
-    const systemConfig = this.systemConfig
     const renderMenu = this.renderMenu
     renderMenu.data = computed(() => {
       return data
@@ -58,7 +62,20 @@ export class system extends base {
   {
     console.log('打开参照弹框')
   }
+  async initLocalStorage() {
+    const localStorage = this.localStorage
+    localStorage.token = useLocalStorage('token', '') as any
+  }
+  routeOpen(entityName: string) {//打开某个路由
+    const mainEntity = createMainEntity(entityName, {})
+  }
 }
 
+//
 const systemInstance = reactive(new system())
-export { systemInstance } 
+export { systemInstance }
+
+
+export const getSystem = (): system => {
+  return systemInstance
+}

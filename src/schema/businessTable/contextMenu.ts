@@ -1,10 +1,9 @@
-import { computed, h, isProxy, nextTick, reactive, toRef, watchEffect } from "vue";
+import { resolveComponent, Teleport, computed, h, isProxy, nextTick, reactive, toRef, watchEffect } from "vue";
 import { base } from "../base";
 import { systemInstance } from "../system";
 import { Dropdown, Menu } from "ant-design-vue";
 import { StyleType, position } from "@/types/schema";
 import { getMouseEventPosition } from "@/utils/utils";
-
 export class contextMenu extends base {
     contextMenuConfig = {
         list: [],//
@@ -27,6 +26,7 @@ export class contextMenu extends base {
     openContext(event: MouseEvent) {
         const position = getMouseEventPosition(event)//获取位置
         this.contextMenuConfig.position = position
+        // console.log(this.contextMenuConfig.position, 'testPosition')
         this.contextMenuConfig.modalValue = true
     }
     initComponent() {
@@ -55,8 +55,7 @@ export class contextMenu extends base {
             items: contextMenuConfig.list,
         })
         const vNode = () => {
-
-
+            // const teleport = resolveComponent('teleport')
             const polldown = h(Dropdown, {
                 trigger: ['contextmenu',],
                 "onUpdate:open": (value) => {
@@ -65,6 +64,20 @@ export class contextMenu extends base {
                 open: modelValue.value
             }, {
                 default: () => {
+                    // return h(Teleport, { to: '#app' }, {
+                    //     default: () => {
+                    //         return h('div', {
+                    //             style: {
+                    //                 width: "250px",
+                    //                 position: "fixed",
+                    //                 left: `${position.value.left}px`,
+                    //                 top: `${position.value.top}px`,
+                    //                 background: 'red'
+                    //             } as StyleType
+                    //         }, [])
+                    //     }
+
+                    // })
                     return h('div', {
                         style: {
                             width: "250px",
@@ -79,9 +92,19 @@ export class contextMenu extends base {
                     return menu
                 }
             })
-            return h('div', {
-            }, [polldown
-            ])
+            // return h('div', {
+            // }, [polldown
+            // ])
+            return h(Teleport, {
+                to: 'body'
+            }, {
+                default: () => {
+                    return [h('div', {
+                        style: { zIndex: 99999 } as StyleType
+                    }, [polldown])]
+                }
+            }
+            )
         }
         this.component = vNode
     }

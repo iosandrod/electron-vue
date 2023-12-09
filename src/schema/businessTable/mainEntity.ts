@@ -9,7 +9,7 @@ import { createDetailEntity, detailEntity } from "./detailEntity"
 export class mainEntity extends basicEntity {
   //页面树
   constructor(schema: any, entityName: string, system: any) {//schema 是entity的数据
-
+    //schema是配置
     super(schema, system);//外部的数据应该是静态数据
     this.entityName = entityName
     this.buttonCategory = 'ViewGrid'

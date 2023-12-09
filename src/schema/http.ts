@@ -1,25 +1,27 @@
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
-interface IOptions {
-  loading?: boolean
-  message?: boolean
-  clearValidateError?: boolean
-}
-export class Axios {
+import { getSystem } from './system'
+
+export class myHttp {
   private instance
   private loading: any
-  private options: IOptions = { loading: true, message: true, clearValidateError: true }
+  private options = { loading: true, message: true, clearValidateError: true }
   constructor(config: AxiosRequestConfig) {
     this.instance = axios.create(config)
     this.interceptors()
   }
+  //只有两个 get和post
   public async post(url: any, data: any, config?: AxiosRequestConfig) {
     return await this.instance.post(url, data, config)
   }
   public async get(url: any, config?: AxiosRequestConfig) {
     return await this.instance.get(url, config)
   }
-
-  public async request<T>(config: AxiosRequestConfig, options?: IOptions) {
+  public getSystem() {
+    const system = getSystem()
+    return system
+  }
+  //
+  public async request<T>(config: AxiosRequestConfig, options?: any) {
     this.options = Object.assign(this.options, options ?? {})
     return new Promise(async (resolve, reject) => {
       try {
@@ -30,7 +32,36 @@ export class Axios {
       }
     }) as Promise<T>
   }
+  public async login(userName?: string, password?: string, companyId?: string) {
+    const body = {
+      UUID: '1377c7ce-9b4b-4fb2-b871-47cd96123cde',
+      companyId: companyId || '0018',
+      password: password || 'zkaps#1',
+      userName: userName || 'admin',
+      verificationCode: '1'
+    }
+    const url = '/api/user/login'
+    const headers = {}
+    const data = await this.post('/entity/postZkapsApi', { body, url, headers })
+    const { data: _data } = data
+    const token = _data.token
+    const system = this.getSystem()
+    system.localStorage.token = token
+    return token
+  }
+  async postZkapsApi(url: string, body?: any, headers?: any) {
 
+    const _body: any = {
+      url, body: body || {},
+    }
+    const _url = '/entity/postZkapsApi'
+    const system = this.getSystem()
+    const token = system.localStorage.token
+    const _headers = headers || {}
+    _body.headers = Object.assign(_headers, { Authorization: `Bearer ${token}` })
+    const data = await this.post(_url, _body)
+    return data
+  }
   private interceptors() {
     this.interceptorsRequest()
     this.interceptorsResponse()
@@ -59,21 +90,12 @@ export class Axios {
         return _data
       },
       (error) => {
-        // if (this.loading) {
-        //   this.loading.close()
-        //   this.loading = undefined
-        // }
-        // this.options = { loading: true, message: true, clearValidateError: true }
-        // const {
-        //   response: { status, data },
-        // } = error
-        // const message = data.error ?? data.message
         return Promise.reject(error)
       },
     )
   }
 }
-export const http = new Axios({
+export const http = new myHttp({
   baseURL: 'http://127.0.0.1:9000/api',
   headers: {
     'Content-Type': "application/json"

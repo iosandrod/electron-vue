@@ -34,6 +34,9 @@ export class table extends base<tableSchema> implements tableMethod {
     bodyContext?: contextMenu
   } = {}
   columnWeakMap = new WeakMap()
+  mergeDivMap = new WeakMap()
+  mergeDivColMap = new WeakMap()
+  mergeColObj = {}
   menuConfig = {
     headerMenu: {
       position: {
@@ -175,27 +178,39 @@ export class table extends base<tableSchema> implements tableMethod {
     } catch (error) {
       console.error('没有找到vxeGrid实例')
     }
-    JSON.stringify
   }
   async setMergeConfig(rows?: any[], cols?: any[]) {//行 
-    // if (this.tableConfig.mergeConfig!?.length > 0) {
-    //   this.tableConfig.mergeConfig = [] as any
-    // } else {
-    //   const _mergeConfig = mergeConfig
-    //   const showData = this.tableData.data
-    //   const _mergeConfig1 = _mergeConfig.map(row => {
-    //     const rowArr = row.rowArr
-    //     const start = rowArr[0]
-    //     const end = rowArr[1] + rowArr[0]
-    //     const _rowArr = showData.slice(start, end)
-    //     const colArr = row.colArr
-    //     return {
-    //       rowArr: _rowArr,
-    //       colArr: colArr
-    //     } 
-    //   })
-    //   this.tableConfig.mergeConfig = _mergeConfig1
-    // }
+    if (Object.keys(this.tableConfig.mergeConfig!).length > 0) {
+      this.tableConfig.mergeConfig = {} as any
+    } else {
+      const _mergeConfig = mergeConfig
+      const showData = this.tableData.data
+      const _mergeConfig1 = _mergeConfig.map(row => {
+        const rowArr = row.rowArr
+        const start = rowArr[0]
+        const end = rowArr[1] + rowArr[0]
+        const _rowArr = showData.slice(start, end)
+        const colArr = row.colArr
+        return {
+          rowArr: _rowArr,
+          colArr: colArr
+        }
+      })
+      let result: any = {}
+      let _obj = this.gridOptions.columns?.map(col => col.field!).map((field: string) => {
+        result[field] = { rowArr: [] }
+        let _obj1 = result[field]
+        let testMerge = _mergeConfig1
+        testMerge.forEach(merge => {
+          let colArr = merge.colArr
+          if (colArr.includes(field)) {
+            _obj1.rowArr.push(merge.rowArr)
+          }
+        })
+        return _obj1
+      })
+      this.tableConfig.mergeConfig = result as any
+    }
   }
 }
 

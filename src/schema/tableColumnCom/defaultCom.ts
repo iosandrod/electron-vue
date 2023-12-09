@@ -42,44 +42,101 @@ export default defineComponent({
         const tableConfig = table?.tableConfig!
         const tableData = table?.tableData!
         const mergeDiv = computed(() => {
-            const mergeConfig = tableConfig.mergeConfig!//合并配置
-            let _canEdit = canEdit.value
-            if (_canEdit == true) {
-                return getRenderFn('div', { class: ['h-full w-full'] })
+            // const mergeConfig = tableConfig.mergeConfig!//合并配置
+            // let _canEdit = canEdit.value
+            // let style = {
+            //     height: '100%',
+            //     width: '100%'
+            // } as StyleType
+            // if (_canEdit == true) {
+            //     return style
+            // }
+            // if (mergeConfig && mergeConfig.length == 0) {
+            //     return style
+            // }
+            // const _row = row.value
+            // let field = column.value.columnConfig.field!
+            // const targetConfig = mergeConfig.find(config => {
+            //     let rowArr = config.rowArr!
+            //     let colArr = config.colArr!
+            //     if (rowArr.includes(_row) && colArr.includes(field)) {
+            //         return true
+            //     }
+            // })
+            // if (targetConfig == null) {
+            //     return style
+            // }
+            // let rowArr = targetConfig.rowArr
+            // let length = rowArr?.length!
+            // let rowHeight = table?.tableConfig.rowConfig?.rowHeight!
+            // let totalHeight = rowHeight * length
+            // let rowIndex = rowArr?.findIndex(item => item == _row)!
+            // let marginTop = rowIndex * rowHeight//marginTop的东西
+            // let paddingTop = Math.abs((length / 2 - rowIndex) * rowHeight)
+            // let curRow = tableData.curRow
+            // let curColumnField = tableData.curColumn?.columnConfig.field
+            // Object.assign(style, {
+            //     marginTop: `-${marginTop}px`,
+            //     height: `${totalHeight}px`,
+            //     background: 'white',
+            //     paddingTop: `${paddingTop}px`,
+            //     position: "absolute",
+            //     border: 'solid 1px RGB(232, 234, 236)',
+            //     width: '100%'
+            // } as StyleType)
+            // if (rowIndex == 0) {
+            //     style.zIndex = 1
+            // }
+            // if (rowArr?.includes(curRow)) {
+            //     if (curColumnField == field) {
+            //         style.background = 'RGB(139, 199, 200)'
+            //     } else {
+            //         style.background = 'RGB(139, 199, 255)'
+            //     }
+            // }
+            // return style
+            let style: any = {
+                width: '100%',
+                height: '100%'
             }
-            if (mergeConfig && mergeConfig.length == 0) {
-                return getRenderFn('div', { class: ['h-full w-full'] })
-            }
-            const _row = row.value
+            let mergeConfig = tableConfig.mergeConfig!
             let field = column.value.columnConfig.field!
-            const targetConfig = mergeConfig.find(config => {
-                let rowArr = config.rowArr!
-                let colArr = config.colArr!
-                if (rowArr.includes(_row) && colArr.includes(field)) {
+            let curRow = tableData.curRow
+            const _row = row.value
+            let _canEdit = canEdit.value
+            if (_canEdit) {
+                return style
+            }
+            let targetConfig = mergeConfig[field]
+            if (targetConfig == null) {
+                return style
+            }
+            let rowArrs = targetConfig.rowArr
+            let rowArr = rowArrs.find(rows => {
+                if (rows.includes(row.value)) {
                     return true
                 }
             })
-            if (targetConfig == null) {
-                return getRenderFn('div', { class: ['h-full w-full'] })
+            console.log(rowArr, 'testArr')
+            if (rowArr == null) {
+                return style
             }
-            let rowArr = targetConfig.rowArr
             let length = rowArr?.length!
-            // let rowHeight = table?.tableConfig.rowConfig?.rowHeight!
-            const rowHeight = 30
+            let rowHeight = table?.tableConfig.rowConfig?.rowHeight!
             let totalHeight = rowHeight * length
             let rowIndex = rowArr?.findIndex(item => item == _row)!
             let marginTop = rowIndex * rowHeight//marginTop的东西
             let paddingTop = Math.abs((length / 2 - rowIndex) * rowHeight)
-            let curRow = tableData.curRow
             let curColumnField = tableData.curColumn?.columnConfig.field
-            let style = {
+            Object.assign(style, {
                 marginTop: `-${marginTop}px`,
                 height: `${totalHeight}px`,
                 background: 'white',
                 paddingTop: `${paddingTop}px`,
                 position: "absolute",
-                border: 'solid 1px RGB(232, 234, 236)'
-            } as StyleType
+                border: 'solid 1px RGB(232, 234, 236)',
+                width: '100%'
+            } as StyleType)
             if (rowIndex == 0) {
                 style.zIndex = 1
             }
@@ -90,35 +147,18 @@ export default defineComponent({
                     style.background = 'RGB(139, 199, 255)'
                 }
             }
-            return getRenderFn('div', { class: ['w-full'], style: style })
-            // const _column = column.value//
-            // const field = _column.columnConfig.field//获取配置
-            // let mergeRow = mergeConfig.find(config => {
-            //     return config.row == _row && config.field == field
-            // })
-            // if (mergeRow == null) {
-            // return getRenderFn('div', { class: ['h-full w-full'] })
-            // h('div', { class: ['h-full w-full'] })//没有合并的列配置
-            // }
-            // const rowHeight = table?.tableConfig.rowConfig?.rowHeight!
-            // const colSpan = mergeRow.colSpan!
-            // const totalHeight = rowHeight * colSpan
-            // const style = {
-            //     height: `${totalHeight}px`,
-            //     position: "absolute",
-            //     background: "red"
-            // } as StyleType
-            // return h('div', { style: style, class: ['w-full'] },)
+            return style
         })
+
         const renderCom = computed(() => {
             const _canEdit = canEdit.value
             const _editDisable = editDisable.value
             let editCom: any = null
             let defaultCom: any = null
             const defaultComFn = getRenderFn('div', { style: { wdith: '100%', height: "100%", background: "" } as StyleType })
-            const mergeComFn = mergeDiv.value!//合并的行节点
+            const mergeComFnStyle = mergeDiv.value//合并的行节点
+            const mergeComFn = getRenderFn('div', { style: mergeComFnStyle })
             defaultCom = defaultComFn([mergeComFn([showValue.value])])
-            // defaultCom = defaultComFn([showValue.value])
             if (_canEdit == true && _editDisable == false) {//表可编辑+行可编辑
                 if (formitem == null) {
                     return getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
@@ -147,7 +187,6 @@ export default defineComponent({
                 }
                 return editCom
             }
-
             return defaultCom
         })
         return { formitem: formitem, renderCom: renderCom }

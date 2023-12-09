@@ -10,6 +10,8 @@
     <vxe-button @click="btnClick4">btnClick4</vxe-button>
     <vxe-button @click="btnClick5">btnClick5</vxe-button>
     <vxe-button @click="btnClick6">merge</vxe-button>
+    <vxe-button @click="btnClick7">local</vxe-button>
+    <vxe-button @click="btnClick8">local1</vxe-button>
     <!-- <vxe-input
       @change="inputChange"
       v-model="_menu.menuConfig.inputValue"
@@ -18,8 +20,21 @@
     <!-- <form-view :items="formItems" :data="formData"></form-view> -->
     <!-- <div class="w-10 h-10 bg-red-700">123</div> -->
     <!-- <component :is="vNode"></component> -->
-    <div style="" class="w-full" v-if="showValue">
-      <!-- <context-menu-view :contextMenuInstance="contextMenu"></context-menu-view> -->
+    <div style="" class="w-full h-full" v-if="showValue">
+      <!-- <div
+        class="relative w-full h-full mt-8 bg-red-500 ml-11"
+        style="
+          transform: translateX(50px);
+          position: relative; /* 设置相对定位 */
+        "
+      >
+        <teleport to="body" :disabled="false">
+          <div class="fixed top-0 left-0 bg-blue-800 w-9 h-9"></div>
+        </teleport>
+        <context-menu-view
+          :contextMenuInstance="contextMenu"
+        ></context-menu-view>
+      </div> -->
       <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
       <!-- <gantt></gantt> -->
       <!-- <component :is="com"></component> -->
@@ -85,12 +100,13 @@ import Mousetrap from 'mousetrap'
 import { tableData, tableData2 } from '@/api/data'
 import { tableData3 } from '@/api/data2'
 import { createDialog, confirm } from '@/schema/dialog'
+import { http } from '@/schema/http'
 import { createMenu } from '@/schema/menu'
 import { menuData, tableMenuData, testTableViewData } from '@/api/data3'
 import { createContextMenu } from '@/schema/businessTable/contextMenu'
-// import { createMenu } from '@/schema/icon'
+import { useLocalStorage } from '@vueuse/core'
 const entity = ref(null)
-const _entity = createMainEntity('t_SdOrder', null)
+const _entity = createMainEntity('v_WorkOrderLess2', null)
 const { proxy: instance } = getCurrentInstance()!
 const _menu = createMenu({
   data: JSON.parse(JSON.stringify(menuData)),
@@ -105,7 +121,6 @@ const contextMenu = createContextMenu({
 })
 console.log(contextMenu)
 function inputChange({ value }: any) {
-  // console.log(value)
   _menu.inputChange()
 }
 const showValue = ref(true)
@@ -129,33 +144,10 @@ function btnClick2() {
 }
 let state = false
 function btnClick1() {
-  // if (table.tableState == 'scan') {
-  //   table.tableState = 'fullEdit'
-  // } else {
-  //   table.tableState = 'scan'
-  // }
-  //@ts-nocheck
-  // console.log(_entity1, 'testEntity')
-  // console.log(_entity)
-  // _entity1.layoutConfig.isDraggable = !_entity1.layoutConfig.isDraggable
-  // _entity1.layoutConfig.isResizable = !_entity1.layoutConfig.isResizable
-  // let tableState = _entity1.pageRef.vxeGrid.tableState
-  // if (tableState == 'scan') {
-  //   _entity1.pageRef.vxeGrid.setTableEdit('fullEdit')
-  // } else {
-  //   _entity1.pageRef.vxeGrid.setTableEdit('scan')
-  // }
-  // _entity1.tableInfo?.tableColumns.forEach((col) => {
-  //   col.editType = 'string'
-  // })
-  // _entity.tableInfo.tableColumns = _entity.tableInfo?.tableColumns.slice(0, 4)
-  // console.log(_entity1.tableInfo?.tableColumns, 'testColumns')
   const _entity: any = instance?.$refs.entity
   const _entity1 = _entity.entity as mainEntity
   _entity1.layoutConfig.isDraggable = !_entity1.layoutConfig.isDraggable
   _entity1.layoutConfig.isResizable = !_entity1.layoutConfig.isResizable
-  // const dEntity = _entity1.getDetailEntity('t_SdOrderEntry')
-  // dEntity.setCurrentEntityDesign(!state)
 }
 function btnClick5() {
   table.setMergeConfig()
@@ -168,18 +160,20 @@ function btnClick4() {
   const _entity1 = _entity.entity as mainEntity
   const vxeGrid = _entity1.pageRef.vxeGrid!
   if (vxeGrid.displayState == 'show') {
-    // if (_entity1.displayState == 'show') {
-    // _entity1.displayState = 'hidden'
     vxeGrid.displayState = 'destroy'
   } else {
     vxeGrid.displayState = 'show'
-    // _entity1.displayState = 'show'
   }
-  // console.log(_entity1.displayState)
-  // _entity1.layoutConfig.isDraggable = false
-  // _entity1.layoutConfig.isResizable = false
-  // const dEntity = _entity1.getDetailEntity('t_SdOrderEntry')
-  // dEntity.setCurrentEntityDesign(!state)
+}
+const localValue = useLocalStorage('value', 'xiaofeng')
+async function btnClick7() {
+  const tableName = 't_SdOrder'
+  const url = `/api/builder/LoadTableInfo?tableName=${tableName}`
+  const _data = await http.postZkapsApi(url)
+  console.log(_data)
+}
+function btnClick8() {
+  localStorage.setItem('value', 'xiaoming')
 }
 Mousetrap.bind('ctrl+left', function () {
   console.log('ctrl a')
@@ -200,57 +194,7 @@ const table = createTable(testTableViewData)
 //律师
 //回应
 
-const formData = ref({
-  name: 'xiaofeng',
-  sex: '0',
-  role: 'shutiao',
-  job: 'teacher',
-})
-const formItems = ref([
-  {
-    field: 'name',
-    title: '名称',
-    span: 8,
-    type: 'string',
-    placeholder: '请输入名称',
-    layout: { x: 0, y: 0, w: 2, h: 2, i: '0', nodeName: 'tableView' },
-  },
-  {
-    field: 'sex',
-    title: '性别',
-    type: 'select',
-    span: 8,
-    layout: { x: 2, y: 0, w: 2, h: 4, i: '1', nodeName: '' },
-    options: [
-      { value: '0', label: '女' },
-      { value: '1', label: '男' },
-    ],
-  },
-  {
-    field: 'role',
-    type: 'baseInfo',
-    title: '角色',
-    span: 8,
-    layout: { x: 4, y: 0, w: 2, h: 5, i: '2', nodeName: '' },
-  },
-  // {
-  //   field: 'job',
-  //   type: 'baseInfo',
-  //   title: '工作',
-  //   span: 8,
-  // },
-])
-function btnClick3() {
-  // console.log('btnClick3')
-  // const _dialog = createDialog('confirmBox', {
-  //   message: '是否执行',
-  //   height: '200px',
-  //   width: '200px',
-  // })
-  // console.log(_dialog, 'testDialog')
-  // _dialog.open()
-  // confirm({})
-}
+function btnClick3() {}
 </script>
 
 <style scoped></style>

@@ -38,8 +38,11 @@ export type tableSchema = concatAny<UnUnique<VxeGridProps>>
 
 export type filterConfig = {}
 export type mergeConfig = {
-  rowArr?: any[]
-  colArr?: any[]
+  // rowArr?: any[]
+  // colArr?: any[]
+  [key: string]: {
+    rowArr: any[][]
+  }
 }
 
 export type sortconfig = {
@@ -60,7 +63,7 @@ export type tableConfig = {
   showSeqColumn?: boolean,
   columns: extendColumnConfig[] = [],
   filterConfig?: filterConfig[],
-  mergeConfig?: mergeConfig[],
+  mergeConfig?: mergeConfig,
   sortconfig?: sortconfig[]
   rowConfig?: {
     background?: string,
@@ -484,4 +487,8 @@ export type tabItem = TabPaneProps & {
 
 export type tabConfig = TabsProps & {
   tabItems?: []
+}
+
+export type localStorageValue = {
+  token?: string
 }
