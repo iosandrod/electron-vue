@@ -303,28 +303,33 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   //添加一个节点
   addItem() { }
   async initRenderTable() {
-    // return await entityRenderFn.getRenderTable(this)
-    const entity = this
-    const renderTable = entity.renderTable//这个是渲染表格的数据
-    renderTable.columns = computed(() => {
-      const columns: any = entity.tableInfo!.tableColumns
-      const _columns = columns.map((col: any) => {
-        let _col = new entityColumn()
-        _col.initColumn(col)
-        return _col
-      })
-      return _columns
-      // return []
-    }) as any//处理表格 
-    renderTable.data = computed(() => {
-      return entity.tableData.data
-    }) as any//行与列
-    const table = createTable(renderTable)
-    entity.pageRef.vxeGrid = table//只初始化一次
-    // console.log(table.gridOptions)
-    // return reactive({ ...table.gridOptions })
-    // return renderTable
-    return { tableInstance: table }
+    try {
+
+
+      const entity = this
+      const renderTable = entity.renderTable//这个是渲染表格的数据
+      renderTable.columns = computed(() => {
+        const columns: any = entity.tableInfo!.tableColumns
+        const _columns = columns.map((col: any) => {
+          let _col = new entityColumn()
+          _col.initColumn(col)
+          return _col
+        })
+        return _columns
+        // return []
+      }) as any//处理表格 
+      renderTable.data = computed(() => {
+        return entity.tableData.data
+      }) as any//行与列
+      const table = createTable(renderTable)
+      entity.pageRef.vxeGrid = table//只初始化一次
+      // console.log(table.gridOptions)
+      // return reactive({ ...table.gridOptions })
+      // return renderTable
+      return { tableInstance: table }
+    } catch (error) {
+      return Promise.reject("表格数据获取出错")
+    }
   }
   async initEntity(initConfig?: any): Promise<void> {//
     this.displayState = 'destroy'//显示状态

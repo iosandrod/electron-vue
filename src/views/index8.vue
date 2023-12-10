@@ -11,7 +11,8 @@
     <vxe-button @click="btnClick5">btnClick5</vxe-button>
     <vxe-button @click="btnClick6">merge</vxe-button>
     <vxe-button @click="btnClick7">local</vxe-button>
-    <vxe-button @click="btnClick8">local1</vxe-button>
+    <vxe-button @click="btnClick8">login</vxe-button>
+    <vxe-button @click="btnClick9">route9</vxe-button>
     <!-- <vxe-input
       @change="inputChange"
       v-model="_menu.menuConfig.inputValue"
@@ -86,6 +87,7 @@ import { createTable } from '@/schema/table'
 import {
   getCurrentInstance,
   h,
+  nextTick,
   onMounted,
   reactive,
   ref,
@@ -105,6 +107,9 @@ import { createMenu } from '@/schema/menu'
 import { menuData, tableMenuData, testTableViewData } from '@/api/data3'
 import { createContextMenu } from '@/schema/businessTable/contextMenu'
 import { useLocalStorage } from '@vueuse/core'
+import { RouteRecordSingleView } from 'vue-router'
+import entityView from '@/schema/schemaComponent/entityView'
+import Index9 from './index9.vue'
 const entity = ref(null)
 const _entity = createMainEntity('v_WorkOrderLess2', null)
 const { proxy: instance } = getCurrentInstance()!
@@ -119,7 +124,6 @@ const _menu = createMenu({
 const contextMenu = createContextMenu({
   list: JSON.parse(JSON.stringify(tableMenuData)),
 })
-console.log(contextMenu)
 function inputChange({ value }: any) {
   _menu.inputChange()
 }
@@ -173,7 +177,25 @@ async function btnClick7() {
   console.log(_data)
 }
 function btnClick8() {
-  localStorage.setItem('value', 'xiaoming')
+  // localStorage.setItem('value', 'xiaoming')
+  http.login()
+}
+async function btnClick9() {
+  const $router = instance?.$router!
+  const entity1 = createMainEntity('t_SdOrder')
+  const obj = {
+    component: Index9 as any,
+    path: '/index9',
+    props: () => {
+      return { testProps: 'xiaofeng', entityInstance: entity1 }
+    },
+  } as RouteRecordSingleView
+  $router.addRoute('index', obj)
+  nextTick(() => {
+    $router.push({
+      path: '/index9',
+    })
+  })
 }
 Mousetrap.bind('ctrl+left', function () {
   console.log('ctrl a')

@@ -84,8 +84,8 @@ export const getOptionsData = (table: table) => {
 export const getOptionsColumns = (table: table) => {
     return computed(() => {
         const tableConfig = table.tableConfig
-        const checkBoxColumn = tableConfig.showCheckBoxColumn == true ? { type: 'checkbox', width: 50, field: 'checkboxField', align: 'center', resizable: true } as VxeColumnProps : null
-        const seqColumn = tableConfig.showSeqColumn == true ? { type: "seq", width: 100, align: 'center', resizable: true } as VxeColumnProps : null
+        const checkBoxColumn = tableConfig.showCheckBoxColumn == true ? { type: 'checkbox', width: 50, field: 'checkboxField', align: 'center', resizable: false } as VxeColumnProps : null
+        const seqColumn = tableConfig.showSeqColumn == true ? { type: "seq", width: 100, align: 'center', resizable: false } as VxeColumnProps : null
         const defaultColumns = [seqColumn, checkBoxColumn].filter(col => col != null)
         const columns = [
             ...defaultColumns,

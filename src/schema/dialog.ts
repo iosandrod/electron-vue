@@ -1,6 +1,6 @@
 import { isVNode, createApp, ComponentOptions, computed, defineComponent, h, nextTick, reactive, resolveComponent, watchEffect, App, VueElement, shallowRef } from "vue";
 import { base } from "./base";
-import { systemInstance, system } from "./system";
+import { system, getSystem } from "./system";
 import VXETable, { VxeModalProps, VxeModalDefines, VxeModal, VxeModalInstance, VxeTable } from "vxe-table";
 import { concatAny, confirmConfig, dialogConfig, openDialogConfig } from "@/types/schema";
 import { getDialogDestroyOnClose, getDialogHeight, getDialogLockView, getDialogMaskClosable, getDialogMinHeight, getDialogMinMask, getDialogMinWidth, getDialogModelValue, getDialogOnHide, getDialogOnShow, getDialogPosition, getDialogPrimaryId, getDialogResize, getDialogShowFooter, getDialogSlots, getDialogType, getDialogWidth } from "./dialogFn";
@@ -146,7 +146,7 @@ export class DialogPool {
     dynamicApp?: App<Element>
     constructor() { }
     initDialogPool() {
-        this.vNode = new dialog('vNode', {}, systemInstance)
+        this.vNode = new dialog('vNode', {}, getSystem())
         this.initVxeDynamics()//初始化app
         this.checkDynamic();//检测挂载
     }
@@ -195,7 +195,7 @@ export class DialogPool {
     }
 }
 export const dialogPool = reactive(new DialogPool())
-dialogPool.initDialogPool()
+
 
 export const createDialog = (schemaName: string = 'codeEdit', schema: concatAny<VxeModalProps & {
     table?: any,
@@ -203,7 +203,7 @@ export const createDialog = (schemaName: string = 'codeEdit', schema: concatAny<
     closeBefore?: () => Promise<void> | void//关闭之前
 }>,) => {
     //schemaName这个是弹框的名称
-    const Dialog = reactive(new dialog(schemaName, schema, systemInstance))
+    const Dialog = reactive(new dialog(schemaName, schema, getSystem()))
     Dialog.initDialog()
     addDialog(Dialog as any)
     return Dialog
@@ -284,4 +284,4 @@ export const confirm = async (confirmConfig: confirmConfig) => {
     const dia = createDialog('confirm', _confirmConfig)
     dia.open()
     return dia
-}  
+}

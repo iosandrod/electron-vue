@@ -40,7 +40,7 @@ export class mainEntity extends basicEntity {
 }
 
 //业务
-export const createMainEntity = (entityName: string, tableInfo: any) => {
+export const createMainEntity = (entityName: string, tableInfo: any = {}) => {
   const entity = reactive(new mainEntity(tableInfo, entityName, systemInstance))
   entity.initEntity()
   return entity

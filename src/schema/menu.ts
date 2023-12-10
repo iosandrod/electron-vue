@@ -43,7 +43,6 @@ export class menu extends base<MenuProps> {
     }
     buildData() {
         const menuConfig = this.menuConfig
-        // const parentKey = menuConfig.parentKey!
         const rootKey = menuConfig.rootKey
         const key = menuConfig.key!
         const rootTitle = menuConfig.rootTitle || '菜单'
@@ -159,6 +158,13 @@ export class menu extends base<MenuProps> {
         renderInput.onChange = ({ value }: any) => {
             renderInput.modelValue = value
             this.inputChange()
+        }
+    }
+    menuItemClick(item: menuItem) {
+        const menuConfig = this.menuConfig
+        const clickFn = menuConfig.itemClick
+        if (typeof clickFn == 'function') {
+            clickFn(item)
         }
     }
     initComponent(): void {
@@ -337,7 +343,12 @@ export class menuItem extends base {
                         return h(menuItemView, { menuItem: chi })
                     })
                 } else {
-                    return h('div', [renderMenuItem.title])
+                    return h('div', {
+                        onClick: () => {
+                            const menu = _this.getMenu()
+                            menu.menuItemClick(_this)
+                        }
+                    }, [renderMenuItem.title])
                 }
             })
             const node1 = h('div', [node])

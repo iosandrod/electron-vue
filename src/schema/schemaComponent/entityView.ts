@@ -14,23 +14,6 @@ export default defineComponent({
         } else {
             entity = createMainEntity(entityName, tableInfo)
         }
-        // const pageShow = computed(() => {
-        //     const state = entity.displayState
-        //     return state !== 'destroy'
-        // }) 
-        // const component = computed(() => {
-        //     const show = pageShow.value
-        //     if (show == false) {
-        //         return () => h('div')
-        //     } else {
-        //         return entity.component
-        //     }
-        // })
-        // const testShow = ref(false)
-        // setInterval(() => {
-        //     testShow.value = !testShow.value
-        // }, 2000)
-        // return { entity: entity, com: component, }
         return { entity: entity }
     },
     render() {

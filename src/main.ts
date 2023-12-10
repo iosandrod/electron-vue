@@ -14,8 +14,10 @@ import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
 import VueGridLayout from 'vue-grid-layout'
 import ganttastic from './components/gantt/vue-ganttastic'
-createApp(App)
-  .use(VXETable)
+import { getSystem } from './schema/system'
+const app = createApp(App)
+app.config.globalProperties['system'] = getSystem()
+app.use(VXETable)
   .use(Antd)
   .use(router)
   .use(register)
@@ -25,7 +27,3 @@ createApp(App)
   .$nextTick(() => {
     postMessage({ payload: 'removeLoading' }, '*')
   })
-
-const arr = [1, 2, 4]
-// arr[]
-  // const value=arr

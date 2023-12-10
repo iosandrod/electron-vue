@@ -158,8 +158,6 @@ export const formatTableInfo = async (tableInfo: any) => {
             let _obj1 = formatTableExtend(_obj)
             _xExtend = _obj1
         } catch (error) {
-            console.log(xExtend)
-            console.log(error, 'xExtend解析出错')
             _xExtend = []
         }
         let _xTreeMenuData = formatJsonData(xTreeMenuData, 'object')
@@ -188,7 +186,6 @@ export const formatJsonData = (jsonStr: any, type: any) => {
         let _data = json5.parse(jsonStr)
         data = _data
     } catch (error) {
-        console.log(jsonStr, error)
     }
     if (!Array.isArray(data) && type == 'array') {
         return []
@@ -229,7 +226,6 @@ export const formatFunction = (str: any) => {
             fn = _fn
         }
     } catch (error) {
-        console.log(str, 'testFn')
         console.error(error)
     }
     return fn

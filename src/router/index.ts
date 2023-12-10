@@ -1,4 +1,4 @@
-import { type RouteRecordRaw, createRouter } from "vue-router"
+import { type RouteRecordRaw, createRouter, RouterView } from "vue-router"
 import { history, flatMultiLevelRoutes } from "./helper"
 
 
@@ -16,19 +16,30 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path: "/",
+    name: "index",
     component: () => import('@/views/index.vue'),
-    redirect: '/index8',//is mainEntity
+    // redirect: '/index8',//is mainEntity
     children: [
       {
         path: "/home",
+        name: "home",
         component: () => import('@/views/home.vue')
       },
       {
         path: "/index8",
+        name: "index8",
         component: () => import("@/views/index8.vue")
       }
     ]
   },
+  {
+    path: "/:pathMatch(.*)*", // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
+    // component: () => import('@/views/index8.vue'),
+    component: () => import('@/views/index.vue'),
+    meta: {
+      hidden: true
+    }
+  }
 ]
 
 /**
@@ -37,21 +48,14 @@ export const constantRoutes: RouteRecordRaw[] = [
  * 必须带有 Name 属性
  */
 export const asyncRoutes: RouteRecordRaw[] = [
-  {
-    path: "/:pathMatch(.*)*", // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
-    // component: () => import('@/views/index8.vue'),
-    component: () => import('@/views/index8.vue'),
-    meta: {
-      hidden: true
-    }
-  }
+
 ]
 
 const router = createRouter({
   history,
-  routes: [...asyncRoutes, ...constantRoutes]
+  routes: [...constantRoutes]
 })
-
+// router.addRoute()
 /** 重置路由 */
 export function resetRouter() {
   // 注意：所有动态路由路由必须带有 Name 属性，否则可能会不能完全重置干净
@@ -69,3 +73,10 @@ export function resetRouter() {
 }
 
 export default router
+
+export const getRouter = () => {
+  return router
+}
+
+
+//

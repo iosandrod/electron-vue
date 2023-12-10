@@ -468,6 +468,7 @@ export type tableButton = {
 
 export type tableButtons = Array<tableButton>
 type _menuConfig = {
+  itemClick?: (item: menuItem) => void
   collapseAll?: boolean,
   data?: [],
   parentKey?: string,

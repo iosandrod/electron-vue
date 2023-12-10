@@ -1,9 +1,6 @@
 <template>
   <template v-if="systemInstance.displayState !== 'destroy'"></template>
-  <a-layout
-    v-show="systemInstance.displayState == 'show'"
-    style="height: 100%;"
-  >
+  <a-layout v-show="systemInstance.displayState == 'show'" style="height: 100%;">
     <a-layout-sider v-model:collapsed="collapsed" :trigger="null" collapsible>
       <div class="flex flex-col h-full">
         <div class="logo" :style="{ height: pageConfig.headerHeight }" />
@@ -14,29 +11,19 @@
     </a-layout-sider>
     <a-layout>
       <a-layout-header style="background: #fff; padding: 0;">
-        <menu-unfold-outlined
-          v-if="collapsed"
-          class="trigger"
-          @click="() => (collapsed = !collapsed)"
-        />
-        <menu-fold-outlined
-          v-else
-          class="trigger"
-          @click="() => (collapsed = !collapsed)"
-        />
+        <menu-unfold-outlined v-if="collapsed" class="trigger" @click="() => (collapsed = !collapsed)" />
+        <menu-fold-outlined v-else class="trigger" @click="() => (collapsed = !collapsed)" />
       </a-layout-header>
-      <a-layout-content
-        :style="{
-          margin: '24px 16px',
-          padding: '24px',
-          background: '#fff',
-          minHeight: '280px',
-        }"
-      >
+      <a-layout-content :style="{
+        margin: '24px 16px',
+        padding: '24px',
+        background: '#fff',
+        minHeight: '280px',
+      }">
         <div class="flex flex-col w-full h-full">
           <div class="w-full bg-gray-400 h-7"></div>
           <div class="flex-1 w-full">
-            <router-view></router-view>
+            <router-view :key="$route.fullPath"></router-view>
             <!-- 路由组件 -->
           </div>
           <!-- is tab -->
