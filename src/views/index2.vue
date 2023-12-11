@@ -1,73 +1,42 @@
 <template>
   <div>
-    <table-view v-bind="gridOptions"></table-view>
-    <!-- <div v-for="item in arr" :key="item">
-      <div>
-        <div>
-          {{ item }}
-        </div>
-        <div>
-          {{ item }}
-        </div>
-        <div>
-          {{ item }}
-        </div>
-        <div>
-          {{ item }}
-        </div>
-        <div>
-          {{ item }}
-        </div>
-      </div>
-    </div> -->
-    <vxe-button @click="clickFn">button</vxe-button>
-    <!-- <vxe-modal
-      :model-value="modalValue"
-      title="阻止关闭"
-      width="400"
-      height="200"
-      :destroy-on-close="true"
-      show-zoom
-      esc-closable
-      :transfer="true"
-      :mask="false"
-      resize
-      :slots="slots"
-      :lock-view="false"
-    ></vxe-modal> -->
+    <vxe-button @click="buttonClick">button</vxe-button>
+    <template v-if="modalValue">
+      <!-- <div v-for="item in arr" :key="item">
+        <div>{{ item }}</div>
+      </div> -->
+      <!-- <index2 :arr="arr"></index2> -->
+      <table-view v-bind="gridOptions"></table-view>
+      <!-- <vxe-grid v-bind="gridOptions"></vxe-grid> -->
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { tableConfig } from '@/types/schema'
-import { h, reactive, ref, onUnmounted } from 'vue'
-onUnmounted(() => {
-  modalValue.value = false
-})
-type indexProp = {
-  arr: Array<number>
-}
-const props = defineProps<indexProp>()
-const arr = props.arr
-const slots = {
-  default: (params: any) => {
-    const arr = Array(1000)
-      .fill(0)
-      .map((v, i) => i)
-    return h(
-      'div',
-      {},
-      arr.map((v) => h('div', {}, [v])),
-    )
-  },
-}
+import { ref, reactive, markRaw, toRaw, watchEffect, h, onMounted, onUnmounted } from 'vue'
+import { VXETable, VxeGridProps } from 'vxe-table'
+import * as electron from 'electron'
+import { dialogConfig, tableConfig } from '@/types/schema'
+import { SelectProps } from 'ant-design-vue'
+import { createDialog } from '@/schema/dialog'
+import index2 from './index2.vue'
+// const show=ref
+const vall = ref(true)
 const modalValue = ref(true)
-// setTimeout(() => {
-//   modalValue.value = false
-// }, 8000)
+
+// const dialog = createDialog(filterConfig.props, {}, 'columnFilter')
+function buttonClick() {
+  modalValue.value = !modalValue.value
+}
+onMounted(() => {
+  console.log('mounted')
+})
+onUnmounted(() => {
+  console.log('unmounted')
+})
 const gridOptions = reactive<tableConfig>({
-  onCellClick: () => {},
-  onCellMenu: () => {},
+  onCellClick: () => { },
+  onCellMenu: () => { },
   border: true,
   height: 300,
   columns: [
@@ -151,10 +120,4 @@ const gridOptions = reactive<tableConfig>({
     },
   ],
 })
-function clickFn() {
-  console.log('clickFn')
-  modalValue.value = false
-}
 </script>
-
-<style scoped></style>

@@ -9,35 +9,35 @@ import XEUtils from "xe-utils";
 import { _columns, _columns1 } from "@/schema/entityColumn";
 import { formatTableInfo } from "@/utils/utils";
 export const getTableInfo = async (entity?: basicEntity) => {
-    const itemArr: layoutItem = [{
-        x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-            renderComName: "buttonGroupView",//组件 
-            renderFunName: 'initRenderButtonGroup',//数据初始化函数
-        } as layoutItemConfig,
-    }, {
-        x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-            renderComName: "tableView",//组件
-            renderFunName: 'initRenderTable',//数据初始化函数
-        } as layoutItemConfig,
-    }, {
-        x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-            renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
-            renderFunName: "initRenderDetailEntity",
-        } as layoutItemConfig
-    },]
-    const _itemArr = JSON.parse(JSON.stringify(itemArr))
-    return _itemArr
+    // const itemArr: layoutItem = [{
+    //     x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+    //         renderComName: "buttonGroupView",//组件 
+    //         renderFunName: 'initRenderButtonGroup',//数据初始化函数
+    //     } as layoutItemConfig,
+    // }, {
+    //     x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+    //         renderComName: "tableView",//组件
+    //         renderFunName: 'initRenderTable',//数据初始化函数
+    //     } as layoutItemConfig,
+    // }, {
+    //     x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+    //         renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
+    //         renderFunName: "initRenderDetailEntity",
+    //     } as layoutItemConfig
+    // },]
+    // const _itemArr = JSON.parse(JSON.stringify(itemArr))
+    // return _itemArr
 }
 
 
 export const getEntityConfig = async (entity?: basicEntity) => {
     const itemArr: layoutItem = [
-        // {
-        //     x: 0, y: 0, h: 2, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-        //         renderComName: "buttonGroupView",//组件
-        //         renderFunName: 'initRenderButtonGroup',//数据初始化函数
-        //     } as layoutItemConfig,
-        // },
+        {
+            x: 0, y: 0, h: 4, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "buttonGroupView",//组件
+                renderFunName: 'initRenderButtonGroup',//数据初始化函数
+            } as layoutItemConfig,
+        },
         // {
         //     x: 0, y: 2, h: 3, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
         //         renderComName: "formView",//组件
@@ -45,20 +45,20 @@ export const getEntityConfig = async (entity?: basicEntity) => {
         //     } as layoutItemConfig,
         // },
         {
-            x: 0, y: 5, h: 25, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            x: 0, y: 4, h: 15, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
                 renderComName: "tableView",//组件
                 renderFunName: 'initRenderTable',//数据初始化函数
             } as layoutItemConfig,
         },
-        // {
-        //     x: 0, y: 8, h: 5, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-        //         renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
-        //         renderFunName: "initRenderDetailEntity",
-        //     } as layoutItemConfig
-        // },
+        {
+            x: 0, y: 19, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
+                renderFunName: "initRenderDetailEntity",
+            } as layoutItemConfig
+        },
     ]
     const _itemArr = JSON.parse(JSON.stringify(itemArr))
-    if (entity?.entityType == 'detail') {
+    if (entity?.entityType == 'detail' || entity?.tableInfo?.detailTable?.length <= 0) {
         _itemArr.pop()
     }
     return _itemArr
@@ -117,7 +117,6 @@ export const getTableConfig = async (tableName?: string, origin = false) => {//�
         const tableInfo = await http.postZkapsApi(`/api/builder/LoadTableInfo?tableName=${tableName}&bDesign=1`)
         const _tableInfo = tableInfo.data
         const _info = await formatTableInfo(_tableInfo) as mainTableInfo
-        console.log(_info)
         const xTableInfo = _info.xTableInfo//
         const detailTable = xTableInfo?.detailTable || []
         const _detailTable = await Promise.all(detailTable?.map(async (table) => {

@@ -4,6 +4,7 @@ import { systemInstance } from "../system"
 import { entityConfig, layoutItem } from "@/types/schema"
 import { mainEntity } from "./mainEntity"
 import { TabPaneProps } from "ant-design-vue"
+import { createEntityButton } from "../entityButton"
 
 export class detailEntity extends basicEntity {
   detailTable: detailEntity[] = []
@@ -15,7 +16,7 @@ export class detailEntity extends basicEntity {
     this.entityType = 'detail'//子表类型
     this.entityName = entityName
     this.tableInfo = schema
-    this.buttonCategory = ''
+    this.buttonCategory = 'ViewDetailTable'
   }
 
   async initEntity() {
@@ -24,6 +25,7 @@ export class detailEntity extends basicEntity {
     await this.initDetailTab()
     this.displayState = 'show'
   }
+
   async initComponent() {//初始化节点
     await super.initComponent()
   }
@@ -47,6 +49,30 @@ export class detailEntity extends basicEntity {
     // const detaialEntity = detailTable.map(table => {
     // return createDetailEntity('t_SdOrderEntry')
     // })
+  }
+  initRenderButtonGroup() {
+    const entity = this.getMainTable()
+    const tableInfo = entity.tableInfo
+    const buttons = tableInfo?.tableButtons! || []//
+    const buttonCategory = this.buttonCategory
+    const entityName = this.entityName
+    let _button = buttons?.find((btn) => {
+      const category = btn.category
+      const tableName = btn.tableName
+      if (category == buttonCategory && entityName == tableName) {
+        return true
+      }
+    })
+    _button = _button || buttons?.find((btn) => {
+      const category = btn.category
+      return category == buttonCategory
+    })
+    const targetButtons = _button?.buttons || []//获取到这个东西
+    this.renderButtonGroup = targetButtons?.map(btn => {
+      const _btn = createEntityButton(btn, this)
+      return _btn
+    })
+    return { entity: this, buttons: this.renderButtonGroup }
   }
 }
 

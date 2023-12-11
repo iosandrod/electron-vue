@@ -1,4 +1,4 @@
-import { defineComponent } from 'vue'
+import { defineComponent, h } from 'vue'
 import { contextMenu } from '../businessTable/contextMenu'
 
 export default defineComponent({//
@@ -8,6 +8,6 @@ export default defineComponent({//
         return { menu: _menu }
     },
     render() {
-        return this.menu.component!()
+        return this.menu?.component!() || h('div', ['123'])
     }
 })

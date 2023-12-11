@@ -17,14 +17,10 @@ export default defineComponent({
                 return detailTable.value.map(dTable => {
                     const renderTab = dTable.renderDetailTab
                     return h(TabPane, renderTab, () => {
-                        // return h('div', ['123'])
                         return h(entityView, { entityInstance: dTable, })
                     })
                 })
             })
         }
     },
-    render() {
-
-    }
 })

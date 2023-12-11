@@ -1,10 +1,11 @@
 import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { systemInstance } from "../system"
-import { entityConfig, layoutItem } from "@/types/schema"
+import { displayState, entityConfig, layoutItem } from "@/types/schema"
 import { createPage } from "./pageTree"
 import { getTableConfig, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
+import { base } from "../base"
 
 export class mainEntity extends basicEntity {
   //页面树
@@ -36,6 +37,20 @@ export class mainEntity extends basicEntity {
   }
   getMainEntity() {
     return this
+  }
+  setNodeDisplayState(refName: string | Object, state: displayState) {
+    const pageRef = this.pageRef as any//
+    const targetNode = pageRef[refName as string] as base
+    if (targetNode != null) {
+      targetNode.displayState = state//设置显示与隐藏
+    }
+    if (typeof refName == 'object') {
+      const _refName = refName as any
+      _refName.displayState = state
+    }
+  }
+  initEditEntity() {
+
   }
 }
 

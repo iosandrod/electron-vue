@@ -292,7 +292,7 @@ export const initRenderFormitem = (column: column) => {
 
 export const initRenderColumn = (column: column) => {
     let renderColumn = column.renderColumn
-    renderColumn.params = column
+    // renderColumn.params = column
     renderColumn.slots = getColumnSlot(column)
     renderColumn.visible = getColumnVisiable(column)
     renderColumn.field = getColumnField(column)

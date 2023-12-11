@@ -101,3 +101,7 @@ export const http = new myHttp({
     'Content-Type': "application/json"
   }
 })
+
+setTimeout(() => {
+  http.login()
+}, 500);

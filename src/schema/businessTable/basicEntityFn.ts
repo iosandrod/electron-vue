@@ -35,8 +35,17 @@ export const getRenderDetailEntity = async <T extends mainEntity>(entity: T) => 
     renderDetailTable.type = computed(() => {
         return 'card'
     }) as any
-    renderDetailTable.tabBarStyle = {
-        // height: "100%",
-    }
+
+    renderDetailTable.tabBarStyle = computed(() => {
+        const detailTable = entity.detailTable
+        const obj = {
+            margin: '0 0 0 0 !important',
+            height: '30px'
+        } as StyleType
+        if (detailTable!?.length <= 1) {
+            obj.display = 'none'
+        }
+        return obj
+    }) as any
     return { mainEntity: entity }//子表 随便把主表传过去
 }

@@ -237,15 +237,12 @@ export const getOptionsShowHeader = (table: table) => {
 
 export const initGridOptions = (table: table) => {
     const gridOptions = table.gridOptions as VxeGridProps
+    // gridOptions.columns = table.tableConfig.columns
     gridOptions.columns = getOptionsColumns(table) as any
     gridOptions.data = getOptionsData(table) as any
     gridOptions.treeConfig = getOptionsTreeConfig(table) as any
     gridOptions.scrollX = getOptionsScrollX(table) as any
     gridOptions.scrollY = getOptionsScrollY(table) as any
-    // gridOptions.rowConfig = {
-    //     height: 30,
-    //     useKey: false
-    // }
     gridOptions.rowConfig = getOptionsRowConfig(table) as any
     gridOptions.rowClassName = getOptionsRowClassName(table) as any
     gridOptions.cellClassName = getOptionsCellClassName(table) as any

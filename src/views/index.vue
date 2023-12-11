@@ -21,10 +21,16 @@
         minHeight: '280px',
       }">
         <div class="flex flex-col w-full h-full">
-          <div class="w-full bg-gray-400 h-7"></div>
+          <div class="w-full bg-gray-400" style="height: 30px;">
+            <tab-view :tabInstance="systemInstance.pageRef.tabRef"></tab-view>
+          </div>
+          <div><vxe-button @click="designEntity">进入设计</vxe-button></div>
           <div class="flex-1 w-full">
-            <router-view :key="$route.fullPath"></router-view>
+            <!-- <router-view :key="$route.fullPath"></router-view> -->
             <!-- 路由组件 -->
+            <component :is="com" :key="$route.name"></component>
+            <!-- <keep-alive>
+            </keep-alive> -->
           </div>
           <!-- is tab -->
         </div>
@@ -33,7 +39,7 @@
   </a-layout>
 </template>
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, getCurrentInstance, h, isProxy, ref } from 'vue'
 import {
   UserOutlined,
   VideoCameraOutlined,
@@ -42,9 +48,33 @@ import {
   MenuFoldOutlined,
 } from '@ant-design/icons-vue'
 import { systemInstance } from '@/schema/system'
+import Index1 from './index1.vue';
+import { RouterView } from 'vue-router';
+import entityView from '@/schema/schemaComponent/entityView';
+import { mainEntity } from '@/schema/businessTable/mainEntity';
 const pageConfig = computed(() => {
   return systemInstance.pageConfig
 })
+const { proxy: instance } = getCurrentInstance()!
+const com = computed(() => {
+  const route = instance?.$route
+  const name = route?.name! as string
+  const entity = systemInstance.entityVetor[name]
+  if (entity == null) {
+    return h(RouterView)
+  }
+  return h(entityView, { entityInstance: entity })
+})
+let state = false
+function designEntity() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  if (entity) {
+    state = !state
+    entity.setCurrentEntityDesign(state)
+  }
+}
 const collapsed = ref<boolean>(false)
 </script>
 <style lang="scss">

@@ -2,12 +2,13 @@ import { getRenderFn } from '@/schema/columnFn'
 import { propsConfig } from '@/schema/icon'
 import { StyleType, position } from '@/types/schema'
 import { isNumber } from 'lodash'
-import { Directive } from 'vue'
+import { Directive, getCurrentInstance } from 'vue'
 import XEUtils, * as vxUtils from 'xe-utils'
 import { StyleBuilder } from './styleBuilder'
 import json5 from 'json5'
 import * as equal from './equal'
 import _ from 'lodash'
+import { system } from '@/schema/system'
 export const getMouseEventPosition = ($event: MouseEvent) => {
     // const left = $event.offsetX
     const left = $event.clientX
@@ -286,3 +287,10 @@ export const combineAdjacentEqualElements = (arr: any[], field: string, num: num
 //         return v1 - v2
 //     }
 // }
+
+
+export const useSystem = (): system => {
+    const { proxy: instance }: any = getCurrentInstance()!
+    const system = instance.system
+    return system as system
+}

@@ -90,3 +90,7 @@ body{
 .c--ellipsis{
     height:inherit !important
 }
+
+.ant-tabs-nav{
+    /* margin:0 0 0 0 !important */
+}

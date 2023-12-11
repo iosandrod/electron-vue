@@ -5,18 +5,21 @@
     </div>
     <entity-view :entityInstance="props.entityInstance"></entity-view>
   </div>
-</template>
+</template> 
 
 <script setup lang="ts">
+import * as utils from '@/utils/utils'
 const props = defineProps({
   entityInstance: {},
 })
+const system = utils.useSystem()
 function fn1() {
-  console.log('fn1')
 }
-function fn2() {}
+function fn2() { }
 function fn3() {
-  console.log()
+}
+
+function fn4() {
 }
 </script>
 <style scoped></style>

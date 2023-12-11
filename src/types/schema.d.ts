@@ -213,6 +213,7 @@ export type layoutItem = {
   component?: any
 }
 export type layoutConfig = {
+  margin?: number[]
   contextMenuPosition?: position
   layout?: Array<layoutItem>
   colNum?: number,
@@ -487,7 +488,7 @@ export type tabItem = TabPaneProps & {
 }
 
 export type tabConfig = TabsProps & {
-  tabItems?: []
+  tabItems?: TabPaneProps[]
 }
 
 export type localStorageValue = {

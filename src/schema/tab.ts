@@ -22,10 +22,12 @@ export class tab extends base {
                 _tabConfig[key] = schema[key]
             })
         })
+        this.initRenderTab()
+        this.initComponent()
     }
     initComponent(): void {
         const _this = this
-        const tabCofnig = this.tabConfig
+        const tabConfig = this.tabConfig
         const destroy = computed(() => {
             return _this.displayState == 'destroy'
         })
@@ -37,7 +39,7 @@ export class tab extends base {
                 return null
             }
             const tabCom = h(Tabs, this.renderTab, () => {
-                const tabItems = tabCofnig.tabItems
+                const tabItems = tabConfig.tabItems
                 return tabItems?.map(item => {
                     return h(TabPane, item)
                 })
@@ -55,6 +57,9 @@ export class tab extends base {
         }) as any
         renderTab.activeKey = computed(() => {
             return tabConfig.activeKey
+        }) as any
+        renderTab.tabBarStyle = computed(() => {
+            return tabConfig.tabBarStyle || {}
         }) as any
     }
 }

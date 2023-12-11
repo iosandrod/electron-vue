@@ -9,6 +9,7 @@ import detailEntityView from '@/schema/schemaComponent/detailEntityView'
 import buttonGroupView from '@/schema/schemaComponent/buttonGroupView'
 import menuView from '@/schema/schemaComponent/menuView'
 import contextMenuView from '@/schema/schemaComponent/contextMenuView'
+import tabView from '@/schema/schemaComponent/tabView'
 export default {
     install(app: App) {
         app.component('table-view', tableView)
@@ -19,10 +20,12 @@ export default {
         app.component('entity-view', entityView)
         app.component('menu-view', menuView)
         app.component('context-menu-view', contextMenuView)
+        app.component('tab-view', tabView)
     }
 }
 
 export const comVetor = {
+    tabView,
     contextMenuView,
     tableView,
     formView,

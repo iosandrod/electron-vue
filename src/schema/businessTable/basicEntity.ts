@@ -3,6 +3,8 @@ import { reactive, h, computed, resolveComponent, Suspense, Teleport } from "vue
 import { base } from "../base"
 import { pageTree } from "./pageTree"
 import layoutGridView from "../schemaComponent/layoutGridView"
+import { GridLayout, GridItem } from 'vue-grid-layout'
+import * as layoutGrid from 'vue-grid-layout'
 import { http } from "../http"
 
 import { tableMethod } from "../tableMethod"
@@ -28,6 +30,7 @@ import contextMenuView from "../schemaComponent/contextMenuView"
 import { contextMenu, createContextMenu } from "./contextMenu"
 import { mergeData } from "@/api/data4"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
+  tabIndex: number = 0//使用tabIndex ,路由的tab
   sub = new Subject()//动作发射器
   detailTable?: detailEntity[] = []
   http = http
@@ -69,7 +72,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   mainEntity?: mainEntity
   originTableInfo?: any
-  schema?: Array<layoutItem> = []
+  schema?: {} = {}
   entityName = ''
   pageRef: {
     vxeGrid?: table,
@@ -138,24 +141,25 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
           zIndex: 9999
         } as StyleType
       }, {
-        // default: () => h(contextMenuView, { contextMenuInstance: contextInstance })
         default: () => {
           return h('div', { style: { height: '100vh', width: '100vw', background: 'red', position: "fixed" } as StyleType }, Array(1000).fill(1))
         }
       })
-
     ])
+    const _div1 = h('div')
     const dragDiv = computed(() => {
       let drag = this.renderLayout.isDraggable && this.renderLayout.isResizable
       if (drag == true) {
         return _div
       }
-      return {}
+      return _div1
     })
     const vNode = () => {
       //这里如果有虚拟节点必须使用虚拟节点
       const layoutCom = resolveComponent('grid-layout')
       const layoutItemCom = resolveComponent('grid-item')
+      // const layoutCom = GridLayout
+      // const layoutItemCom = GridItem
       const renderLayout = this.renderLayout
       const schema = this.entityConfig!
       const _this = this
@@ -186,10 +190,11 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
             let defaultCom: any = null
             const component = item.component//
             if (component != null) {//
-              renderCom = withDirectives(component(), [[{
-                mounted(div, node) { },
-                unmounted() { }
-              }]])
+              // renderCom = withDirectives(component(), [[{
+              //   mounted(div, node) { },
+              //   unmounted() { }
+              // }]])
+              renderCom = component()
             }
             const renderStyle = { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType
             if (renderCom) {
@@ -211,6 +216,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       })), [[vShow, show.value]])
     }
     this.component = vNode as any
+
   }
   async initNode() {
   }
@@ -384,7 +390,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   async initTableInfo() {
     const tableInfo = await getTableConfig(this.entityName)//相当于表名吧,这个函数具有副作用
-    // entity.originTableInfo = JSON.parse(JSON.stringify(tableInfo))//原始的表格数据 
     this.tableInfo = tableInfo
   }
   async initRenderLayout() {
@@ -401,6 +406,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     renderLayout.verticalCompact = computed(() => {
       return this.layoutConfig.verticalCompact
     }) as any
+    renderLayout.margin = [0, 0]
     // renderLayout.responsive = true
     // renderLayout.useCssTransform = false
     // renderLayout.verticalCompact = false

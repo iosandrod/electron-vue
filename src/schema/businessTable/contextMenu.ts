@@ -55,7 +55,6 @@ export class contextMenu extends base {
             items: contextMenuConfig.list,
         })
         const vNode = () => {
-            // const teleport = resolveComponent('teleport')
             const polldown = h(Dropdown, {
                 trigger: ['contextmenu',],
                 "onUpdate:open": (value) => {
@@ -64,20 +63,6 @@ export class contextMenu extends base {
                 open: modelValue.value
             }, {
                 default: () => {
-                    // return h(Teleport, { to: '#app' }, {
-                    //     default: () => {
-                    //         return h('div', {
-                    //             style: {
-                    //                 width: "250px",
-                    //                 position: "fixed",
-                    //                 left: `${position.value.left}px`,
-                    //                 top: `${position.value.top}px`,
-                    //                 background: 'red'
-                    //             } as StyleType
-                    //         }, [])
-                    //     }
-
-                    // })
                     return h('div', {
                         style: {
                             width: "250px",
@@ -92,9 +77,7 @@ export class contextMenu extends base {
                     return menu
                 }
             })
-            // return h('div', {
-            // }, [polldown
-            // ])
+
             return h(Teleport, {
                 to: 'body'
             }, {
