@@ -39,19 +39,19 @@ export class table extends base<tableSchema> implements tableMethod {
   mergeColObj = {}
   menuConfig = {
     headerMenu: {
-      position: {
-        left: 0,
-        top: 0
-      },
-      show: false,
+      // position: {
+      //   left: 0,
+      //   top: 0
+      // },
+      // show: false,
       list: JSON.parse(JSON.stringify(tableMenuData))
     },
     bodyMenu: {
-      position: {
-        left: 0,
-        top: 0
-      },
-      show: false,
+      // position: {
+      //   left: 0,
+      //   top: 0
+      // },
+      // show: false,
       list: JSON.parse(JSON.stringify(tableMenuData))
     }
   }
@@ -66,14 +66,14 @@ export class table extends base<tableSchema> implements tableMethod {
     showHeaderMenuDialog: true,
     columns: [],//列
     filterConfig: [{ field: 'name', value: 'Test1' }],//过滤配置
-    mergeConfig: [
-    ],//合并配置
+    mergeConfig: {},//合并配置
     sortconfig: [],//处理排序
     height: 'auto',
     limitSize: 100,
     rowConfig: {
       rowHeight: 30,//行高度
       background: 'red',
+      useKey: false
     },
     hiddenBorder: false,
     headerConfig: {//表头配置

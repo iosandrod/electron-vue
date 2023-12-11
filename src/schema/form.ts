@@ -42,7 +42,6 @@ export class form extends base<formConfig> {
   }
   async initRenderForm() {
     const renderForm = this.renderForm
-    // renderForm.items = this.schema?.items
     renderForm.items = formFn.getFormItems(this) as any
     renderForm.data = formFn.getFormData(this) as any
   }
@@ -55,12 +54,12 @@ export class form extends base<formConfig> {
     })
     const vNode = () => {
       const formComponent = resolveComponent('vxe-form')
-      const formView = h(formComponent, this.renderForm,
-      )
-      const style = styleBuilder.setFull().getStyle()
       if (destroy.value == true) {
         return null
       }
+      const formView = h(formComponent, this.renderForm,
+      )
+      const style = styleBuilder.setFull().getStyle()
       return withDirectives(h('div', { style }, [formView]), [[vShow, show.value]])
     }
     this.component = vNode

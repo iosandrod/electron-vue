@@ -16,6 +16,10 @@ import contextMenuView from "./schemaComponent/contextMenuView";
 export const getTableRowConfig = (table: table) => {
     const tableConfig = table?.tableConfig
     const rowConfig = tableConfig?.rowConfig
+    // const rowConfig = {
+    //     rowHeight: 30,
+    //     useKey: false
+    // }
     return rowConfig
 }
 export const getTableHeaderConfig = (table: table) => {

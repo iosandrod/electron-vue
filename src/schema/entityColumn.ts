@@ -109,6 +109,12 @@ const columnObj = [
         }
         return targetValue
     }),
+    new Translate('editTitle', 'editTitle', function (targetValue, column) {
+        let value = targetValue || column.columnCnName
+        return value || ''
+    }),
+    new Translate('editColSize', 'editColSize'),
+    new Translate('editOrderNo', 'editOrderNo'),
     //headerSlot
     new Translate('headerSlot', 'headerSlot'),
     new Translate('editType', 'editType'),//编辑的类型
@@ -231,6 +237,7 @@ const columnObj = [
 export class entityColumn {
     editType: string = ''
     field: string = ''
+    title: string = ''
     initColumn(column: any) {
         const _this: any = this
         let _column = column

@@ -39,7 +39,7 @@ export const getEntityConfig = async (entity?: basicEntity) => {
             } as layoutItemConfig,
         },
         // {
-        //     x: 0, y: 2, h: 3, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+        //     x: 0, y: 2, h: 50, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
         //         renderComName: "formView",//组件
         //         renderFunName: 'initRenderEditForm',//数据初始化函数 初始化编辑的表单的
         //     } as layoutItemConfig,

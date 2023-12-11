@@ -11,8 +11,8 @@ import { tableMethod } from "../tableMethod"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig } from "@/types/schema"
-import { entityColumn } from "../entityColumn"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig } from "@/types/schema"
+import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
 import { getRenderTable } from "./basicEntityFn"
@@ -29,6 +29,8 @@ import { propsConfig } from "../icon"
 import contextMenuView from "../schemaComponent/contextMenuView"
 import { contextMenu, createContextMenu } from "./contextMenu"
 import { mergeData } from "@/api/data4"
+import { tableMenuData } from "@/api/data3"
+import { createMenu, menu } from "../menu"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   tabIndex: number = 0//使用tabIndex ,路由的tab
   sub = new Subject()//动作发射器
@@ -75,6 +77,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   schema?: {} = {}
   entityName = ''
   pageRef: {
+    // menuRef?: menu, 
     vxeGrid?: table,
     vxeForm?: form,
     contextMenu?: contextMenu,
@@ -85,6 +88,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
   tableConfig: any = {//表格配置
     //表格配置
+  }
+  menuConfig = {
+    list: JSON.parse(JSON.stringify(tableMenuData))
   }
   detailEntityConfig = {
     curDetailKey: ''
@@ -130,21 +136,11 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const _this = this
     const _div = h('div', {
       style: _divStyle,
+      onContextmenu: (event: MouseEvent) => {
+        _this.openContext(event)
+      }
     } as propsConfig, [
-      // h(contextMenuView, { contextMenuInstance: contextInstance })
-      // h(Teleport,{to})
-      h(Teleport, {
-        to: 'body', style: {
-          position: "fixed",
-          left: "0px",
-          top: '0px',
-          zIndex: 9999
-        } as StyleType
-      }, {
-        default: () => {
-          return h('div', { style: { height: '100vh', width: '100vw', background: 'red', position: "fixed" } as StyleType }, Array(1000).fill(1))
-        }
-      })
+      h(contextMenuView, { contextMenuInstance: this.pageRef.contextMenu })
     ])
     const _div1 = h('div')
     const dragDiv = computed(() => {
@@ -183,7 +179,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
             item.w = newW
           }
         } as layoutItem
-
         return h(layoutItemCom, _item,
           () => {
             let renderCom: any = null
@@ -342,12 +337,21 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     await this.initTableInfo()
     await this.initEntityConfig()//这个函数才是最重要的
     await this.initRenderLayout()//初始化layout的需要制定
+    await this.initDragMenu()
     await this.initRenderContext()
     this.initComponent()//初始化普通的component
     const show = initConfig.show//显示的东西
     if (show != false) {
       this.displayState = 'show'
     }
+  }
+  initDragMenu() {
+    // const list = this.menuConfig.list
+    const contextMenu = createMenu(this.menuConfig as menuConfig)
+    this.pageRef.contextMenu = contextMenu
+  }
+  initDetailEntity() {
+    //基类没有初始化子表的配置的东西
   }
   initRenderContext() {
     const list = this.layoutConfig.list
@@ -356,7 +360,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   //打开右键菜单
   openContext(event: MouseEvent, entityItem?: any) {
-    const contextInstance = this.pageRef.contextMenu
+    const contextInstance = this.pageRef.contextMenu!
+    console.log(contextInstance, 'testInstance')
     contextInstance?.openContext(event)
   }
   async initRenderEditForm() {
@@ -378,7 +383,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
           disable: disable,
           span: 6,
           field: col.field,
-          title: '标题'
+          title: col.title
         }
         return config
       })
@@ -386,6 +391,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }) as any
     const vxeForm = createForm(renderEditForm)
     this.pageRef.vxeForm = vxeForm
+    console.log(vxeForm, 'testForm')
     return { formInstance: vxeForm }
   }
   async initTableInfo() {
