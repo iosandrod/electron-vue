@@ -99,7 +99,9 @@ export type roundType = {
 }
 
 export type columnConfig = {
+  filterTransLeft?: number
   visible?: boolean
+  filterLeft?: number
   field?: string
   filterOptions?: []
   formatFn?: ({ value, column, row }) => any
@@ -136,7 +138,7 @@ export type pickKey<T = any> = {
 }
 
 export type dialogButton = {
-  btnFun: (dialog: dialog) => Promise<void>,//立即执行函数
+  btnFun: (dialog?: dialog) => Promise<void>,//立即执行函数
   text: string,
 }
 export type dialogConfig = concatAny<VxeModalDefines.ModalOptions & { dialogPrimaryName?: string, hasOpen?: boolean, modalData?: any, buttons?: dialogButton[] }>

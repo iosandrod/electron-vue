@@ -16,6 +16,8 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
     showFilter: true,//显示filter
     showSort: true,
     resizable: true,
+    filterLeft: 0,
+    filterTransLeft: 0,
     roundType: {//小数点后面的位数
       iRoundAmout: 2,
       iRoundInt: 0,

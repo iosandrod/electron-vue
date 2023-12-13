@@ -24,7 +24,10 @@
           <div class="w-full bg-gray-400" style="height: 30px;">
             <tab-view :tabInstance="systemInstance.pageRef.tabRef"></tab-view>
           </div>
-          <div><vxe-button @click="designEntity">进入设计</vxe-button></div>
+          <div>
+            <vxe-button @click="designEntity">进入设计</vxe-button>
+            <vxe-button @click="openDialog">打开弹框</vxe-button>
+          </div>
           <div class="flex-1 w-full">
             <!-- <router-view :key="$route.fullPath"></router-view> -->
             <!-- 路由组件 -->
@@ -73,6 +76,16 @@ function designEntity() {
   if (entity) {
     state = !state
     entity.setCurrentEntityDesign(state)
+  }
+}
+function openDialog() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  if (entity) {
+    const dialog = entity.pageRef.searchDialog!
+    console.log(dialog)
+    dialog.open()
   }
 }
 const collapsed = ref<boolean>(false)

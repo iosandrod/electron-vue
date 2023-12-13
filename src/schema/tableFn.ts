@@ -180,7 +180,7 @@ export const getOptionsCellClassName = (table: table) => {
         return ({ row, column }: any) => {
             const curRow = table.tableData.curRow
             const curColumn = table.tableData.curColumn
-            if (row == curRow && column.field == curColumn?.columnConfig.field && column?.field != null) {
+            if (row == curRow && column?.field == curColumn?.columnConfig?.field && column?.field != null) {
                 return ['rowSelect', 'cellDefaultClass']
             }
             return ['cellDefaultClass']
@@ -361,6 +361,8 @@ export const initComponent = (table: table) => {
             },
             onCellMenu: (params: any) => {
                 const { row, column, $event } = params
+                const _event: MouseEvent = $event
+                _event.preventDefault()
                 // console.log(table.pageRef)
                 // const position = getMouseEventPosition($event)
                 const tableConfig = _this.tableConfig

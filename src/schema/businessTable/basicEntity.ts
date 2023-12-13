@@ -11,7 +11,7 @@ import { tableMethod } from "../tableMethod"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -31,6 +31,8 @@ import { contextMenu, createContextMenu } from "./contextMenu"
 import { mergeData } from "@/api/data4"
 import { tableMenuData } from "@/api/data3"
 import { createMenu, menu } from "../menu"
+import { createDialog, dialog } from "../dialog"
+import dialogView from "../schemaComponent/dialogView"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   tabIndex: number = 0//使用tabIndex ,路由的tab
   sub = new Subject()//动作发射器
@@ -77,10 +79,12 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   schema?: {} = {}
   entityName = ''
   pageRef: {
-    // menuRef?: menu, 
+    // menuRef?: menu,
+    searchDialog?: dialog
     vxeGrid?: table,
     vxeForm?: form,
     contextMenu?: contextMenu,
+    searchForm?: form
   } = {
       vxeGrid: undefined,
       vxeForm: undefined,
@@ -96,7 +100,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     curDetailKey: ''
   }
   buttonCategory: btnCategory = ''
-  entityConfig?: any
+  entityConfig?: any//这个是模型的配置，是一个数组
   pageConfig: any = {}//页面配置
   tableInfo?: mainTableInfo = {} as any//远程获取的数据
   renderLayout: layoutConfig = {}//渲染节点数据
@@ -108,6 +112,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   renderButtonGroup: any = []//初始化按钮   
   renderDetailTable: any = {}//渲染子表配置
   renderEditTable: any = {}//渲染编辑表格配置 
+  renderSearchDialog: dialogConfig = {}
   nodeArr: [] = []
   renderTableInfo: any = {}
   util: any
@@ -168,47 +173,54 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       if (destroy.value == true) {
         return null
       }
-      return withDirectives(h(layoutCom, { ...renderLayout, style: { height: '100%' } as StyleType, }, () => schema!.map((item: any) => {
-        const _item = {
-          x: item.x, y: item.y, h: item.h, w: item.w, i: item.i, onMove: (i: any, newx: any, newy: any) => {
-            item.x = newx
-            item.y = newy
-          },
-          onResize: (i: any, newH: any, newW: any, newHPx: any, newWPx: any) => {
-            item.h = newH
-            item.w = newW
-          }
-        } as layoutItem
-        return h(layoutItemCom, _item,
-          () => {
-            let renderCom: any = null
-            let defaultCom: any = null
-            const component = item.component//
-            if (component != null) {//
-              // renderCom = withDirectives(component(), [[{
-              //   mounted(div, node) { },
-              //   unmounted() { }
-              // }]])
-              renderCom = component()
-            }
-            const renderStyle = { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType
-            if (renderCom) {
-              defaultCom = h('div', { style: renderStyle }, [renderCom,
-                h(dragDiv.value, {
-                  onContextmenu: (event: MouseEvent) => {
-                    _this.openContext(event, _item)
-                    event.preventDefault()
-                    event.stopPropagation()
-                  },
-                })
-              ])
-            } else {
-              defaultCom = h('div', { style: renderStyle }, ['默认节点'])
-            }
-            return defaultCom
-          }
-        )
-      })), [[vShow, show.value]])
+      return withDirectives(
+        h('div', { class: 'h-full w-full' }, [
+          h(layoutCom, { ...renderLayout, style: { height: '100%', width: '100%' } as StyleType, }, () => schema!.map((item: any) => {
+            const _item = {
+              x: item.x, y: item.y, h: item.h, w: item.w, i: item.i, onMove: (i: any, newx: any, newy: any) => {
+                item.x = newx
+                item.y = newy
+              },
+              onResize: (i: any, newH: any, newW: any, newHPx: any, newWPx: any) => {
+                item.h = newH
+                item.w = newW
+              }
+            } as layoutItem
+            return h(layoutItemCom, _item,
+              () => {
+                let renderCom: any = null
+                let defaultCom: any = null
+                const component = item.component//
+                if (component != null) {//
+                  // renderCom = withDirectives(component(), [[{
+                  //   mounted(div, node) { },
+                  //   unmounted() { }
+                  // }]])
+                  renderCom = component()
+                }
+                const renderStyle = { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType
+                if (renderCom) {
+                  defaultCom = h('div', { style: renderStyle }, [renderCom,
+                    h(dragDiv.value, {
+                      onContextmenu: (event: MouseEvent) => {
+                        _this.openContext(event, _item)
+                        event.preventDefault()
+                        event.stopPropagation()
+                      },
+                    })
+                  ])
+                } else {
+                  defaultCom = h('div', { style: renderStyle }, ['默认节点'])
+                }
+                return defaultCom
+              }
+            )
+          })),
+          h(dialogView, { dialogInstance: _this.pageRef.searchDialog })
+        ])
+        , [[vShow, show.value]])
+
+
     }
     this.component = vNode as any
 
@@ -348,7 +360,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   initDragMenu() {
     // const list = this.menuConfig.list
     const contextMenu = createMenu(this.menuConfig as menuConfig)
-    this.pageRef.contextMenu = contextMenu
+    this.pageRef.contextMenu = contextMenu as any
   }
   initDetailEntity() {
     //基类没有初始化子表的配置的东西
@@ -364,6 +376,57 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     console.log(contextInstance, 'testInstance')
     contextInstance?.openContext(event)
   }
+  async initRenderSearchDialog() {
+    const _this = this
+    const renderSearchDialog = this.renderSearchDialog
+    renderSearchDialog.showFooter = true
+    renderSearchDialog.modalData = { entity: this }
+    renderSearchDialog.buttons = [{
+      text: "查询",
+      btnFun: async () => {
+        console.log(_this)
+      }
+    }, {
+      text: "取消",
+      btnFun: async (dialog) => {
+        dialog?.close()
+      }
+    }]
+    renderSearchDialog.height = 300
+    renderSearchDialog.width = 400
+    const dialog = createDialog('entitySearchDialog', renderSearchDialog, false)
+    this.pageRef.searchDialog = dialog as any
+  }
+  async initRenderSearchForm() {
+    const tableInfo = this.tableInfo
+    const renderEditForm = this.renderEditForm
+    renderEditForm.data = computed(() => {
+      return {}
+    }) as any
+    renderEditForm.items = computed(() => {
+      const tableColumns = tableInfo?.tableColumns.filter(col => { return Boolean(col.searchType) != false && col.editType != 'undefined' }).map((col: any) => {
+        const _col = new entityColumn()
+        _col.initColumn(col)
+        return _col
+      })
+      const tableEditItems = tableColumns?.map(col => {
+        const disable = false//编辑的东西
+        const config: formItemConfig = {
+          type: col.editType,
+          disable: disable,
+          span: 24,
+          field: col.field,
+          title: col.title
+        }
+        return config
+      })
+      return tableEditItems
+    }) as any
+    const vxeForm = createForm(renderEditForm)
+    this.pageRef.searchForm = vxeForm//查询表单
+    // console.log(vxeForm, 'testForm')
+    return { formInstance: vxeForm }
+  }
   async initRenderEditForm() {
     const tableInfo = this.tableInfo
     const renderEditForm = this.renderEditForm
@@ -371,7 +434,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       return {}
     }) as any
     renderEditForm.items = computed(() => {
-      const tableColumns = tableInfo?.tableColumns.filter(col => Boolean(col.editType) != false).map((col: any) => {
+      const tableColumns = tableInfo?.tableColumns.filter(col => { return Boolean(col.editType) != false && col.editType != 'undefined' }).map((col: any) => {
         const _col = new entityColumn()
         _col.initColumn(col)
         return _col

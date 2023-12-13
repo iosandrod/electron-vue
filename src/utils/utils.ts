@@ -294,3 +294,21 @@ export const useSystem = (): system => {
     const system = instance.system
     return system as system
 }
+
+export const getTransformPosition = (el: HTMLDivElement): any => {
+    const parent = el.parentNode as any
+    if (parent == null) {
+        return null
+    }
+    const style = parent?.style!
+    const transform = style?.transform
+    if (Boolean(transform) != false) {
+        return transform
+    }
+    return getTransformPosition(parent)
+}
+
+export const getTranslate3D = (str: string) => {
+    const _str = str.replace('translate3d', '').slice(1, -1).split(',').map(row => row.replace('px', ''))
+    return _str
+}

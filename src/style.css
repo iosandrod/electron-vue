@@ -94,3 +94,6 @@ body{
 .ant-tabs-nav{
     /* margin:0 0 0 0 !important */
 }
+.animat--leave{
+    transform:none !important;
+}

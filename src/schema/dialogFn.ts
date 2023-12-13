@@ -32,7 +32,17 @@ export const getDialogSlots = (dialog: dialog) => {
 export const getDialogSlotsHeader = (dialog: dialog) => {
     return computed(() => {
         return (params: ModalDefaultSlotParams) => {
-            return h('div', {}, ['header'])
+            let com: any = null
+            const dialogComponent = dialog.dialogComponent
+            const dialogName = dialog.dialogName! as keyof typeof dialogComponent
+            const defaultCom = dialogComponent[dialogName]?.header
+            if (defaultCom != null) {
+                const modalData = dialog.dialogConfig.modalData
+                com = h(defaultCom, { dialog: dialog, modalData: modalData })
+            } else {
+                com = h('div', ['弹框'])
+            }
+            return com
         }
     })
 }
@@ -189,16 +199,14 @@ export const getDialogOnShow = (dialog: dialog) => {
 }
 
 export const getDialogOnHide = (dialog: dialog) => {
-    return computed(() => {
-        const fn = (params: any) => {
-            dialog.modalInstance = null as any
-            const onHide = dialog.dialogConfig.onHide
-            if (typeof onHide == 'function') {
-                onHide(params)
-            }
+    const fn = (params: any) => {
+        dialog.modalInstance = null as any
+        const onHide = dialog.dialogConfig.onHide
+        dialog.renderDialog.modelValue = false
+        if (typeof onHide == 'function') {
+            onHide(params)
         }
-        return fn
-    },
-    )
+    }
+    return fn
 }
 

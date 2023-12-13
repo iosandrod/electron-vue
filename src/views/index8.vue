@@ -1,8 +1,5 @@
 <template>
-  <div
-    @contextmenu="contextMenu.openContext($event)"
-    class="w-full h-full overflow-auto"
-  >
+  <div @contextmenu="contextMenu.openContext($event)" class="w-full h-full overflow-auto">
     <vxe-button @click="btnClick">button</vxe-button>
     <vxe-button @click="btnClick1">btnClick1</vxe-button>
     <vxe-button @click="btnClick2">btnClick2</vxe-button>
@@ -40,7 +37,7 @@
       <!-- <gantt></gantt> -->
       <!-- <component :is="com"></component> -->
       <!-- <component :is="table.component"></component> -->
-      <!-- <table-view :tableInstance="table"></table-view> -->
+      <table-view :tableInstance="table"></table-view>
       <!-- <table-view
         :columns="table.tableConfig.columns.map((col) => col.renderColumn)"
         :data="table.tableData.data"
@@ -216,7 +213,7 @@ const table = createTable(testTableViewData)
 //律师
 //回应
 
-function btnClick3() {}
+function btnClick3() { }
 </script>
 
 <style scoped></style>

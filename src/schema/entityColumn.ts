@@ -32,7 +32,16 @@ class Translate {
     }
 }
 const columnObj = [
-    new Translate('editType', 'editType'),
+    new Translate('editType', 'editType', function (targetValue) {
+        let value = targetValue
+        if (typeof targetValue == 'string') {
+            value = targetValue.slice(0, 1).toLocaleLowerCase() + targetValue.slice(1)
+        }
+        if (value == 'undefined') {
+            return null
+        }
+        return value
+    }),
     new Translate('visible', 'isDisplay', function (targetValue, column) {
         if (column.isExtend == true) {
             return true
@@ -117,7 +126,15 @@ const columnObj = [
     new Translate('editOrderNo', 'editOrderNo'),
     //headerSlot
     new Translate('headerSlot', 'headerSlot'),
-    new Translate('editType', 'editType'),//编辑的类型
+    new Translate('editType', 'editType', function (targetValue) {
+        if (['string', 'text'].includes(targetValue)) {
+            return 'string'
+        }
+        if (typeof targetValue == 'string') {
+            targetValue = targetValue.slice(0, 1).toLocaleLowerCase() + targetValue.slice(1)
+        }
+        return targetValue
+    }),//编辑的类型
     new Translate('bindField', 'sBindField'),
     new Translate('cDefaultValue', 'cDefaultValue', function (targetValue, column, entityColumn) {
         if (targetValue != null) {
@@ -232,12 +249,14 @@ const columnObj = [
         return null
     }),
     new Translate('isExtend', 'isExtend'),
-    new Translate('sBindField', 'sBindField')
+    new Translate('sBindField', 'sBindField'),
+    new Translate('searchType', 'searchType')
 ]
 export class entityColumn {
     editType: string = ''
     field: string = ''
     title: string = ''
+    searchType: string = ''
     initColumn(column: any) {
         const _this: any = this
         let _column = column

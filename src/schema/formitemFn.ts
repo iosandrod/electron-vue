@@ -5,6 +5,7 @@ import { getRenderFn } from "./columnFn";
 import * as formitemComFn from './formitemComFn'
 import { editPool } from "./formitemComFn";
 import { VxeInput } from "vxe-table";
+import { StyleType } from "@/types/schema";
 export const getFormitemSlots = (formitem: formitem) => {
     return computed(() => {
         const slots: any = {}
@@ -18,7 +19,15 @@ export const getItemSlotsDefault = (formitem: formitem) => {
     return computed(() => {
         return (params: any) => {
             const title = formitem.itemConfig.title//title
-            const titleCom = getRenderFn('div', {})([title])
+            const titleCom = getRenderFn('div', {
+                style: {
+                    width: '30%',
+                    height: "100%",
+                    display: 'flex',
+                    alignItems: "center",
+                    overflow: "hidden"
+                } as StyleType
+            })([title])
             let editCom = getItemSlotsDefautlEditCom(formitem, params.data, titleCom)
             return editCom
         }
@@ -41,7 +50,7 @@ export const getItemSlotsDefautlEditCom = (formitem: formitem, data?: any, title
 
 export const getFormitemSpan = (formitem: formitem) => {
     return computed(() => {
-        return 6
+        return formitem.itemConfig.span || 6
     })
 }
 export const getFormItemVisible = (formitem: formitem) => {

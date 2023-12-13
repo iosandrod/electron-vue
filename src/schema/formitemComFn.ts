@@ -11,6 +11,7 @@ import { pickKey, tableConfig } from "@/types/schema";
 import datetimeView from "./editComponent/datetimeView";
 import stringView from "./editComponent/stringView";
 import boolView from "./editComponent/boolView";
+import numberView from "./editComponent/numberView";
 export const getOutSizeEditDiv = (formitem: formitem) => {
     const style = styleBuilder.setFull().getStyle()
     const renderFn = getRenderFn('div', { style })
@@ -50,16 +51,35 @@ export const bool = (formitem: formitem, data?: any) => {
 }
 
 export const baseInfo = (formitem: formitem, data?: any) => {
-    return h(baseInfoView, { formitem: formitem, data: data })
+    const outSizeDivFn = getOutSizeEditDiv(formitem)
+    const inputCom = h(baseInfoView, { formitem: formitem, data: data })
+    return outSizeDivFn([inputCom])
 }
 
+export const wangEditor = (formitem: formitem, data?: any) => {
+    const outSizeDivFn = getOutSizeEditDiv(formitem)
+    const inputCom = h(stringView, { formitem: formitem, data: data, form: formitem.form })
+    return outSizeDivFn([inputCom])
+}
+
+export const number = (formitem: formitem, data?: any) => {
+    const inputCom = h(numberView, { formitem: formitem, data: data })
+    const outSizeDivFn = getOutSizeEditDiv(formitem)
+    return outSizeDivFn(inputCom)
+}
+
+export const stringRange = (formitem: formitem, data?: any) => {
+
+}
 
 export const editPool = {
+    number,
     baseInfo,
     bool,
     string,
     datetime,
     date,
     time,
-    select
+    select,
+    wangEditor
 }

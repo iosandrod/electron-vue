@@ -3,10 +3,11 @@ import { getOutSizeEditDiv } from '../formitemComFn'
 import { styleBuilder } from '@/utils/utils'
 import { getIcon } from '../icon'
 import { VxeButton, VxeInput, VxeInputInstance, VxePulldown, VxePulldownInstance } from 'vxe-table'
-import { pickKey, tableConfig } from '@/types/schema'
+import { StyleType, pickKey, tableConfig } from '@/types/schema'
 import tableView from '../schemaComponent/tableView'
 import { formitem } from '../formitem'
 import { column } from '../column'
+import { createTable } from '../table'
 export default defineComponent({
     props: ['formitem', 'baseInfoItem', 'form', 'data'],
     setup(props, context) {
@@ -14,7 +15,6 @@ export default defineComponent({
             return props.data
         })
         const formitem: formitem = props.formitem
-        // // const outSizeDivFn = getOutSizeEditDiv(formitem)
         const suffStyle = styleBuilder.setMousePoint().getStyle()
         const itemConfig = formitem.itemConfig
         const field = itemConfig.field!
@@ -49,12 +49,16 @@ export default defineComponent({
         let isMousedown = false
         const tableConfig = reactive({
             showCheckBoxColumn: false,
+            onCellClick: () => {
+                console.log('clickFn')
+            },
             height: "300px",
             data: [{ id: 10001, name: 'Test1', nickname: 'T1', role: 'Develop', sex: 'Man', age: 28, address: 'Shenzhen' },
             { id: 10002, name: 'Test2', nickname: 'T2', role: 'Test', sex: 'Women', age: 22, address: 'Guangzhou' },
             { id: 10003, name: 'Test3', nickname: 'T3', role: 'PM', sex: 'Man', age: 32, address: 'Shanghai' },
             ], columns: [
-                { field: 'name', title: '', width: 100, showHeader: true }, {
+                { field: 'name', title: '', width: 100, showHeader: true },
+                {
                     showFilter: false, showSort: false,
                     showHeader: false,
                     field: 'operator', title: "操作", width: 100, slots: {
@@ -63,33 +67,35 @@ export default defineComponent({
                                 onClick: () => {
                                 }
                             }, () => {
-                                return h('div', {}, ['123'])
+                                return h('div', {}, ['选择'])
                             })])
                         }
                     }
-                }],
+                }
+            ],
             showHeader: true,
             resizable: false,
             showHeaderFilter: false,
             showHeaderSort: false,
         }) as pickKey<tableConfig>
-
+        const pulldownTable = createTable(tableConfig)
+        const pullShow = computed({
+            set(value) {
+                formitem.itemConfig.isFocus = value as any
+            },
+            get() {
+                return formitem.itemConfig.isFocus as boolean
+            }
+        })
+        const vxeinput = ref<any>(null)
+        const polldown = ref<any>(null)
         return () => {
             const suffixIcon = getIcon({
                 style: suffStyle,
                 onClick: (event: MouseEvent) => {
-                    // isClick = true
-                    // setTimeout(() => {
-                    //     isClick = false
-                    // }, 0);
                     event.stopPropagation()
                 },
                 onMousedown: (event: MouseEvent) => {
-                    // isMousedown = true
-                    // setTimeout(() => {
-                    //     formitem.focus()
-                    //     isMousedown = false
-                    // }, 0);
                     event.stopPropagation()
                 }
             }, 'vxe-icon-search')()
@@ -102,20 +108,12 @@ export default defineComponent({
                     onFocus: () => {
                         itemConfig.isFocus = true
                     },
-                    ref: 'vxeinput',
+                    style: { width: '100%' } as StyleType,
+                    ref: vxeinput,
                     onBlur: () => {
                         if (isMousedown == false) {
                             formitem.itemConfig.isFocus = false
                         }
-                        // setTimeout(() => {
-
-                        // console.log(formitem.itemConfig.isPulldownFocus)
-                        // }, 0);
-                        // setTimeout(() => {
-                        //     if (isClick == false && isMousedown == false) {
-                        //         itemConfig.isFocus = false
-                        //     }
-                        // }, 100);
                     }
                 }, {
                 suffix: () => {
@@ -125,51 +123,30 @@ export default defineComponent({
                 ,
                 [[{
                     mounted(div, vnode) {
-                        const instance = vnode.instance
-                        const $refs = instance?.$refs!
-                        const vxeinput = $refs['vxeinput'] as VxeInputInstance
-                        formitem.pageRef['edititem'] = vxeinput
+                        formitem.pageRef['edititem'] = vxeinput.value
                         formitem.editMethod.focus = () => {
                             formitem.itemConfig.isFocus = true
-                            vxeinput.focus()//使其活得焦点
+                            vxeinput.value.focus()//使其活得焦点
                         }
                     },
                     unmounted() {
                         formitem.pageRef['edititem'] = null
                     }
                 }]])
-            // return inputCom
-            const pullShow = computed({
-                set(value) {
-                    formitem.itemConfig.isFocus = value as any
-                },
-                get() {
-                    return formitem.itemConfig.isFocus as boolean
-                }
-            })
             return withDirectives(h(VxePulldown, {
                 transfer: true,
+                style: { width: '100%' },
                 modelValue: pullShow.value as boolean,
                 ['onUpdate:modelValue']: (value1: any) => {
                     pullShow.value = value1
                 },
                 onClick: (event: MouseEvent) => {
-                    // isClick = true
-                    // setTimeout(() => {
-                    //     formitem.focus()
-                    //     isClick = false
-                    // }, 0);
-                    // event.stopPropagation()
+
                 },
                 onMousedown: (event: MouseEvent) => {
-                    // isMousedown = true
-                    // setTimeout(() => {
-                    //     formitem.focus()
-                    //     isMousedown = false
-                    // }, 0);
-                    // event.stopPropagation()
+
                 },
-                ref: 'polldown'
+                ref: polldown
             }, {
                 default: (params: any) => {
                     return inputCom
@@ -184,21 +161,19 @@ export default defineComponent({
                                 formitem.focus()
                             }, 0)//
                         }
-                    }, [h(tableView, tableConfig,)]), [[{
+                    }, [
+                        h(tableView, { tableInstance: pulldownTable },)
+                    ]), [[{
                         mounted(div, node) {
-
                         },
                         unmounted() {
-                            // formitem.effectPool['pulldownFocus']()
                         }
                     }]])
                 },
             },), [[{
                 mounted: (div, node) => {
-                    const instance = node.instance
-                    const $refs = instance?.$refs
-                    const polldown = $refs?.polldown
-                    formitem.pageRef['polldown'] = polldown
+                    const _polldown = polldown.value
+                    formitem.pageRef['polldown'] = _polldown
                 }, unmounted: (div, node) => {
                     formitem.pageRef['polldown'] = null
                 }

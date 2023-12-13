@@ -1,4 +1,4 @@
-import { isVNode, createApp, ComponentOptions, computed, defineComponent, h, nextTick, reactive, resolveComponent, watchEffect, App, VueElement, shallowRef } from "vue";
+import { withDirectives, isVNode, createApp, ComponentOptions, computed, defineComponent, h, nextTick, reactive, resolveComponent, watchEffect, App, VueElement, shallowRef, vShow } from "vue";
 import { base } from "./base";
 import { system, getSystem } from "./system";
 import VXETable, { VxeModalProps, VxeModalDefines, VxeModal, VxeModalInstance, VxeTable } from "vxe-table";
@@ -8,13 +8,14 @@ import { Subject } from "rxjs";
 import register from "@/plugin/register";
 import dialogComponent from "./dialogComponent";
 import { tranPosition, tranPositionNumber } from "@/utils/utils";
+// import { VxeModal } from 'vxe-table'
 import { message } from 'ant-design-vue'
 export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     renderDialog: VxeModalDefines.ModalOptions = {}
     childDialog: dialog[] = []//子节点
     parentDialog?: dialog
     dialogPool?: DialogPool
-    dialogComponent = shallowRef(dialogComponent)
+    dialogComponent: any = shallowRef(dialogComponent)
     modalInstance?: VxeModalInstance
     // dialogConfig: concatAny<VxeModalProps & { dialogPrimaryName?: string }> = {//modalData 是模态框的存储数据
     dialogConfig: dialogConfig = {
@@ -53,10 +54,10 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
                     })
                 }
             }
-            Object.entries(schema).forEach(([key, value]) => {
-                const _config = this.dialogConfig as any
-                _config[key] = value
-            })
+            // Object.entries(schema).forEach(([key, value]) => {
+            //     const _config = this.dialogConfig as any
+            //     _config[key] = value
+            // })
             //修改配置 
             this.effectPool['positionEffect'] = watchEffect(() => {
                 const position = this.dialogConfig.position
@@ -103,12 +104,22 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         renderDialog.position = getDialogPosition(this) as any
     }
     async initComponent(): Promise<void> {
-        // const vNode = () => {
-        //     const vxeModel = resolveComponent('vxe-modal')
-        //     //返回虚拟节点
-        //     return h(vxeModel, {}, [])
-        // }
-        // this.component = vNode
+        const _this = this
+        const show = computed(() => {
+            return _this.displayState == 'show'
+        })
+        const destroy = computed(() => {
+            return _this.displayState == 'destroy'
+        })
+        const renderDialog = this.renderDialog
+        const vNode = () => {
+            //返回虚拟节点
+            if (destroy.value == true) {
+                return null
+            }
+            return withDirectives(h('div', [h(VxeModal, renderDialog,)]), [[vShow, show.value]])
+        }
+        this.component = vNode
     }
     //打开弹框
     async open() {
@@ -201,11 +212,13 @@ export const createDialog = (schemaName: string = 'codeEdit', schema: concatAny<
     table?: any,
     openBefore?: () => Promise<boolean> | void,//打开之前
     closeBefore?: () => Promise<void> | void//关闭之前
-}>,) => {
+}>, global: boolean = true) => {
     //schemaName这个是弹框的名称
     const Dialog = reactive(new dialog(schemaName, schema, getSystem()))
     Dialog.initDialog()
-    addDialog(Dialog as any)
+    if (global == true) {
+        addDialog(Dialog as any)//在页面进行新增
+    }
     return Dialog
 }
 

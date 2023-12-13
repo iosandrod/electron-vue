@@ -28,7 +28,6 @@ export default defineComponent({
             }
             const outSizeDiv = usePropsDiv({
                 style, onContextmenu: (event: MouseEvent) => {
-                    // const position = getMouseEventPosition(event)
                     column.value.table!.openHeaderMenu(event)
                 }
             })
