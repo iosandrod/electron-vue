@@ -122,6 +122,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   curRowChange: any
   constructor(schema: any, system: any) {
     super(schema, system)
+    this.system = system
     this.displayState = 'destroy'
     this.schema = schema
   }
@@ -219,8 +220,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
           h(dialogView, { dialogInstance: _this.pageRef.searchDialog })
         ])
         , [[vShow, show.value]])
-
-
     }
     this.component = vNode as any
 
@@ -233,20 +232,33 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   async getPageData() {//获取页面数据,与实体相关的
     try {
-      const payload = { entity: this, params: {}, url: '' }
+      const { params, url } = await getTableData(this)
+      const payload = { entity: this, params, url }
       const fn = async (payload: any, next: any) => {
         const params = payload.params
         const url = payload.url
-        const entity = payload.entity
-        // const data=await http.post()//这里模拟获取数据
-        const data = JSON.parse(JSON.stringify(mergeData))//这里是数据  
-        this.tableData.data = data
+        // const entity = payload.entity
+        const result: any = await http.postZkapsApi(url, params)//这里模拟获取数据
+        // const data = JSON.parse(JSON.stringify(mergeData))//这里是数据  
+        // this.tableData.data = data
+        const { status, msg, dtMain: rows, total, data } = result
+        let _rows = rows
+        let _total = total
+        if (_rows == null) {
+          _rows = data
+        }
+        if (_total == null) {
+          _total = data?.length || 0
+        }
+        this.tableData.data = _rows
         await next()
       }
       const data = JSON.parse(JSON.stringify(mergeData))//这里是数据  
-      this.tableData.data = data
-      // const middleArr = [pageloadMiddleware, confirmMiddleware, fn]//两个中间件
-      // await this.runMiddlewares(payload, middleArr, 0)
+      // this.tableData.data = data
+      const middleArr = [pageloadMiddleware
+        // , confirmMiddleware
+        , fn]//两个中间件
+      await this.runMiddlewares(payload, middleArr, 0)
       // this.setPageLoading(true) 
       // let curRow = this.getCurRow()
       // console.log(curRow, 'testCurRow')
@@ -317,8 +329,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   addItem() { }
   async initRenderTable() {
     try {
-
-
       const entity = this
       const renderTable = entity.renderTable//这个是渲染表格的数据
       renderTable.columns = computed(() => {
@@ -335,6 +345,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         return entity.tableData.data
       }) as any//行与列
       const table = createTable(renderTable)
+      console.log(table)
       entity.pageRef.vxeGrid = table//只初始化一次
       // console.log(table.gridOptions)
       // return reactive({ ...table.gridOptions })
@@ -392,6 +403,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         dialog?.close()
       }
     }]
+    renderSearchDialog.maskClosable = false
     renderSearchDialog.height = 300
     renderSearchDialog.width = 400
     const dialog = createDialog('entitySearchDialog', renderSearchDialog, false)
@@ -399,11 +411,11 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   async initRenderSearchForm() {
     const tableInfo = this.tableInfo
-    const renderEditForm = this.renderEditForm
-    renderEditForm.data = computed(() => {
+    const renderSearchForm = this.renderSearchForm
+    renderSearchForm.data = computed(() => {
       return {}
     }) as any
-    renderEditForm.items = computed(() => {
+    renderSearchForm.items = computed(() => {
       const tableColumns = tableInfo?.tableColumns.filter(col => { return Boolean(col.searchType) != false && col.editType != 'undefined' }).map((col: any) => {
         const _col = new entityColumn()
         _col.initColumn(col)
@@ -422,9 +434,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       })
       return tableEditItems
     }) as any
-    const vxeForm = createForm(renderEditForm)
+    const vxeForm = createForm(renderSearchForm)
     this.pageRef.searchForm = vxeForm//查询表单
-    // console.log(vxeForm, 'testForm')
     return { formInstance: vxeForm }
   }
   async initRenderEditForm() {
@@ -454,7 +465,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }) as any
     const vxeForm = createForm(renderEditForm)
     this.pageRef.vxeForm = vxeForm
-    console.log(vxeForm, 'testForm')
     return { formInstance: vxeForm }
   }
   async initTableInfo() {
@@ -500,7 +510,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
     const entityConfig = this.entityConfig!//这个是节点配置
     await Promise.all(entityConfig.map(async (item: any) => {//这是个数组 节点数组
-      return await this.resolveEntityItem(item)
+      try {
+
+        let _item = await this.resolveEntityItem(item)
+        return _item
+      } catch (error) {
+        console.error('初始化出错')
+      }
     }))
   }
   addEntityItem() { }
@@ -511,10 +527,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const renderFunName = itemConfig.renderFunName
     let renderComName = itemConfig.renderComName as keyof typeof comVetor
     let renderCom: any = h('div', ['123'])
-    let renderData: any = {
-      columns: [],
-      data: []
-    }
+    let renderData: any = {}
     //@ts-ignore
     if (renderFunName != null && _this[renderFunName]) {//初始化渲染数据
       const _this: any = this
@@ -546,7 +559,10 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   initRenderButtonGroup() {
     const entity = this.getMainTable()
     const tableInfo = entity.tableInfo
-    const buttons = tableInfo?.tableButtons! || []//
+    let buttons: any = tableInfo?.tableButtons! || []//
+    if (Array.isArray(buttons)) {
+      buttons = []
+    }
     const buttonCategory = this.buttonCategory
     const entityName = this.entityName
     let _button = buttons?.find((btn) => {

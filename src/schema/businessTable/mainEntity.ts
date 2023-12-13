@@ -16,11 +16,15 @@ export class mainEntity extends basicEntity {
     this.buttonCategory = 'ViewGrid'
   }
   async initEntity() {
-    await super.initEntity({ show: false })
-    await this.initDetailEntity()
-    await this.initRenderSearchForm()
-    await this.initRenderSearchDialog()
-    this.displayState = 'show'
+    try {
+      await super.initEntity({ show: false })
+      await this.initDetailEntity()
+      await this.initRenderSearchForm()
+      await this.initRenderSearchDialog()
+      this.displayState = 'show'
+    } catch (error) {
+      console.error(error)
+    }
   }
   async initComponent() {//初始化节点
     await super.initComponent()

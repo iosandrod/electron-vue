@@ -10,6 +10,9 @@ import { getColumnAlign, getColumnField, getColumnResizable, getColumnSlot, getC
 import XEUtils from "xe-utils"
 import * as dateFns from 'date-fns'
 export class column extends base<VxeTableDefines.ColumnOptions> {
+  getTableShowData: () => any[] = () => {
+    return []
+  }
   columnConfig: VxeTableDefines.ColumnOptions & columnConfig = {
     isEdit: false,
     type: 'string' as any,
@@ -17,7 +20,13 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
     showSort: true,
     resizable: true,
     filterLeft: 0,
-    filterTransLeft: 0,
+    filterPosition: {
+      left: 0,
+      top: 0,
+      //@ts-ignore
+      mouseLeft: 0,
+      mouseTop: 0
+    },
     roundType: {//小数点后面的位数
       iRoundAmout: 2,
       iRoundInt: 0,

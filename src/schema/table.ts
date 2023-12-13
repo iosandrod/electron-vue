@@ -216,7 +216,7 @@ export class table extends base<tableSchema> implements tableMethod {
 }
 
 export function createTable(schema?: any, context?: any) {
-  const system = {} as system
+  const system = systemInstance
   const _table = reactive(new table(system, schema))
   _table.initTableConfig()
   return _table

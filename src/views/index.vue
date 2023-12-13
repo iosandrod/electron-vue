@@ -27,13 +27,14 @@
           <div>
             <vxe-button @click="designEntity">进入设计</vxe-button>
             <vxe-button @click="openDialog">打开弹框</vxe-button>
+            <vxe-button @click="changeForm">改变form</vxe-button>
+            <vxe-button @click="visibleNode">改变node</vxe-button>
+            <vxe-button @click="getTableData">获取数据</vxe-button>
           </div>
           <div class="flex-1 w-full">
             <!-- <router-view :key="$route.fullPath"></router-view> -->
             <!-- 路由组件 -->
             <component :is="com" :key="$route.name"></component>
-            <!-- <keep-alive>
-            </keep-alive> -->
           </div>
           <!-- is tab -->
         </div>
@@ -86,6 +87,43 @@ function openDialog() {
     const dialog = entity.pageRef.searchDialog!
     console.log(dialog)
     dialog.open()
+  }
+}
+function changeForm() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  if (entity) {
+    let col = entity.tableInfo?.tableColumns.find(col => {
+      return col.columnName == 'cStatus'
+    })!
+    if (col.editType != 'string') {
+      col.editType = 'string'
+    } else {
+      col.editType = 'select'
+    }
+  }
+}
+function visibleNode() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  if (entity) {
+    if (
+      entity.pageRef.vxeGrid?.displayState == 'hidden'
+    ) {
+      entity.pageRef.vxeGrid.displayState = 'show'
+    } else {
+      entity.pageRef.vxeGrid!.displayState = 'hidden'
+    }
+  }
+}
+function getTableData() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  if (entity) {
+    entity.getPageData()
   }
 }
 const collapsed = ref<boolean>(false)

@@ -99,7 +99,7 @@ export type roundType = {
 }
 
 export type columnConfig = {
-  filterTransLeft?: number
+  filterPosition?: position
   visible?: boolean
   filterLeft?: number
   field?: string

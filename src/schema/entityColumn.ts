@@ -136,6 +136,9 @@ const columnObj = [
         return targetValue
     }),//编辑的类型
     new Translate('bindField', 'sBindField'),
+    new Translate('scope', 'searchScope', function (targetValue) {
+        return targetValue ? true : false
+    }),
     new Translate('cDefaultValue', 'cDefaultValue', function (targetValue, column, entityColumn) {
         if (targetValue != null) {
             return entityColumn.formatFunData(targetValue, column.columnType.toLocaleLowerCase(), true)
@@ -150,6 +153,7 @@ const columnObj = [
         }
         return null
     }),
+
     new Translate('bind', 'dropNo', function (targetValue, column) {
         let _targetValue = targetValue
         if (Boolean(_targetValue) == false) {

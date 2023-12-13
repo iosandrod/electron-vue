@@ -32,24 +32,24 @@ export const getTableInfo = async (entity?: basicEntity) => {
 
 export const getEntityConfig = async (entity?: basicEntity) => {
     const itemArr: layoutItem = [
-        // {
-        //     x: 0, y: 0, h: 4, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-        //         renderComName: "buttonGroupView",//组件
-        //         renderFunName: 'initRenderButtonGroup',//数据初始化函数
-        //     } as layoutItemConfig,
-        // },
-        // {
-        //     x: 0, y: 2, h: 20, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-        //         renderComName: "formView",//组件
-        //         renderFunName: 'initRenderEditForm',//数据初始化函数 初始化编辑的表单的
-        //     } as layoutItemConfig,
-        // },
-        // {
-        //     x: 0, y: 22, h: 15, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-        //         renderComName: "tableView",//组件
-        //         renderFunName: 'initRenderTable',//数据初始化函数
-        //     } as layoutItemConfig,
-        // },
+        {
+            x: 0, y: 0, h: 4, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "buttonGroupView",//组件
+                renderFunName: 'initRenderButtonGroup',//数据初始化函数
+            } as layoutItemConfig,
+        },
+        {
+            x: 0, y: 2, h: 20, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "formView",//组件
+                renderFunName: 'initRenderEditForm',//数据初始化函数 初始化编辑的表单的
+            } as layoutItemConfig,
+        },
+        {
+            x: 0, y: 22, h: 15, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "tableView",//组件
+                renderFunName: 'initRenderTable',//数据初始化函数
+            } as layoutItemConfig,
+        },
         // {
         //     x: 0, y: 19, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
         //         renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
@@ -58,7 +58,9 @@ export const getEntityConfig = async (entity?: basicEntity) => {
         // },
     ]
     const _itemArr = JSON.parse(JSON.stringify(itemArr))
-    if (entity?.entityType == 'detail' || entity?.tableInfo?.detailTable?.length <= 0) {
+    if (entity?.entityType == 'detail'
+        // || entity?.tableInfo?.detailTable?.length <= 0
+    ) {
         _itemArr.pop()
     }
     return _itemArr
@@ -131,6 +133,38 @@ export const getTableConfig = async (tableName?: string, origin = false) => {//�
     }
 }
 
-export const getTableData = (table: table) => {
-    return { url: '', params: {} }
+// export const getTableData = (table: table) => {
+//     return { url: '', params: {} }
+// }
+
+
+export const getTableData = async (entity: basicEntity) => {
+    const tableInfo = entity.tableInfo
+    const system = entity.system
+    const systemConfig = system.systemConfig
+    const companyId = systemConfig.companyConfig.companyId
+    const order = tableInfo?.sortOrder || 'desc'
+    // const colName = tableInfo?.tableColumns.slice(0, 1).pop()?.columnName
+    const colName = tableInfo?.sortName || tableInfo?.tableColumns.find(col => col.isKey == true)?.columnName || ''
+    const page = 1
+    const rows = 100
+    const tableName = tableInfo?.tableName
+    let TableEntity = 't_PubEntry'
+    const params = {
+        companyId,
+        order,
+        page,
+        rows,
+        sort: JSON.stringify([
+            {
+                colName,
+                order
+            }
+        ]),
+        tableName,
+        wheres: JSON.stringify([
+        ])
+    }
+    const url = `/api/${TableEntity}/getPageData`
+    return { url, params }
 }

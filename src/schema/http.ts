@@ -35,7 +35,7 @@ export class myHttp {
   public async login(userName?: string, password?: string, companyId?: string) {
     const body = {
       UUID: '1377c7ce-9b4b-4fb2-b871-47cd96123cde',
-      companyId: companyId || '0018',
+      companyId: getSystem().systemConfig.companyConfig.companyId,
       password: password || 'zkaps#1',
       userName: userName || 'admin',
       verificationCode: '1'

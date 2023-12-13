@@ -296,19 +296,41 @@ export const useSystem = (): system => {
 }
 
 export const getTransformPosition = (el: HTMLDivElement): any => {
-    const parent = el.parentNode as any
+    const parent = el.parentNode as HTMLDivElement
     if (parent == null) {
         return null
     }
     const style = parent?.style!
     const transform = style?.transform
     if (Boolean(transform) != false) {
-        return transform
+        const Rect = el.getBoundingClientRect()
+        const left = Rect.left
+        const top = Rect.top
+        return { transform, left: left, top: top }
     }
     return getTransformPosition(parent)
 }
 
 export const getTranslate3D = (str: string) => {
-    const _str = str.replace('translate3d', '').slice(1, -1).split(',').map(row => row.replace('px', ''))
+    const _str = str.replace('translate3d', '').slice(1, -1).split(',').map(row => row.replace('px', '')).map(row => Number(row))
     return _str
+}
+
+export const getFixedPosition = (el: any, mousePosition: position) => {
+    const pPosition = getTransformPosition(el) || {}//获取父级的位置信息
+    const { transform = 'translate3d(0,0,0)',
+        left = 0,//左侧位移
+        top = 0//高度
+    } = pPosition
+    // console.log(transform, 'testTransform')
+    // const tranArr = getTranslate3D(transform)
+    // const tX = tranArr[0] //转移的X
+    // const tY = tranArr[1]//转移的Y
+    const tX = 0 //转移的X
+    const tY = 0//转移的Y
+    const mLeft = mousePosition.left
+    const mTop = mousePosition.top
+    const fLeft = mLeft - tX - left
+    const fTop = mTop - tY - top
+    return { left: fLeft, top: fTop }
 }

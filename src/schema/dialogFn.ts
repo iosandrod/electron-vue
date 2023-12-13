@@ -3,8 +3,9 @@ import { dialog } from "./dialog";
 import { ModalDefaultSlotParams } from 'vxe-table'
 import { VxeButton } from "vxe-table";
 import { table } from "./table";
-import { dialogComponent, position } from "@/types/schema";
+import { StyleType, dialogComponent, position } from "@/types/schema";
 import { tranPosition, tranPositionNumber } from "@/utils/utils";
+import { getRenderFn } from "./columnFn";
 export const getDialogType = (dialog: dialog) => {
     return computed(() => {
         const dialogConfig = dialog.dialogConfig
@@ -56,9 +57,20 @@ export const getDialogSlotsDefault = (dialog: dialog) => {
             const defaultCom = dialogComponent[dialogName]?.default
             if (defaultCom != null) {
                 const modalData = dialog.dialogConfig.modalData
-                com = h(defaultCom, { dialog: dialog, modalData: modalData })
+                const outSizeDiv = getRenderFn('div', {
+                    style: {
+                        paddingLeft: "10px",
+                        paddingRight: "10px",
+                        width: "100%",
+                        height: "100%",
+                        overflow: 'auto'
+                    } as StyleType
+                })
+                com = outSizeDiv(
+                    h(defaultCom, { dialog: dialog, modalData: modalData })
+                )
             } else {
-                com = h('div', ['default'])
+                com = h('div', ['弹框'])
             }
             return com
         }

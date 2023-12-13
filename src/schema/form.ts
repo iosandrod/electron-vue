@@ -58,7 +58,7 @@ export class form extends base<formConfig> {
       if (destroy.value == true) {
         return null
       }
-      const formView = h(formComponent, this.renderForm,
+      const formView = h(formComponent, { ...this.renderForm, style: { width: '100%' } },
       )
       const style = styleBuilder.setFull().getStyle()
       return withDirectives(h('div', { style }, [formView]), [[vShow, show.value]])

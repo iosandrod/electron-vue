@@ -35,7 +35,11 @@ export class system extends base {
   }
   systemConfig = {
     headerIcon: [],//配置信息
-    activeKey: ''
+    activeKey: '',
+    companyConfig: {
+      companyId: '0009',
+      companyName: "",
+    }
   }
   renderMenu: menuConfig = {}
   renderTab: tabConfig = {}

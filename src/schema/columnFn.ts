@@ -4,7 +4,7 @@ import { StyleType } from "@/types/schema"
 import { getTableHeaderHeight, getTableRowHeight } from "./tableFn"
 import { isUndefined } from 'xe-utils'
 import { getIcon, propsConfig, useCenterDiv, useMousePoint, usePropsDiv } from "./icon"
-import { getMouseEventPosition, getPercentLength, getTransformPosition, getTranslate3D, registerDocumentClickFn } from "@/utils/utils"
+import { getFixedPosition, getMouseEventPosition, getPercentLength, getTransformPosition, getTranslate3D, registerDocumentClickFn } from "@/utils/utils"
 import { isString } from "lodash"
 import defaultCom from "./tableColumnCom/defaultCom"
 import defaultHeaderCom from './tableColumnCom/defalutHeaderCom'
@@ -144,18 +144,16 @@ export const getSlotHeader = (_column: column) => {
 }
 
 export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的图标
-    const position = ref({
-        left: 0,
-    })
-    const scrollLeft = ref(0)
+    const divRef = ref(null)
     const filterIconFn = useMousePoint({
         capture: true,
         onClick: (event: MouseEvent) => {
             const _position = getMouseEventPosition(event)
-            _column.columnConfig.filterLeft = _position.left
-            // setTimeout(() => {
-            //     console.log(position.value)
-            // }, 1000);
+            const position1 = _column.columnConfig.filterPosition!
+            //@ts-ignore
+            position1.mouseLeft = _position.left
+            //@ts-ignore
+            position1.mouseTop = _position.top
             event.stopPropagation()
             nextTick(() => {
                 _column.columnConfig.filterPulldownShow = true
@@ -163,41 +161,41 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
         },
     })
     const targetIcon = getIcon(null, "vxe-icon-funnel")
-
     return h(VxePulldown, {
-        // transfer: true,
         trigger: ['click'],
-        // open: _column.columnConfig.filterPulldownShow,
-        // 'onUpdate:open': (value) => {
-        //     _column.columnConfig.filterPulldownShow = value
-        // }
+        destroyOnClose: true,
         modelValue: _column.columnConfig.filterPulldownShow,
         ['onUpdate:modelValue']: (value: boolean) => {
             const table = _column.table
-            const scroll = table?.pageRef.vxeGrid?.getScroll()
-            const { scrollLeft: _scrollLeft } = scroll!
-            scrollLeft.value = _scrollLeft
+            // const scroll = table?.pageRef.vxeGrid?.getScroll()
             _column.columnConfig.filterPulldownShow = value
+            nextTick(() => {
+                if (value == true) {
+                    const filterPosition = _column.columnConfig.filterPosition
+                    //@ts-ignore
+                    const pObj = getFixedPosition(divRef.value, { left: filterPosition.mouseLeft, top: filterPosition.mouseTop })
+                    //把具体数据过去过去
+                    let showData = _column.table?.tableData.showData//展示的数据
+                    _column.getTableShowData = () => {
+                        return showData!
+                    }
+                    const left = pObj.left
+                    _column.columnConfig.filterLeft = left
+                }
+            })
         }
     }, {
         default: () => {
             return filterIconFn(targetIcon())
         },
         overlay: () => {
-            return h('div', { style: { width: "100px", height: '200px', background: "red" } }, [h(columnFilterCom, { column: _column })])
+            return h('div', { style: { width: "100px", height: '200px', background: "white" } }, [h(columnFilterCom, { column: _column })])
         },
         dropdown: () => {
             return withDirectives(
-                h('div', { style: { left: `${_column.columnConfig.filterLeft! - _column.columnConfig.filterTransLeft!}px`, width: "100px", height: '200px', background: "red", position: "fixed" } as StyleType }, [h(columnFilterCom, { column: _column })]),
+                h('div', { ref: divRef, style: { left: `${_column.columnConfig.filterLeft!}px`, width: "100px", height: '200px', background: "white", position: "fixed" } as StyleType }, [h(columnFilterCom, { column: _column })]),
                 [[{
                     mounted(el, node) {
-                        const tranform = getTransformPosition(el)
-                        if (Boolean(tranform) == false) {
-                            return
-                        }
-                        const tranArr = getTranslate3D(tranform)
-                        const left = tranArr[1]
-                        _column.columnConfig.filterTransLeft = Number(left)
                     }
                 }]]
             )
