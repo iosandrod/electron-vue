@@ -1,17 +1,15 @@
 import { computed, getCurrentInstance, h, isReactive, nextTick, ref, resolveComponent, vShow, watch, watchEffect, withDirectives } from "vue";
 import { table } from "./table";
-import { StyleType, position, tableSchema } from "@/types/schema";
+import { StyleType, filterConfig, position, tableSchema } from "@/types/schema";
 import { column, createColumn } from "./column";
 import { VxeGridProps, VxeGrid, VxeColumnProps } from "vxe-table";
 import { getRenderFn } from "./columnFn";
 import { getDialogPosition } from "./dialogFn";
 import { getMouseEventPosition } from "@/utils/utils";
 import { createDialog } from "./dialog";
-import tableBodyMenu from "./tableColumnCom/tableBodyMenu";
-import tableHeaderMenu from "./tableColumnCom/tableHeaderMenu";
 import { createContextMenu } from "./businessTable/contextMenu";
 import contextMenuView from "./schemaComponent/contextMenuView";
-
+import { createTable } from "./table"
 
 export const getTableRowConfig = (table: table) => {
     const tableConfig = table?.tableConfig
@@ -60,25 +58,26 @@ export const getOptionsId = (table: table) => {
 
 export const getOptionsData = (table: table) => {
     return computed(() => {
-        const showData = table.tableData.data
-        const _data = showData.filter(row => {
-            const filterConfig = table.tableConfig.filterConfig!
-            const status = filterConfig.reduce((res, item: any) => {
-                if (res == false) {
-                    return res
+        let showData = table.tableData.data
+        const filterConfig = table.tableConfig.filterConfig!
+        let arrayFilterConfig = filterConfig.filter(item => item.filterType == 'array')
+        const _data = showData.filter((row: any, i, arr) => {
+            let state = true
+            for (const config of arrayFilterConfig) {
+                let field = config.field!
+                let filterArr = config.filterData || []
+                if (filterArr.length == 0 || state == false) {
+                    continue
                 }
-                const field = item.field
-                const value = item.value
-                const _value = row[field]
-                if (_value == value) {
-                    res == false
+                let _value: any = row[field]
+                //@ts-ignore
+                if (!filterArr.includes(_value)) {
+                    state = false
                 }
-                return res
-            }, true)
-            return status
+            }
+            return state
         })
-        const limitSize = table.tableConfig.limitSize
-        // const _data1 = _data.slice(0, limitSize)
+        // let _data = showData
         const _data1 = _data.slice(0)
         table.tableData.showData = _data1
         return _data1
@@ -248,17 +247,21 @@ export const initGridOptions = (table: table) => {
     gridOptions.scrollX = getOptionsScrollX(table) as any
     gridOptions.scrollY = getOptionsScrollY(table) as any
     gridOptions.rowConfig = getOptionsRowConfig(table) as any
+    gridOptions.columnConfig = getOptionsColumnConfig(table) as any
     gridOptions.rowClassName = getOptionsRowClassName(table) as any
     gridOptions.cellClassName = getOptionsCellClassName(table) as any
     gridOptions.filterConfig = getOptionsFilterConfig(table) as any
     gridOptions.checkboxConfig = getOptionsCheckboxConfig(table) as any
-    gridOptions.columnConfig = getOptionsColumnConfig(table) as any
     gridOptions.showOverflow = 'ellipsis'
     gridOptions.showHeaderOverflow = 'ellipsis'
     gridOptions.height = getOptionsHeight(table) as any
     gridOptions.minHeight = '150px'
+    gridOptions.headerAlign = 'center'
     gridOptions.showFooter = getOptionsShowFooter(table) as any
     gridOptions.showHeader = getOptionsShowHeader(table) as any
+    gridOptions.headerRowStyle = {
+        height: `${table.tableConfig.headerConfig?.rowHeight}px`
+    }
     gridOptions.stripe = true
     gridOptions.border = true
     gridOptions.menuConfig = { enabled: true }
@@ -266,7 +269,7 @@ export const initGridOptions = (table: table) => {
 export const getOptionsColumnConfig = (table: table) => {
     return computed(() => {
         return {
-            useKey: true,
+            useKey: false,
             minWidth: 100
         }
     })
@@ -279,26 +282,7 @@ export const initComponent = (table: table) => {
     const destroy = computed(() => {
         return table.displayState == 'destroy'
     })
-    const bodyMenu = computed(() => {
-        let com: any = null
-        if (table.tableConfig.showBodyMenuDialog == true) {
-            // com = table.pageRef.bodyContext!.component!()
-            com = h(contextMenuView, { contextMenuInstance: table.pageRef.bodyContext })
-        } else {
-            com = null
-        }
-        return com
-    })
-    const headerMenu = computed(() => {
-        let com: any = null
-        if (table.tableConfig.showHeaderMenuDialog == true) {
-            // com = table.pageRef.bodyContext!.component!()
-            com = h(contextMenuView, { contextMenuInstance: table.pageRef.headerContext })
-        } else {
-            com = null
-        }
-        return com
-    })
+    //别用闭包，搞死人
     const _vNode = () => {
         const options = table.gridOptions
         const _class = ['h-full', 'w-full']
@@ -308,7 +292,6 @@ export const initComponent = (table: table) => {
         }
         const outSizeDiv = getRenderFn('div',
             {
-                tabIndex: '0',
                 class: _class,
             },
             [[{
@@ -363,13 +346,33 @@ export const initComponent = (table: table) => {
                 const { row, column, $event } = params
                 const _event: MouseEvent = $event
                 _event.preventDefault()
-                // console.log(table.pageRef)
-                // const position = getMouseEventPosition($event)
                 const tableConfig = _this.tableConfig
                 table.openBodyMenu($event)
                 const onCellMenu = tableConfig.onCellMenu
                 if (typeof onCellMenu == 'function') {
                     onCellMenu({ row, column } as any)
+                }
+            },
+            onCheckboxChange: (value) => {
+                const checkChange = table.tableConfig.onCheckboxChange as any
+                if (typeof checkChange == 'function') {
+                    const row = value.row
+                    const records = value.records
+                    checkChange(row, records)//哪一行改变了
+                }
+            },
+            onCheckboxRangeEnd: (value) => {
+                const checkChange = table.tableConfig.onCheckboxChange as any
+                if (typeof checkChange == 'function') {
+                    const row = value.records
+                    checkChange(row, row)
+                }
+            },
+            onCheckboxAll: (value) => {
+                const checkChange = table.tableConfig.onCheckboxChange as any
+                if (typeof checkChange == 'function') {
+                    const row = value.records
+                    checkChange(row, row)
                 }
             }
         }), [[{
@@ -382,12 +385,8 @@ export const initComponent = (table: table) => {
                 table.pageRef.vxeGrid = null as any
             },
         }]])
-        // const _bodyMenu = table.tableConfig.showBodyMenuDialog == true ? h(tableBodyMenu, { table: table }) : null
-        // const _headerMenu = table.tableConfig.showHeaderMenuDialog == true ? h(tableHeaderMenu, { table: table }) : null
-        // const _bodyMenu = table.tableConfig.showBodyMenuDialog == true ? h(contextMenuView, { contextMenuInstance: table.pageRef.bodyContext }) : null
-        // const _headerMenu = table.tableConfig.showHeaderMenuDialog == true ? h(contextMenuView, { contextMenuInstance: table.pageRef.headerContext }) : null
-        let _bodyMenu = bodyMenu.value
-        let _headerMenu = headerMenu.value
+        const _bodyMenu = table.tableConfig.showBodyMenuDialog == true ? h(contextMenuView, { contextMenuInstance: table.pageRef.bodyContext }) : null
+        const _headerMenu = table.tableConfig.showHeaderMenuDialog == true ? h(contextMenuView, { contextMenuInstance: table.pageRef.headerContext }) : null
         const inSizeGrid = outSizeDiv([vxeGridCom,
             _bodyMenu,
             _headerMenu
@@ -400,12 +399,19 @@ export const initComponent = (table: table) => {
 
 export const initSchema = (table: table) => {
     const schema: tableSchema = table.schema as any
+    let showHeaderFilter = schema.showHeaderFilter
+    if (showHeaderFilter === false) {
+        table.tableConfig.showHeaderFilter = false
+    }
     if (schema != null && Object.keys(schema).length > 0) {
         for (const key of Object.keys(schema)) {
             let tableConfig: any = table.tableConfig
             if (key == 'columns') {
                 table.effectPool['tablecolumnEffect'] = watchEffect(() => {
                     tableConfig.columns = schema['columns']?.map(col => {
+                        if (col instanceof column) {
+                            return col
+                        }
                         return createColumn(col, table)
                     })
                 })
@@ -433,8 +439,45 @@ export const initTableConfig = (table: table) => {
     // 最后才会初始化Component
     initTableMenu(table)
     initGridOptions(table)
+    initRenderFilterTable(table)
     initComponent(table)
 }
+
+export const initRenderFilterTable = (table: table) => {
+    if (table?.tableConfig.showHeaderFilter == false) {
+        return
+    }
+    const renderFilterTable = table.renderFilterTable
+    renderFilterTable.columns = [{
+        field: "value",
+        title: "值",
+        width: 150
+    }]
+    renderFilterTable.showSeqColumn = false
+    renderFilterTable.showHeaderFilter = false
+    renderFilterTable.headerConfig = {
+        rowHeight: 25
+    }
+    renderFilterTable.rowConfig = {
+        height: 25,
+        isHover: true,
+        rowHeight: 25
+    }
+    renderFilterTable.showBodyMenuDialog = false
+    renderFilterTable.showHeaderMenuDialog = false
+    //@ts-ignore
+    renderFilterTable.onCheckboxChange = (row, record) => {
+        const _record = record//is Array
+        const curFilterColumn = table.tableData.curFilterColumn
+        const field = curFilterColumn?.columnConfig.field
+        const _valueArr = _record.map((row: any) => row['value'])
+        const filterConfig = table.tableConfig.filterConfig?.find(config => config.field == field)
+        filterConfig!.filterData = _valueArr
+    }
+    const _table = createTable(renderFilterTable)
+    table.pageRef.filterTable = _table
+}
+
 export const initTableMenu = (table: table) => {
     //只初始化一次
     if (table.pageRef.bodyContext != null || table.pageRef.headerContext != null) {

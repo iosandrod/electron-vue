@@ -28,7 +28,11 @@ import { mergeConfig } from "@/api/data4"
 export class table extends base<tableSchema> implements tableMethod {
   tableState: tableState = 'scan'
   isFocus: boolean = false
+  renderFilterTable: tableConfig = {
+    columns: []
+  }
   pageRef: {
+    filterTable?: table
     vxeGrid?: VxeGridInstance,
     headerContext?: contextMenu,
     bodyContext?: contextMenu
@@ -44,7 +48,7 @@ export class table extends base<tableSchema> implements tableMethod {
       //   top: 0
       // },
       // show: false,
-      list: JSON.parse(JSON.stringify(tableMenuData))
+      list: JSON.parse(JSON.stringify(tableMenuData)).slice(2)
     },
     bodyMenu: {
       // position: {
@@ -77,7 +81,7 @@ export class table extends base<tableSchema> implements tableMethod {
     },
     hiddenBorder: false,
     headerConfig: {//表头配置
-      rowHeight: "30px",//行高度
+      rowHeight: 35,//行高度
     },
     showHeaderFilter: true,
     showHeaderSort: true,
@@ -141,7 +145,6 @@ export class table extends base<tableSchema> implements tableMethod {
     } else if (col instanceof column) {
       this.tableData.curColumn = col
     }
-    console.log(col, 'testCol')
   }
   openDialog(key: string, position?: position) {
     openDialog({ key: key, position: position })

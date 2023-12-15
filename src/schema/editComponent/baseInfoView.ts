@@ -1,23 +1,27 @@
-import { Directive, isProxy, computed, defineComponent, h, reactive, withDirectives, watchEffect, toRef, onUnmounted, ref, nextTick } from 'vue'
+import { Directive, computed, defineComponent, h, ref, withDirectives } from 'vue'
 import { getOutSizeEditDiv } from '../formitemComFn'
-import { styleBuilder } from '@/utils/utils'
-import { getIcon } from '../icon'
-import { VxeButton, VxeInput, VxeInputInstance, VxePulldown, VxePulldownInstance } from 'vxe-table'
-import { StyleType, pickKey, tableConfig } from '@/types/schema'
-import tableView from '../schemaComponent/tableView'
 import { formitem } from '../formitem'
-import { column } from '../column'
-import { createTable } from '../table'
+import { VxeInput, VxePulldown } from 'vxe-table'
+import { getIcon } from '../icon'
+import { styleBuilder } from '@/utils/utils'
+import tableView from '../schemaComponent/tableView'
 export default defineComponent({
-    props: ['formitem', 'baseInfoItem', 'form', 'data'],
+    props: ['formitem', 'form', 'data'],
     setup(props, context) {
+        const formitem: formitem = props.formitem
+        const itemConfig = formitem.itemConfig
+        const field = itemConfig.field!
         const _data = computed(() => {
             return props.data
         })
-        const formitem: formitem = props.formitem
-        const suffStyle = styleBuilder.setMousePoint().getStyle()
-        const itemConfig = formitem.itemConfig
-        const field = itemConfig.field!
+        // const value = computed({
+        //     get() {
+        //         return _data.value[field]
+        //     },
+        //     set(value) {
+        //         _data.value[field] = value
+        //     }
+        // }) as any
         const baseInfoData = computed(() => {
             let data = formitem.itemConfig.baseInfoTable?.tableData || []
             return data
@@ -43,42 +47,6 @@ export default defineComponent({
                 _data.value[field] = value
             }
         }) as any
-        onUnmounted(() => {
-            // formitem.effectPool['polldownEffect']()
-        })
-        let isMousedown = false
-        const tableConfig = reactive({
-            showCheckBoxColumn: false,
-            onCellClick: () => {
-                console.log('clickFn')
-            },
-            height: "300px",
-            data: [{ id: 10001, name: 'Test1', nickname: 'T1', role: 'Develop', sex: 'Man', age: 28, address: 'Shenzhen' },
-            { id: 10002, name: 'Test2', nickname: 'T2', role: 'Test', sex: 'Women', age: 22, address: 'Guangzhou' },
-            { id: 10003, name: 'Test3', nickname: 'T3', role: 'PM', sex: 'Man', age: 32, address: 'Shanghai' },
-            ], columns: [
-                { field: 'name', title: '', width: 100, showHeader: true },
-                {
-                    showFilter: false, showSort: false,
-                    showHeader: false,
-                    field: 'operator', title: "操作", width: 100, slots: {
-                        default: (column: any) => {
-                            return h('div', {}, [h(VxeButton, {
-                                onClick: () => {
-                                }
-                            }, () => {
-                                return h('div', {}, ['选择'])
-                            })])
-                        }
-                    }
-                }
-            ],
-            showHeader: true,
-            resizable: false,
-            showHeaderFilter: false,
-            showHeaderSort: false,
-        }) as pickKey<tableConfig>
-        const pulldownTable = createTable(tableConfig)
         const pullShow = computed({
             set(value) {
                 formitem.itemConfig.isFocus = value as any
@@ -89,52 +57,53 @@ export default defineComponent({
         })
         const vxeinput = ref<any>(null)
         const polldown = ref<any>(null)
+        // formitem.initBaseInfoTable()
         return () => {
-            const suffixIcon = getIcon({
-                style: suffStyle,
-                onClick: (event: MouseEvent) => {
-                    event.stopPropagation()
+            let isMousedown = false
+            const diretive: Directive = {
+                mounted(div, vnode) {
+                    const instance = vnode.instance
+                    const $refs = instance?.$refs!
+                    const vxeinput = $refs['vxeinput']
+                    formitem.pageRef['edititem'] = vxeinput
+                    console.log(formitem.pageRef)
                 },
-                onMousedown: (event: MouseEvent) => {
-                    event.stopPropagation()
+                unmounted() {
+                    formitem.pageRef['edititem'] = null
                 }
-            }, 'vxe-icon-search')()
+            }
             const inputCom = withDirectives(h(VxeInput,
                 {
-                    modelValue: value.value, onChange: ({ value: value1 }: any) => {
+                    modelValue: showValue.value, onChange: ({ value: value1 }: any) => {
                         value.value = value1
                     },
-                    placeholder: '',
                     onFocus: () => {
                         itemConfig.isFocus = true
                     },
-                    style: { width: '100%' } as StyleType,
-                    ref: vxeinput,
                     onBlur: () => {
                         if (isMousedown == false) {
-                            formitem.itemConfig.isFocus = false
-                        }
-                    }
-                }, {
-                suffix: () => {
-                    return suffixIcon
-                }
-            })
-                ,
-                [[{
-                    mounted(div, vnode) {
-                        formitem.pageRef['edititem'] = vxeinput.value
-                        formitem.editMethod.focus = () => {
-                            formitem.itemConfig.isFocus = true
-                            vxeinput.value.focus()//使其活得焦点
+                            itemConfig.isFocus = false
                         }
                     },
-                    unmounted() {
-                        formitem.pageRef['edititem'] = null
-                    }
-                }]])
-            return withDirectives(h(VxePulldown, {
+                    ref: 'vxeinput'
+                }, {
+                suffix: () => {
+                    const suffStyle = styleBuilder.setMousePoint().getStyle()
+                    return getIcon({
+                        style: suffStyle,
+                        onClick: (event: MouseEvent) => {
+                            event.stopPropagation()
+                        },
+                        onMousedown: (event: MouseEvent) => {
+                            event.stopPropagation()
+                        }
+                    }, 'vxe-icon-search')()
+                }
+            })
+                , [[diretive]])
+            const _polldown = withDirectives(h(VxePulldown, {
                 transfer: true,
+                destroyOnClose: true,
                 style: { width: '100%' },
                 modelValue: pullShow.value as boolean,
                 ['onUpdate:modelValue']: (value1: any) => {
@@ -162,7 +131,8 @@ export default defineComponent({
                             }, 0)//
                         }
                     }, [
-                        h(tableView, { tableInstance: pulldownTable },)
+                        // h('div', Array(1000).fill(1))
+                        h(tableView, { tableInstance: formitem.pageRef.tableRef })
                     ]), [[{
                         mounted(div, node) {
                         },
@@ -178,6 +148,10 @@ export default defineComponent({
                     formitem.pageRef['polldown'] = null
                 }
             }]])
+            return h('div', { style: { width: '100%', height: '100%' } }, [
+                // inputCom,
+                _polldown])
         }
-    },
+    }
 })
+

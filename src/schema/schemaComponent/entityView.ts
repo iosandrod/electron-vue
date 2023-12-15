@@ -9,9 +9,10 @@ export default defineComponent({
         const tableInfo = props.tableInfo //使用静态数据 
         let entity: any = null
         if (props.entityInstance != null) {
-            entity = computed(() => {
-                return props.entityInstance
-            })
+            // entity = computed(() => {
+            //     return props.entityInstance
+            // })
+            entity = props.entityInstance
         } else {
             entity = createMainEntity(entityName, tableInfo)
         }

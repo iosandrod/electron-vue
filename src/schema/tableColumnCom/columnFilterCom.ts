@@ -1,6 +1,8 @@
-import { computed, defineComponent, h } from "vue";
+import { computed, defineComponent, h, nextTick } from "vue";
 import { column } from "../column";
 import { StyleType } from "@/types/schema";
+import { CheckboxGroup, VxeCheckbox } from "vxe-table";
+import tableView from "../schemaComponent/tableView";
 
 export default defineComponent({
     props: ['column', 'data'],
@@ -11,26 +13,24 @@ export default defineComponent({
         const table = computed(() => {
             return column.value.table
         })//表格
-        const checkboxValue = computed({
-            get() { },
-            set() { }
-        })
         let field = column.value.columnConfig.field!
-        const checkboxOptions = computed(() => {
-            const _column = column.value
-            const columnConfig = _column.columnConfig//列配置
-            return columnConfig.filterOptions
+        let filterConfig = table.value?.tableConfig.filterConfig?.find(row => {
+            return row.field == field
         })
-        const showData = computed(() => {
-            const getTableShowData = column.value.getTableShowData
-            let data = getTableShowData()
-            let _data = data.map(row => {
-                return row[field]
+        if (filterConfig == null) {
+            table.value?.tableConfig.filterConfig?.push({
+                field: field,
+                filterType: "array",
+                filterData: []
             })
-            return _data
-        })
+            filterConfig = table.value?.tableConfig.filterConfig?.find(row => {
+                return row.field == field
+            })
+        }
+
+        const tableRef = column.value.table!.pageRef.filterTable
         return () => {
-            return h('div', { style: { display: "flex", flexDirection: 'column' } as StyleType }, showData.value)
+            return h('div', { style: { height: '100%', width: '100%' } as StyleType }, [h(tableView, { tableInstance: tableRef })])
         }
     }
 })

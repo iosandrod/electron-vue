@@ -33,8 +33,12 @@
           </div>
           <div class="flex-1 w-full">
             <!-- <router-view :key="$route.fullPath"></router-view> -->
+            <!-- <component :is="com" :key="$route.name"></component> -->
             <!-- 路由组件 -->
+            <!-- <component :is="com"></component> -->
             <component :is="com" :key="$route.name"></component>
+            <!-- <keep-alive :max="20">
+            </keep-alive> -->
           </div>
           <!-- is tab -->
         </div>
@@ -67,7 +71,8 @@ const com = computed(() => {
   if (entity == null) {
     return h(RouterView)
   }
-  return h(entityView, { entityInstance: entity })
+  return h(entityView, { entityInstance: entity, })
+  // return h(entityView, { entityName: route!.name, })
 })
 let state = false
 function designEntity() {
@@ -85,7 +90,6 @@ function openDialog() {
   const entity = systemInstance.entityVetor[key]
   if (entity) {
     const dialog = entity.pageRef.searchDialog!
-    console.log(dialog)
     dialog.open()
   }
 }

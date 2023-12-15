@@ -1,5 +1,6 @@
 import { tableData, tableInfo, tableinfo1 } from "@/api/data";
 import { columnConfig } from "@/types/schema";
+import { basicEntity } from "./businessTable/basicEntity";
 
 const alignType = {
     left: ['string'],
@@ -257,6 +258,7 @@ const columnObj = [
     new Translate('searchType', 'searchType')
 ]
 export class entityColumn {
+    getEntity?: () => basicEntity
     editType: string = ''
     field: string = ''
     title: string = ''

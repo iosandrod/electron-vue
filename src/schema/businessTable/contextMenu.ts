@@ -31,7 +31,6 @@ export class contextMenu extends base {
     }
     initComponent() {
         const contextMenuConfig = this.contextMenuConfig
-
         const position = computed(() => {
             return contextMenuConfig.position
         })
@@ -77,7 +76,6 @@ export class contextMenu extends base {
                     return menu
                 }
             })
-
             return h(Teleport, {
                 to: 'body'
             }, {

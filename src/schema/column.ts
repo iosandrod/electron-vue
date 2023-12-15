@@ -2,7 +2,7 @@ import { computed, h, reactive, toRef } from "vue"
 import { base } from "./base"
 import { systemInstance, system } from "./system"
 import { VxeColumnProps, VxeGridPropTypes, VxeColumn, VxeGridProps, VxeTableDefines } from "vxe-table"
-import { StyleType, columnConfig, formItemConfig, pickRef } from "@/types/schema"
+import { StyleType, columnConfig, formItemConfig, pickRef, tableConfig } from "@/types/schema"
 import { isUndefined } from "xe-utils"
 import { table } from "./table"
 import * as columnFn from './columnFn'
@@ -13,6 +13,7 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
   getTableShowData: () => any[] = () => {
     return []
   }
+  renderFilterTable: tableConfig = { columns: [] }
   columnConfig: VxeTableDefines.ColumnOptions & columnConfig = {
     isEdit: false,
     type: 'string' as any,

@@ -1,7 +1,7 @@
 import { ReactiveEffect, h, reactive, watchEffect } from "vue";
 import { base } from "./base";
 import { system, systemInstance } from "./system";
-import { VxeFormItemProps } from 'vxe-table'
+import { VxeButton, VxeFormItemProps } from 'vxe-table'
 import { dialogConfig, itemConfig, pickKey, tableConfig } from "@/types/schema";
 import { column } from "./column";
 import * as formitemFn from './formitemFn'
@@ -9,7 +9,7 @@ import { baseEdit } from "./baseEdit";
 import { getDialogMaskHidden } from "@/utils/utils";
 import { form } from "./form";
 import { getItemSlotsDefault } from "./formitemFn";
-import { table } from "./table";
+import { createTable, table } from "./table";
 export class formitem extends baseEdit<any> {
     form?: form
     constructor(schema: any, context: any, system: system) {
@@ -76,9 +76,50 @@ export class formitem extends baseEdit<any> {
         if (type != 'baseInfo') {
             return
         }
+        this.initBaseInfoTable()
     }
     openBaseInfoDialog() {
         const pageRef = this.pageRef
+    }
+    initBaseInfoTable() {
+        if (this.pageRef.tableRef != null) {
+            return
+        }
+        const tableConfig = {
+            showCheckBoxColumn: false,
+            onCellClick: () => {
+                console.log('clickFn')
+            },
+            height: "300px",
+            data: [{ id: 10001, name: 'Test1', nickname: 'T1', role: 'Develop', sex: 'Man', age: 28, address: 'Shenzhen' },
+            { id: 10002, name: 'Test2', nickname: 'T2', role: 'Test', sex: 'Women', age: 22, address: 'Guangzhou' },
+            { id: 10003, name: 'Test3', nickname: 'T3', role: 'PM', sex: 'Man', age: 32, address: 'Shanghai' },
+            ], columns: [
+                { field: 'name', title: '', width: 100, showHeader: true },
+                {
+                    showFilter: false, showSort: false,
+                    showHeader: false,
+                    field: 'operator', title: "操作", width: 100, slots: {
+                        default: (column: any) => {
+                            return h('div', {}, [h(VxeButton, {
+                                onClick: () => {
+                                }
+                            }, () => {
+                                return h('div', {}, ['选择'])
+                            })])
+                        }
+                    }
+                }
+            ],
+            showHeader: true,
+            resizable: false,
+            showHeaderFilter: false,
+            showHeaderSort: false,
+        }
+        // this.renderTable = tableConfig
+        const tableRef = createTable(tableConfig)
+        this.pageRef.tableRef = tableRef
+        return this.pageRef.tableRef
     }
     async initComponent() {
         const vNode = () => {

@@ -33,6 +33,7 @@ import { tableMenuData } from "@/api/data3"
 import { createMenu, menu } from "../menu"
 import { createDialog, dialog } from "../dialog"
 import dialogView from "../schemaComponent/dialogView"
+import { VxeGrid } from "vxe-table"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   tabIndex: number = 0//使用tabIndex ,路由的tab
   sub = new Subject()//动作发射器
@@ -90,8 +91,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       vxeForm: undefined,
       contextMenu: undefined,
     }
-  tableConfig: any = {//表格配置
+  tableConfig: { columns: entityColumn[] } = {//表格配置
     //表格配置
+    columns: []
   }
   menuConfig = {
     list: JSON.parse(JSON.stringify(tableMenuData))
@@ -160,8 +162,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       //这里如果有虚拟节点必须使用虚拟节点
       const layoutCom = resolveComponent('grid-layout')
       const layoutItemCom = resolveComponent('grid-item')
-      // const layoutCom = GridLayout
-      // const layoutItemCom = GridItem
       const renderLayout = this.renderLayout
       const schema = this.entityConfig!
       const _this = this
@@ -221,6 +221,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         ])
         , [[vShow, show.value]])
     }
+    // const vNode = () => {
+    //   return h(VxeGrid, this.renderTable)
+    // }
     this.component = vNode as any
 
   }
@@ -331,21 +334,21 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     try {
       const entity = this
       const renderTable = entity.renderTable//这个是渲染表格的数据
+      const columns: any = entity.tableInfo!.tableColumns
+      const _columns = columns.map((col: any) => {
+        let _col = new entityColumn()
+        _col.initColumn(col)
+        _col.getEntity = () => { return this }
+        return _col
+      })
+      this.tableConfig.columns = _columns
       renderTable.columns = computed(() => {
-        const columns: any = entity.tableInfo!.tableColumns
-        const _columns = columns.map((col: any) => {
-          let _col = new entityColumn()
-          _col.initColumn(col)
-          return _col
-        })
-        return _columns
-        // return []
+        return this.tableConfig.columns
       }) as any//处理表格 
       renderTable.data = computed(() => {
         return entity.tableData.data
-      }) as any//行与列
+      }) as any//行与列 
       const table = createTable(renderTable)
-      console.log(table)
       entity.pageRef.vxeGrid = table//只初始化一次
       // console.log(table.gridOptions)
       // return reactive({ ...table.gridOptions })
@@ -367,6 +370,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     if (show != false) {
       this.displayState = 'show'
     }
+    setTimeout(() => {
+      this.getPageData()
+    }, 1000);
   }
   initDragMenu() {
     // const list = this.menuConfig.list
@@ -560,7 +566,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const entity = this.getMainTable()
     const tableInfo = entity.tableInfo
     let buttons: any = tableInfo?.tableButtons! || []//
-    if (Array.isArray(buttons)) {
+    if (!Array.isArray(buttons)) {
       buttons = []
     }
     const buttonCategory = this.buttonCategory

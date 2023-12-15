@@ -11,6 +11,7 @@ import defaultHeaderCom from './tableColumnCom/defalutHeaderCom'
 import { Dropdown } from "ant-design-vue"
 import columnFilterCom from "./tableColumnCom/columnFilterCom"
 import { VxePulldown } from "vxe-table"
+import { createTable } from "./table"
 // import { system } from "./system"
 export const getOutSizeDiv = (column: column, row: any) => {
     const style: StyleType = {//外部div的配置
@@ -148,6 +149,7 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
     const filterIconFn = useMousePoint({
         capture: true,
         onClick: (event: MouseEvent) => {
+            _column.table!.tableData.curFilterColumn = _column
             const _position = getMouseEventPosition(event)
             const position1 = _column.columnConfig.filterPosition!
             //@ts-ignore
@@ -163,7 +165,7 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
     const targetIcon = getIcon(null, "vxe-icon-funnel")
     return h(VxePulldown, {
         trigger: ['click'],
-        destroyOnClose: true,
+        // destroyOnClose: true,
         modelValue: _column.columnConfig.filterPulldownShow,
         ['onUpdate:modelValue']: (value: boolean) => {
             const table = _column.table
@@ -176,9 +178,10 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
                     const pObj = getFixedPosition(divRef.value, { left: filterPosition.mouseLeft, top: filterPosition.mouseTop })
                     //把具体数据过去过去
                     let showData = _column.table?.tableData.showData//展示的数据
-                    _column.getTableShowData = () => {
-                        return showData!
-                    }
+                    _column.table!.pageRef.filterTable!.tableData.data = [...new Set(showData!.map(row => {
+                        let field = _column.columnConfig.field
+                        return row[field!]
+                    }).filter(row => row !== null && row !== undefined))].map(row => { return { value: row } })
                     const left = pObj.left
                     _column.columnConfig.filterLeft = left
                 }
@@ -188,12 +191,15 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
         default: () => {
             return filterIconFn(targetIcon())
         },
-        overlay: () => {
-            return h('div', { style: { width: "100px", height: '200px', background: "white" } }, [h(columnFilterCom, { column: _column })])
-        },
         dropdown: () => {
             return withDirectives(
-                h('div', { ref: divRef, style: { left: `${_column.columnConfig.filterLeft!}px`, width: "100px", height: '200px', background: "white", position: "fixed" } as StyleType }, [h(columnFilterCom, { column: _column })]),
+                h('div', {
+                    ref: divRef, style: {
+                        left: `${_column.columnConfig.filterLeft!}px`,
+                        width: "200px", height: '330px', background: "RGB(248, 248, 249)",
+                        position: "fixed"
+                    } as StyleType
+                }, [h(columnFilterCom, { column: _column })]),
                 [[{
                     mounted(el, node) {
                     }
@@ -238,7 +244,7 @@ export const getColumnType = (column: column) => {
         if (typeArr.includes(type)) {
             return type
         } else {
-            return 'html'
+            return 'seq'
         }
         // return column.columnConfig.type!
     })
@@ -326,6 +332,7 @@ export const initRenderFormitem = (column: column) => {
 export const initRenderColumn = (column: column) => {
     let renderColumn = column.renderColumn
     renderColumn.params = column
+    renderColumn.headerAlign = 'center'
     renderColumn.slots = getColumnSlot(column)
     renderColumn.visible = getColumnVisiable(column)
     renderColumn.field = getColumnField(column)

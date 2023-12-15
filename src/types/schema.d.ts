@@ -36,7 +36,15 @@ export type UnUnique<T> = {
 // type x=VxeGridPropTypes
 export type tableSchema = concatAny<UnUnique<VxeGridProps>>
 
-export type filterConfig = {}
+export type filterConfig = {
+  field: string,
+  filterData?: [],//过去的数据
+  filterType: 'array' | 'cal'//计算还是数组
+  cal?: {
+    calType: "equal" | '',
+    calValue: string | number | Array
+  }
+}
 export type mergeConfig = {
   // rowArr?: any[]
   // colArr?: any[]
@@ -71,7 +79,7 @@ export type tableConfig = {
     // currentEditRow: any[]
   },
   headerConfig?: {
-    rowHeight: string
+    rowHeight: number
   },
   resizable?: boolean,
   showHeaderFilter?: boolean,

@@ -33,8 +33,8 @@ export default defineComponent({
             })
             const renderColumn = column.value.renderColumn
             const title: string = renderColumn.title as string || 'title'
-            const _filterIcon = column.value.columnConfig.showFilter == true ? getSlotHeaderFilterIcon(column.value) : null
-            const sortIcon = column.value.columnConfig.showSort == true ? getSlotHeaderSortIcon(column.value) : null
+            const _filterIcon = column.value.columnConfig.showFilter == true && column.value.table?.tableConfig.showHeaderFilter == true ? getSlotHeaderFilterIcon(column.value) : null
+            const sortIcon = column.value.columnConfig.showSort == true && column.value.table?.tableConfig.showHeaderSort == true ? getSlotHeaderSortIcon(column.value) : null
             //排序图标
             let headerCom = outSizeDiv([title, _filterIcon, sortIcon])
             return headerCom

@@ -45,7 +45,7 @@ export const getEntityConfig = async (entity?: basicEntity) => {
             } as layoutItemConfig,
         },
         {
-            x: 0, y: 22, h: 15, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            x: 0, y: 22, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
                 renderComName: "tableView",//组件
                 renderFunName: 'initRenderTable',//数据初始化函数
             } as layoutItemConfig,
