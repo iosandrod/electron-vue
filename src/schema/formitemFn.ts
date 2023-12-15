@@ -6,6 +6,7 @@ import * as formitemComFn from './formitemComFn'
 import { editPool } from "./formitemComFn";
 import { VxeInput } from "vxe-table";
 import { StyleType } from "@/types/schema";
+import inputView from "./schemaComponent/inputView";
 export const getFormitemSlots = (formitem: formitem) => {
     return computed(() => {
         const slots: any = {}
@@ -37,12 +38,14 @@ export const getItemSlotsDefault = (formitem: formitem) => {
 export const getItemSlotsDefautlEditCom = (formitem: formitem, data?: any, titleCom?: any) => {
     const style = styleBuilder.setFull().setFlexRow().getStyle()
     const outSizeDivFn = getRenderFn('div', { style })
-    const type = formitem.itemConfig.type as keyof typeof editPool
-    let defaultRenderCom: any = h('div', {}, ['default'])
-    const renderFn = editPool[type]
-    if (typeof renderFn == 'function') {
-        defaultRenderCom = renderFn(formitem, data)
-    }
+    // const type = formitem.itemConfig.type as keyof typeof editPool
+    // let defaultRenderCom: any = h('div', {}, ['default'])
+    // const renderFn = editPool[type]
+    // if (typeof renderFn == 'function') {
+    //     defaultRenderCom = renderFn(formitem, data)
+    // }
+    const inputInstance = formitem.pageRef.inputInstance
+    let defaultRenderCom = h(inputView, { inputInstance: inputInstance })
     const editCom = outSizeDivFn([titleCom, defaultRenderCom])
     return editCom
 }

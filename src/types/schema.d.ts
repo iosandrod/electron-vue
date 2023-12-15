@@ -11,7 +11,7 @@ import { table } from "@/schema/table"
 import { MenuProps, SelectProps, TabPaneProps, TabsProps } from "ant-design-vue"
 import { CSSProperties } from "ant-design-vue/es/_util/cssinjs/hooks/useStyleRegister"
 import { ComputedRef, VNode } from "vue"
-import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps, VxeColumnProps } from "vxe-table"
+import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps, VxeColumnProps, VxeInputProps, VxeInputEventProps } from "vxe-table"
 
 export type schema = {
   componentType: string
@@ -504,3 +504,5 @@ export type tabConfig = TabsProps & {
 export type localStorageValue = {
   token?: string
 }
+
+export type inputConfig = VxeInputProps & {} & VxeInputEventProps

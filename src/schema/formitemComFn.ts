@@ -12,6 +12,15 @@ import datetimeView from "./editComponent/datetimeView";
 import stringView from "./editComponent/stringView";
 import boolView from "./editComponent/boolView";
 import numberView from "./editComponent/numberView";
+import { createBaseInfo } from "./editClass/baseInfo";
+import { createBool } from "./editClass/bool";
+import { createString } from "./editClass/string";
+import { createDatetime } from "./editClass/datetime";
+import { createDate } from "./editClass/date";
+import { createTime } from "./editClass/time";
+import { createNumber } from "./editClass/number";
+import { createSelect } from "./editClass/select";
+import { createWangEditor } from "./editClass/wangEditor";
 export const getOutSizeEditDiv = (formitem: formitem) => {
     const style = styleBuilder.setFull().getStyle()
     const renderFn = getRenderFn('div', { style })
@@ -82,4 +91,17 @@ export const editPool = {
     time,
     select,
     wangEditor
+}
+
+
+export const instancePool = {
+    number: createNumber,
+    baseInfo: createBaseInfo,
+    bool: createBool,
+    string: createString,
+    datetime: createDatetime,
+    date: createDate,
+    time: createTime,
+    select: createSelect,
+    wangEditor: createWangEditor
 }

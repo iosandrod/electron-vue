@@ -15,6 +15,7 @@ import { createTab, tab } from "./tab"
 import index9Vue from "@/views/index9.vue"
 import index10Vue from "@/views/index10.vue"
 import index1Vue from "@/views/index1.vue"
+import { table } from "./table"
 
 export class system extends base {
   getRouter = getRouter
@@ -29,6 +30,9 @@ export class system extends base {
   } = {
 
     }
+  formItemBaseInfoTable: {
+    [key: string]: table//那么formitem不需要再次生成table实例
+  } = {}
   entityConfigVetor = new Map()
   pageConfig = {
     headerHeight: '50px'
@@ -60,6 +64,9 @@ export class system extends base {
     this.displayState = 'show'
     setTimeout(() => {
       this.routeOpen('t_SdOrder')
+      // this.routeOpen('index8')
+      // const router = this.getRouter()
+      // router.push({ path: '/index8' })
     }, 1000);
   }
   async initSystemPermission() { }
@@ -154,7 +161,9 @@ export class system extends base {
     }
     return targetEntity
   }
+  getFormItemBaseInfoTable() {//使用formitem的baseInfoTable的编辑项
 
+  }
 }
 
 //

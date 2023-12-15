@@ -285,14 +285,13 @@ export const initComponent = (table: table) => {
     //别用闭包，搞死人
     const _vNode = () => {
         const options = table.gridOptions
-        const _class = ['h-full', 'w-full']
-        _class.push('grid-border-none')
         if (destroy.value == true) {
             return null
         }
         const outSizeDiv = getRenderFn('div',
             {
-                class: _class,
+                class: ['grid-border-none'],
+                style: { height: '100%', width: '100%', position: 'relative' } as StyleType
             },
             [[{
                 mounted(div) {
@@ -387,9 +386,11 @@ export const initComponent = (table: table) => {
         }]])
         const _bodyMenu = table.tableConfig.showBodyMenuDialog == true ? h(contextMenuView, { contextMenuInstance: table.pageRef.bodyContext }) : null
         const _headerMenu = table.tableConfig.showHeaderMenuDialog == true ? h(contextMenuView, { contextMenuInstance: table.pageRef.headerContext }) : null
+        const inputDiv = h('div', { style: { height: '100px', width: "100px", background: 'red', position: 'absolute', } as StyleType })
         const inSizeGrid = outSizeDiv([vxeGridCom,
             _bodyMenu,
-            _headerMenu
+            _headerMenu,
+            // inputDiv
         ])
         const _inSizeGrid = withDirectives(inSizeGrid, [[vShow, show.value]])
         return _inSizeGrid

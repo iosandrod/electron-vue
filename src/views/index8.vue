@@ -37,7 +37,7 @@
       <!-- <gantt></gantt> -->
       <!-- <component :is="com"></component> -->
       <!-- <component :is="table.component"></component> -->
-      <table-view :tableInstance="table"></table-view>
+      <!-- <table-view :tableInstance="table"></table-view> -->
       <!-- <table-view
         :columns="table.tableConfig.columns.map((col) => col.renderColumn)"
         :data="table.tableData.data"
@@ -68,7 +68,8 @@
         }"
         :height="100"
       ></table-view> -->
-      <entity-view ref="entity" :entityInstance="_entity"></entity-view>
+      <input-view :inputInstance="_input"></input-view>
+      <!-- <entity-view ref="entity" :entityInstance="_entity"></entity-view> -->
       <!-- <component :is="vNode"></component> -->
       <!-- <menu-view :menuInstance="_menu"></menu-view> -->
       <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
@@ -99,6 +100,7 @@ import Mousetrap from 'mousetrap'
 import { tableData, tableData2 } from '@/api/data'
 import { tableData3 } from '@/api/data2'
 import { createDialog, confirm } from '@/schema/dialog'
+import { createInput } from '@/schema/input'
 import { http } from '@/schema/http'
 import { createMenu } from '@/schema/menu'
 import { menuData, tableMenuData, testTableViewData } from '@/api/data3'
@@ -135,6 +137,8 @@ const showValue = ref(true)
 //     },
 //   ],
 // })
+const _inputConfig = {}
+const _input = createInput(_inputConfig)
 async function btnClick() {
   showValue.value = !showValue.value
 }

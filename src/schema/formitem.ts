@@ -1,8 +1,8 @@
-import { ReactiveEffect, h, reactive, watchEffect } from "vue";
+import { ReactiveEffect, computed, h, reactive, watchEffect } from "vue";
 import { base } from "./base";
 import { system, systemInstance } from "./system";
 import { VxeButton, VxeFormItemProps } from 'vxe-table'
-import { dialogConfig, itemConfig, pickKey, tableConfig } from "@/types/schema";
+import { dialogConfig, inputConfig, itemConfig, pickKey, tableConfig } from "@/types/schema";
 import { column } from "./column";
 import * as formitemFn from './formitemFn'
 import { baseEdit } from "./baseEdit";
@@ -10,6 +10,8 @@ import { getDialogMaskHidden } from "@/utils/utils";
 import { form } from "./form";
 import { getItemSlotsDefault } from "./formitemFn";
 import { createTable, table } from "./table";
+import { createInput } from "./input";
+import { instancePool } from "./formitemComFn";
 export class formitem extends baseEdit<any> {
     form?: form
     constructor(schema: any, context: any, system: system) {
@@ -18,12 +20,13 @@ export class formitem extends baseEdit<any> {
     itemState: any = {
         isFocus: false
     }
+    renderInput: inputConfig = {}
     table?: table
     column?: column
-    itemConfig: itemConfig = {
+    itemConfig: itemConfig & inputConfig = {
         isPulldownFocus: false,
         folding: false, //折叠
-        type: "string",
+        type: "text",
         isFocus: false,//是否聚焦
         baseInfoTable: {//
             tableName: '',//表名 
@@ -32,7 +35,7 @@ export class formitem extends baseEdit<any> {
         },
         options: [],
         layout: undefined,
-        visible: true
+        visible: true,
     }
     baseInfoDialogConfig = {
         props: {
@@ -69,10 +72,29 @@ export class formitem extends baseEdit<any> {
         }
         this.initRenderItem()
         this.initBaseInfoDialog()
+        this.initInputInstance()
         this.initComponent()
+    }
+    initInputInstance() {
+        const renderInput = this.renderInput
+        const itemConfig = this.itemConfig
+        renderInput.type = computed(() => {
+            return this.itemConfig.type
+        }) as any
+        renderInput.onChange = () => {
+            console.log('changeValue')
+        }
+        const type = itemConfig.type
+        let createFn = instancePool[type as keyof typeof instancePool]
+        if (createFn == null) {
+            createFn = createInput
+        }
+        const inputInstance = createFn(this.renderInput as any)
+        this.pageRef.inputInstance = inputInstance
     }
     initBaseInfoDialog() {
         const type = this.itemConfig.type
+        //@ts-ignore
         if (type != 'baseInfo') {
             return
         }
@@ -116,7 +138,6 @@ export class formitem extends baseEdit<any> {
             showHeaderFilter: false,
             showHeaderSort: false,
         }
-        // this.renderTable = tableConfig
         const tableRef = createTable(tableConfig)
         this.pageRef.tableRef = tableRef
         return this.pageRef.tableRef
