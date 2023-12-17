@@ -12,6 +12,8 @@ import { Dropdown } from "ant-design-vue"
 import columnFilterCom from "./tableColumnCom/columnFilterCom"
 import { VxePulldown } from "vxe-table"
 import { createTable } from "./table"
+import { createFormItem, formitem } from "./formitem"
+import { _columns } from "./entityColumn"
 // import { system } from "./system"
 export const getOutSizeDiv = (column: column, row: any) => {
     const style: StyleType = {//外部div的配置
@@ -96,18 +98,22 @@ export const getTimeEditDiv = (column: column, row: any) => {
 
 
 export const getSlotDefault = (_column: column) => {
-    return computed(() => {
-        const slots = _column.columnConfig.slots as any
-        const slotsDefault = slots?.default
-        if (typeof slotsDefault == 'function') {
-            return slotsDefault
-        }
-        const fn = ({ row, rowIndex, column }: any) => {
-            const _defaultCom = h(defaultCom, { column: _column, row: row })
-            return _defaultCom
-        }
-        return fn
-    })
+    const slots = _column.columnConfig.slots as any
+    const slotsDefault = slots?.default
+    if (typeof slotsDefault == 'function') {
+        return slotsDefault
+    }
+    const fn = ({ row, rowIndex, column }: any) => {
+        // let formitem = _column.formItemMap.get(row)
+        // if (formitem == null) {
+        //     _column.formItemMap.set(row, createFormItem(_column.renderFormitem, null))
+        // }
+        const _defaultCom = h(defaultCom, { column: _column, row: row })
+        return _defaultCom
+    }
+    return fn
+    // return computed(() => {
+    // })
 }
 
 export const getColumnSlot = (column: column) => {
@@ -126,22 +132,22 @@ export const getColumnSlot = (column: column) => {
             return {}
         }
         let slots: any = {}
-        const _default = getSlotDefault(column).value//默认的
-        const header = getSlotHeader(column).value//表头的显示
+        const _default = getSlotDefault(column)//默认的
+        const _header = getSlotHeader(column)//表头的显示
         slots.default = _default
-        slots.header = header
+        slots.header = _header
         return slots
     })
 }
 
 export const getSlotHeader = (_column: column) => {
-    return computed(() => {
-        const fn = (params: any) => {
-            //过滤图标 w4
-            return h(defaultHeaderCom, { column: _column })
-        }
-        return fn
-    })
+    const fn = (params: any) => {
+        //过滤图标 w4
+        return h(defaultHeaderCom, { column: _column })
+    }
+    return fn
+    // return computed(() => {
+    // })
 }
 
 export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的图标
@@ -311,13 +317,25 @@ export const initColumnConfig = (column: column) => {
     }
     initRenderColumn(column)
     initRenderFormitem(column)
+    initFormitem(column)
+}
+export const initFormitem = (column: column) => {
+    let _item = createFormItem(column.renderFormitem, null)
+    column.pageRef.formitem = _item
+    //@ts-ignore
+    _item.table = column.table!
 }
 
 export const initRenderFormitem = (column: column) => {
     const renderFormitem = column.renderFormitem
+    // renderFormitem.modelValue = computed(() => {
+    //     return '123'
+    // }) as any
     renderFormitem.type = computed(() => {
         return column.columnConfig.editType || column.columnConfig.type
     }) as any
+    renderFormitem.onChange = (value) => {
+    }
     renderFormitem.field = computed(() => {
         return column.columnConfig.field
     }) as any

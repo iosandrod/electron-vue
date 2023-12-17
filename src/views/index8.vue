@@ -35,6 +35,7 @@
       </div> -->
       <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
       <!-- <gantt></gantt> -->
+      <!-- <form-view :formInstance="_form"></form-view> -->
       <!-- <component :is="com"></component> -->
       <!-- <component :is="table.component"></component> -->
       <!-- <table-view :tableInstance="table"></table-view> -->
@@ -68,8 +69,8 @@
         }"
         :height="100"
       ></table-view> -->
-      <input-view :inputInstance="_input"></input-view>
-      <!-- <entity-view ref="entity" :entityInstance="_entity"></entity-view> -->
+      <!-- <input-view v-model="testValue" :inputInstance="_input"></input-view> -->
+      <entity-view ref="entity" :entityInstance="_entity"></entity-view>
       <!-- <component :is="vNode"></component> -->
       <!-- <menu-view :menuInstance="_menu"></menu-view> -->
       <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
@@ -83,6 +84,7 @@ import { createPage, nodeConfig } from '@/schema/businessTable/pageTree'
 import tableView from '@/schema/schemaComponent/tableView'
 import { createTable } from '@/schema/table'
 import {
+  computed,
   getCurrentInstance,
   h,
   nextTick,
@@ -109,8 +111,11 @@ import { useLocalStorage } from '@vueuse/core'
 import { RouteRecordSingleView } from 'vue-router'
 import entityView from '@/schema/schemaComponent/entityView'
 import Index9 from './index9.vue'
+import { VxeInput } from 'vxe-table'
+import { createForm } from '@/schema/form'
 const entity = ref(null)
-const _entity = createMainEntity('v_WorkOrderLess2', null)
+const testValue = ref('')
+const _entity = createMainEntity('t_SdOrder', null)
 const { proxy: instance } = getCurrentInstance()!
 const _menu = createMenu({
   data: JSON.parse(JSON.stringify(menuData)),
@@ -137,8 +142,67 @@ const showValue = ref(true)
 //     },
 //   ],
 // })
-const _inputConfig = {}
+const _inputConfig = reactive({
+} as any)
+//@ts-ignore
+const value = ref('1111')
+_inputConfig.modelValue = computed(() => {
+  return value.value
+})
+_inputConfig['onChange'] = (value1: any) => {
+  console.log(value.value)
+}
+// _inputConfig.onChange = (value1: any) => {
+//   //@ts-ignore
+//   // console.log(value1, 'testValue')
+//   // console.log(_inputConfig.modelValue) 
+//   nextTick(() => {
+//     console.log(value.value, 'changeValue')
+//   })
+// }
+const _data = reactive({
+  name: '',
+  nickname: '',
+  sex: '0',
+  role: '',
+  age: '',
+  val1: '[]',
+  val2: 'false',
+  val3: '',
+  flag: 'false',
+  region: ''
+})
+const formConfig = reactive({
+  data: _data,
+  items: [{
+    field: 'name', type: "select", options: [{
+      key: "xiaofeng",
+      value: "晓峰"
+    }, {
+      key: "xiaoming",
+      value: "小明"
+    }], title: '名称', span: 6, onChange: (): void => { console.log(_data) }
+  },
+  { field: 'sex', type: 'baseInfo', title: '性别', span: 6, onChange: () => { console.log(_data) } },
+  { field: 'role', type: 'string', title: '角色', span: 6, onChange: () => { console.log(_data) } },
+  { field: 'age', type: 'string', title: '年龄', span: 6, onChange: () => { console.log(_data) } },
+  { field: 'val1', type: 'string', title: '复选框-组', span: 6, onChange: () => { console.log(_data) } },
+  { field: 'val2', type: 'string', title: '复选框', span: 6, onChange: () => { console.log(_data) } },
+  { field: 'val3', type: 'string', title: '单选框', span: 6, onChange: () => { console.log(_data) } },
+  { field: 'flag', type: 'string', title: '开关', span: 6, onChange: () => { console.log(_data) } },
+  { field: 'region', type: 'string', title: '地区', span: 6, onChange: () => { console.log(_data) } },
+  ]
+})
+const _form = createForm(formConfig)
+const vNode = h(VxeInput, { modelValue: '123123' })
 const _input = createInput(_inputConfig)
+_input.getData = () => {
+  return value
+}
+_input.getField = () => {
+  return 'value'
+}
+
 async function btnClick() {
   showValue.value = !showValue.value
 }
@@ -181,22 +245,32 @@ function btnClick8() {
   // localStorage.setItem('value', 'xiaoming')
   http.login()
 }
-async function btnClick9() {
-  const $router = instance?.$router!
-  const entity1 = createMainEntity('t_SdOrder')
-  const obj = {
-    component: Index9 as any,
-    path: '/index9',
-    props: () => {
-      return { testProps: 'xiaofeng', entityInstance: entity1 }
-    },
-  } as RouteRecordSingleView
-  $router.addRoute('index', obj)
-  nextTick(() => {
-    $router.push({
-      path: '/index9',
-    })
-  })
+// async function btnClick9() {
+//   const $router = instance?.$router!
+//   const entity1 = createMainEntity('t_SdOrder')
+//   const obj = {
+//     component: Index9 as any,
+//     path: '/index9',
+//     props: () => {
+//       return { testProps: 'xiaofeng', entityInstance: entity1 }
+//     },
+//   } as RouteRecordSingleView
+//   $router.addRoute('index', obj)
+//   nextTick(() => {
+//     $router.push({
+//       path: '/index9',
+//     })
+//   })
+// }
+async function btnClick9(params: any) {
+  // formConfig.data = {}
+  // _form.formConfig.data = {}
+  if (state == true) {
+    _entity.setTableEdit('fullEdit')
+  } else {
+    _entity.setTableEdit('scan')
+  }
+  state = !state
 }
 Mousetrap.bind('ctrl+left', function () {
   console.log('ctrl a')

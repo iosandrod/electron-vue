@@ -1,5 +1,5 @@
-import { computed, nextTick, reactive } from "vue"
-import { VxeTableDefines } from "vxe-table"
+import { computed, h, nextTick, reactive } from "vue"
+import { VxeButton, VxeTableDefines } from "vxe-table"
 import { base } from "./base"
 import { createMenu, menu } from "./menu"
 import { menuData } from "@/api/data3"
@@ -15,7 +15,7 @@ import { createTab, tab } from "./tab"
 import index9Vue from "@/views/index9.vue"
 import index10Vue from "@/views/index10.vue"
 import index1Vue from "@/views/index1.vue"
-import { table } from "./table"
+import { createTable, table } from "./table"
 
 export class system extends base {
   getRouter = getRouter
@@ -24,6 +24,7 @@ export class system extends base {
   defaultColumnConfig: VxeTableDefines.ColumnOptions = {
     width: 180
   }//一些默认配置
+  baseInfoTableMap: any = {}
   pageRef: {
     menuRef?: menu,
     tabRef?: tab
@@ -58,6 +59,7 @@ export class system extends base {
   async systemInit() {
     dialogPool.initDialogPool()
     //初始化menu 实例数据
+    await this.initBaseInfoTable()
     await this.initLocalStorage()
     await this.initRenderMenu()//渲染menu的数据
     await this.initRenderTab()
@@ -162,6 +164,44 @@ export class system extends base {
     return targetEntity
   }
   getFormItemBaseInfoTable() {//使用formitem的baseInfoTable的编辑项
+
+  }
+  initBaseInfoTable(tableName: string) {
+    const tableConfig = {
+      showCheckBoxColumn: false,
+      onCellClick: () => {
+        console.log('clickFn')
+      },
+      height: "300px",
+      data: [{ id: 10001, name: 'Test1', nickname: 'T1', role: 'Develop', sex: 'Man', age: 28, address: 'Shenzhen' },
+      { id: 10002, name: 'Test2', nickname: 'T2', role: 'Test', sex: 'Women', age: 22, address: 'Guangzhou' },
+      { id: 10003, name: 'Test3', nickname: 'T3', role: 'PM', sex: 'Man', age: 32, address: 'Shanghai' },
+      ], columns: [
+        { field: 'name', title: '', width: 100, showHeader: true },
+        {
+          showFilter: false, showSort: false,
+          showHeader: false,
+          field: 'operator', title: "操作", width: 100, slots: {
+            default: (column: any) => {
+              return h('div', {}, [h(VxeButton, {
+                onClick: () => {
+                }
+              }, () => {
+                return h('div', {}, ['选择'])
+              })])
+            }
+          }
+        }
+      ],
+      showHeader: true,
+      resizable: false,
+      showHeaderFilter: false,
+      showHeaderSort: false,
+    }
+    const tableRef = createTable(tableConfig)
+    this.baseInfoTableMap['t_SdOrder'] = tableRef
+  }
+  getBaseInfoTable() {
 
   }
 }

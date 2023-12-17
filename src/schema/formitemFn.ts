@@ -1,4 +1,4 @@
-import { computed, h } from "vue";
+import { computed, h, watchEffect } from "vue";
 import { formitem } from "./formitem";
 import { styleBuilder } from "@/utils/utils";
 import { getRenderFn } from "./columnFn";
@@ -7,6 +7,7 @@ import { editPool } from "./formitemComFn";
 import { VxeInput } from "vxe-table";
 import { StyleType } from "@/types/schema";
 import inputView from "./schemaComponent/inputView";
+import formitemView from "./editComponent/formitemView";
 export const getFormitemSlots = (formitem: formitem) => {
     return computed(() => {
         const slots: any = {}
@@ -19,23 +20,24 @@ export const getFormitemSlots = (formitem: formitem) => {
 export const getItemSlotsDefault = (formitem: formitem) => {
     return computed(() => {
         return (params: any) => {
-            const title = formitem.itemConfig.title//title
-            const titleCom = getRenderFn('div', {
-                style: {
-                    width: '30%',
-                    height: "100%",
-                    display: 'flex',
-                    alignItems: "center",
-                    overflow: "hidden"
-                } as StyleType
-            })([title])
-            let editCom = getItemSlotsDefautlEditCom(formitem, params.data, titleCom)
-            return editCom
+            return h(formitemView, { formitem: formitem, params: params })
+            // const title = formitem.itemConfig.title//title
+            // const titleCom = getRenderFn('div', {
+            //     style: {
+            //         width: '30%',
+            //         height: "100%",
+            //         display: 'flex',
+            //         alignItems: "center",
+            //         overflow: "hidden"
+            //     } as StyleType
+            // })([title])
+            // let editCom = getItemSlotsDefaultEditCom(formitem, params.data, titleCom)
+            // return editCom
         }
     })
 }
 
-export const getItemSlotsDefautlEditCom = (formitem: formitem, data?: any, titleCom?: any) => {
+export const getItemSlotsDefaultEditCom = (formitem: formitem, data?: any, titleCom?: any) => {
     const style = styleBuilder.setFull().setFlexRow().getStyle()
     const outSizeDivFn = getRenderFn('div', { style })
     // const type = formitem.itemConfig.type as keyof typeof editPool
@@ -45,6 +47,7 @@ export const getItemSlotsDefautlEditCom = (formitem: formitem, data?: any, title
     //     defaultRenderCom = renderFn(formitem, data)
     // }
     const inputInstance = formitem.pageRef.inputInstance
+    inputInstance.getData = formitem.getData
     let defaultRenderCom = h(inputView, { inputInstance: inputInstance })
     const editCom = outSizeDivFn([titleCom, defaultRenderCom])
     return editCom

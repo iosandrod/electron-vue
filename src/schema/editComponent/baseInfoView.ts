@@ -14,14 +14,6 @@ export default defineComponent({
         const _data = computed(() => {
             return props.data
         })
-        // const value = computed({
-        //     get() {
-        //         return _data.value[field]
-        //     },
-        //     set(value) {
-        //         _data.value[field] = value
-        //     }
-        // }) as any
         const baseInfoData = computed(() => {
             let data = formitem.itemConfig.baseInfoTable?.tableData || []
             return data
@@ -29,7 +21,7 @@ export default defineComponent({
         const showValue = computed(() => {
             const field = formitem.itemConfig.field!
             const value = _data.value[field]
-            let showValue: any = baseInfoData.value.find(v => v.value == value)?.label
+            let showValue: any = baseInfoData.value.find((v: any) => v.value == value)?.label
             if (showValue == null) {
                 showValue = value
             }
@@ -57,7 +49,6 @@ export default defineComponent({
         })
         const vxeinput = ref<any>(null)
         const polldown = ref<any>(null)
-        // formitem.initBaseInfoTable()
         return () => {
             let isMousedown = false
             const diretive: Directive = {

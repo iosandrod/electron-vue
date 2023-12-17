@@ -14,6 +14,9 @@ import { createInput } from "./input";
 import { instancePool } from "./formitemComFn";
 export class formitem extends baseEdit<any> {
     form?: form
+    getForm?: () => form
+    getTable?: () => table
+    getData?: () => any = () => { return {} }
     constructor(schema: any, context: any, system: system) {
         super(schema, system, context)
     }
@@ -76,20 +79,39 @@ export class formitem extends baseEdit<any> {
         this.initComponent()
     }
     initInputInstance() {
+        const _this = this
         const renderInput = this.renderInput
         const itemConfig = this.itemConfig
         renderInput.type = computed(() => {
             return this.itemConfig.type
         }) as any
-        renderInput.onChange = () => {
-            console.log('changeValue')
+        renderInput.onChange = (value) => {
+            const _onChange = itemConfig.onChange
+            if (typeof _onChange == 'function') {
+                _onChange(value)
+            }
         }
+        renderInput.modelValue = computed(() => {
+            let value = ''
+            const data = _this.form?.formConfig.data
+            if (data == null) {
+                //@ts-ignore
+                value = _this.itemConfig.modelValue!
+            } else {
+                //@ts-ignore
+                value = data[itemConfig.field]
+            }
+            return value
+        }) as any
         const type = itemConfig.type
         let createFn = instancePool[type as keyof typeof instancePool]
         if (createFn == null) {
             createFn = createInput
         }
         const inputInstance = createFn(this.renderInput as any)
+        inputInstance.getField = () => {
+            return itemConfig.field
+        }
         this.pageRef.inputInstance = inputInstance
     }
     initBaseInfoDialog() {

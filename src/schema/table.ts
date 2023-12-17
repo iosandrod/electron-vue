@@ -26,7 +26,7 @@ import { mergeConfig } from "@/api/data4"
 
 
 export class table extends base<tableSchema> implements tableMethod {
-  tableState: tableState = 'scan'
+  tableState: tableState = 'fullEdit'
   isFocus: boolean = false
   renderFilterTable: tableConfig = {
     columns: []

@@ -31,6 +31,12 @@ export class form extends base<formConfig> {
             let _item = createFormItem(item, this)
             return _item
           })
+          formConfig.items.forEach(item => {
+            //@ts-ignore
+            item.getData = () => {
+              return schema.data || {}
+            }
+          })
         })
         continue
       }

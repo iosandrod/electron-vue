@@ -11,7 +11,7 @@ import { table } from "@/schema/table"
 import { MenuProps, SelectProps, TabPaneProps, TabsProps } from "ant-design-vue"
 import { CSSProperties } from "ant-design-vue/es/_util/cssinjs/hooks/useStyleRegister"
 import { ComputedRef, VNode } from "vue"
-import { VxeGridPropTypes, VxeTableProps, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps, VxeColumnProps, VxeInputProps, VxeInputEventProps } from "vxe-table"
+import { VxeGridPropTypes, VxeTableProps, VxeInputEmits, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps, VxeColumnProps, VxeInputProps, VxeInputEventProps, VxeInputEvents } from "vxe-table"
 
 export type schema = {
   componentType: string
@@ -127,7 +127,7 @@ export type columnConfig = {
   columnConfig?: columnConfig
 }
 
-export type formItemConfig = itemConfig
+export type formItemConfig = itemConfig & VxeInputEmits & VxeInputEvents
 
 export type extendColumnConfig = VxeTableDefines.ColumnOptions & columnConfig
 
@@ -505,4 +505,7 @@ export type localStorageValue = {
   token?: string
 }
 
-export type inputConfig = VxeInputProps & {} & VxeInputEventProps
+export type inputConfig = VxeInputProps & {
+  baseInfoTable?: any
+  isFocus?: boolean
+} & VxeInputEventProps & { [key in VxeInputEmits[number]]?: any } & { options?: { key: string, value: string }[] } & SelectProps

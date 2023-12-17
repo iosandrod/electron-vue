@@ -80,6 +80,7 @@ export const getOptionsData = (table: table) => {
         // let _data = showData
         const _data1 = _data.slice(0)
         table.tableData.showData = _data1
+
         return _data1
     })
 }
@@ -117,7 +118,8 @@ export const getOptionsScrollX = (table: table) => {
         return {
             enabled: true,
             mode: 'default',
-            gt: 0
+            gt: 10,
+            oSize: 5,
         }
     })
 }
@@ -139,7 +141,8 @@ export const getOptionsScrollY = (table: table) => {
         return {
             enabled: true,
             mode: 'wheel',
-            gt: 0
+            gt: 0,
+            oSize: 0,
         }
     })
 }
@@ -240,7 +243,7 @@ export const getOptionsShowHeader = (table: table) => {
 
 export const initGridOptions = (table: table) => {
     const gridOptions = table.gridOptions as VxeGridProps
-    // gridOptions.columns = table.tableConfig.columns
+    gridOptions.columns = table.tableConfig.columns
     gridOptions.columns = getOptionsColumns(table) as any
     gridOptions.data = getOptionsData(table) as any
     gridOptions.treeConfig = getOptionsTreeConfig(table) as any

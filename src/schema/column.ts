@@ -14,6 +14,7 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
     return []
   }
   renderFilterTable: tableConfig = { columns: [] }
+  formItemMap = new WeakMap()
   columnConfig: VxeTableDefines.ColumnOptions & columnConfig = {
     isEdit: false,
     type: 'string' as any,

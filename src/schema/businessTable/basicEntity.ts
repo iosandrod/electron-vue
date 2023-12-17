@@ -11,7 +11,7 @@ import { tableMethod } from "../tableMethod"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -571,19 +571,19 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
     const buttonCategory = this.buttonCategory
     const entityName = this.entityName
-    let _button = buttons?.find((btn) => {
+    let _button = buttons?.find((btn: any) => {
       const category = btn.category
       const tableName = btn.tableName
       if (category == buttonCategory && entityName == tableName) {
         return true
       }
     })
-    _button = _button || buttons?.find((btn) => {
+    _button = _button || buttons?.find((btn: any) => {
       const category = btn.category
       return category == buttonCategory
     })
     const targetButtons = _button?.buttons || []//获取到这个东西
-    this.renderButtonGroup = targetButtons?.map(btn => {
+    this.renderButtonGroup = targetButtons?.map((btn: any) => {
       const _btn = createEntityButton(btn, this)
       return _btn
     })
@@ -609,6 +609,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   setMergeConfig() {
     const vxeGrid = this.pageRef.vxeGrid
     vxeGrid?.setMergeConfig()
+  }
+  setTableEdit(state: tableState) {
+    const vxeGrid = this.pageRef.vxeGrid
+    if (vxeGrid == null) {
+      return
+    }
+    vxeGrid.tableState = state
   }
 }
 
