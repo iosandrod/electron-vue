@@ -31,7 +31,11 @@ export class table extends base<tableSchema> implements tableMethod {
   renderFilterTable: tableConfig = {
     columns: []
   }
+  renderFilterColTable: tableConfig = {
+    columns: []
+  }
   pageRef: {
+    filterColTable?: table
     filterTable?: table
     vxeGrid?: VxeGridInstance,
     headerContext?: contextMenu,
@@ -68,8 +72,8 @@ export class table extends base<tableSchema> implements tableMethod {
     showFilterDialog: true,
     showBodyMenuDialog: true,
     showHeaderMenuDialog: true,
-    columns: [],//列
-    filterConfig: [{ field: 'name', value: 'Test1' }],//过滤配置
+    columns: [],//列 
+    filterConfig: [],//过滤配置
     mergeConfig: {},//合并配置
     sortconfig: [],//处理排序
     height: 'auto',
@@ -183,6 +187,7 @@ export class table extends base<tableSchema> implements tableMethod {
       console.error('没有找到vxeGrid实例')
     }
   }
+  //设置合并配置
   async setMergeConfig(rows?: any[], cols?: any[]) {//行 
     if (Object.keys(this.tableConfig.mergeConfig!).length > 0) {
       this.tableConfig.mergeConfig = {} as any
@@ -214,6 +219,28 @@ export class table extends base<tableSchema> implements tableMethod {
         return _obj1
       })
       this.tableConfig.mergeConfig = result as any
+    }
+  }
+  //获取选择配置
+  getCheckBoxRecord() {
+    const vxeGrid = this.pageRef.vxeGrid
+    const checkArr = vxeGrid?.getCheckboxRecords()
+    return checkArr
+  }
+  setCheckBoxRecord(rowArr: any[]) {
+    const vxeGrid = this.pageRef.vxeGrid
+    if (!Array.isArray(rowArr) || rowArr.length == 0) {
+      vxeGrid?.clearCheckboxRow()
+      return
+    }
+    vxeGrid?.setCheckboxRow(rowArr, true)
+  }
+  changeColumnEditType(field: string, type: string) {
+    let targetCol = this.tableConfig.columns.find(col => {
+      return col.columnConfig?.field == field
+    })
+    if (targetCol) {
+      targetCol!.columnConfig!.editType! = type
     }
   }
 }

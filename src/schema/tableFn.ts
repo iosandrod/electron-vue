@@ -1,4 +1,4 @@
-import { computed, getCurrentInstance, h, isReactive, nextTick, ref, resolveComponent, vShow, watch, watchEffect, withDirectives } from "vue";
+import { computed, getCurrentInstance, h, isReactive, nextTick, reactive, ref, resolveComponent, vShow, watch, watchEffect, withDirectives } from "vue";
 import { table } from "./table";
 import { StyleType, filterConfig, position, tableSchema } from "@/types/schema";
 import { column, createColumn } from "./column";
@@ -61,6 +61,7 @@ export const getOptionsData = (table: table) => {
         let showData = table.tableData.data
         const filterConfig = table.tableConfig.filterConfig!
         let arrayFilterConfig = filterConfig.filter(item => item.filterType == 'array')
+        console.log(arrayFilterConfig, 'testConfig')
         const _data = showData.filter((row: any, i, arr) => {
             let state = true
             for (const config of arrayFilterConfig) {
@@ -407,18 +408,20 @@ export const initSchema = (table: table) => {
     if (showHeaderFilter === false) {
         table.tableConfig.showHeaderFilter = false
     }
+    const tableConfig: any = table.tableConfig
     if (schema != null && Object.keys(schema).length > 0) {
         for (const key of Object.keys(schema)) {
             let tableConfig: any = table.tableConfig
             if (key == 'columns') {
-                table.effectPool['tablecolumnEffect'] = watchEffect(() => {
-                    tableConfig.columns = schema['columns']?.map(col => {
-                        if (col instanceof column) {
-                            return col
-                        }
-                        return createColumn(col, table)
-                    })
-                })
+                //这种就不需要了呀
+                // table.effectPool['tablecolumnEffect'] = watchEffect(() => {
+                //     tableConfig.columns = schema['columns']?.map(col => {
+                //         if (col instanceof column) {
+                //             return col
+                //         }
+                //         return createColumn(col, table)
+                //     })
+                // })
                 continue
             }
             const _value = schema[key]
@@ -435,6 +438,12 @@ export const initSchema = (table: table) => {
                 })
             }
         }
+        tableConfig.columns = schema['columns']?.map(col => {
+            if (col instanceof column) {
+                return col
+            }
+            return createColumn(col, table)
+        })
     }
 }
 
@@ -444,7 +453,38 @@ export const initTableConfig = (table: table) => {
     initTableMenu(table)
     initGridOptions(table)
     initRenderFilterTable(table)
+    initRenderFilterColTable(table)
     initComponent(table)
+}
+
+export const initRenderFilterColTable = (table: table) => {
+    const renderFilterColTable = table.renderFilterColTable
+    if (table?.tableConfig.showHeaderFilter == false) {
+        return
+    }
+    renderFilterColTable.showHeaderFilter = false
+    renderFilterColTable.showSeqColumn = false
+    renderFilterColTable.showHeaderFilter = false
+    renderFilterColTable.showBodyMenuDialog = false
+    renderFilterColTable.showHeaderMenuDialog = false
+    renderFilterColTable.columns = [{
+        //@ts-ignore
+        type: 'string',
+        field: "operator",
+        editType: "select",
+        options: [
+            { label: "大于", value: ">" },
+            { label: "等于", value: '=' },
+            { label: "小于", value: "<" },
+            { label: "包含", value: "%" }
+        ],
+        onChange: (value) => {
+            console.log(value)
+        }
+    }]
+    const filterColTable = createTable(renderFilterColTable)
+    filterColTable.tableState = 'fullEdit'
+    table.pageRef.filterColTable = filterColTable
 }
 
 export const initRenderFilterTable = (table: table) => {

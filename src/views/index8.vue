@@ -10,6 +10,7 @@
     <vxe-button @click="btnClick7">local</vxe-button>
     <vxe-button @click="btnClick8">login</vxe-button>
     <vxe-button @click="btnClick9">route9</vxe-button>
+    <vxe-button @click="btnClick10">route10</vxe-button>
     <!-- <vxe-input
       @change="inputChange"
       v-model="_menu.menuConfig.inputValue"
@@ -33,7 +34,7 @@
           :contextMenuInstance="contextMenu"
         ></context-menu-view>
       </div> -->
-      <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
+      <table-view ref="tableView1" :tableInstance="table"></table-view>
       <!-- <gantt></gantt> -->
       <!-- <form-view :formInstance="_form"></form-view> -->
       <!-- <component :is="com"></component> -->
@@ -70,7 +71,7 @@
         :height="100"
       ></table-view> -->
       <!-- <input-view v-model="testValue" :inputInstance="_input"></input-view> -->
-      <entity-view ref="entity" :entityInstance="_entity"></entity-view>
+      <!-- <entity-view ref="entity" :entityInstance="_entity"></entity-view> -->
       <!-- <component :is="vNode"></component> -->
       <!-- <menu-view :menuInstance="_menu"></menu-view> -->
       <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
@@ -272,6 +273,16 @@ async function btnClick9(params: any) {
   }
   state = !state
 }
+async function btnClick10() {
+  if (state == true) {
+    // _testTableViewData.columns[0].editType = 'string'
+    table.changeColumnEditType('name', 'string')
+  } else {
+    // _testTableViewData.columns[0].editType = 'baseInfo'
+    table.changeColumnEditType('name', 'select')
+  }
+  state = !state
+}
 Mousetrap.bind('ctrl+left', function () {
   console.log('ctrl a')
 })
@@ -287,7 +298,9 @@ const nodeArr: Array<nodeConfig> = reactive([
 ])
 const com = h(tableView, nodeArr[0].nodeData)
 // const pageTree = createPage(nodeArr)
-const table = createTable(testTableViewData)
+let _testTableViewData = reactive(testTableViewData)
+const table = createTable(_testTableViewData)
+table.tableState = 'fullEdit'
 //律师
 //回应
 

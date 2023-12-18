@@ -61,6 +61,19 @@ export class tab extends base {
         renderTab.tabBarStyle = computed(() => {
             return tabConfig.tabBarStyle || {}
         }) as any
+        renderTab.onTabClick = (key, e) => {
+            const _onTabClick = tabConfig.onTabClick
+            if (typeof _onTabClick == 'function') {
+                _onTabClick(key, e)
+            }
+        }
+        renderTab.onChange = (key,) => {
+            const _onChange = tabConfig.onChange
+            if (typeof _onChange == 'function') {
+                _onChange(key)
+            }
+
+        }
     }
 }
 

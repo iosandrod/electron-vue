@@ -331,16 +331,21 @@ export const initRenderFormitem = (column: column) => {
     // renderFormitem.modelValue = computed(() => {
     //     return '123'
     // }) as any
+    const columnConfig = column.columnConfig
     renderFormitem.type = computed(() => {
         return column.columnConfig.editType || column.columnConfig.type
     }) as any
-    renderFormitem.onChange = (value) => {
+    renderFormitem.onChange = (value: any) => {
+        const _onChange = columnConfig.onChange
+        if (typeof _onChange == 'function') {
+            _onChange(value)
+        }
     }
     renderFormitem.field = computed(() => {
         return column.columnConfig.field
     }) as any
     renderFormitem.options = computed(() => {
-        return []
+        return columnConfig.options || []
     }) as any//下拉框的数据绑定
     renderFormitem.baseInfoTable = computed(() => {
         return column.columnConfig.baseInfoTable

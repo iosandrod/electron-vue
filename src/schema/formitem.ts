@@ -91,6 +91,13 @@ export class formitem extends baseEdit<any> {
                 _onChange(value)
             }
         }
+        renderInput.options = computed(() => {
+            let options = itemConfig.options
+            if (Array.isArray(options)) {
+                return options
+            }
+            return []
+        }) as any
         renderInput.modelValue = computed(() => {
             let value = ''
             const data = _this.form?.formConfig.data
@@ -103,16 +110,18 @@ export class formitem extends baseEdit<any> {
             }
             return value
         }) as any
-        const type = itemConfig.type
-        let createFn = instancePool[type as keyof typeof instancePool]
-        if (createFn == null) {
-            createFn = createInput
-        }
-        const inputInstance = createFn(this.renderInput as any)
-        inputInstance.getField = () => {
-            return itemConfig.field
-        }
-        this.pageRef.inputInstance = inputInstance
+        this.pageRef.inputInstance = computed(() => {
+            const type = itemConfig.type
+            let createFn = instancePool[type as keyof typeof instancePool]
+            if (createFn == null) {
+                createFn = createInput
+            }
+            const inputInstance = createFn(this.renderInput as any)
+            inputInstance.getField = () => {
+                return itemConfig.field
+            }
+            return inputInstance
+        })
     }
     initBaseInfoDialog() {
         const type = this.itemConfig.type

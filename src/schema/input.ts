@@ -56,7 +56,7 @@ export class input extends base {
         renderInput.modelValue = computed(() => {
             return inputConfig.modelValue
         }) as any
-        renderInput.onChange = ({ value }) => {
+        renderInput.onChange = ({ value }: any) => {
             const getData = _this.getData
             const getField = _this.getField
             if (typeof getData == 'function' && typeof getField == 'function') {
@@ -67,7 +67,7 @@ export class input extends base {
             const _onChange = inputConfig.onChange as any
             inputConfig.modelValue = value
             if (typeof _onChange == 'function') {
-                _onChange(value)
+                _onChange({ value, inputInstance: _this, data: _this.getData!(), })
             }
         }
         //@ts-ignore

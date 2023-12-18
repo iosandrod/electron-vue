@@ -30,6 +30,7 @@
             <vxe-button @click="changeForm">改变form</vxe-button>
             <vxe-button @click="visibleNode">改变node</vxe-button>
             <vxe-button @click="getTableData">获取数据</vxe-button>
+            <vxe-button @click="routeOpen">路由跳转</vxe-button>
           </div>
           <div class="flex-1 w-full">
             <!-- <router-view :key="$route.fullPath"></router-view> -->
@@ -37,6 +38,8 @@
             <!-- 路由组件 -->
             <!-- <component :is="com"></component> -->
             <component :is="com" :key="$route.name"></component>
+            <keep-alive :max="10">
+            </keep-alive>
             <!-- <keep-alive :max="20">
             </keep-alive> -->
           </div>
@@ -129,6 +132,9 @@ function getTableData() {
   if (entity) {
     entity.getPageData()
   }
+}
+function routeOpen() {
+  systemInstance.routeOpen('index8')
 }
 const collapsed = ref<boolean>(false)
 </script>

@@ -59,14 +59,14 @@ export class system extends base {
   async systemInit() {
     dialogPool.initDialogPool()
     //初始化menu 实例数据
-    await this.initBaseInfoTable()
+    await this.initBaseInfoTable('')
     await this.initLocalStorage()
     await this.initRenderMenu()//渲染menu的数据
     await this.initRenderTab()
     this.displayState = 'show'
     setTimeout(() => {
-      this.routeOpen('t_SdOrder')
-      // this.routeOpen('index8')
+      // this.routeOpen('t_SdOrder')
+      this.routeOpen('index8')
       // const router = this.getRouter()
       // router.push({ path: '/index8' })
     }, 1000);
@@ -95,6 +95,12 @@ export class system extends base {
   async initRenderTab() {
     const _this = this
     const renderTab = this.renderTab
+    renderTab.onTabClick = () => {
+
+    }
+    renderTab.onChange = (key: any) => {
+      this.routeOpen(key)
+    }
     renderTab.tabItems = computed(() => {
       const entityVetor = _this.entityVetor
       const entityArr = Object.values(entityVetor).sort((entity1, entity2) => {
@@ -133,7 +139,17 @@ export class system extends base {
     localStorage.token = useLocalStorage('token', '') as any
   }
   routeOpen(entityName: string) {//打开某个路由 以路由基础
+    //判断是否有这个路由
     const $router = this.getRouter()
+    const renderMenu = this.renderMenu
+    const data = renderMenu.data
+    const state = data?.map((row: any) => row.tableName).includes(entityName)
+    if (Boolean(state) == false) {
+      $router.push(entityName)
+      return
+    }
+    //
+
     const allRoute = $router.getRoutes()
     if (allRoute.map(route => route.name).filter(v => v != null).includes(entityName)) {
       $router.push({ path: `/${entityName}` })
@@ -166,7 +182,7 @@ export class system extends base {
   getFormItemBaseInfoTable() {//使用formitem的baseInfoTable的编辑项
 
   }
-  initBaseInfoTable(tableName: string) {
+  async initBaseInfoTable(tableName: string) {
     const tableConfig = {
       showCheckBoxColumn: false,
       onCellClick: () => {

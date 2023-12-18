@@ -19,6 +19,8 @@ export const getButtonSlotsDefault = (button: button) => {
             if (_default) {
                 return _default(button)
             }
+            const buttonConfig = button.buttonConfig
+            return h('div', [buttonConfig.content])
         }
     })
 }

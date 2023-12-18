@@ -35,7 +35,7 @@ export default defineComponent({
             if (showTitle == false) {
                 titleCom = null
             }
-            let defaultRenderCom = h(inputView, { inputInstance: inputInstance, data: data.value, })
+            let defaultRenderCom = h(inputView, { inputInstance: formitem.pageRef.inputInstance, data: data.value, })
             const editCom = outSizeDivFn([titleCom, defaultRenderCom])
             return editCom
         }

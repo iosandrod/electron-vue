@@ -11,7 +11,7 @@ import { table } from "@/schema/table"
 import { MenuProps, SelectProps, TabPaneProps, TabsProps } from "ant-design-vue"
 import { CSSProperties } from "ant-design-vue/es/_util/cssinjs/hooks/useStyleRegister"
 import { ComputedRef, VNode } from "vue"
-import { VxeGridPropTypes, VxeTableProps, VxeInputEmits, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps, VxeColumnProps, VxeInputProps, VxeInputEventProps, VxeInputEvents } from "vxe-table"
+import { VxeGridPropTypes, VxeTableProps, VxeInputEmits, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps, VxeColumnProps, VxeInputProps, VxeInputEventProps, VxeInputEvents, VxeButtonProps, VxeButtonEventProps } from "vxe-table"
 
 export type schema = {
   componentType: string
@@ -115,7 +115,9 @@ export type columnConfig = {
   formatFn?: ({ value, column, row }) => any
   filterPulldownShow?: boolean,
   baseInfoTable?: any,
-  editType?: boolean,
+  editType?: string,
+  onChange?: (changeConfig: any) => void
+  getRowEditType?: (row, col) => string
   options?: Array<{ label: string, value: string }>
   isEdit?: boolean,
   showFilter?: boolean
@@ -129,7 +131,9 @@ export type columnConfig = {
 
 export type formItemConfig = itemConfig & VxeInputEmits & VxeInputEvents
 
-export type extendColumnConfig = VxeTableDefines.ColumnOptions & columnConfig
+export type extendColumnConfig = VxeTableDefines.ColumnOptions & columnConfig & {
+
+}
 
 
 export type pickRef<T = any> = {
@@ -509,3 +513,6 @@ export type inputConfig = VxeInputProps & {
   baseInfoTable?: any
   isFocus?: boolean
 } & VxeInputEventProps & { [key in VxeInputEmits[number]]?: any } & { options?: { key: string, value: string }[] } & SelectProps
+
+
+export type buttonConfig = VxeButtonProps & { slots?: VxeButtonProps } & VxeButtonEventProps 

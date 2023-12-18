@@ -13,7 +13,7 @@ export default defineComponent({
             }
         }
         onUnmounted(() => {
-            _input.value.getData = null
+            _input.value!.getData = null
         })
         return { inputInstance: _input }
     },
