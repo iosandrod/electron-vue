@@ -14,7 +14,7 @@ import { createFormItem } from "./formitem";
 import defaultHeaderCom from "./tableColumnCom/defaultHeaderCom";
 import showValueCom from "./tableColumnCom/showValueCom";
 import inputView from "./schemaComponent/inputView";
-import { Select } from "ant-design-vue";
+import { Select, TableColumn } from "ant-design-vue";
 import baseInfoInputView from "./schemaComponent/baseInfoInputView";
 
 export const getTableRowConfig = (table: table) => {
@@ -509,17 +509,38 @@ export const initSchema = (table: table) => {
                 })
             }
         }
-        tableConfig.columns = schema['columns']?.map(col => {
-            if (col instanceof column) {
-                return col
-            }
-            return createColumn(col, table)
-        })
+        // tableConfig.columns = schema['columns']?.map(col => {
+        //     if (col instanceof column) {
+        //         return col
+        //     }
+        //     return createColumn(col, table)
+        // })
     }
 }
-
+export const initTableColumn = (table: table) => {
+    const schema = table.schema
+    const tableConfig = table.tableConfig
+    //@ts-ignore
+    tableConfig.columns = schema['columns']?.map(col => {
+        if (col instanceof column) {
+            return col
+        }
+        return createColumn(col, table)
+    })
+    tableConfig.filterConfig = tableConfig.columns.map(col => {
+        let field = col.columnConfig?.field!
+        let obj: filterConfig = {
+            field: field,
+            filterType: "array",
+            filterData: [],
+            calCondition: []
+        }
+        return obj
+    })
+}
 export const initTableConfig = (table: table) => {
     initSchema(table)
+    initTableColumn(table)
     // 最后才会初始化Component
     initTableMenu(table)
     initGridOptions(table)

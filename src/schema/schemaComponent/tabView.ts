@@ -3,11 +3,11 @@ import { menu } from '../menu'
 import { TabsProps } from 'ant-design-vue'
 import { h } from 'vue'
 import { tabsProps } from 'ant-design-vue/es/tabs/src/Tabs'
-import { createTab } from '../tab'
+import { createTab, tab } from '../tab'
 export default defineComponent({
     props: ['tabInstance', 'tabBarStyle', 'activeKey', 'tabItems', 'onChange', 'onTabClick'] as Array<keyof TabsProps | 'tabInstance' | 'tabItems'>,
     setup(props) {
-        let _tab = props.tabInstance as menu
+        let _tab = props.tabInstance as tab
         if (_tab == null) {
             _tab = createTab({
                 ...props, tabBarStyle: {

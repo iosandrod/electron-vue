@@ -63,6 +63,7 @@ export const getDialogSlotsDefault = (dialog: dialog) => {
                         paddingRight: "10px",
                         width: "100%",
                         height: "100%",
+                        maxHeight: '800px',
                         overflow: 'auto'
                     } as StyleType
                 })

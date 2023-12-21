@@ -40,10 +40,10 @@ export type filterConfig = {
   field: string,
   filterData?: [],//过去的数据
   filterType: 'array' | 'cal'//计算还是数组
-  cal?: {
+  calCondition?: {
     calType: "equal" | '',
     calValue: string | number | Array
-  }
+  }[]
 }
 export type mergeConfig = {
   // rowArr?: any[]
@@ -504,6 +504,7 @@ export type tabItem = TabPaneProps & {
 
 export type tabConfig = TabsProps & {
   tabItems?: TabPaneProps[]
+  tabMarginHidden?: boolean
 }
 
 export type localStorageValue = {

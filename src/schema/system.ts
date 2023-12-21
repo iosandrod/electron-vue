@@ -96,7 +96,7 @@ export class system extends base {
     const _this = this
     const renderTab = this.renderTab
     renderTab.onTabClick = () => {
-
+      console.log('tabClick')
     }
     renderTab.onChange = (key: any) => {
       this.routeOpen(key)
@@ -108,8 +108,9 @@ export class system extends base {
       }).map(entity => {
         let cnName = entity?.tableInfo?.cnName
         const obj = {
+          // tab: cnName,
           tab: cnName,
-          key: entity.entityName
+          key: entity.entityName,
         } as TabPaneProps & { key: string }
         return obj
       })
@@ -125,6 +126,9 @@ export class system extends base {
       } as StyleType
       return obj
     }) as any
+    // renderTab.tabBarExtraContent = (params: any) => {
+    //   return h('div', ['123123'])
+    // }
     const tabRef = createTab(renderTab)
     this.pageRef.tabRef = tabRef
   }

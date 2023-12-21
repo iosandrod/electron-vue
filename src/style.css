@@ -99,3 +99,14 @@ body{
 .animat--leave{
     transform:none !important;
 }
+.tabNoneMargin{
+    
+}
+.tabNoneMargin .ant-tabs-tab{
+    /* background:red !important */
+    padding:0 !important;
+    border:none !important;
+}
+.ant-select-selector{
+    height:95% !important
+}

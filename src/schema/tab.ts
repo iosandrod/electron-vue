@@ -10,6 +10,7 @@ export class tab extends base {
         tabItems: [],
         activeKey: '',
         type: "card",
+        tabMarginHidden: false
     }
     constructor(schema: any, system: any) {
         super(system, schema)
@@ -41,10 +42,19 @@ export class tab extends base {
             const tabCom = h(Tabs, this.renderTab, () => {
                 const tabItems = tabConfig.tabItems
                 return tabItems?.map(item => {
-                    return h(TabPane, item)
+                    return h(TabPane, item, {
+                        tab: (params: any) => {
+                            // console.log(params, 'testParams')
+                            return h('div', ['123312'])
+                        }
+                    })
                 })
             })
-            const com = withDirectives(h('div', [tabCom]), [[vShow, show.value]])
+            const _class = []
+            if (tabConfig.tabMarginHidden == true) {
+                _class.push('tabNoneMargin')
+            }
+            const com = withDirectives(h('div', { class: _class }, [tabCom]), [[vShow, show.value]])
             return com
         }
         this.component = vNode
@@ -55,6 +65,9 @@ export class tab extends base {
         renderTab.type = computed(() => {
             return tabConfig.type
         }) as any
+        renderTab.tabBarExtraContent = computed(() => {
+            return tabConfig.tabBarExtraContent
+        })
         renderTab.activeKey = computed(() => {
             return tabConfig.activeKey
         }) as any
@@ -67,6 +80,7 @@ export class tab extends base {
                 _onTabClick(key, e)
             }
         }
+        renderTab.tabBarGutter = 0
         renderTab.onChange = (key,) => {
             const _onChange = tabConfig.onChange
             if (typeof _onChange == 'function') {
@@ -78,7 +92,7 @@ export class tab extends base {
 }
 
 
-export const createTab = (schema: any) => {
+export const createTab = (schema: tabConfig) => {
     const _tab = reactive(new tab(schema, systemInstance))
     _tab.initTab()
     return _tab

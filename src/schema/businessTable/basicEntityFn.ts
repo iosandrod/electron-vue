@@ -71,6 +71,9 @@ export const initRenderSearchForm = (entity: basicEntity) => {
         obj.options = computed(() => {
             return col.options
         }) as any
+        obj.title = computed(() => {
+            return col.title
+        }) as any
         return obj
     })
     const vxeForm = createForm(renderSearchForm)
@@ -85,7 +88,7 @@ export const initRenderEditForm = (entity: basicEntity) => {
     renderEditForm.data = computed(() => {
         return {}
     }) as any
-    renderEditForm.items = _this.tableConfig.columns?.map(col => {
+    renderEditForm.items = _this.tableConfig.columns?.filter(col => Boolean(col.editType) == true).map(col => {
         const obj: formItemConfig = {} as any
         obj.type = computed(() => {
             return col.editType
@@ -125,7 +128,7 @@ export const initRenderSearchDialog = (entity: basicEntity) => {
         }
     }]
     renderSearchDialog.maskClosable = false
-    renderSearchDialog.height = 300
+    renderSearchDialog.height = 'auto'
     renderSearchDialog.width = 400
     const dialog = createDialog('entitySearchDialog', renderSearchDialog, false)
     _this.pageRef.searchDialog = dialog as any

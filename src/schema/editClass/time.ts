@@ -19,6 +19,7 @@ export const timeInit = (input: input) => {
             //时间模型
         }
     }) as any
+    renderInput.transfer = true
     renderInput.type = 'time'
 }
 
@@ -26,6 +27,7 @@ export const datetimeInit = (input: input) => {
     const _this = input
     const renderInput = _this.renderInput
     renderInput.type = 'datetime'
+    renderInput.transfer = true
 }
 
 export const dateInit = (input: input) => {
@@ -40,4 +42,5 @@ export const dateInit = (input: input) => {
             return _this.inputConfig.modelValue
         }
     }) as any
+    renderInput.transfer = true
 }
