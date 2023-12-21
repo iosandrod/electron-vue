@@ -93,7 +93,8 @@ export default defineComponent({
             const tab = h(tabView, { tabInstance: tabInstance })
             const tableCom = h(tableView, { tableInstance: tableRef })
             return h('div', { style: { height: '100%', width: '100%', display: 'flex', flexDirection: "column" } as StyleType }, [
-                tab, tableCom,
+                tab,
+                tableCom,
                 buttonIns
             ])
         }

@@ -27,10 +27,12 @@ import { mergeConfig } from "@/api/data4"
 
 export class table extends base<tableSchema> implements tableMethod {
   tableState: tableState = 'fullEdit'
+  // tableState: tableState = 'scan'
   isFocus: boolean = false
   renderFilterTable: tableConfig = {
     columns: []
   }
+  editWeakMap = new Map()
   renderFilterColTable: tableConfig = {
     columns: []
   }
@@ -240,8 +242,20 @@ export class table extends base<tableSchema> implements tableMethod {
       return col.columnConfig?.field == field
     })
     if (targetCol) {
+      // targetCol.columnConfig.options = [{ key: '1', value: '3' }]
       targetCol!.columnConfig!.editType! = type
     }
+  }
+  refreshData() {
+    // const table = this
+    // const vxeGrid = this.pageRef.vxeGrid
+    // const showData = this.tableData.showData
+    // vxeGrid?.reloadData(showData).then(res => {
+    //   const scrollConfig = table.scrollConfig
+    //   const scrollTop = scrollConfig.scrollTop
+    //   const scrollLeft = scrollConfig.scrollLeft
+    //   vxeGrid.scrollTo(scrollLeft, scrollTop)
+    // })
   }
 }
 

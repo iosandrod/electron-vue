@@ -1,5 +1,5 @@
 import { Subject } from "rxjs"
-import { reactive, h, computed, resolveComponent, Suspense, Teleport } from "vue"
+import { reactive, h, computed, resolveComponent, Suspense, Teleport, isProxy } from "vue"
 import { base } from "../base"
 import { pageTree } from "./pageTree"
 import layoutGridView from "../schemaComponent/layoutGridView"
@@ -91,7 +91,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       vxeForm: undefined,
       contextMenu: undefined,
     }
-  tableConfig: { columns: entityColumn[] } = {//表格配置
+  tableConfig: { columns?: entityColumn[] } = {//表格配置
     //表格配置
     columns: []
   }
@@ -193,10 +193,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
                 let defaultCom: any = null
                 const component = item.component//
                 if (component != null) {//
-                  // renderCom = withDirectives(component(), [[{
-                  //   mounted(div, node) { },
-                  //   unmounted() { }
-                  // }]])
                   renderCom = component()
                 }
                 const renderStyle = { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType
@@ -221,11 +217,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         ])
         , [[vShow, show.value]])
     }
-    // const vNode = () => {
-    //   return h(VxeGrid, this.renderTable)
-    // }
     this.component = vNode as any
-
   }
   async initNode() {
   }
@@ -235,33 +227,33 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   async getPageData() {//获取页面数据,与实体相关的
     try {
-      const { params, url } = await getTableData(this)
-      const payload = { entity: this, params, url }
-      const fn = async (payload: any, next: any) => {
-        const params = payload.params
-        const url = payload.url
-        // const entity = payload.entity
-        const result: any = await http.postZkapsApi(url, params)//这里模拟获取数据
-        // const data = JSON.parse(JSON.stringify(mergeData))//这里是数据  
-        // this.tableData.data = data
-        const { status, msg, dtMain: rows, total, data } = result
-        let _rows = rows
-        let _total = total
-        if (_rows == null) {
-          _rows = data
-        }
-        if (_total == null) {
-          _total = data?.length || 0
-        }
-        this.tableData.data = _rows
-        await next()
-      }
-      const data = JSON.parse(JSON.stringify(mergeData))//这里是数据  
-      // this.tableData.data = data
-      const middleArr = [pageloadMiddleware
-        // , confirmMiddleware
-        , fn]//两个中间件
-      await this.runMiddlewares(payload, middleArr, 0)
+      //   const { params, url } = await getTableData(this)
+      //   const payload = { entity: this, params, url }
+      //   const fn = async (payload: any, next: any) => {
+      //     const params = payload.params
+      //     const url = payload.url
+      //     // const entity = payload.entity
+      //     const result: any = await http.postZkapsApi(url, params)//这里模拟获取数据
+      //     // const data = JSON.parse(JSON.stringify(mergeData))//这里是数据  
+      //     // this.tableData.data = data
+      //     const { status, msg, dtMain: rows, total, data } = result
+      //     let _rows = rows
+      //     let _total = total
+      //     if (_rows == null) {
+      //       _rows = data
+      //     }
+      //     if (_total == null) {
+      //       _total = data?.length || 0
+      //     }
+      //     this.tableData.data = _rows
+      //     await next()
+      //   }
+      const data = JSON.parse(JSON.stringify(tableData))//这里是数据  
+      this.tableData.data = data
+      // const middleArr = [pageloadMiddleware
+      //   // , confirmMiddleware
+      //   , fn]//两个中间件
+      // await this.runMiddlewares(payload, middleArr, 0)
       // this.setPageLoading(true) 
       // let curRow = this.getCurRow()
       // console.log(curRow, 'testCurRow')
@@ -334,14 +326,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     try {
       const entity = this
       const renderTable = entity.renderTable//这个是渲染表格的数据
-      const columns: any = entity.tableInfo!.tableColumns
-      const _columns = columns.map((col: any) => {
-        let _col = new entityColumn()
-        _col.initColumn(col)
-        _col.getEntity = () => { return this }
-        return _col
-      })
-      this.tableConfig.columns = _columns
       renderTable.columns = computed(() => {
         return this.tableConfig.columns
       }) as any//处理表格 
@@ -394,88 +378,42 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     contextInstance?.openContext(event)
   }
   async initRenderSearchDialog() {
-    const _this = this
-    const renderSearchDialog = this.renderSearchDialog
-    renderSearchDialog.showFooter = true
-    renderSearchDialog.modalData = { entity: this }
-    renderSearchDialog.buttons = [{
-      text: "查询",
-      btnFun: async () => {
-        console.log(_this)
-      }
-    }, {
-      text: "取消",
-      btnFun: async (dialog) => {
-        dialog?.close()
-      }
-    }]
-    renderSearchDialog.maskClosable = false
-    renderSearchDialog.height = 300
-    renderSearchDialog.width = 400
-    const dialog = createDialog('entitySearchDialog', renderSearchDialog, false)
-    this.pageRef.searchDialog = dialog as any
+    entityRenderFn.initRenderSearchDialog(this)
   }
   async initRenderSearchForm() {
-    const tableInfo = this.tableInfo
-    const renderSearchForm = this.renderSearchForm
-    renderSearchForm.data = computed(() => {
-      return {}
-    }) as any
-    renderSearchForm.items = computed(() => {
-      const tableColumns = tableInfo?.tableColumns.filter(col => { return Boolean(col.searchType) != false && col.editType != 'undefined' }).map((col: any) => {
-        const _col = new entityColumn()
-        _col.initColumn(col)
-        return _col
-      })
-      const tableEditItems = tableColumns?.map(col => {
-        const disable = false//编辑的东西
-        const config: formItemConfig = {
-          type: col.editType,
-          disable: disable,
-          span: 24,
-          field: col.field,
-          title: col.title
-        }
-        return config
-      })
-      return tableEditItems
-    }) as any
-    const vxeForm = createForm(renderSearchForm)
-    this.pageRef.searchForm = vxeForm//查询表单
-    return { formInstance: vxeForm }
+    return entityRenderFn.initRenderSearchForm(this)
   }
   async initRenderEditForm() {
-    const tableInfo = this.tableInfo
-    const renderEditForm = this.renderEditForm
-    renderEditForm.data = computed(() => {
-      return {}
-    }) as any
-    renderEditForm.items = computed(() => {
-      const tableColumns = tableInfo?.tableColumns.filter(col => { return Boolean(col.editType) != false && col.editType != 'undefined' }).map((col: any) => {
-        const _col = new entityColumn()
-        _col.initColumn(col)
-        return _col
-      })
-      const tableEditItems = tableColumns?.map(col => {
-        const disable = false//编辑的东西
-        const config: formItemConfig = {
-          type: col.editType,
-          disable: disable,
-          span: 6,
-          field: col.field,
-          title: col.title
-        }
-        return config
-      })
-      return tableEditItems
-    }) as any
-    const vxeForm = createForm(renderEditForm)
-    this.pageRef.vxeForm = vxeForm
-    return { formInstance: vxeForm }
+    return entityRenderFn.initRenderEditForm(this)
   }
   async initTableInfo() {
     const tableInfo = await getTableConfig(this.entityName)//相当于表名吧,这个函数具有副作用
     this.tableInfo = tableInfo
+    const entity = this
+    const columns: any = entity.tableInfo!.tableColumns
+    const _columns = columns.map((col: any) => {
+      let _col = new entityColumn()
+      _col.initColumn(col)
+      _col.getEntity = () => { return this }
+      //@tsin
+      return _col
+    })
+    this.tableConfig.columns = _columns!
+    this.tableConfig.columns!.forEach((col: any) => {
+      console.log(isProxy(col))
+      if (col.field == 'cCustNo') {
+        // col.getRowEditType = (row: any, col: any) => {
+        //   if (row['cSdOrderNo'] == '1111') {
+        //     return 'string'
+        //   } else {
+        //     return 'select'
+        //   }
+        // }
+      }
+      if (col.editType == 'select') {
+        col.options = [{ label: '小风', value: 'xiaofeng' }, { label: '小峰', value: 'xiaofeng1' }]
+      }
+    })
   }
   async initRenderLayout() {
     const renderLayout = this.renderLayout
@@ -517,7 +455,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const entityConfig = this.entityConfig!//这个是节点配置
     await Promise.all(entityConfig.map(async (item: any) => {//这是个数组 节点数组
       try {
-
         let _item = await this.resolveEntityItem(item)
         return _item
       } catch (error) {
@@ -532,7 +469,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const itemConfig = item.layoutItemConfig!
     const renderFunName = itemConfig.renderFunName
     let renderComName = itemConfig.renderComName as keyof typeof comVetor
-    let renderCom: any = h('div', ['123'])
+    let renderCom: any = h('div', [])
     let renderData: any = {}
     //@ts-ignore
     if (renderFunName != null && _this[renderFunName]) {//初始化渲染数据
@@ -616,6 +553,16 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       return
     }
     vxeGrid.tableState = state
+  }
+  changeColumnEditType(field: string, type: string) {
+    let targetCol = this.tableConfig.columns!.find(col => {
+      return col?.field == field
+    })
+    if (targetCol) {
+      console.log(targetCol)
+      // targetCol.columnConfig.options = [{ key: '1', value: '3' }]
+      targetCol!.editType! = type
+    }
   }
 }
 

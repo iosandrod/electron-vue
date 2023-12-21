@@ -1,4 +1,4 @@
-import { ReactiveEffect, computed, h, reactive, watchEffect } from "vue";
+import { ReactiveEffect, computed, h, reactive, watch, watchEffect } from "vue";
 import { base } from "./base";
 import { system, systemInstance } from "./system";
 import { VxeButton, VxeFormItemProps } from 'vxe-table'
@@ -110,18 +110,32 @@ export class formitem extends baseEdit<any> {
             }
             return value
         }) as any
-        this.pageRef.inputInstance = computed(() => {
-            const type = itemConfig.type
-            let createFn = instancePool[type as keyof typeof instancePool]
-            if (createFn == null) {
-                createFn = createInput
-            }
-            const inputInstance = createFn(this.renderInput as any)
-            inputInstance.getField = () => {
-                return itemConfig.field
-            }
-            return inputInstance
-        })
+        // this.pageRef.inputInstance = computed(() => {
+        //     const type = itemConfig.type
+        //     let createFn = instancePool[type as keyof typeof instancePool]
+        //     if (createFn == null) {
+        //         createFn = createInput
+        //     }
+        //     const inputInstance = createFn(this.renderInput as any)
+        //     inputInstance.getField = () => {
+        //         return itemConfig.field
+        //     }
+        //     return inputInstance
+        // })
+        // const type = itemConfig.type
+        // let createFn = instancePool[type as keyof typeof instancePool]
+        // if (createFn == null) {
+        //     createFn = createInput
+        // }
+        // const inputInstance = createFn(this.renderInput as any)
+        const inputInstance = createInput(this.renderInput)
+        inputInstance.getField = () => {
+            return itemConfig.field
+        }
+        this.pageRef.inputInstance = inputInstance
+        // watch(() => itemConfig.type, (newType) => {
+        // }, { immediate: true })
+
     }
     initBaseInfoDialog() {
         const type = this.itemConfig.type

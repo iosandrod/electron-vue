@@ -1,10 +1,10 @@
-import { watch, computed, defineComponent, h, defineExpose, reactive, watchEffect } from 'vue'
+import { watch, computed, defineComponent, ref, h, defineExpose, reactive, watchEffect, nextTick, onUnmounted, onMounted } from 'vue'
 import { column } from '../column'
 import { getOutSizeDiv } from '../columnFn'
 import { StyleType, tableState } from '@/types/schema'
 import { getRenderFn } from '../columnFn'
 import { editPool } from '../formitemComFn'
-import { createFormItem } from '../formitem'
+import { createFormItem, formitem } from '../formitem'
 import { table } from '../table'
 // import { getItemSlotsDefautlEditCom } from '../formitemFn'
 import { _columns } from '../entityColumn'
@@ -21,39 +21,36 @@ export default defineComponent({
         const row = computed(() => {
             return props.row! as any
         })
-        // let formitem = createFormItem({ type: 'baseInfo', field: 'test', }, null)
         const _column = column.value
         let field = _column.columnConfig.field
-
-        //处理input实例新建
-        watch(() => column.value.columnConfig.editType, (newValue) => {
-            console.log(newValue)
+        let formitem = ref<formitem>(null as any)
+        let _renderItem = column.value.renderFormitem
+        let renderItem = reactive<any>({
         })
-        let inputInstance = computed(() => {
-            if (column.value.columnConfig.editType == null) {
-                return null
+        for (const key of Object.keys(_renderItem)) {
+            if (key == 'type') {
+                continue
             }
-            const renderItem = ({
-                ...column.value.renderFormitem,
-                modelValue: computed(() => {
-                    return row.value[field!]
-                })
-            })
-            let _row = row.value
+            renderItem[key] = computed(() => {
+                return _renderItem[key]
+            }) as any
+        }
+        //
+        renderItem.modelValue = computed(() => {
+            return row.value[field!]
+        })
+        renderItem.type = computed(() => {
+            let type = _renderItem.type
             let getRowEditType = column.value.columnConfig.getRowEditType
             if (typeof getRowEditType == 'function') {
-                let _type = getRowEditType(_row, column.value)
+                let _type = getRowEditType(props.row, column.value)
                 if (_type != null) {
-                    renderItem.type = _type
+                    type = _type
                 }
             }
-            let item = createFormItem(renderItem, null)
-            const inputInstance = item.pageRef.inputInstance as input
-            inputInstance.getData = () => {
-                return props.row
-            }
-            return inputInstance
+            return type
         })
+        formitem.value = createFormItem(renderItem, null)
         const showValue = computed(() => {
             const field = column.value.renderColumn.field!
             const value = row.value[field as string]
@@ -130,44 +127,36 @@ export default defineComponent({
         const renderCom = computed(() => {
             const _canEdit = canEdit.value
             const _editDisable = editDisable.value
-            let editCom: any = null
+            let editCom: any = h(inputView, { inputInstance: formitem.value?.pageRef?.inputInstance, data: row.value })
             let defaultCom: any = null
             const defaultComFn = getRenderFn('div', { style: { wdith: '100%', height: "100%", background: "" } as StyleType })
             const mergeComFnStyle = mergeDiv.value//合并的行节点
             const mergeComFn = getRenderFn('div', { style: mergeComFnStyle })
             defaultCom = defaultComFn([mergeComFn([showValue.value])])
             if (_canEdit == true && _editDisable == false) {//表可编辑+行可编辑
-                // if (formitem == null) {
-                //     return getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
-                // }
-                if (inputInstance.value == null) {
+                if (Boolean(column.value.columnConfig.editType) == false || formitem.value == null) {
                     return getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
                 }
                 let editState = column.value.table?.tableState
                 if (editState == 'singleRowEdit') {
                     let _row = row.value
                     let curRow = column.value.table?.tableData.curRow
-                    if (_row === curRow) {
-                        editCom = h(inputView, { inputInstance: inputInstance.value, data: row.value })
-                        // editCom = h(formitemView, { formitem: formitem, params: params.value })
-                        // editCom =  getItemSlotsDefautlEditCom(formitem, row.value, null)
-                    } else {
+                    // if (_row === curRow) {
+                    //     editCom = h(inputView, { inputInstance: formitem.value?.pageRef?.inputInstance, data: row.value })
+                    // } else {
+                    //     editCom = defaultCom//默认的合并
+                    // }
+                    if (_row !== curRow) {
                         editCom = defaultCom//默认的合并
                     }
-                } else if (editState == 'fullEdit') {
-                    editCom = h(inputView, { inputInstance: inputInstance.value, data: row.value })
-                    // editCom = h(formitemView, { formitem: formitem, params: params.value })
-                    // editCom = getItemSlotsDefautlEditCom(formitem, row.value, null)
                 } else if (editState == 'moreRowEdit') {
                     let _row = row.value
                     let editData = column.value.table?.tableData.editData
-                    if (editData?.includes(_row)) {
-                        editCom = h(inputView, { inputInstance: inputInstance.value, data: row.value })
-                        // editCom = h(formitemView, { formitem: formitem, params: params.value })
-                        // editCom = getItemSlotsDefautlEditCom(formitem, row.value, null)
-                    } else {
+                    if (!editData?.includes(_row)) {//not include the com 
                         editCom = getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
                     }
+                } else if (editState == 'fullEdit') {
+
                 } else {
                     editCom = getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
                 }
@@ -175,7 +164,49 @@ export default defineComponent({
             }
             return defaultCom
         })
-        return { formitem: inputInstance, renderCom: renderCom }
+        return {
+            formitem: formitem,
+            renderCom: renderCom
+        }
+        // return () => {
+        //     const _canEdit = canEdit.value
+        //     const _editDisable = editDisable.value
+        //     let editCom: any = null
+        //     let defaultCom: any = null
+        //     const defaultComFn = getRenderFn('div', { style: { wdith: '100%', height: "100%", background: "" } as StyleType })
+        //     const mergeComFnStyle = mergeDiv.value//合并的行节点
+        //     const mergeComFn = getRenderFn('div', { style: mergeComFnStyle })
+        //     defaultCom = defaultComFn([mergeComFn([showValue.value])])
+        //     if (_canEdit == true && _editDisable == false) {//表可编辑+行可编辑
+        //         if (Boolean(column.value.columnConfig.editType) == false || formitem.value == null) {
+        //             return getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
+        //         }
+        //         let editState = column.value.table?.tableState
+        //         if (editState == 'singleRowEdit') {
+        //             let _row = row.value
+        //             let curRow = column.value.table?.tableData.curRow
+        //             if (_row === curRow) {
+        //                 editCom = h(inputView, { inputInstance: formitem.value?.pageRef?.inputInstance, data: row.value })
+        //             } else {
+        //                 editCom = defaultCom//默认的合并
+        //             }
+        //         } else if (editState == 'fullEdit') {
+        //             editCom = h(inputView, { inputInstance: formitem.value?.pageRef?.inputInstance, data: row.value })
+        //         } else if (editState == 'moreRowEdit') {
+        //             let _row = row.value
+        //             let editData = column.value.table?.tableData.editData
+        //             if (editData?.includes(_row)) {
+        //                 editCom = h(inputView, { inputInstance: formitem.value?.pageRef?.inputInstance, data: row.value })
+        //             } else {
+        //                 editCom = getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
+        //             }
+        //         } else {
+        //             editCom = getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
+        //         }
+        //         return editCom
+        //     }
+        //     return defaultCom
+        // }
     },
     render() {
         return this.renderCom

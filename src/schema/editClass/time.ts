@@ -1,27 +1,43 @@
-import { reactive } from "vue";
+import { Directive, computed, h, ref, vShow, withDirectives } from "vue";
 import { input } from "../input";
-import { system, systemInstance } from "../system";
-import { formitem } from "../formitem";
-import { form } from "../form";
+import { styleBuilder } from "@/utils/utils";
+import { Select } from "ant-design-vue";
+import { VxeInput, VxeInputInstance, VxePulldown, VxePulldownInstance } from "vxe-table";
+import { getIcon } from "../icon";
+import tableView from "../schemaComponent/tableView";
+import { createTable } from "../table";
 
 
-export class time extends input {
-    getFormItem?: () => formitem
-    getForm?: () => form
-    constructor(schema: any, system: system) {
-        super(schema, system)
-    }
-    initInput() {
-        super.initInput()//
-    }
-    initRenderInput() {
-        super.initRenderInput()
-        const inputConfig = this.inputConfig//统一使用inputConfig
-    }
+export const timeInit = (input: input) => {
+    const _this = input
+    const renderInput = _this.renderInput
+    renderInput.modelValue = computed({
+        set: (value: any) => {
+            renderInput.modelValue = value
+        },
+        get: () => {
+            //时间模型
+        }
+    }) as any
+    renderInput.type = 'time'
 }
 
-export const createTime = (schema: any) => {
-    const _string1 = reactive(new time(schema, systemInstance))
-    _string1.initInput()
-    return _string1
+export const datetimeInit = (input: input) => {
+    const _this = input
+    const renderInput = _this.renderInput
+    renderInput.type = 'datetime'
+}
+
+export const dateInit = (input: input) => {
+    const _this = input
+    const renderInput = _this.renderInput
+    renderInput.type = 'date'
+    renderInput.modelValue = computed({
+        set: (value) => {
+            renderInput.modelValue = value
+        },
+        get: () => {
+            return _this.inputConfig.modelValue
+        }
+    }) as any
 }

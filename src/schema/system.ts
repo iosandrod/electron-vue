@@ -65,8 +65,8 @@ export class system extends base {
     await this.initRenderTab()
     this.displayState = 'show'
     setTimeout(() => {
-      // this.routeOpen('t_SdOrder')
-      this.routeOpen('index8')
+      this.routeOpen('t_SdOrder')
+      // this.routeOpen('index8')
       // const router = this.getRouter()
       // router.push({ path: '/index8' })
     }, 1000);

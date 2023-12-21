@@ -123,7 +123,13 @@ const columnObj = [
         let value = targetValue || column.columnCnName
         return value || ''
     }),
-    new Translate('editColSize', 'editColSize'),
+    new Translate('editColSize', 'editColSize', function (targetValue, column, entityColumn) {
+        let num = Number(targetValue)
+        if (isNaN(num)) {
+            return 6
+        }
+        return num
+    }),
     new Translate('editOrderNo', 'editOrderNo'),
     //headerSlot
     new Translate('headerSlot', 'headerSlot'),
@@ -255,14 +261,20 @@ const columnObj = [
     }),
     new Translate('isExtend', 'isExtend'),
     new Translate('sBindField', 'sBindField'),
-    new Translate('searchType', 'searchType')
+    new Translate('searchType', 'searchType'),
+    //sBindField
+    new Translate('sBindField', 'sBindField')
 ]
 export class entityColumn {
     getEntity?: () => basicEntity
     editType: string = ''
     field: string = ''
+    editColSize?: number
     title: string = ''
+    editTitle: string = ''
     searchType: string = ''
+    sBindField: string = ''
+    options: any[] = []
     initColumn(column: any) {
         const _this: any = this
         let _column = column

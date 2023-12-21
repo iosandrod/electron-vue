@@ -5609,15 +5609,13 @@ export const testTableViewData = {
                 { label: "小于", value: "<" },
                 { label: "包含", value: "%" }
             ],
-            onChange: (value) => {
-                console.log(value)
+            onChange: (value: any) => {
+                const { table } = value
             }
         },
         {
-            field: 'sex', title: 'sex', editType: 'string', getRowEditType: (row, col) => {
-                if (row['name'] == '=') {
-                    return 'select'
-                }
+            field: 'sex', title: 'sex', editType: 'string', onChange: (value) => {
+                console.log(value)
             }
         },
         { field: 'address', title: 'Address' },
@@ -5632,24 +5630,24 @@ export const testTableViewData = {
             age: 28,
             address: 'Shenzhen',
         },
-        //     {
-        //         id: 10002,
-        //         name: 'Test2',
-        //         nickname: 'T2',
-        //         role: 'Test',
-        //         sex: 'Women',
-        //         age: 22,
-        //         address: 'Guangzhou',
-        //     },
-        //     {
-        //         id: 10003,
-        //         name: 'Test3',
-        //         nickname: 'T3',
-        //         role: 'PM',
-        //         sex: 'Man',
-        //         age: 32,
-        //         address: 'Shanghai',
-        //     },
+        {
+            id: 10002,
+            name: 'Test2',
+            nickname: 'T2',
+            role: 'Test',
+            sex: 'Women',
+            age: 22,
+            address: 'Guangzhou',
+        },
+        {
+            id: 10003,
+            name: 'Test3',
+            nickname: 'T3',
+            role: 'PM',
+            sex: 'Man',
+            age: 32,
+            address: 'Shanghai',
+        },
         //     {
         //         id: 20000,
         //         name: 'Test4',

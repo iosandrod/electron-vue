@@ -11,7 +11,7 @@ import { table } from "@/schema/table"
 import { MenuProps, SelectProps, TabPaneProps, TabsProps } from "ant-design-vue"
 import { CSSProperties } from "ant-design-vue/es/_util/cssinjs/hooks/useStyleRegister"
 import { ComputedRef, VNode } from "vue"
-import { VxeGridPropTypes, VxeTableProps, VxeInputEmits, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps, VxeColumnProps, VxeInputProps, VxeInputEventProps, VxeInputEvents, VxeButtonProps, VxeButtonEventProps } from "vxe-table"
+import { VxeGridPropTypes, VxeTableProps, VxeInputEvents, VxeInputEmits, VxeGridProps, VxeTableDefines, VxeModalDefines, VxeFormItemProps, VxeFormProps, VxeTableEventProps, VxeColumnProps, VxeInputProps, VxeInputEventProps, VxeInputEvents, VxeButtonProps, VxeButtonEventProps } from "vxe-table"
 
 export type schema = {
   componentType: string
@@ -107,6 +107,7 @@ export type roundType = {
 }
 
 export type columnConfig = {
+  renderColumn?: any,
   filterPosition?: position
   visible?: boolean
   filterLeft?: number
@@ -129,10 +130,10 @@ export type columnConfig = {
   columnConfig?: columnConfig
 }
 
-export type formItemConfig = itemConfig & VxeInputEmits & VxeInputEvents
+export type formItemConfig = itemConfig
 
 export type extendColumnConfig = VxeTableDefines.ColumnOptions & columnConfig & {
-
+  renderFormitem?: any
 }
 
 
@@ -150,7 +151,7 @@ export type pickKey<T = any> = {
 }
 
 export type dialogButton = {
-  btnFun: (dialog?: dialog) => Promise<void>,//立即执行函数
+  btnFun: (dialog: dialog) => Promise<void>,//立即执行函数
   text: string,
 }
 export type dialogConfig = concatAny<VxeModalDefines.ModalOptions & { dialogPrimaryName?: string, hasOpen?: boolean, modalData?: any, buttons?: dialogButton[] }>
@@ -510,6 +511,8 @@ export type localStorageValue = {
 }
 
 export type inputConfig = VxeInputProps & {
+  itemChange?: (value: any) => void
+  field?: string
   baseInfoTable?: any
   isFocus?: boolean
 } & VxeInputEventProps & { [key in VxeInputEmits[number]]?: any } & { options?: { key: string, value: string }[] } & SelectProps

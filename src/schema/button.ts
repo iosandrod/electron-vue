@@ -36,13 +36,12 @@ export class button extends base<VxeButtonProps> {
     }
     async initComponent() {
         const vNode = () => {
-            // const slots = useSlots()  
             const renderButton = this.renderButton
             if (this.displayState == 'destroy') {
                 return h('div')
             }
             const slots = renderButton.slots! as any
-            return h(VxeButton, renderButton, {
+            return h(VxeButton, { ...renderButton }, {
                 default: slots.default,
                 icon: slots.icon,
                 dropdowns: slots.dropdowns

@@ -9,10 +9,12 @@ import * as columnFn from './columnFn'
 import { getColumnAlign, getColumnField, getColumnResizable, getColumnSlot, getColumnTitle, getColumnType, getColumnVisiable, getColumnWidth, getInSizeDiv, getOutSizeDiv, getSlotDefault } from "./columnFn"
 import XEUtils from "xe-utils"
 import * as dateFns from 'date-fns'
+import { createFormItem } from "./formitem"
 export class column extends base<VxeTableDefines.ColumnOptions> {
   getTableShowData: () => any[] = () => {
     return []
   }
+  rowIndexFormitem = {}
   renderFilterTable: tableConfig = { columns: [] }
   formItemMap = new WeakMap()
   columnConfig: VxeTableDefines.ColumnOptions & columnConfig = {

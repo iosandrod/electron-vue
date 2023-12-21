@@ -34,12 +34,12 @@
           :contextMenuInstance="contextMenu"
         ></context-menu-view>
       </div> -->
-      <table-view ref="tableView1" :tableInstance="table"></table-view>
+      <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
       <!-- <gantt></gantt> -->
       <!-- <form-view :formInstance="_form"></form-view> -->
       <!-- <component :is="com"></component> -->
       <!-- <component :is="table.component"></component> -->
-      <!-- <table-view :tableInstance="table"></table-view> -->
+      <table-view :tableInstance="table"></table-view>
       <!-- <table-view
         :columns="table.tableConfig.columns.map((col) => col.renderColumn)"
         :data="table.tableData.data"
@@ -88,6 +88,7 @@ import {
   computed,
   getCurrentInstance,
   h,
+  isProxy,
   nextTick,
   onMounted,
   reactive,
@@ -106,7 +107,8 @@ import { createDialog, confirm } from '@/schema/dialog'
 import { createInput } from '@/schema/input'
 import { http } from '@/schema/http'
 import { createMenu } from '@/schema/menu'
-import { menuData, tableMenuData, testTableViewData } from '@/api/data3'
+import { menuData, tableMenuData, } from '@/api/data3'
+import { testTableViewData } from '@/api/data5'
 import { createContextMenu } from '@/schema/businessTable/contextMenu'
 import { useLocalStorage } from '@vueuse/core'
 import { RouteRecordSingleView } from 'vue-router'
@@ -194,7 +196,7 @@ const formConfig = reactive({
   { field: 'region', type: 'string', title: '地区', span: 6, onChange: () => { console.log(_data) } },
   ]
 })
-const _form = createForm(formConfig)
+// const _form = createForm(formConfig)
 const vNode = h(VxeInput, { modelValue: '123123' })
 const _input = createInput(_inputConfig)
 _input.getData = () => {
@@ -276,10 +278,27 @@ async function btnClick9(params: any) {
 async function btnClick10() {
   if (state == true) {
     // _testTableViewData.columns[0].editType = 'string'
-    table.changeColumnEditType('name', 'string')
+    // table.changeColumnEditType('name', 'string')
+    table.tableConfig.columns.forEach((col: any) => {
+      if (col.columnConfig.editType == 'select') {
+        col.columnConfig.options = [{ label: 'sfdsf11', value: 'sdfsdf11' }]
+        // col.options = [{ label: 'sfdsf', value: 'sdfsdf' }]
+        // col.renderFormitem.options.push({ label: "sdfsdf", value: 'sdfsd' })
+        // col.renderFormitem.options = [{ label: "sdfsdf", value: 'sdfsd' }]
+
+      }
+    })
   } else {
+    table.tableConfig.columns.forEach((col: any) => {
+      if (col.columnConfig.editType == 'select') {
+        console.log(isProxy(col))
+        col.columnConfig.options = [{ label: 'sfdsf11', value: 'sdfsdf11' }]
+        // col.renderFormitem.options.push({ label: "sdfsdf", value: 'sdfsd' })
+        // col.renderFormitem.options = [{ label: "sdfsdf", value: 'sdfsd' }]
+      }
+    })
     // _testTableViewData.columns[0].editType = 'baseInfo'
-    table.changeColumnEditType('name', 'select')
+    // table.changeColumnEditType('name', 'select')
   }
   state = !state
 }
@@ -296,13 +315,14 @@ const nodeArr: Array<nodeConfig> = reactive([
     nodeData: {},
   },
 ])
-const com = h(tableView, nodeArr[0].nodeData)
+// const com = h(tableView, nodeArr[0].nodeData)
 // const pageTree = createPage(nodeArr)
 let _testTableViewData = reactive(testTableViewData)
 const table = createTable(_testTableViewData)
 table.tableState = 'fullEdit'
+
 //律师
-//回应
+//回应 
 
 function btnClick3() { }
 </script>

@@ -24,6 +24,7 @@ export class form extends base<formConfig> {
       if (key == 'items') {
         effectPool[`form${key}Effect`] = watchEffect(() => {
           let _value = schema[key] || []
+          console.log('create formitem')
           formConfig.items = _value.map((item: any) => {
             if (item instanceof formitem) {
               return item
@@ -37,7 +38,7 @@ export class form extends base<formConfig> {
               return schema.data || {}
             }
           })
-        })
+        }) as any
         continue
       }
       if (value != null) {

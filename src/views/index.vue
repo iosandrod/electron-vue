@@ -31,17 +31,19 @@
             <vxe-button @click="visibleNode">改变node</vxe-button>
             <vxe-button @click="getTableData">获取数据</vxe-button>
             <vxe-button @click="routeOpen">路由跳转</vxe-button>
+            <vxe-button @click="changeEditType">改变类型</vxe-button>
+            <vxe-button @click="changeEditType1">改变编辑框类型</vxe-button>
+            <vxe-button @click="changeEditType11">改变类型11</vxe-button>
           </div>
           <div class="flex-1 w-full">
             <!-- <router-view :key="$route.fullPath"></router-view> -->
             <!-- <component :is="com" :key="$route.name"></component> -->
             <!-- 路由组件 -->
             <!-- <component :is="com"></component> -->
+            <!-- 暂时缓存起来 -->
             <component :is="com" :key="$route.name"></component>
-            <keep-alive :max="10">
+            <keep-alive :max="3">
             </keep-alive>
-            <!-- <keep-alive :max="20">
-            </keep-alive> -->
           </div>
           <!-- is tab -->
         </div>
@@ -135,6 +137,64 @@ function getTableData() {
 }
 function routeOpen() {
   systemInstance.routeOpen('index8')
+}
+let state1 = false
+function changeEditType() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  const vxeGrid = entity.pageRef.vxeGrid
+  if (state1) {
+    vxeGrid?.setTableEdit('fullEdit')
+    // vxeGrid?.changeColumnEditType('cCustName', 'select')
+  } else {
+    vxeGrid?.setTableEdit('scan')
+    // vxeGrid?.changeColumnEditType('cCustName', 'string')
+  }
+  state1 = !state1
+}
+let state11 = false
+function changeEditType1() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  const vxeGrid = entity.pageRef.vxeGrid
+  if (state11) {
+    entity?.changeColumnEditType('cSdOrderNo', 'baseInfo')
+    // vxeGrid?.setTableEdit('fullEdit') 
+    // vxeGrid?.changeColumnEditType('cSdOrderNo', 'baseInfo')
+    // console.log(vxeGrid)
+  } else {
+    entity?.changeColumnEditType('cSdOrderNo', 'string')
+    // vxeGrid?.setTableEdit('scan')
+    // vxeGrid?.changeColumnEditType('cSdOrderNo', 'string')
+    // console.log(vxeGrid)
+  }
+  state11 = !state11
+}
+
+function changeEditType11() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  const vxeGrid = entity.pageRef.vxeGrid
+  if (state11) {
+    entity.tableConfig.columns!.forEach((col: any) => {
+      if (col.editType == 'select') {
+        col.options = [{ label: '小风1', value: 'xiaofeng1' }, { label: '小峰1', value: 'xiaofeng11' }]
+      }
+    })
+    // vxeGrid?.setTableEdit('fullEdit')
+  } else {
+    // vxeGrid?.setTableEdit('scan')
+    entity.tableConfig.columns!.forEach((col: any) => {
+      console.log(isProxy(col))
+      if (col.editType == 'select') {
+        col.options = [{ label: '小风11', value: 'xiaofeng11' }, { label: '小峰11', value: 'xiaofeng111' }]
+      }
+    })
+  }
+  state11 = !state11
 }
 const collapsed = ref<boolean>(false)
 </script>

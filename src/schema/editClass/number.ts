@@ -1,27 +1,16 @@
-import { reactive } from "vue";
+import { Directive, computed, h, ref, vShow, withDirectives } from "vue";
 import { input } from "../input";
-import { system, systemInstance } from "../system";
-import { formitem } from "../formitem";
-import { form } from "../form";
+import { styleBuilder } from "@/utils/utils";
+import { Select } from "ant-design-vue";
+import { VxeInput, VxeInputInstance, VxePulldown, VxePulldownInstance } from "vxe-table";
+import { getIcon } from "../icon";
+import tableView from "../schemaComponent/tableView";
+import { createTable } from "../table";
 
+export const numberInit = (input: input) => {
 
-export class _number extends input {
-    getFormItem?: () => formitem
-    getForm?: () => form
-    constructor(schema: any, system: system) {
-        super(schema, system)
-    }
-    initInput() {
-        super.initInput()//
-    }
-    initRenderInput() {
-        super.initRenderInput()
-        const inputConfig = this.inputConfig//统一使用inputConfig
-    }
 }
 
-export const createNumber = (schema: any) => {
-    const _string1 = reactive(new _number(schema, systemInstance))
-    _string1.initInput()
-    return _string1
+export const floatInit = (input: input) => {
+
 }

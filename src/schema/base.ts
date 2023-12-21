@@ -13,7 +13,7 @@ export class base<T = any> {
   effectPool: any = {}//作用域
   context?: any = {}
   displayState: displayState = 'show'
-  component?: (props?: any) => VNode | null = () => null
+  component?: (props?: any) => VNode | null | (() => any) = () => null
   constructor(system: system, schema?: any, context?: any) {
     this.system = system
     this.schema = schema

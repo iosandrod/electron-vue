@@ -7,10 +7,10 @@ import { getIcon, propsConfig, useCenterDiv, useMousePoint, usePropsDiv } from "
 import { getFixedPosition, getMouseEventPosition, getPercentLength, getTransformPosition, getTranslate3D, registerDocumentClickFn } from "@/utils/utils"
 import { isString } from "lodash"
 import defaultCom from "./tableColumnCom/defaultCom"
-import defaultHeaderCom from './tableColumnCom/defalutHeaderCom'
+import defaultHeaderCom from './tableColumnCom/defaultHeaderCom'
 import { Dropdown } from "ant-design-vue"
 import columnFilterCom from "./tableColumnCom/columnFilterCom"
-import { VxePulldown } from "vxe-table"
+import { VxeColumnSlots, VxePulldown } from "vxe-table"
 import { createTable } from "./table"
 import { createFormItem, formitem } from "./formitem"
 import { _columns } from "./entityColumn"
@@ -104,10 +104,6 @@ export const getSlotDefault = (_column: column) => {
         return slotsDefault
     }
     const fn = ({ row, rowIndex, column }: any) => {
-        // let formitem = _column.formItemMap.get(row)
-        // if (formitem == null) {
-        //     _column.formItemMap.set(row, createFormItem(_column.renderFormitem, null))
-        // }
         const _defaultCom = h(defaultCom, { column: _column, row: row })
         return _defaultCom
     }
@@ -133,9 +129,9 @@ export const getColumnSlot = (column: column) => {
         }
         let slots: any = {}
         const _default = getSlotDefault(column)//默认的
-        const _header = getSlotHeader(column)//表头的显示
+        // const _header = getSlotHeader(column)//表头的显示
         slots.default = _default
-        slots.header = _header
+        slots.header = 'header'
         return slots
     })
 }
@@ -171,7 +167,7 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
     const targetIcon = getIcon(null, "vxe-icon-funnel")
     return h(VxePulldown, {
         trigger: ['click'],
-        // destroyOnClose: true,
+        destroyOnClose: true,
         modelValue: _column.columnConfig.filterPulldownShow,
         ['onUpdate:modelValue']: (value: boolean) => {
             const table = _column.table
@@ -317,35 +313,31 @@ export const initColumnConfig = (column: column) => {
     }
     initRenderColumn(column)
     initRenderFormitem(column)
-    initFormitem(column)
+    // initFormitem(column)
 }
-export const initFormitem = (column: column) => {
-    let _item = createFormItem(column.renderFormitem, null)
-    column.pageRef.formitem = _item
-    //@ts-ignore
-    _item.table = column.table!
-}
+
 
 export const initRenderFormitem = (column: column) => {
     const renderFormitem = column.renderFormitem
-    // renderFormitem.modelValue = computed(() => {
-    //     return '123'
-    // }) as any
     const columnConfig = column.columnConfig
-    renderFormitem.type = computed(() => {
-        return column.columnConfig.editType || column.columnConfig.type
-    }) as any
+    // renderFormitem.type = computed(() => {
+    //     let type = column.columnConfig.editType
+    //     return type
+    // }) as any
+    renderFormitem.type = column.columnConfig.editType
     renderFormitem.onChange = (value: any) => {
         const _onChange = columnConfig.onChange
         if (typeof _onChange == 'function') {
             _onChange(value)
         }
     }
-    renderFormitem.field = computed(() => {
-        return column.columnConfig.field
-    }) as any
+    renderFormitem.field = column.columnConfig.field
+    // renderFormitem.field = computed(() => {
+    //     return column.columnConfig.field
+    // }) as any
+
     renderFormitem.options = computed(() => {
-        return columnConfig.options || []
+        return columnConfig.options
     }) as any//下拉框的数据绑定
     renderFormitem.baseInfoTable = computed(() => {
         return column.columnConfig.baseInfoTable
@@ -353,10 +345,30 @@ export const initRenderFormitem = (column: column) => {
 }
 
 export const initRenderColumn = (column: column) => {
+    const table = column.table
     let renderColumn = column.renderColumn
     renderColumn.params = column
     renderColumn.headerAlign = 'center'
-    renderColumn.slots = getColumnSlot(column)
+    // renderColumn.slots = getColumnSlot(column)
+    renderColumn.slots = computed(() => {
+        let slots = {} as any
+        slots.header = 'header'
+        let tableState = table?.tableState!
+        if (['fullEdit', 'moreRowEdit', 'singleRowEdit'].includes(tableState)) {
+            const editType = column.columnConfig.editType
+            if (Boolean(editType) == false) {
+                slots.default = 'showValue'
+            } else {
+                slots.default = editType
+            }
+            if (typeof column.columnConfig.getRowEditType == 'function') {
+                slots.default = 'rowEdit'
+            }
+        } else {
+            slots.default = 'showValue'
+        }
+        return slots
+    }) as any
     renderColumn.visible = getColumnVisiable(column)
     renderColumn.field = getColumnField(column)
     renderColumn.minWidth = 50//最小宽度

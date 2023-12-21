@@ -1,23 +1,25 @@
-import { computed, getCurrentInstance, h, isReactive, nextTick, reactive, ref, resolveComponent, vShow, watch, watchEffect, withDirectives } from "vue";
+import { computed, getCurrentInstance, h, isReactive, nextTick, onMounted, reactive, ref, resolveComponent, vShow, watch, watchEffect, withDirectives } from "vue";
 import { table } from "./table";
 import { StyleType, filterConfig, position, tableSchema } from "@/types/schema";
 import { column, createColumn } from "./column";
-import { VxeGridProps, VxeGrid, VxeColumnProps } from "vxe-table";
+import { VxeGridProps, VxeGrid, VxeColumnProps, VxeColumnSlotTypes, VxeSelect } from "vxe-table";
 import { getRenderFn } from "./columnFn";
 import { getDialogPosition } from "./dialogFn";
-import { getMouseEventPosition } from "@/utils/utils";
+import { getMouseEventPosition, styleBuilder } from "@/utils/utils";
 import { createDialog } from "./dialog";
 import { createContextMenu } from "./businessTable/contextMenu";
 import contextMenuView from "./schemaComponent/contextMenuView";
 import { createTable } from "./table"
+import { createFormItem } from "./formitem";
+import defaultHeaderCom from "./tableColumnCom/defaultHeaderCom";
+import showValueCom from "./tableColumnCom/showValueCom";
+import inputView from "./schemaComponent/inputView";
+import { Select } from "ant-design-vue";
+import baseInfoInputView from "./schemaComponent/baseInfoInputView";
 
 export const getTableRowConfig = (table: table) => {
     const tableConfig = table?.tableConfig
     const rowConfig = tableConfig?.rowConfig
-    // const rowConfig = {
-    //     rowHeight: 30,
-    //     useKey: false
-    // }
     return rowConfig
 }
 export const getTableHeaderConfig = (table: table) => {
@@ -61,7 +63,6 @@ export const getOptionsData = (table: table) => {
         let showData = table.tableData.data
         const filterConfig = table.tableConfig.filterConfig!
         let arrayFilterConfig = filterConfig.filter(item => item.filterType == 'array')
-        console.log(arrayFilterConfig, 'testConfig')
         const _data = showData.filter((row: any, i, arr) => {
             let state = true
             for (const config of arrayFilterConfig) {
@@ -78,12 +79,21 @@ export const getOptionsData = (table: table) => {
             }
             return state
         })
-        // let _data = showData
+        //使用loadData获取好像更好一些
         const _data1 = _data.slice(0)
         table.tableData.showData = _data1
-
+        // nextTick(async () => {
+        //     const vxeGrid = table.pageRef.vxeGrid
+        //     vxeGrid?.reloadData(_data).then(res => {
+        //         const scrollConfig = table.scrollConfig
+        //         const scrollTop = scrollConfig.scrollTop
+        //         const scrollLeft = scrollConfig.scrollLeft
+        //         vxeGrid.scrollTo(scrollLeft, scrollTop)
+        //     })
+        // })
         return _data1
     })
+
 }
 
 export const getOptionsColumns = (table: table) => {
@@ -94,7 +104,7 @@ export const getOptionsColumns = (table: table) => {
         const defaultColumns = [seqColumn, checkBoxColumn].filter(col => col != null)
         const columns = [
             ...defaultColumns,
-            ...tableConfig.columns.map((col: any) => col.renderColumn),]
+            ...tableConfig.columns.map((col: any) => { return { ...col.renderColumn } }),]
         return columns
     })
 }
@@ -244,8 +254,10 @@ export const getOptionsShowHeader = (table: table) => {
 
 export const initGridOptions = (table: table) => {
     const gridOptions = table.gridOptions as VxeGridProps
-    gridOptions.columns = table.tableConfig.columns
+    // gridOptions.columns = table.tableConfig.columns
     gridOptions.columns = getOptionsColumns(table) as any
+    // gridOptions.renderData = getOptionsData(table) as any
+    //@ts-ignore 
     gridOptions.data = getOptionsData(table) as any
     gridOptions.treeConfig = getOptionsTreeConfig(table) as any
     gridOptions.scrollX = getOptionsScrollX(table) as any
@@ -303,6 +315,7 @@ export const initComponent = (table: table) => {
                     if (Object.keys(effectPool).length == 0) {
                         initSchema(table)
                     }
+                    table.refreshData()
                 }, unmounted() {
                     const dialogMap = table.dialogMap
                     Object.values(dialogMap).forEach(value => {
@@ -378,6 +391,72 @@ export const initComponent = (table: table) => {
                     checkChange(row, row)
                 }
             }
+        }, {
+            /* 
+                这里是插槽
+            */
+            header: (params: any) => {
+                return h(defaultHeaderCom, { column: params.column.params })
+            },
+            showValue: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                return h(showValueCom, { column: params.column.params, row: params.row })
+            },
+            select: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                const column = params.column.params as column
+                const renderFormitem = column.renderFormitem
+                const field = column.columnConfig.field
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+            },
+            string: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                const column = params.column.params as column
+                const renderFormitem = column.renderFormitem
+                const field = column.columnConfig.field
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+            },
+            baseInfo: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                const column = params.column.params as column
+                const renderFormitem = column.renderFormitem
+                const field = column.columnConfig.field
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+            },
+            date: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                const column = params.column.params as column
+                const renderFormitem = column.renderFormitem
+                const field = column.columnConfig.field
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+            },
+            datetime: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                const column = params.column.params as column
+                const renderFormitem = column.renderFormitem
+                const field = column.columnConfig.field
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+            },
+            time: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                const column = params.column.params as column
+                const renderFormitem = column.renderFormitem
+                const field = column.columnConfig.field
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+            },
+            number: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                const column = params.column.params as column
+                const renderFormitem = column.renderFormitem
+                const field = column.columnConfig.field
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+            },
+            wangEditor: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                const column = params.column.params as column
+                const renderFormitem = column.renderFormitem
+                const field = column.columnConfig.field
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+            },
+            rowEdit: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                const column = params.column.params as column
+                const renderFormitem = column.renderFormitem
+                const getRowEditType = column.columnConfig.getRowEditType as any
+                const _type = getRowEditType(params.row, column)
+                const field = column.columnConfig.field
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: _type, table: column.table, type: _type })
+            },
         }), [[{
             mounted: (el, node) => {
                 table.pageRef.vxeGrid = xeinstacne.value as any
@@ -414,14 +493,6 @@ export const initSchema = (table: table) => {
             let tableConfig: any = table.tableConfig
             if (key == 'columns') {
                 //这种就不需要了呀
-                // table.effectPool['tablecolumnEffect'] = watchEffect(() => {
-                //     tableConfig.columns = schema['columns']?.map(col => {
-                //         if (col instanceof column) {
-                //             return col
-                //         }
-                //         return createColumn(col, table)
-                //     })
-                // })
                 continue
             }
             const _value = schema[key]
