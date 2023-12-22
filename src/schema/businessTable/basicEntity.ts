@@ -11,7 +11,7 @@ import { tableMethod } from "../tableMethod"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -34,12 +34,13 @@ import { createMenu, menu } from "../menu"
 import { createDialog, dialog } from "../dialog"
 import dialogView from "../schemaComponent/dialogView"
 import { VxeGrid } from "vxe-table"
+import modal from '@/components/modal.vue'
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   tabIndex: number = 0//使用tabIndex ,路由的tab
   sub = new Subject()//动作发射器
   detailTable?: detailEntity[] = []
   http = http
-  entityType = 'main'//这里默认是主表
+  entityType: entityType = 'main'//这里默认是主表
   layoutConfig: layoutConfig = {
     rowHeight: 10,
     isDraggable: false,
@@ -139,24 +140,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     return originTableInfo.cCodeColumn
   }
   initComponent() {
-    const _divStyle = { position: 'absolute', top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType
-    const contextInstance = this.pageRef.contextMenu
     const _this = this
-    const _div = h('div', {
-      style: _divStyle,
-      onContextmenu: (event: MouseEvent) => {
-        _this.openContext(event)
-      }
-    } as propsConfig, [
-      h(contextMenuView, { contextMenuInstance: this.pageRef.contextMenu })
-    ])
-    const _div1 = h('div')
-    const dragDiv = computed(() => {
-      let drag = this.renderLayout.isDraggable && this.renderLayout.isResizable
-      if (drag == true) {
-        return _div
-      }
-      return _div1
+    let isDrag = computed(() => {
+      return _this.layoutConfig.isDraggable && _this.layoutConfig.isResizable
     })
     const vNode = () => {
       //这里如果有虚拟节点必须使用虚拟节点
@@ -174,7 +160,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       if (destroy.value == true) {
         return null
       }
-      return withDirectives(
+      const _divStyle = { position: 'absolute', top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px', zIndex: 999 } as StyleType
+      const entityCom = withDirectives(
         h('div', { class: 'h-full w-full' }, [
           h(layoutCom, { ...renderLayout, style: { height: '100%', width: '100%' } as StyleType, }, () => schema!.map((item: any) => {
             const _item = {
@@ -196,15 +183,19 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
                   renderCom = component()
                 }
                 const renderStyle = { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType
+                const dragCom = withDirectives(
+                  h('div', {
+                    style: _divStyle,
+                    onContextmenu: (event: MouseEvent) => {
+                      _this.openContext(event)
+                    }
+                  } as propsConfig, [
+                    h(contextMenuView, { contextMenuInstance: _this.pageRef.contextMenu })
+                  ]), [[vShow, isDrag.value]]
+                )
                 if (renderCom) {
                   defaultCom = h('div', { style: renderStyle }, [renderCom,
-                    h(dragDiv.value, {
-                      onContextmenu: (event: MouseEvent) => {
-                        _this.openContext(event, _item)
-                        event.preventDefault()
-                        event.stopPropagation()
-                      },
-                    })
+                    dragCom
                   ])
                 } else {
                   defaultCom = h('div', { style: renderStyle }, ['默认节点'])
@@ -216,6 +207,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
           h(dialogView, { dialogInstance: _this.pageRef.searchDialog })
         ])
         , [[vShow, show.value]])
+      return entityCom
     }
     this.component = vNode as any
   }
@@ -227,75 +219,32 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   async getPageData() {//获取页面数据,与实体相关的
     try {
-      //   const { params, url } = await getTableData(this)
-      //   const payload = { entity: this, params, url }
-      //   const fn = async (payload: any, next: any) => {
-      //     const params = payload.params
-      //     const url = payload.url
-      //     // const entity = payload.entity
-      //     const result: any = await http.postZkapsApi(url, params)//这里模拟获取数据
-      //     // const data = JSON.parse(JSON.stringify(mergeData))//这里是数据  
-      //     // this.tableData.data = data
-      //     const { status, msg, dtMain: rows, total, data } = result
-      //     let _rows = rows
-      //     let _total = total
-      //     if (_rows == null) {
-      //       _rows = data
-      //     }
-      //     if (_total == null) {
-      //       _total = data?.length || 0
-      //     }
-      //     this.tableData.data = _rows
-      //     await next()
-      //   }
-      const data = JSON.parse(JSON.stringify(tableData))//这里是数据  
-      this.tableData.data = data
-      // const middleArr = [pageloadMiddleware
-      //   // , confirmMiddleware
-      //   , fn]//两个中间件
-      // await this.runMiddlewares(payload, middleArr, 0)
-      // this.setPageLoading(true) 
-      // let curRow = this.getCurRow()
-      // console.log(curRow, 'testCurRow')
-      // let { url, params } = await this.util.httpServe.getPageData(this)
-      // let { url, params } = {} as any
-      // let otherParams = {}
-      // await this.getRunBefore('getTableData', params, url, otherParams)
-      // let { params: newParams, url: newUrl } = otherParams as any
-      // params = newParams || params
-      // url = newUrl || url
-      // await this.setDataPermission(params)
-      // const data = tableData3
-      // this.tableData.data = data as any//获取数据 
-      // const { status, msg, dtMain: rows, total, data } =
-      //   let _rows = rows
-      //   let _total = total
-      //   if (_rows == null) {
-      //     _rows = data
-      //   }
-      //   if (_total == null) {
-      //     _total = data?.length || 0
-      //   }
-      //   this.tableData.data = _rows
-      //   // this.tableData.showData = _rows
-      //   let _showData = this.sortTableData(_rows)
-      //   this.tableData.data = _showData
-      //   let _showData1 = _showData
-      //   _showData1 = this.filterGlobalWhere(_showData1) //根据全局条件进行过滤，在显示查找面板里找到符合条件的数据
-      //   _showData1 = this.filterColumnWhere(_showData1) //根据显示查找面板里已经过滤完毕的数据，再到每个单独列的条件进一步过滤符合要求数据
-      //   this.tableData.showData = _showData1 //在视图层渲染
-      //   // this.tableData.showData = this.sortTableData(_rows)
-      //   await this.getRunAfter('getTableData', _rows, _total) //调用执行后的函数
-      //   this.setPageLoading(false) //关闭加载动画效果
-      //   if (this.curRowChange) {
-      //     //判断当前表是否有该属性函数，如果有就调用
-      //     this.curRowChange.call(this, curRow, true) //获取当前行的数据
-      //   }
-      //   return _showData1
+      const { params, url } = await getTableData(this)
+      const payload = { entity: this, params, url }
+      const fn = async (payload: any, next: any) => {
+        const params = payload.params
+        const url = payload.url
+        const result: any = await http.postZkapsApi(url, params)//这里模拟获取数据
+        const { status, msg, dtMain: rows, total, data } = result
+        let _rows = rows
+        let _total = total
+        if (_rows == null) {
+          _rows = data
+        }
+        if (_total == null) {
+          _total = data?.length || 0
+        }
+        this.tableData.data = _rows
+        await next()
+      }
+      // const data = JSON.parse(JSON.stringify(tableData))//这里是数据  
+      // this.tableData.data = data
+      const middleArr = [pageloadMiddleware
+        // , confirmMiddleware 
+        , fn]//两个中间件
+      await this.runMiddlewares(payload, middleArr, 0)
     } catch (error) {
       console.error(error, 'testError')
-      //   this.setGetTableDataPermission(true)
-      //   this.setPageLoading(false)
     }
   }
   setPageLoading(arg0: boolean) {
@@ -347,7 +296,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     await this.initTableInfo()
     await this.initEntityConfig()//这个函数才是最重要的
     await this.initRenderLayout()//初始化layout的需要制定
-    await this.initDragMenu()
     await this.initRenderContext()
     this.initComponent()//初始化普通的component
     const show = initConfig.show//显示的东西
@@ -357,11 +305,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     setTimeout(() => {
       this.getPageData()
     }, 1000);
-  }
-  initDragMenu() {
-    // const list = this.menuConfig.list
-    const contextMenu = createMenu(this.menuConfig as menuConfig)
-    this.pageRef.contextMenu = contextMenu as any
   }
   initDetailEntity() {
     //基类没有初始化子表的配置的东西
@@ -374,7 +317,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   //打开右键菜单
   openContext(event: MouseEvent, entityItem?: any) {
     const contextInstance = this.pageRef.contextMenu!
-    console.log(contextInstance, 'testInstance')
     contextInstance?.openContext(event)
   }
   async initRenderSearchDialog() {
@@ -400,7 +342,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     })
     this.tableConfig.columns = _columns!
     this.tableConfig.columns!.forEach((col: any) => {
-      console.log(isProxy(col))
       if (col.field == 'cCustNo') {
         // col.getRowEditType = (row: any, col: any) => {
         //   if (row['cSdOrderNo'] == '1111') {
@@ -446,16 +387,23 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       })
       return _layout
     }) as any
+    // const _layout = this.entityConfig.map((item: any) => {
+    //   return {
+    //     x: item.x, y: item.y, h: item.h, w: item.w,
+    //     i: item.i
+    //   } as layoutItem
+    // })
+    // renderLayout.layout = _layout
   }
   async initEntityConfig() {//初始化页面节点数据
     if (this.entityConfig == null) {
       //使用entityConfig
-      this.entityConfig = await getEntityConfig(this) as any
+      this.entityConfig = await getEntityConfig(this.entityType) as any
     }
     const entityConfig = this.entityConfig!//这个是节点配置
-    await Promise.all(entityConfig.map(async (item: any) => {//这是个数组 节点数组
+    await Promise.all(entityConfig.map(async (item: any, i: any) => {//这是个数组 节点数组
       try {
-        let _item = await this.resolveEntityItem(item)
+        let _item = await this.resolveEntityItem(item, i)
         return _item
       } catch (error) {
         console.error('初始化出错')
@@ -464,7 +412,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   addEntityItem() { }
   removeEntityItem() { }
-  async resolveEntityItem(item: any) {
+  async resolveEntityItem(item: any, i: any) {
     const _this = this
     const itemConfig = item.layoutItemConfig!
     const renderFunName = itemConfig.renderFunName
@@ -480,7 +428,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       renderCom = comVetor[renderComName]
     }
     item.component = () => {
-      return h(renderCom, { ...renderData, style: { height: "100%", width: '100%' } })//使用闭包 
+      return h(renderCom, { ...renderData, style: { height: "100%", width: '100%' }, })
+      // return div
+      // return h(renderCom, { ...renderData, style: { height: "100%", width: '100%' }, key: i })//使用闭包  
     }
     return item
   }

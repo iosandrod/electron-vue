@@ -21,6 +21,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     dialogConfig: dialogConfig = {
         modelValue: false,//默认是不打开弹框
         buttons: [],//
+        transfer: true,
         position: 'center',
         type: "modal",
         maskClosable: true,
@@ -102,6 +103,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         renderDialog.destroyOnClose = true
         renderDialog.lockView = getDialogLockView(this) as any
         renderDialog.position = getDialogPosition(this) as any
+        renderDialog.transfer = Boolean(this.dialogConfig.transfer)
     }
     async initComponent(): Promise<void> {
         const _this = this
@@ -117,7 +119,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
             if (destroy.value == true) {
                 return null
             }
-            return withDirectives(h('div', [h(VxeModal, renderDialog,)]), [[vShow, show.value]])
+            return withDirectives(h('div', [h(VxeModal, { ...renderDialog },)]), [[vShow, show.value]])
         }
         this.component = vNode
     }

@@ -12,9 +12,10 @@ import formitemView from '../editComponent/formitemView'
 import inputView from '../schemaComponent/inputView'
 import { input } from '../input'
 export default defineComponent({
-    props: ['column', 'row'],
+    props: ['column', 'row', 'merge'],
     setup(props, context) {
         //行与列
+        const isMerge = props.merge
         const column = computed(() => {
             return props.column as column
         })
@@ -23,34 +24,7 @@ export default defineComponent({
         })
         const _column = column.value
         let field = _column.columnConfig.field
-        let formitem = ref<formitem>(null as any)
-        let _renderItem = column.value.renderFormitem
-        let renderItem = reactive<any>({
-        })
-        for (const key of Object.keys(_renderItem)) {
-            if (key == 'type') {
-                continue
-            }
-            renderItem[key] = computed(() => {
-                return _renderItem[key]
-            }) as any
-        }
-        //
-        renderItem.modelValue = computed(() => {
-            return row.value[field!]
-        })
-        renderItem.type = computed(() => {
-            let type = _renderItem.type
-            let getRowEditType = column.value.columnConfig.getRowEditType
-            if (typeof getRowEditType == 'function') {
-                let _type = getRowEditType(props.row, column.value)
-                if (_type != null) {
-                    type = _type
-                }
-            }
-            return type
-        })
-        formitem.value = createFormItem(renderItem, null)
+
         const showValue = computed(() => {
             const field = column.value.renderColumn.field!
             const value = row.value[field as string]
@@ -79,7 +53,7 @@ export default defineComponent({
             let curRow = tableData.curRow
             const _row = row.value
             let _canEdit = canEdit.value
-            if (_canEdit) {
+            if (_canEdit && isMerge !== false) {
                 return style
             }
             let targetConfig = mergeConfig[field]
@@ -92,7 +66,6 @@ export default defineComponent({
                     return true
                 }
             })
-            console.log(rowArr, 'testArr')
             if (rowArr == null) {
                 return style
             }
@@ -124,50 +97,25 @@ export default defineComponent({
             }
             return style
         })
-        const renderCom = computed(() => {
-            const _canEdit = canEdit.value
-            const _editDisable = editDisable.value
-            let editCom: any = h(inputView, { inputInstance: formitem.value?.pageRef?.inputInstance, data: row.value })
+        return () => {
             let defaultCom: any = null
             const defaultComFn = getRenderFn('div', { style: { wdith: '100%', height: "100%", background: "" } as StyleType })
             const mergeComFnStyle = mergeDiv.value//合并的行节点
             const mergeComFn = getRenderFn('div', { style: mergeComFnStyle })
             defaultCom = defaultComFn([mergeComFn([showValue.value])])
-            if (_canEdit == true && _editDisable == false) {//表可编辑+行可编辑
-                if (Boolean(column.value.columnConfig.editType) == false || formitem.value == null) {
-                    return getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
-                }
-                let editState = column.value.table?.tableState
-                if (editState == 'singleRowEdit') {
-                    let _row = row.value
-                    let curRow = column.value.table?.tableData.curRow
-                    // if (_row === curRow) {
-                    //     editCom = h(inputView, { inputInstance: formitem.value?.pageRef?.inputInstance, data: row.value })
-                    // } else {
-                    //     editCom = defaultCom//默认的合并
-                    // }
-                    if (_row !== curRow) {
-                        editCom = defaultCom//默认的合并
-                    }
-                } else if (editState == 'moreRowEdit') {
-                    let _row = row.value
-                    let editData = column.value.table?.tableData.editData
-                    if (!editData?.includes(_row)) {//not include the com 
-                        editCom = getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
-                    }
-                } else if (editState == 'fullEdit') {
-
-                } else {
-                    editCom = getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
-                }
-                return editCom
-            }
             return defaultCom
-        })
-        return {
-            formitem: formitem,
-            renderCom: renderCom
         }
+        // const renderCom = computed(() => {
+        //     let defaultCom: any = null
+        //     const defaultComFn = getRenderFn('div', { style: { wdith: '100%', height: "100%", background: "" } as StyleType })
+        //     const mergeComFnStyle = mergeDiv.value//合并的行节点
+        //     const mergeComFn = getRenderFn('div', { style: mergeComFnStyle })
+        //     defaultCom = defaultComFn([mergeComFn([showValue.value])])
+        //     return defaultCom
+        // })
+        // return {
+        //     renderCom: renderCom
+        // }
         // return () => {
         //     const _canEdit = canEdit.value
         //     const _editDisable = editDisable.value

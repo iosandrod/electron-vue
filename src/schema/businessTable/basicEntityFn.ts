@@ -11,13 +11,10 @@ import { createForm } from "../form";
 import { createDialog, dialog } from "../dialog";
 
 
-export const initComponent = (basicEntity: basicEntity) => {
 
-}
 
 
 export const getRenderTable = async <T extends basicEntity>(entity: T) => {
-
     // return renderTable//固定死的 
 }
 
@@ -48,7 +45,7 @@ export const getRenderDetailEntity = async <T extends mainEntity>(entity: T) => 
         }
         return obj
     }) as any
-    return { mainEntity: entity }//子表 随便把主表传过去
+    return { mainEntity: entity, }//子表 随便把主表传过去
 }
 
 export const initRenderSearchForm = (entity: basicEntity) => {
@@ -115,6 +112,7 @@ export const initRenderSearchDialog = (entity: basicEntity) => {
     const _this = entity
     const renderSearchDialog = _this.renderSearchDialog
     renderSearchDialog.showFooter = true
+    renderSearchDialog.transfer = false
     renderSearchDialog.modalData = { entity: _this }
     renderSearchDialog.buttons = [{
         text: "查询",

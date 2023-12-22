@@ -28,41 +28,92 @@ export const getTableInfo = async (entity?: basicEntity) => {
     // const _itemArr = JSON.parse(JSON.stringify(itemArr))
     // return _itemArr
 }
-
-
-export const getEntityConfig = async (entity?: basicEntity) => {
-    const itemArr: layoutItem = [
+export const typeNode = {
+    main: [
         {
             x: 0, y: 0, h: 4, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
                 renderComName: "buttonGroupView",//组件
                 renderFunName: 'initRenderButtonGroup',//数据初始化函数
             } as layoutItemConfig,
         },
-        // {
-        //     x: 0, y: 4, h: 40, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-        //         renderComName: "formView",//组件
-        //         renderFunName: 'initRenderEditForm',//数据初始化函数 初始化编辑的表单的
-        //     } as layoutItemConfig,
-        // },
         {
-            x: 0, y: 22, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            x: 0, y: 4, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
                 renderComName: "tableView",//组件
                 renderFunName: 'initRenderTable',//数据初始化函数
             } as layoutItemConfig,
         },
+        {
+            x: 0, y: 34, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
+                // renderComName:"entityView",
+                renderFunName: "initRenderDetailEntity",
+            } as layoutItemConfig
+        },
+    ],
+    detail: [
+        {
+            x: 0, y: 0, h: 4, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "buttonGroupView",//组件
+                renderFunName: 'initRenderButtonGroup',//数据初始化函数
+            } as layoutItemConfig,
+        },
+        {
+            x: 0, y: 4, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "tableView",//组件
+                renderFunName: 'initRenderTable',//数据初始化函数
+            } as layoutItemConfig,
+        },
+    ],
+    search: [
+        {
+            x: 0, y: 0, h: 4, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "buttonGroupView",//组件
+                renderFunName: 'initRenderButtonGroup',//数据初始化函数
+            } as layoutItemConfig,
+        },
+        {
+            x: 0, y: 4, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "tableView",//组件
+                renderFunName: 'initRenderTable',//数据初始化函数
+            } as layoutItemConfig,
+        },
+        {
+            x: 0, y: 34, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
+                renderFunName: "initRenderDetailEntity",
+            } as layoutItemConfig
+        },
+    ],
+    edit: [
+        {
+            x: 0, y: 0, h: 4, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "buttonGroupView",//组件
+                renderFunName: 'initRenderButtonGroup',//数据初始化函数
+            } as layoutItemConfig,
+        },
+        {
+            x: 0, y: 4, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "formView",//组件
+                renderFunName: 'initRenderEditForm',//数据初始化函数 初始化编辑的表单的
+            } as layoutItemConfig,
+        },
         // {
-        //     x: 0, y: 19, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-        //         renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
-        //         renderFunName: "initRenderDetailEntity",
-        //     } as layoutItemConfig
+        //     x: 0, y: 22, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+        //         renderComName: "tableView",//组件
+        //         renderFunName: 'initRenderTable',//数据初始化函数
+        //     } as layoutItemConfig,
         // },
+        {
+            x: 0, y: 34, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
+                renderFunName: "initRenderDetailEntity",
+            } as layoutItemConfig
+        },
     ]
-    const _itemArr = JSON.parse(JSON.stringify(itemArr))
-    if (entity?.entityType == 'detail'
-        // || entity?.tableInfo?.detailTable?.length <= 0
-    ) {
-        _itemArr.pop()
-    }
+}
+
+export const getEntityConfig = async (entityType) => {
+    let _itemArr = JSON.parse(JSON.stringify(typeNode[entityType]))
     return _itemArr
 }
 

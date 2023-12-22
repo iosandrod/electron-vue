@@ -21,12 +21,12 @@ export const getDialogMaskCloseAble = (dialog: dialog) => {
 }
 
 export const getDialogSlots = (dialog: dialog) => {
+    const slots: any = {}
+    slots.header = getDialogSlotsHeader(dialog).value
+    slots.default = getDialogSlotsDefault(dialog).value
+    slots.footer = getDialogSlotsFooter(dialog).value
+    return slots
     return computed(() => {
-        const slots: any = {}
-        slots.header = getDialogSlotsHeader(dialog).value
-        slots.default = getDialogSlotsDefault(dialog).value
-        slots.footer = getDialogSlotsFooter(dialog).value
-        return slots
     })
 }
 

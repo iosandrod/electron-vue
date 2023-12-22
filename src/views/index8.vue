@@ -291,7 +291,6 @@ async function btnClick10() {
   } else {
     table.tableConfig.columns.forEach((col: any) => {
       if (col.columnConfig.editType == 'select') {
-        console.log(isProxy(col))
         col.columnConfig.options = [{ label: 'sfdsf11', value: 'sdfsdf11' }]
         // col.renderFormitem.options.push({ label: "sdfsdf", value: 'sdfsd' })
         // col.renderFormitem.options = [{ label: "sdfsdf", value: 'sdfsd' }]

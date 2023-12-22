@@ -2,8 +2,9 @@ import { computed, defineComponent, watch, onUnmounted, watchEffect, h, ref, toR
 import { createInput, input } from '../input'
 import { inputConfig } from '@/types/schema'
 import { table } from '../table'
+import defaultCom from '../tableColumnCom/defaultCom'
 export default defineComponent({
-    props: ['type', 'table', 'renderFormitem', 'inputInstance', 'data', 'field', 'onChange', 'options', 'modelValue'] as Array<'inputInstance' | 'field' | 'data' | 'renderFormitem' | 'table' | keyof inputConfig>,
+    props: ['type', 'column', 'table', 'renderFormitem', 'inputInstance', 'data', 'field', 'onChange', 'options', 'modelValue'] as Array<'inputInstance' | 'column' | 'field' | 'data' | 'renderFormitem' | 'table' | keyof inputConfig>,
     setup(props) {
         // let inputInstance = props.inputInstance
         const _data = computed(() => {
@@ -80,7 +81,7 @@ export default defineComponent({
         const tableState = computed(() => {
             return table?.tableState
         })
-        return { input: inputInstance, tableState, table, data: _data }
+        return { input: inputInstance, tableState, table, data: _data, column: props.column }
     },
     render() {
         const component = this.input.component
@@ -91,13 +92,25 @@ export default defineComponent({
         if (tableState == 'fullEdit') {
             return component()
         }
+        const column = this.column
+        const showValue = h(defaultCom, { row: this.data, column: column, merge: false })
         if (tableState == 'moreRowEdit') {
             let table = this.table as table
             let editData = table.tableData.editData
             if (editData.includes(this.data)) {
                 return component()
             } else {
+                return showValue
+            }
+        } else if (tableState == 'singleRowEdit') {
+            let table = this.table
+            let curRow = table.tableData.curRow
+            if (this.data == curRow) {
+                return component()
+            } else {
+                return showValue
             }
         }
+        return showValue
     }
 })

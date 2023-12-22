@@ -42,12 +42,13 @@ export class tab extends base {
             const tabCom = h(Tabs, this.renderTab, () => {
                 const tabItems = tabConfig.tabItems
                 return tabItems?.map(item => {
-                    return h(TabPane, item, {
-                        tab: (params: any) => {
-                            // console.log(params, 'testParams')
-                            return h('div', ['123312'])
-                        }
-                    })
+                    return h(TabPane, item,
+                        //      {
+                        //     tab: (params: any) => {
+                        //         return h('div', [''])
+                        //     }
+                        // }
+                    )
                 })
             })
             const _class = []

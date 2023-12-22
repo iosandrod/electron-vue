@@ -36,5 +36,6 @@ export const comVetor = {
     layoutGridView,
     detailEntityView: detailEntityView,
     buttonGroupView: buttonGroupView,
-    menuView: menuView
+    menuView: menuView,
+    entityView
 }

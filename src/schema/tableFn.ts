@@ -254,14 +254,25 @@ export const getOptionsShowHeader = (table: table) => {
 
 export const initGridOptions = (table: table) => {
     const gridOptions = table.gridOptions as VxeGridProps
-    // gridOptions.columns = table.tableConfig.columns
+    // table.tableConfig.columns
     gridOptions.columns = getOptionsColumns(table) as any
     // gridOptions.renderData = getOptionsData(table) as any
     //@ts-ignore 
     gridOptions.data = getOptionsData(table) as any
-    gridOptions.treeConfig = getOptionsTreeConfig(table) as any
-    gridOptions.scrollX = getOptionsScrollX(table) as any
-    gridOptions.scrollY = getOptionsScrollY(table) as any
+    // gridOptions.treeConfig = getOptionsTreeConfig(table) as any
+    gridOptions.scrollX = {//先写死吧
+        enabled: true,
+        gt: 10,
+        oSize: 5,
+    }
+    // getOptionsScrollX(table) as any
+    gridOptions.scrollY = {
+        enabled: true,
+        mode: 'default',
+        gt: 0,
+        oSize: 0,
+    }
+    // getOptionsScrollY(table) as any
     gridOptions.rowConfig = getOptionsRowConfig(table) as any
     gridOptions.columnConfig = getOptionsColumnConfig(table) as any
     gridOptions.rowClassName = getOptionsRowClassName(table) as any
@@ -315,7 +326,7 @@ export const initComponent = (table: table) => {
                     if (Object.keys(effectPool).length == 0) {
                         initSchema(table)
                     }
-                    table.refreshData()
+                    table.autoRefreshData()
                 }, unmounted() {
                     const dialogMap = table.dialogMap
                     Object.values(dialogMap).forEach(value => {
@@ -399,55 +410,56 @@ export const initComponent = (table: table) => {
                 return h(defaultHeaderCom, { column: params.column.params })
             },
             showValue: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                // return h('div')
                 return h(showValueCom, { column: params.column.params, row: params.row })
             },
             select: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
                 const column = params.column.params as column
                 const renderFormitem = column.renderFormitem
                 const field = column.columnConfig.field
-                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table, column: column })
             },
             string: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
                 const column = params.column.params as column
                 const renderFormitem = column.renderFormitem
                 const field = column.columnConfig.field
-                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table, column: column })
             },
             baseInfo: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
                 const column = params.column.params as column
                 const renderFormitem = column.renderFormitem
                 const field = column.columnConfig.field
-                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table, column: column })
             },
             date: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
                 const column = params.column.params as column
                 const renderFormitem = column.renderFormitem
                 const field = column.columnConfig.field
-                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table, column: column })
             },
             datetime: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
                 const column = params.column.params as column
                 const renderFormitem = column.renderFormitem
                 const field = column.columnConfig.field
-                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table, column: column })
             },
             time: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
                 const column = params.column.params as column
                 const renderFormitem = column.renderFormitem
                 const field = column.columnConfig.field
-                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table, column: column })
             },
             number: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
                 const column = params.column.params as column
                 const renderFormitem = column.renderFormitem
                 const field = column.columnConfig.field
-                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table, column: column })
             },
             wangEditor: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
                 const column = params.column.params as column
                 const renderFormitem = column.renderFormitem
                 const field = column.columnConfig.field
-                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table })
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table, column: column })
             },
             rowEdit: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
                 const column = params.column.params as column

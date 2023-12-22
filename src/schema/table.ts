@@ -26,11 +26,14 @@ import { mergeConfig } from "@/api/data4"
 
 
 export class table extends base<tableSchema> implements tableMethod {
-  tableState: tableState = 'fullEdit'
+  tableState: tableState = 'scan'
   // tableState: tableState = 'scan'
   isFocus: boolean = false
   renderFilterTable: tableConfig = {
     columns: []
+  }
+  tablePermission = {
+    canRefreshData: true//能否刷新数据
   }
   editWeakMap = new Map()
   renderFilterColTable: tableConfig = {
@@ -246,16 +249,56 @@ export class table extends base<tableSchema> implements tableMethod {
       targetCol!.columnConfig!.editType! = type
     }
   }
-  refreshData() {
-    // const table = this
-    // const vxeGrid = this.pageRef.vxeGrid
-    // const showData = this.tableData.showData
-    // vxeGrid?.reloadData(showData).then(res => {
-    //   const scrollConfig = table.scrollConfig
-    //   const scrollTop = scrollConfig.scrollTop
-    //   const scrollLeft = scrollConfig.scrollLeft
-    //   vxeGrid.scrollTo(scrollLeft, scrollTop)
-    // })
+  async autoRefreshData() {
+    const effectPool = this.effectPool
+    const table = this
+    effectPool.refreDataEffect = watchEffect(() => {
+      let showData = table.tableData.data
+      const filterConfig = table.tableConfig.filterConfig!
+      let arrayFilterConfig = filterConfig.filter(item => item.filterType == 'array')
+      const _data = showData.filter((row: any, i, arr) => {
+        let state = true
+        for (const config of arrayFilterConfig) {
+          let field = config.field!
+          let filterArr = config.filterData || []
+          if (filterArr.length == 0 || state == false) {
+            continue
+          }
+          let _value: any = row[field]
+          //@ts-ignore
+          if (!filterArr.includes(_value)) {
+            state = false
+          }
+        }
+        return state
+      })
+      //使用loadData获取好像更好一些
+      const _data1 = _data.slice(0)
+      table.tableData.showData = _data1
+      nextTick(async () => {
+        const vxeGrid = table.pageRef.vxeGrid
+        let canRefreshData = table.tablePermission.canRefreshData
+        if (canRefreshData == true) {
+          table.tablePermission.canRefreshData = false
+          //使用节流处理
+          setTimeout(() => {
+            try {
+              let showData = this.tableData.showData
+              console.log('run refreshData')
+              vxeGrid?.reloadData(showData).then(res => {
+                const scrollConfig = table.scrollConfig
+                const scrollTop = scrollConfig.scrollTop
+                const scrollLeft = scrollConfig.scrollLeft
+                vxeGrid.scrollTo(scrollLeft, scrollTop)
+                table.tablePermission.canRefreshData = true
+              })
+            } catch (error) {
+              table.tablePermission.canRefreshData = true
+            }
+          }, 100);
+        }
+      })
+    })
   }
 }
 
@@ -267,3 +310,4 @@ export function createTable(schema?: any, context?: any) {
 }
 /* 
 */
+

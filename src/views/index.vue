@@ -34,18 +34,11 @@
             <vxe-button @click="changeEditType">改变类型</vxe-button>
             <vxe-button @click="changeEditType1">改变编辑框类型</vxe-button>
             <vxe-button @click="changeEditType11">改变类型11</vxe-button>
+            <vxe-button @click="changeEditType111">scrollTo</vxe-button>
           </div>
           <div class="flex-1 w-full">
-            <!-- <router-view :key="$route.fullPath"></router-view> -->
-            <!-- <component :is="com" :key="$route.name"></component> -->
-            <!-- 路由组件 -->
-            <!-- <component :is="com"></component> -->
-            <!-- 暂时缓存起来 -->
-            <component :is="com" :key="$route.name"></component>
-            <keep-alive :max="3">
-            </keep-alive>
+            <router-view></router-view>
           </div>
-          <!-- is tab -->
         </div>
       </a-layout-content>
     </a-layout>
@@ -69,16 +62,7 @@ const pageConfig = computed(() => {
   return systemInstance.pageConfig
 })
 const { proxy: instance } = getCurrentInstance()!
-const com = computed(() => {
-  const route = instance?.$route
-  const name = route?.name! as string
-  const entity = systemInstance.entityVetor[name]
-  if (entity == null) {
-    return h(RouterView)
-  }
-  return h(entityView, { entityInstance: entity, })
-  // return h(entityView, { entityName: route!.name, })
-})
+
 let state = false
 function designEntity() {
   const systemConfig = systemInstance.systemConfig
@@ -188,11 +172,23 @@ function changeEditType11() {
   } else {
     // vxeGrid?.setTableEdit('scan')
     entity.tableConfig.columns!.forEach((col: any) => {
-      console.log(isProxy(col))
       if (col.editType == 'select') {
         col.options = [{ label: '小风11', value: 'xiaofeng11' }, { label: '小峰11', value: 'xiaofeng111' }]
       }
     })
+  }
+  state11 = !state11
+}
+
+function changeEditType111() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  const vxeGrid = entity.pageRef.vxeGrid
+  if (state11) {
+    vxeGrid?.scrollToPosition(100, 100)
+  } else {
+    vxeGrid?.scrollToPosition(100, 100)
   }
   state11 = !state11
 }

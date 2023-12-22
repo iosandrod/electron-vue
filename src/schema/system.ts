@@ -16,6 +16,7 @@ import index9Vue from "@/views/index9.vue"
 import index10Vue from "@/views/index10.vue"
 import index1Vue from "@/views/index1.vue"
 import { createTable, table } from "./table"
+import entityView from "./schemaComponent/entityView"
 
 export class system extends base {
   getRouter = getRouter
@@ -153,7 +154,6 @@ export class system extends base {
       return
     }
     //
-
     const allRoute = $router.getRoutes()
     if (allRoute.map(route => route.name).filter(v => v != null).includes(entityName)) {
       $router.push({ path: `/${entityName}` })
@@ -162,9 +162,9 @@ export class system extends base {
       this.entityConfigVetor.set(mainEntity, {
       })
       const route = {
-        component: {}, path: `/${entityName}`, name: entityName,
+        component: () => entityView, path: `/${entityName}`, name: entityName,
         props: (route) => {
-          return { entityInstance: mainEntity }
+          return { entityInstance: mainEntity, key: entityName }
         }
       } as RouteRecordSingleView
       $router.addRoute('index', route)

@@ -6,13 +6,16 @@ export default defineComponent({
     setup(props, context) {
         let dialogInstance = props.dialogInstance
         const dialogName = props.dialogName
-        if (dialogInstance == null) {
+        if (dialogInstance == null && dialogName != null) {
             dialogInstance = createDialog(dialogName, props)
         }
         return { dialog: dialogInstance }
     },
     render() {
-        let component = this.dialog.component
-        return component()
+        let component = this.dialog?.component
+        if (component) {
+            return component()
+        }
+        return h('div')
     }
 })

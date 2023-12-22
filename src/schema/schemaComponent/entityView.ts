@@ -20,9 +20,10 @@ export default defineComponent({
     },
     render() {
         let component = this.entity?.component
-        if (component) {
-            return component()
-        }
-        return h('div')
+        return component()
+        // if (component) {
+        //     return component()
+        // }
+        // return h('div')
     }
 })

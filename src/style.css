@@ -110,3 +110,7 @@ body{
 .ant-select-selector{
     height:95% !important
 }
+
+.vue-resizable-handle{
+    z-index:1000
+}

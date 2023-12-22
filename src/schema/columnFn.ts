@@ -166,19 +166,18 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
     })
     const targetIcon = getIcon(null, "vxe-icon-funnel")
     return h(VxePulldown, {
-        trigger: ['click'],
+        // trigger: ['click'],
+        transfer: true,
         destroyOnClose: true,
         modelValue: _column.columnConfig.filterPulldownShow,
         ['onUpdate:modelValue']: (value: boolean) => {
-            const table = _column.table
-            // const scroll = table?.pageRef.vxeGrid?.getScroll()
             _column.columnConfig.filterPulldownShow = value
             nextTick(() => {
                 if (value == true) {
                     const filterPosition = _column.columnConfig.filterPosition
                     //@ts-ignore
                     const pObj = getFixedPosition(divRef.value, { left: filterPosition.mouseLeft, top: filterPosition.mouseTop })
-                    //把具体数据过去过去
+                    //把具体数据过去过去 
                     let showData = _column.table?.tableData.showData//展示的数据
                     _column.table!.pageRef.filterTable!.tableData.data = [...new Set(showData!.map(row => {
                         let field = _column.columnConfig.field

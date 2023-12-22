@@ -989,3 +989,75 @@ export const initTableMenu = (table: table) => {
 
 
 
+
+
+// let formitem = ref<formitem>(null as any)
+        // let _renderItem = column.value.renderFormitem
+        // let renderItem = reactive<any>({
+        // })
+        // for (const key of Object.keys(_renderItem)) {
+        //     if (key == 'type') {
+        //         continue
+        //     }
+        //     renderItem[key] = computed(() => {
+        //         return _renderItem[key]
+        //     }) as any
+        // }
+        // //
+        // renderItem.modelValue = computed(() => {
+        //     return row.value[field!]
+        // })
+        // renderItem.type = computed(() => {
+        //     let type = _renderItem.type
+        //     let getRowEditType = column.value.columnConfig.getRowEditType
+        //     if (typeof getRowEditType == 'function') {
+        //         let _type = getRowEditType(props.row, column.value)
+        //         if (_type != null) {
+        //             type = _type
+        //         }
+        //     }
+        //     return type
+        // })
+        // formitem.value = createFormItem(renderItem, null)
+
+
+
+         if (editState == 'singleRowEdit') {
+                    // let _row = row.value
+                    // let curRow = column.value.table?.tableData.curRow
+                    // if (_row === curRow) {
+                    //     editCom = h(inputView, { inputInstance: formitem.value?.pageRef?.inputInstance, data: row.value })
+                    // } else {
+                    //     editCom = defaultCom//默认的合并
+                    // }
+                    // if (_row !== curRow) {
+                    //     editCom = defaultCom//默认的合并
+                    // }
+                } else if (editState == 'moreRowEdit') {
+                    let _row = row.value
+                    let editData = column.value.table?.tableData.editData
+                    if (!editData?.includes(_row)) {//not include the com 
+                        editCom = getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
+                    }
+                } else if (editState == 'fullEdit') {
+
+                } else {
+                    editCom = getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
+                }
+
+                // if (Boolean(column.value.columnConfig.editType) == false || formitem.value == null) {
+                //     return getRenderFn('div', { style: { wdith: '100%' } })([showValue.value])
+                // }
+
+                  const _canEdit = canEdit.value
+            const _editDisable = editDisable.value
+            const com = computed(() => { 
+  // const route = instance?.$route 
+  // const name = route?.name! as string
+  // const entity = systemInstance.entityVetor[name]
+  // if (entity == null) {
+  //   return h(RouterView)
+  // }
+  // return h(entityView, { entityInstance: entity, })
+  // return h(entityView, { entityName: route!.name, })
+})
