@@ -35,6 +35,8 @@
             <vxe-button @click="changeEditType1">改变编辑框类型</vxe-button>
             <vxe-button @click="changeEditType11">改变类型11</vxe-button>
             <vxe-button @click="changeEditType111">scrollTo</vxe-button>
+            <vxe-button @click="changeEditType1111">scrollTo11</vxe-button>
+            <vxe-button @click="changeEditType11111">进入编辑路由</vxe-button>
           </div>
           <div class="flex-1 w-full">
             <router-view></router-view>
@@ -58,6 +60,8 @@ import Index1 from './index1.vue';
 import { RouterView } from 'vue-router';
 import entityView from '@/schema/schemaComponent/entityView';
 import { mainEntity } from '@/schema/businessTable/mainEntity';
+import XEUtils from 'xe-utils';
+import { layoutItemConfig } from '@/types/schema';
 const pageConfig = computed(() => {
   return systemInstance.pageConfig
 })
@@ -189,6 +193,39 @@ function changeEditType111() {
     vxeGrid?.scrollToPosition(100, 100)
   } else {
     vxeGrid?.scrollToPosition(100, 100)
+  }
+  state11 = !state11
+}
+const obj = {
+  x: 0, y: 4, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+    renderComName: "tableView",//组件
+    renderFunName: 'initRenderTable',//数据初始化函数
+  } as layoutItemConfig
+} as any
+function changeEditType1111() {
+
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  const vxeGrid = entity.pageRef.vxeGrid
+  if (state11) {
+    entity.addEntityItem(obj)
+  } else {
+    entity.removeEntityItem(obj)
+  }
+  state11 = !state11
+}
+function changeEditType11111() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  const entityName = entity.entityName
+  const system = entity.system!
+  if (state11) {
+    system.routeOpen({ entityName: entityName, isEdit: true })
+    // entity.addEntityItem(obj)
+  } else {
+    // entity.removeEntityItem(obj)
   }
   state11 = !state11
 }

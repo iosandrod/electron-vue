@@ -39,6 +39,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   sub = new Subject()//动作发射器
   detailTable?: detailEntity[] = []
   http = http
+  isEditEntity = false
+  entityTabKey?: string
   entityType: entityType = 'main'//这里默认是主表
   layoutConfig: layoutConfig = {
     rowHeight: 10,
@@ -101,7 +103,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     curDetailKey: ''
   }
   buttonCategory: btnCategory = ''
-  entityConfig?: any//这个是模型的配置，是一个数组
+  entityConfig?: layoutItem[] = []//这个是模型的配置，是一个数组
   pageConfig: any = {}//页面配置
   tableInfo?: mainTableInfo = {} as any//远程获取的数据
   renderLayout: layoutConfig = {}//渲染节点数据
@@ -271,6 +273,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   addItem() { }
   async initRenderTable() {
     try {
+      if (this.pageRef.vxeGrid != null) {
+        return { tableInstance: this.pageRef.vxeGrid }
+      }
       const entity = this
       const renderTable = entity.renderTable//这个是渲染表格的数据
       renderTable.columns = computed(() => {
@@ -281,9 +286,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       }) as any//行与列 
       const table = createTable(renderTable)
       entity.pageRef.vxeGrid = table//只初始化一次
-      // console.log(table.gridOptions)
-      // return reactive({ ...table.gridOptions })
-      // return renderTable
       return { tableInstance: table }
     } catch (error) {
       return Promise.reject("表格数据获取出错")
@@ -377,7 +379,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }) as any
     renderLayout.colNum = 24
     renderLayout.layout = computed(() => {
-      const _layout = this.entityConfig.map((item: any) => {
+      const _layout = this.entityConfig!.map((item: any) => {
         return {
           x: item.x, y: item.y, h: item.h, w: item.w,
           i: item.i
@@ -385,32 +387,34 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       })
       return _layout
     }) as any
-    // const _layout = this.entityConfig.map((item: any) => {
-    //   return {
-    //     x: item.x, y: item.y, h: item.h, w: item.w,
-    //     i: item.i
-    //   } as layoutItem
-    // })
-    // renderLayout.layout = _layout
   }
   async initEntityConfig() {//初始化页面节点数据
-    if (this.entityConfig == null) {
-      //使用entityConfig
-      this.entityConfig = await getEntityConfig(this.entityType) as any
-    }
-    const entityConfig = this.entityConfig!//这个是节点配置
-    await Promise.all(entityConfig.map(async (item: any, i: any) => {//这是个数组 节点数组
+    // const entityConfig = this.entityConfig!//这个是节点配置
+    let entityConfig = await getEntityConfig(this.entityType) as any
+    for (const config of entityConfig) {
       try {
-        let _item = await this.resolveEntityItem(item, i)
-        return _item
+        await this.addEntityItem(config)
       } catch (error) {
-        console.error('初始化出错')
+        console.error('节点初始化失败')
       }
-    }))
+    }
   }
-  addEntityItem() { }
-  removeEntityItem() { }
-  async resolveEntityItem(item: any, i: any) {
+  async addEntityItem(config: layoutItem) {//添加一个节点
+    const _config = lodash.cloneDeep(config)
+    const _config1: any = await this.resolveEntityItem(_config)
+    this.entityConfig!.push(_config1)
+  }
+  async removeEntityItem(config: layoutItem) {
+    const i = config.i
+    const index = this.entityConfig?.findIndex(item => {
+      return item.i == i
+    })!
+    if (index == -1) {
+      return
+    }
+    this.entityConfig?.splice(index, 1)
+  }
+  async resolveEntityItem(item: any) {
     const _this = this
     const itemConfig = item.layoutItemConfig!
     const renderFunName = itemConfig.renderFunName
@@ -427,8 +431,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
     item.component = () => {
       return h(renderCom, { ...renderData, style: { height: "100%", width: '100%' }, })
-      // return div
-      // return h(renderCom, { ...renderData, style: { height: "100%", width: '100%' }, key: i })//使用闭包  
     }
     return item
   }
@@ -444,8 +446,11 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       });
     }
   }
-  getMainTable() {
-    return this.mainEntity || this
+  getMainTable(getFn?: (entity: any) => mainEntity) {
+    if (typeof getFn == 'function') {
+      return getFn(this)//把自己传过去
+    }
+    return this.mainEntity || this//获取主表实例
   }
   initRenderButtonGroup() {
     const entity = this.getMainTable()

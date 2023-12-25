@@ -17,6 +17,7 @@ import index10Vue from "@/views/index10.vue"
 import index1Vue from "@/views/index1.vue"
 import { createTable, table } from "./table"
 import entityView from "./schemaComponent/entityView"
+import { createMainEditEntity } from "./businessTable/mainEditEntity"
 
 export class system extends base {
   getRouter = getRouter
@@ -66,7 +67,8 @@ export class system extends base {
     await this.initRenderTab()
     this.displayState = 'show'
     setTimeout(() => {
-      this.routeOpen('t_SdOrder')
+      this.routeOpen({ entityName: "t_SdOrder" })
+      // this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
       // this.routeOpen('index9')
       // const router = this.getRouter()
       // router.push({ path: '/index8' })
@@ -100,19 +102,22 @@ export class system extends base {
       console.log('tabClick')
     }
     renderTab.onChange = (key: any) => {
-      this.routeOpen(key)
+      this.routeOpen(key)//使用key  
     }
     renderTab.tabItems = computed(() => {
       const entityVetor = _this.entityVetor
       const entityArr = Object.values(entityVetor).sort((entity1, entity2) => {
         return entity1.tabIndex - entity2.tabIndex//先排序
       }).map(entity => {
-        let cnName = entity?.tableInfo?.cnName
+        let cnName = entity?.tableInfo?.cnName || ''
         const obj = {
-          // tab: cnName,
           tab: cnName,
           key: entity.entityName,
         } as TabPaneProps & { key: string }
+        if (entity.isEditEntity == true) {
+          obj.tab = `${obj.tab}编辑`
+          obj.key = `${entity.entityTabKey}`
+        }
         return obj
       })
       return entityArr//使用vetor的tab
@@ -127,9 +132,6 @@ export class system extends base {
       } as StyleType
       return obj
     }) as any
-    // renderTab.tabBarExtraContent = (params: any) => {
-    //   return h('div', ['123123'])
-    // }
     const tabRef = createTab(renderTab)
     this.pageRef.tabRef = tabRef
   }
@@ -143,43 +145,82 @@ export class system extends base {
     const localStorage = this.localStorage
     localStorage.token = useLocalStorage('token', '') as any
   }
-  routeOpen(entityName: string) {//打开某个路由 以路由基础
+  //打开路由
+  routeOpen(openConfig: { entityName: string, isEdit?: boolean, path?: string }) {//打开某个路由 以路由基础,是否编辑页面 
     //判断是否有这个路由
+    if (typeof openConfig == 'string') {
+      const reg = new RegExp(/_edit$/)
+      openConfig = { entityName: openConfig }
+      if (reg.test(openConfig.entityName)) {
+        openConfig.isEdit = true
+      }
+    }
+    const isEdit = openConfig.isEdit
+    const entityName = openConfig.entityName
     const $router = this.getRouter()
     const renderMenu = this.renderMenu
     const data = renderMenu.data
     const state = data?.map((row: any) => row.tableName).includes(entityName)
-    if (Boolean(state) == false) {
+    if (Boolean(state) == false) {//普通路由
       $router.push(entityName)
+      this.systemConfig.activeKey = entityName
       return
     }
-    //
-    const allRoute = $router.getRoutes()
-    if (allRoute.map(route => route.name).filter(v => v != null).includes(entityName)) {
-      $router.push({ path: `/${entityName}` })
+    let entityKey = null
+    if (isEdit == true) {
+      let reg = new RegExp(/_edit$/)
+      if (reg.test(entityName)) {
+        entityKey = entityName
+      } else {
+        entityKey = `${entityName}_edit`
+      }
     } else {
-      const mainEntity = this.getMainEntity(entityName) //暂时不使用这个配置
-      this.entityConfigVetor.set(mainEntity, {
-      })
+      entityKey = entityName
+    }
+    const allRoute = $router.getRoutes()
+    if (allRoute.map(route => route.name).filter(v => v != null).includes(entityKey)) {
+      $router.push({ path: `/${entityKey}` })
+    } else {
+      let entityKey: any = null
+      let mainEntity: any = null
+      if (isEdit !== true) {
+        mainEntity = this.getMainEntity(entityName) //暂时不使用这个配置
+        entityKey = entityName
+      } else {
+        mainEntity = this.getMainEditEntity(entityName)
+        entityKey = `${entityName}_edit`
+      }
       const route = {
-        component: () => entityView, path: `/${entityName}`, name: entityName,
+        component: () => entityView, path: `/${entityKey}`, name: entityKey,
         props: (route) => {
-          return { entityInstance: mainEntity, key: entityName }
+          return { entityInstance: mainEntity, key: entityKey }
         }
       } as RouteRecordSingleView
       $router.addRoute('index', route)
       nextTick(() => {
-        $router.push({ path: `/${entityName}` })
+        $router.push({ path: `/${entityKey}` })
       })
     }
-    this.systemConfig.activeKey = entityName
+    this.systemConfig.activeKey = entityKey
   }
   getMainEntity(entityName: string) {
     const entityVetor = this.entityVetor
     let targetEntity: any = entityVetor[entityName]
     if (targetEntity == null) {
       targetEntity = createMainEntity(entityName)
+      targetEntity.entityTabKey = entityName
       entityVetor[entityName] = targetEntity//这个是实体类
+    }
+    return targetEntity
+  }
+  getMainEditEntity(entityName: string) {
+    const entityVetor = this.entityVetor
+    const entityEditName = `${entityName}_edit`
+    let targetEntity: any = entityVetor[entityEditName]
+    if (targetEntity == null) {
+      targetEntity = createMainEditEntity(entityName)
+      targetEntity.entityTabKey = `${entityName}_edit`
+      entityVetor[entityEditName] = targetEntity
     }
     return targetEntity
   }
