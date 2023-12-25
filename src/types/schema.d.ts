@@ -61,6 +61,7 @@ export type sortconfig = {
 }
 
 export type tableConfig = {
+  baseInfoTable?: any
   checkLabelField?: string,
   globalWhereShow?: boolean
   hiddenCheckbox?: boolean

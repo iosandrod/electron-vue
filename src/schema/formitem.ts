@@ -12,6 +12,7 @@ import { getItemSlotsDefault } from "./formitemFn";
 import { createTable, table } from "./table";
 import { createInput } from "./input";
 import { instancePool } from "./formitemComFn";
+import inputView from "./schemaComponent/inputView";
 export class formitem extends baseEdit<any> {
     form?: form
     getForm?: () => form
@@ -31,12 +32,13 @@ export class formitem extends baseEdit<any> {
         folding: false, //折叠
         type: "text",
         isFocus: false,//是否聚焦
-        baseInfoTable: {//
-            tableName: '',//表名 
-            tableData: [],//表的数据
-            columns: [],//表的列
-        },
-        options: [],
+        // baseInfoTable: {//
+        //     tableName: 't_Item',//表名 
+        //     tableData: [],//表的数据
+        //     columns: [],//表的列
+        // },
+        baseInfoTable: null,
+        options: [] as any,
         layout: undefined,
         visible: true,
     }
@@ -110,6 +112,9 @@ export class formitem extends baseEdit<any> {
             }
             return value
         }) as any
+        renderInput.baseInfoTable = computed(() => {
+            return itemConfig.baseInfoTable
+        })
         // this.pageRef.inputInstance = computed(() => {
         //     const type = itemConfig.type
         //     let createFn = instancePool[type as keyof typeof instancePool]
@@ -152,44 +157,11 @@ export class formitem extends baseEdit<any> {
         if (this.pageRef.tableRef != null) {
             return
         }
-        const tableConfig = {
-            showCheckBoxColumn: false,
-            onCellClick: () => {
-                console.log('clickFn')
-            },
-            height: "300px",
-            data: [{ id: 10001, name: 'Test1', nickname: 'T1', role: 'Develop', sex: 'Man', age: 28, address: 'Shenzhen' },
-            { id: 10002, name: 'Test2', nickname: 'T2', role: 'Test', sex: 'Women', age: 22, address: 'Guangzhou' },
-            { id: 10003, name: 'Test3', nickname: 'T3', role: 'PM', sex: 'Man', age: 32, address: 'Shanghai' },
-            ], columns: [
-                { field: 'name', title: '', width: 100, showHeader: true },
-                {
-                    showFilter: false, showSort: false,
-                    showHeader: false,
-                    field: 'operator', title: "操作", width: 100, slots: {
-                        default: (column: any) => {
-                            return h('div', {}, [h(VxeButton, {
-                                onClick: () => {
-                                }
-                            }, () => {
-                                return h('div', {}, ['选择'])
-                            })])
-                        }
-                    }
-                }
-            ],
-            showHeader: true,
-            resizable: false,
-            showHeaderFilter: false,
-            showHeaderSort: false,
-        }
-        const tableRef = createTable(tableConfig)
-        this.pageRef.tableRef = tableRef
-        return this.pageRef.tableRef
+
     }
     async initComponent() {
         const vNode = () => {
-            return h('div')
+            return h(inputView, { inputInstance: this.pageRef.inputInstance })
         }
         this.component = vNode
     }

@@ -3,7 +3,7 @@ import { VxeButton, VxeTableDefines } from "vxe-table"
 import { base } from "./base"
 import { createMenu, menu } from "./menu"
 import { menuData } from "@/api/data3"
-import { StyleType, localStorageValue, menuConfig, tabConfig } from "@/types/schema"
+import { StyleType, localStorageValue, menuConfig, tabConfig, tableConfig } from "@/types/schema"
 import { useLocalStorage } from '@vueuse/core'
 import { createMainEntity, mainEntity } from "./businessTable/mainEntity"
 import { getRouter } from "@/router"
@@ -18,6 +18,8 @@ import index1Vue from "@/views/index1.vue"
 import { createTable, table } from "./table"
 import entityView from "./schemaComponent/entityView"
 import { createMainEditEntity } from "./businessTable/mainEditEntity"
+import { getTableConfig } from "@/api/httpApi"
+import { createBaseInfoTable } from "./editClass/baseInfoTable"
 
 export class system extends base {
   getRouter = getRouter
@@ -53,6 +55,9 @@ export class system extends base {
   entityVetor: {
     [key: string]: mainEntity
   } = {}//使用map数据结构
+  baseInfoEntityVetor: {
+    [key: string]: mainEntity
+  } = {}
   constructor() {
     super({} as any, {})
     this.displayState = 'destroy'
@@ -67,7 +72,7 @@ export class system extends base {
     await this.initRenderTab()
     this.displayState = 'show'
     setTimeout(() => {
-      this.routeOpen({ entityName: "t_SdOrder" })
+      this.routeOpen({ entityName: "t_SdOrder", isEdit: true })
       // this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
       // this.routeOpen('index9')
       // const router = this.getRouter()
@@ -140,6 +145,18 @@ export class system extends base {
   async openBaseInfoTable()//打开参照弹框
   {
     console.log('打开参照弹框')
+  }
+  async createBaseInfoTable(baseInfoConfig: any) {
+    const tableName = baseInfoConfig.tableName
+    let baseInfoTableMap = this.baseInfoTableMap
+    let baseInfoTable = baseInfoTableMap[tableName]
+    if (baseInfoTable != null) {
+      return
+    }
+    let _baseInfoTable = createBaseInfoTable(baseInfoConfig)
+    this.baseInfoTableMap[tableName] = _baseInfoTable
+    // const tableInfo = await getTableConfig(tableName)
+
   }
   async initLocalStorage() {
     const localStorage = this.localStorage
@@ -265,8 +282,16 @@ export class system extends base {
   getBaseInfoTable() {
 
   }
+  async createSearchTable(tableName: string, searchFieldArr?: string[]) {
+    //查询的tableRef
+    const tableInfo = await getTableConfig(tableName)
+    // console.log(tableInfo, 'testInfo') 
+    const renderTable: tableConfig = {
+      columns: []
+    }
+    const _table = createTable(renderTable)
+  }
 }
-
 //
 const systemInstance = reactive(new system())
 

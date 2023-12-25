@@ -1,5 +1,5 @@
 import { Subject } from "rxjs"
-import { reactive, h, computed, resolveComponent, Suspense, Teleport, isProxy } from "vue"
+import { reactive, h, computed, resolveComponent, Suspense, Teleport, isProxy, nextTick } from "vue"
 import { base } from "../base"
 import { pageTree } from "./pageTree"
 import layoutGridView from "../schemaComponent/layoutGridView"
@@ -78,7 +78,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     },]
   }
   mainEntity?: mainEntity
-  originTableInfo?: any
+  originTableInfo?: any//
   schema?: {} = {}
   entityName = ''
   pageRef: {
@@ -213,7 +213,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   async initNode() {
   }
-  //
   async dispatch(eventName = '') {//触发某个函数
 
   }
@@ -294,7 +293,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   async initEntity(initConfig?: any): Promise<void> {//
     this.displayState = 'destroy'//显示状态
     await this.initTableInfo()
-    await this.initEntityConfig()//这个函数才是最重要的
+    nextTick(async () => {
+      await this.initEntityConfig()//这个函数才是最重要的
+    })
     await this.initRenderLayout()//初始化layout的需要制定
     await this.initRenderContext()
     this.initComponent()//初始化普通的component
@@ -477,7 +478,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       const _btn = createEntityButton(btn, this)
       return _btn
     })
-    return { entity: this, buttons: this.renderButtonGroup }
+    return { entity: this, buttons: this.renderButtonGroup } as any
   }
   async initRenderDetailEntity() {
     return await entityRenderFn.getRenderDetailEntity(this as any)
@@ -507,13 +508,12 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
     vxeGrid.tableState = state
   }
+  //改变编辑类型
   changeColumnEditType(field: string, type: string) {
     let targetCol = this.tableConfig.columns!.find(col => {
       return col?.field == field
     })
     if (targetCol) {
-      console.log(targetCol)
-      // targetCol.columnConfig.options = [{ key: '1', value: '3' }]
       targetCol!.editType! = type
     }
   }

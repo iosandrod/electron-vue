@@ -9,24 +9,7 @@ import XEUtils from "xe-utils";
 import { _columns, _columns1 } from "@/schema/entityColumn";
 import { formatTableInfo } from "@/utils/utils";
 export const getTableInfo = async (entity?: basicEntity) => {
-    // const itemArr: layoutItem = [{
-    //     x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-    //         renderComName: "buttonGroupView",//组件 
-    //         renderFunName: 'initRenderButtonGroup',//数据初始化函数
-    //     } as layoutItemConfig,
-    // }, {
-    //     x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-    //         renderComName: "tableView",//组件
-    //         renderFunName: 'initRenderTable',//数据初始化函数
-    //     } as layoutItemConfig,
-    // }, {
-    //     x: 0, y: 0, h: 10, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-    //         renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
-    //         renderFunName: "initRenderDetailEntity",
-    //     } as layoutItemConfig
-    // },]
-    // const _itemArr = JSON.parse(JSON.stringify(itemArr))
-    // return _itemArr
+
 }
 export const typeNode = {
     main: [
@@ -152,26 +135,6 @@ const runFun = async function getOrderData() {
     return result
 }
 export const getTableConfig = async (tableName?: string, origin = false) => {//获取配置
-    // try {
-    //     if (tableName == 't_SdOrder') {//这个是表的数据
-    //         let _tableInfo = JSON.parse(JSON.stringify(tableInfo))
-    //         const _info = await formatTableInfo(_tableInfo) as mainTableInfo
-    //         const xTableInfo = _info.xTableInfo//
-    //         const detailTable = xTableInfo?.detailTable || []
-    //         const _detailTable = await Promise.all(detailTable?.map(async (table) => {
-    //             let _config = await getTableConfig(table.tableName)
-    //             _config.tableButtons = JSON.parse(JSON.stringify(_info.tableButtons))
-    //             return _config
-    //         }))//子表配置
-    //         _info.detailTable = _detailTable
-    //         return _info
-    //     } else if (tableName == 't_SdOrderEntry') {
-    //         const _info1 = await formatTableInfo(tableinfo1) as mainTableInfo
-    //         return _info1
-    //     }
-    // } catch (error) {
-    //     console.error(error.message)
-    // }
     try {
         const tableInfo = await http.postZkapsApi(`/api/builder/LoadTableInfo?tableName=${tableName}&bDesign=1`)
         const _tableInfo = tableInfo.data

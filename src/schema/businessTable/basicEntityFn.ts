@@ -100,6 +100,9 @@ export const initRenderEditForm = (entity: basicEntity) => {
         obj.title = computed(() => {
             return col.editTitle || col.title
         }) as any
+        obj.baseInfoTable = computed(() => {
+            return col.baseInfoTable
+        }) as any
         return obj
     }) as any
     const vxeForm = createForm(renderEditForm)

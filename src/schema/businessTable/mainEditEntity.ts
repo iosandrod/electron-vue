@@ -6,6 +6,8 @@ import { createPage } from "./pageTree"
 import { getTableConfig, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
 import { base } from "../base"
+import { createEntityButton } from "../entityButton"
+import { mainEntity } from "./mainEntity"
 
 export class mainEditEntity extends basicEntity {
     //页面树
@@ -15,14 +17,14 @@ export class mainEditEntity extends basicEntity {
         super(schema, system);//外部的数据应该是静态数据
         this.entityType = 'edit'//编辑类型的entity
         this.entityName = entityName
-        this.buttonCategory = 'ViewGrid'
+        this.buttonCategory = 'ViewFormGridEdit'
     }
     async initEntity() {
         try {
             await super.initEntity({ show: false })
             await this.initDetailEntity()
-            await this.initRenderSearchForm()
-            await this.initRenderSearchDialog()
+            // await this.initRenderSearchForm()
+            // await this.initRenderSearchDialog()
             this.displayState = 'show'
         } catch (error) {
             console.error(error)
@@ -30,6 +32,33 @@ export class mainEditEntity extends basicEntity {
     }
     async initComponent() {//初始化节点
         await super.initComponent()
+    }
+    initRenderButtonGroup() {
+        const entity = this.getMainTable()
+        const tableInfo = entity.tableInfo
+        let buttons: any = tableInfo?.tableButtons! || []//
+        if (!Array.isArray(buttons)) {
+            buttons = []
+        }
+        const buttonCategory = this.buttonCategory
+        const entityName = this.entityName
+        let _button = buttons?.find((btn: any) => {
+            const category = btn.category
+            const tableName = btn.tableName
+            if (category == buttonCategory && entityName == tableName) {
+                return true
+            }
+        })
+        _button = _button || buttons?.find((btn: any) => {
+            const category = btn.category
+            return category == buttonCategory
+        })
+        const targetButtons = _button?.buttons || []//获取到这个东西
+        this.renderButtonGroup = targetButtons?.map((btn: any) => {
+            const _btn = createEntityButton(btn, this)
+            return _btn
+        })
+        return { entity: this, buttons: this.renderButtonGroup } as any
     }
     //初始化子表数据
     async initDetailEntity() {
@@ -57,7 +86,10 @@ export class mainEditEntity extends basicEntity {
     initEditEntity() {
 
     }
-    getMainEntity() {
+    getMainEntity(getFn?: (value: any) => mainEntity) {
+        if (typeof getFn == 'function') {
+            return getFn(this)
+        }
         const system = this.system as system
         const entityVetor = system.entityVetor//获取主要的表格
     }

@@ -263,7 +263,37 @@ const columnObj = [
     new Translate('sBindField', 'sBindField'),
     new Translate('searchType', 'searchType'),
     //sBindField
-    new Translate('sBindField', 'sBindField')
+    new Translate('sBindField', 'sBindField'),
+    new Translate('baseInfoTable', 'baseInfoTableName', function (targetValue, column, entityColumn) {
+        try {
+            if (targetValue) {
+                const _this = entityColumn
+                let baseInfoData = _this.formatJsonData(column.baseInfoData, 'object') //isArray
+                let baseInfoTreeWhere = column.baseInfoTreeWhere
+                let baseInfoTableWhere = _this.formatJsonData(column.baseInfoTableWhere, 'object')
+                let mapKey = Object.entries(baseInfoData).find(([key, value]) => {
+                    return key == _this.field
+                })?.[1]
+                mapKey = mapKey || Object.values(baseInfoData).shift()
+                let mapKeys = baseInfoData
+                let baseInfoTable = {
+                    path: targetValue,
+                    tableName: targetValue,
+                    mapKey: mapKey,
+                    mapKeys: mapKeys,
+                    dataWhereValue: baseInfoTableWhere,
+                    treeWhere: baseInfoTreeWhere,
+                    baseInfoTreeWhere: baseInfoTreeWhere,
+                    baseInfoData: baseInfoData,
+                    getColumnNameSQL: column.getColumnNameSQL
+                }
+                console.log(baseInfoTable, 'testTable')
+                return baseInfoTable
+            }
+        } catch (error) {
+            return null
+        }
+    }),
 ]
 export class entityColumn {
     getEntity?: () => basicEntity
@@ -275,6 +305,7 @@ export class entityColumn {
     searchType: string = ''
     sBindField: string = ''
     options: any[] = []
+    baseInfoTable?: { tableName: string }
     initColumn(column: any) {
         const _this: any = this
         let _column = column
@@ -282,7 +313,23 @@ export class entityColumn {
             _this[v.key] = v.transFn.call(this, _column[v.targetKey], _column, this)
         })
     }
-    formatJsonData() {
+    formatJsonData(value: any, type: any = 'string') {
+        let mapType = {
+            string: '',
+            array: [],
+            object: {},
+            number: 0
+        }
+        try {
+            if (value == null) {
+                //@ts-ignore
+                return mapType[type]
+            }
+            return JSON.parse(value)
+        } catch (error) {
+            //@ts-ignore
+            return mapType[type]
+        }
     }
     formatFunData() { }
     changeEditType(type: string = 'string') {

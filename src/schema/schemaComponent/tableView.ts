@@ -1,4 +1,4 @@
-import { VNode, defineExpose, defineComponent, h, onMounted, resolveComponent, reactive } from "vue"
+import { VNode, ref, defineExpose, defineComponent, h, onMounted, resolveComponent, reactive, computed } from "vue"
 import { createTable, table } from "../table"
 import { createEntityTable } from "../entityTable"
 import { VxeTableProps, VxeGridProps, VxeGrid, Grid } from 'vxe-table'
@@ -13,11 +13,13 @@ export default defineComponent({
     const tableInstance = _props.tableInstance
     let table: any = null
     if (tableInstance == null) {
-      table = createTable(props, context)
+      table = ref(createTable(props, context))
     } else {
-      table = tableInstance
+      table = computed(() => {
+        return _props.tableInstance
+      })
     }
-    return { table: table }
+    return { table: table.value }
   },
   render() {
     const table = this.table

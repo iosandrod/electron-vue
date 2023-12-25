@@ -1,4 +1,4 @@
-import { Directive, computed, h, ref, vShow, withDirectives } from "vue";
+import { Directive, computed, h, nextTick, ref, vShow, withDirectives } from "vue";
 import { input } from "../input";
 import { styleBuilder } from "@/utils/utils";
 import { Select } from "ant-design-vue";
@@ -56,11 +56,19 @@ export const baseInfoInitComponent = (input: input) => {
     const destroy = computed(() => {
         return _this.displayState == 'destroy'
     })
-    const baseInfoData = computed(() => {
-        let data = formitem.inputConfig?.baseInfoTable?.tableData || []
-        return data
+    // const baseInfoData = computed(() => {
+    //     let data = formitem.inputConfig?.baseInfoTable?.tableData || []
+    //     return data
+    // })
+    const baseInfoTable = input.inputConfig.baseInfoTable
+    console.log(baseInfoTable, 'testTable')
+    const tableName = baseInfoTable.tableName || 't_SdOrder'
+    const tableRef = computed(() => {
+        return _this.system.baseInfoTableMap[tableName] || {}
     })
-    const tableRef = _this.system.baseInfoTableMap['t_SdOrder']
+    nextTick(() => {
+        // _this.system.cre
+    })
     const vNode = () => {
         const _this = input
         let isMousedown = false
@@ -175,13 +183,20 @@ export const baseInfoInitComponent = (input: input) => {
 }
 
 export const initBaseInfoTable = (input: input) => {
-    const _this = input
-    const tableConfig = {
-        columns: [{ field: "test", title: "测试值" }],
-        data: [{
-            test: "xiaofeng"
-        }]
+    // const _this = input
+    // const tableConfig = {
+    //     columns: [{ field: "test", title: "测试值" }],
+    //     data: [{
+    //         test: "xiaofeng"
+    //     }]
+    // }
+    // const tableRef = createTable(tableConfig)
+    // _this.pageRef.tableRef = tableRef
+    const system = input.system
+    const baseInfoTable = input.inputConfig.baseInfoTable
+    if (baseInfoTable != null) {
+        //
+        console.log(baseInfoTable, 'testTable')
+        system.createBaseInfoTable(baseInfoTable)
     }
-    const tableRef = createTable(tableConfig)
-    _this.pageRef.tableRef = tableRef
 }

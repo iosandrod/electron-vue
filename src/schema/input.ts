@@ -31,7 +31,8 @@ export class input extends base {
         options: [],
         allowClear: true,
         clearable: true,
-        field: ''
+        field: '',
+        baseInfoTable: null
     }
     renderInput: inputConfig = {}
     renderSelect: SelectProps = {}

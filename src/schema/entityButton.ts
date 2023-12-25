@@ -149,7 +149,6 @@ export class entityButton extends button {
         this.displayState = 'show'
 
     }
-
     async initRenderButton() {
         await super.initRenderButton()
         const renderButton = this.renderButton
@@ -178,10 +177,11 @@ export class entityButton extends button {
             return h(VxeButton, {
                 ...renderButton, onClick: () => {
                     console.log('clickFn')
+                    console.log(_this)
                 }
             }, {
                 default: () => {
-                    const cButtonText = _this.buttonConfig.cButtonText
+                    const cButtonText = _this.buttonConfig?.cButtonText
                     return h('div', { style: {} as StyleType }, [cButtonText || '按钮'])
                 }
             })
