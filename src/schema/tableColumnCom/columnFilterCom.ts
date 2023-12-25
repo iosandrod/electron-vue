@@ -60,10 +60,11 @@ export default defineComponent({
                 setTimeout(() => {
                     const showData = column.value.table?.tableData.showData
                     const _column = column.value
-                    tableRef!.tableData.data = [...new Set(showData!.map(row => {
+                    const curData = [...new Set(showData!.map(row => {
                         let field = _column.columnConfig.field
                         return row[field!]
                     }).filter(row => row !== null && row !== undefined))].map(row => { return { value: row } })
+                    tableRef!.setTableData(curData)
                     // })
                 }, 0);
             },
@@ -77,10 +78,11 @@ export default defineComponent({
                     setTimeout(() => {
                         const showData = column.value.table?.tableData.showData
                         const _column = column.value
-                        tableRef!.tableData.data = [...new Set(showData!.map(row => {
+                        const curData = [...new Set(showData!.map(row => {
                             let field = _column.columnConfig.field
                             return row[field!]
                         }).filter(row => row !== null && row !== undefined))].map(row => { return { value: row } })
+                        tableRef?.setTableData(curData)
                     }, 0);
                 })
             }

@@ -178,12 +178,13 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
                     const pObj = getFixedPosition(divRef.value, { left: filterPosition.mouseLeft, top: filterPosition.mouseTop })
                     //把具体数据过去过去 
                     let showData = _column.table?.tableData.showData//展示的数据
-                    _column.table!.pageRef.filterTable!.tableData.data = [...new Set(showData!.map(row => {
+                    const curData = [...new Set(showData!.map(row => {
                         let field = _column.columnConfig.field
                         return row[field!]
                     }).filter(row => row !== null && row !== undefined))].map(row => { return { value: row } })
                     const left = pObj.left
                     _column.columnConfig.filterLeft = left
+                    _column.table!.pageRef.filterTable!.setTableData(curData)
                 }
             })
         }

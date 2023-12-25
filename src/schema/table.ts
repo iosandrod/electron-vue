@@ -70,6 +70,8 @@ export class table extends base<tableSchema> implements tableMethod {
     scrollWidth: 0
   }
   tableConfig: tableConfig = {
+    globalWhereCloseShow: true,
+    globalWhereSearchShow: true,
     showFilterDialog: true,
     showBodyMenuDialog: true,
     globalWhereShow: false,
@@ -77,8 +79,8 @@ export class table extends base<tableSchema> implements tableMethod {
     columns: [],//列
     globalWhere: "",
     filterConfig: [],//过滤配置
-    mergeConfig: {},//合并配置
     sortconfig: [],//处理排序
+    mergeConfig: {},//合并配置
     height: 'auto',
     limitSize: 100,
     rowConfig: {
@@ -279,7 +281,24 @@ export class table extends base<tableSchema> implements tableMethod {
       targetCol!.columnConfig!.editType! = type
     }
   }
+  setTableData(_data: any) {
+    const table = this
+    _data.forEach((row: any) => {
+      let _str = ''
+      table.tableConfig.columns.forEach(col => {
+        // const _value=col
+        let str = col.formatJsonRow(row)
+        if (str == '') {
+          return
+        }
+        _str = `${_str}^^^${str}`
+      })
+      row['vHtml'] = _str
+    })
+    this.tableData.data = _data
+  }
   async autoRefreshData() {
+
     const effectPool = this.effectPool
     const table = this
     effectPool.refreDataEffect = watchEffect(() => {

@@ -18,6 +18,7 @@ import { Select, TableColumn } from "ant-design-vue";
 import baseInfoInputView from "./schemaComponent/baseInfoInputView";
 import checkboxCom from "./tableColumnCom/checkboxCom";
 import { createInput } from "./input";
+import { getIcon } from "./icon";
 
 export const getTableRowConfig = (table: table) => {
     const tableConfig = table?.tableConfig
@@ -204,12 +205,13 @@ export const initGridOptions = (table: table) => {
     gridOptions.columns = computed(() => {
         const tableConfig = table.tableConfig
         // const checkboxConfig = tableConfig.checkboxConfig 
-        const checkBoxColumn = tableConfig.showCheckBoxColumn == true ? { type: 'checkbox', width: 50, field: 'checkboxField', treeNode: true, align: 'center', resizable: false, } as VxeColumnProps : null
+        const checkBoxColumn = tableConfig.showCheckBoxColumn == true ? { type: 'checkbox', width: 50, field: 'checkboxField', align: 'center', resizable: false, } as VxeColumnProps : null
         const seqColumn = tableConfig.showSeqColumn == true ? { type: "seq", width: 100, align: 'center', resizable: false } as VxeColumnProps : null
         const defaultColumns = [seqColumn, checkBoxColumn].filter(col => col != null)
         if (tableConfig.isTree == true) {
             if (checkBoxColumn) {
-                //@ts-ignore
+                checkBoxColumn.treeNode = true
+                //@ts-ignore 
                 checkBoxColumn.slots = { checkbox: "checkbox" }
                 checkBoxColumn.width = 300
                 checkBoxColumn.align = 'left'
@@ -324,6 +326,7 @@ export const initComponent = (table: table) => {
                     // }
                     table.autoRefreshData()
                 }, unmounted() {
+                    table.tableConfig.globalWhere = ''
                     // const dialogMap = table.dialogMap
                     // Object.values(dialogMap).forEach(value => {
                     //     table.destroyDialog(value)
@@ -468,16 +471,28 @@ export const initComponent = (table: table) => {
         const _bodyMenu = table.tableConfig.showBodyMenuDialog == true ? h(contextMenuView, { contextMenuInstance: table.pageRef.bodyContext }) : null
         const _headerMenu = table.tableConfig.showHeaderMenuDialog == true ? h(contextMenuView, { contextMenuInstance: table.pageRef.headerContext }) : null
         const inputInstance = table.pageRef.globalInput
-        const inputBtn1 = h(VxeButton, {}, () => { return '查询' })
-        const inputBtn2 = h(VxeButton, {
+        const inputBtn1 = withDirectives(h(VxeButton, {
+            onClick: () => {
+                console.log('search')
+            }
+        }, () => { return getIcon({}, 'vxe-icon-search')() }), [[vShow, table.tableConfig.globalWhereSearchShow]])
+        //vxe-icon-close
+        const inputBtn2 = withDirectives(h(VxeButton, {
             onClick: () => {
                 table.tableConfig.globalWhere = ''
                 table.closeGlobalWhere()
             }
-        }, () => { return '关闭' })
+        }, () => { return getIcon({}, 'vxe-icon-close')() }), [[vShow, table.tableConfig.globalWhereCloseShow]])
         const inputDiv = withDirectives(
-            h('div', { class: ['flex flex-row'], style: { width: '50%' } }, [h(inputView, { inputInstance: inputInstance, style: { width: "50%" } },), inputBtn1,
-                inputBtn2])
+            h('div', { class: ['flex flex-row'], style: { width: '100%' } }, [h(inputView, {
+                inputInstance: inputInstance, style: {
+                    // width: "50%"
+                    flex: 1
+                }
+            },),
+                inputBtn1,
+                inputBtn2
+            ])
             , [[vShow,
                 globalInputShow.value
             ]])
@@ -577,6 +592,7 @@ export const initTableGlobalWhere = (table: table) => {
     // const renderInput=table.
     const renderWhereInput = table.renderWhereInput
     renderWhereInput.type = 'text'
+    renderWhereInput.clearable = true
     renderWhereInput.onChange = ({ value }: any) => {
         table.tableConfig.globalWhere = value
         console.log(table.tableConfig.globalWhere, 'testWhere')
@@ -637,8 +653,11 @@ export const initRenderFilterTable = (table: table) => {
         isHover: true,
         rowHeight: 25
     }
+    renderFilterTable.globalWhereShow = true
     renderFilterTable.showBodyMenuDialog = false
     renderFilterTable.showHeaderMenuDialog = false
+    renderFilterTable.globalWhereCloseShow = false
+    renderFilterTable.globalWhereSearchShow = false
     //@ts-ignore
     renderFilterTable.onCheckboxChange = (row, record) => {
         const _record = record//is Array

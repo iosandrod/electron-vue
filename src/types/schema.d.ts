@@ -66,6 +66,8 @@ export type tableConfig = {
   hiddenCheckbox?: boolean
   curRowChange?: (value: { row: any, table: table }) => Promise<void> | ((value: { row: any, table: table }) => void)
   treeRowField?: string
+  globalWhereCloseShow?: boolean
+  globalWhereSearchShow?: boolean
   treeTransform?: boolean
   isTree?: boolean,
   treeParentId?: string,

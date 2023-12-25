@@ -30,6 +30,7 @@ export class input extends base {
         showSearch: true,
         options: [],
         allowClear: true,
+        clearable: true,
         field: ''
     }
     renderInput: inputConfig = {}
@@ -119,6 +120,14 @@ export class input extends base {
                 _onChange({ value, inputInstance: _this, data: _this.getData!(), table: table })
             }
         }
+        renderInput.clearable = computed({
+            get: () => {
+                return inputConfig.clearable
+            },
+            set: (value) => {
+                renderInput.clearable = value
+            }
+        }) as any
         //@ts-ignore 
     }
     update(value: any) {
