@@ -115,32 +115,11 @@ export class formitem extends baseEdit<any> {
         renderInput.baseInfoTable = computed(() => {
             return itemConfig.baseInfoTable
         })
-        // this.pageRef.inputInstance = computed(() => {
-        //     const type = itemConfig.type
-        //     let createFn = instancePool[type as keyof typeof instancePool]
-        //     if (createFn == null) {
-        //         createFn = createInput
-        //     }
-        //     const inputInstance = createFn(this.renderInput as any)
-        //     inputInstance.getField = () => {
-        //         return itemConfig.field
-        //     }
-        //     return inputInstance
-        // })
-        // const type = itemConfig.type
-        // let createFn = instancePool[type as keyof typeof instancePool]
-        // if (createFn == null) {
-        //     createFn = createInput
-        // }
-        // const inputInstance = createFn(this.renderInput as any)
         const inputInstance = createInput(this.renderInput)
         inputInstance.getField = () => {
             return itemConfig.field
         }
         this.pageRef.inputInstance = inputInstance
-        // watch(() => itemConfig.type, (newType) => {
-        // }, { immediate: true })
-
     }
     initBaseInfoDialog() {
         const type = this.itemConfig.type

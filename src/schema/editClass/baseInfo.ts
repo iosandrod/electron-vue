@@ -56,15 +56,12 @@ export const baseInfoInitComponent = (input: input) => {
     const destroy = computed(() => {
         return _this.displayState == 'destroy'
     })
-    // const baseInfoData = computed(() => {
-    //     let data = formitem.inputConfig?.baseInfoTable?.tableData || []
-    //     return data
-    // })
     const baseInfoTable = input.inputConfig.baseInfoTable
-    console.log(baseInfoTable, 'testTable')
     const tableName = baseInfoTable.tableName || 't_SdOrder'
     const tableRef = computed(() => {
-        return _this.system.baseInfoTableMap[tableName] || {}
+        const _table = _this.system.baseInfoTableMap[tableName] || {}
+        console.log('baseInfoTable', _table)
+        return _table
     })
     nextTick(() => {
         // _this.system.cre
@@ -159,7 +156,8 @@ export const baseInfoInitComponent = (input: input) => {
                         }, 0)//
                     }
                 }, [
-                    h(tableView, { tableInstance: tableRef })
+                    h(tableView, { tableInstance: tableRef.value })
+                    // h('div', Array(1000).fill(1))
                 ]), [[{
                     mounted(div, node) {
                     },
@@ -183,20 +181,10 @@ export const baseInfoInitComponent = (input: input) => {
 }
 
 export const initBaseInfoTable = (input: input) => {
-    // const _this = input
-    // const tableConfig = {
-    //     columns: [{ field: "test", title: "测试值" }],
-    //     data: [{
-    //         test: "xiaofeng"
-    //     }]
-    // }
-    // const tableRef = createTable(tableConfig)
-    // _this.pageRef.tableRef = tableRef
     const system = input.system
     const baseInfoTable = input.inputConfig.baseInfoTable
     if (baseInfoTable != null) {
         //
-        console.log(baseInfoTable, 'testTable')
         system.createBaseInfoTable(baseInfoTable)
     }
 }

@@ -226,12 +226,16 @@ export const getSlotHeaderSortIcon = (_column: column) => {
 
 export const getColumnVisiable = (column: column) => {
     return computed(() => {
-        const schema = column.schema//外部的schema
-        let visible = schema?.visible
-        if (isUndefined(visible)) {
-            visible = true
+        // const schema = column.schema//外部的schema
+        // let visible = schema?.visible
+        // if (isUndefined(visible)) {
+        //     visible = true
+        // }
+        const visible = column.columnConfig.visible
+        if (visible === false) {
+            return false
         }
-        return visible
+        return true
     })
 }
 

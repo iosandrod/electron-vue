@@ -287,7 +287,6 @@ const columnObj = [
                     baseInfoData: baseInfoData,
                     getColumnNameSQL: column.getColumnNameSQL
                 }
-                console.log(baseInfoTable, 'testTable')
                 return baseInfoTable
             }
         } catch (error) {
