@@ -23,6 +23,8 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
     showFilter: true,//显示filter
     showSort: true,
     resizable: true,
+    //@ts-ignore
+    editType: null,
     filterLeft: 0,
     filterPosition: {
       left: 0,
@@ -69,6 +71,28 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
     let columnConfig = this.columnConfig
     let field = columnConfig.field
     let type = columnConfig.type!
+  }
+  formatJsonRow(row: any) {
+    const columnConfig = this.columnConfig
+    let field = columnConfig.field!
+    let _value = row[field]
+    if (_value == null) {
+      _value = ''
+      return _value
+    }
+    let editType = columnConfig.editType
+    if (Boolean(editType) == false) {
+      return _value
+    }
+    if (editType == 'select') {
+      let options = columnConfig.options || []
+      let label = options?.find(item => {
+        return item.value == _value
+      })?.label || ''
+      _value = `${_value}${label}`
+      return _value
+    }
+    return _value
   }
 }
 const formats = { datetime: 'yyyy-MM-dd HH:mm:ss', date: 'yyyy-MM-dd', time: 'HH:mm:ss' };
@@ -119,6 +143,7 @@ export const filterFormat = {
   number: (column: column, data: []) => {
 
   },
+
 }
 
 

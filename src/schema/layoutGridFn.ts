@@ -53,7 +53,6 @@ export const initRenderLayout = (layoutGrid: layoutGrid) => {
     const pageTree = layoutGrid.pageTree
     renderLayout.layout = computed({
         set(value) {
-            console.log(value, 'testValue')
         },
         get() {
             const children = pageTree?.children || []

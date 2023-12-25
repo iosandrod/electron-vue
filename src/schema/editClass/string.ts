@@ -31,7 +31,7 @@ export const initComponent = (input: input) => {
             updateFn = () => { }
         }
         const com = withDirectives(
-            h('div', { style: { height: "100%", width: '100%' } as StyleType, attrs: attrs }, h(VxeInput, { ...renderInput }))
+            h('div', { style: { height: "100%", width: '100%' } as StyleType, attrs: attrs }, h(VxeInput, { ...renderInput, style: { width: '100%' } }))
             , [[vShow, show.value]]
         )
         return com

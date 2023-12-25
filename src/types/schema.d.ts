@@ -77,7 +77,7 @@ export type tableConfig = {
   hiddenBorder?: boolean,
   showCheckBoxColumn?: boolean,
   showSeqColumn?: boolean,
-  columns: extendColumnConfig[] = [],
+  columns: column[] = [],
   filterConfig?: filterConfig[],
   mergeConfig?: mergeConfig,
   sortconfig?: sortconfig[]
@@ -137,7 +137,7 @@ export type columnConfig = {
   roundType?: roundType
   columnConfig?: columnConfig
 }
-
+export type editType = 'select' | 'string' | 'text' | 'number' | 'int' | 'baseInfo' | 'wangEditor'
 export type formItemConfig = itemConfig
 
 export type extendColumnConfig = VxeTableDefines.ColumnOptions & columnConfig & {

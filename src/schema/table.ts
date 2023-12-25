@@ -303,7 +303,16 @@ export class table extends base<tableSchema> implements tableMethod {
         return state
       })
       //使用loadData获取好像更好一些
-      const _data1 = _data.slice(0)
+      const globalWhere = table.tableConfig.globalWhere || ''
+      let _data1 = _data
+      if (globalWhere?.length > 0) {
+        _data1 = _data.filter(row => {
+          let vHtml: string = row['vHtml'] || ""
+          if (vHtml.includes(globalWhere)) {
+            return true
+          }
+        })
+      }
       table.tableData.showData = _data1
       nextTick(async () => {
         const vxeGrid = table.pageRef.vxeGrid
@@ -314,7 +323,6 @@ export class table extends base<tableSchema> implements tableMethod {
           setTimeout(() => {
             try {
               let showData = this.tableData.showData
-              console.log('run refreshData')
               vxeGrid?.reloadData(showData).then(res => {
                 const scrollConfig = table.scrollConfig
                 const scrollTop = scrollConfig.scrollTop

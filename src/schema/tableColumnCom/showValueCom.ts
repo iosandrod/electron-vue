@@ -21,12 +21,20 @@ export default defineComponent({
         const row = computed(() => {
             return props.row! as any
         })
-        const showValue = computed(() => {
-            const field = column.value.renderColumn.field!
-            const value = row.value[field as string]
-            return value
-        })
+        const _column = column.value
         const table = column.value.table
+        const showValue = computed(() => {
+            const globalWhere = table?.tableConfig.globalWhere!
+            const field = _column.columnConfig.field!
+            let value = row.value[field]
+            if (value == null) {
+                value = ''
+            }
+            const _value = `${value}`.replace(globalWhere, (str) => {
+                return `<span class='global-where-color'>${str}</span>`
+            })
+            return _value
+        })
         const tableConfig = table?.tableConfig!
         const tableData = table?.tableData!
         const mergeDiv = computed(() => {
@@ -84,7 +92,8 @@ export default defineComponent({
             const defaultComFn = getRenderFn('div', { style: { wdith: '100%', height: "100%", background: "" } as StyleType })
             const mergeComFnStyle = mergeDiv.value//合并的行节点
             const mergeComFn = getRenderFn('div', { style: mergeComFnStyle })
-            defaultCom = defaultComFn([mergeComFn([showValue.value])])
+            const showDiv = h('div', { innerHTML: showValue.value })
+            defaultCom = defaultComFn([mergeComFn([showDiv])])
             return defaultCom
         })
         return {

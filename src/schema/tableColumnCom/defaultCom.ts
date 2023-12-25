@@ -1,4 +1,4 @@
-import { watch, computed, defineComponent, ref, h, defineExpose, reactive, watchEffect, nextTick, onUnmounted, onMounted } from 'vue'
+import { watch, computed, defineComponent, ref, h, defineExpose, reactive, watchEffect, nextTick, onUnmounted, onMounted, withDirectives } from 'vue'
 import { column } from '../column'
 import { getOutSizeDiv } from '../columnFn'
 import { StyleType, tableState } from '@/types/schema'
@@ -22,13 +22,16 @@ export default defineComponent({
         const row = computed(() => {
             return props.row! as any
         })
+        const table = column.value.table
         const _column = column.value
         let field = _column.columnConfig.field
-
         const showValue = computed(() => {
-            const field = column.value.renderColumn.field!
-            const value = row.value[field as string]
-            return value
+            const globalWhere = table?.tableConfig.globalWhere!
+            const field = _column.columnConfig.field!
+            const value = row.value[field]
+            console.log('showValue testValue', globalWhere)
+            const _value = `${value}`.replace(globalWhere, `<span class='bg-red-500'>123</span>`)
+            return _value
         })
         const canEdit = computed(() => {
             let _editState: tableState = column.value.table?.tableState as any
@@ -37,10 +40,6 @@ export default defineComponent({
             }
             return false
         })
-        const editDisable = computed(() => {
-            return false
-        })
-        const table = column.value.table
         const tableConfig = table?.tableConfig!
         const tableData = table?.tableData!
         const mergeDiv = computed(() => {
@@ -102,7 +101,9 @@ export default defineComponent({
             const defaultComFn = getRenderFn('div', { style: { wdith: '100%', height: "100%", background: "" } as StyleType })
             const mergeComFnStyle = mergeDiv.value//合并的行节点
             const mergeComFn = getRenderFn('div', { style: mergeComFnStyle })
-            defaultCom = defaultComFn([mergeComFn([showValue.value])])
+            // const showDiv = h('div', { innerHTML: showValue.value })
+            const showDiv = h('div', { innerHTML: showValue.value })
+            defaultCom = defaultComFn([mergeComFn([showDiv])])
             return defaultCom
         }
         // const renderCom = computed(() => {
@@ -156,7 +157,4 @@ export default defineComponent({
         //     return defaultCom
         // }
     },
-    render() {
-        return this.renderCom
-    }
 })

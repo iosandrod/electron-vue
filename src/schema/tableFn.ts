@@ -318,24 +318,18 @@ export const initComponent = (table: table) => {
             },
             [[{
                 mounted(div) {
-                    const effectPool = table.effectPool
-                    if (Object.keys(effectPool).length == 0) {
-                        initSchema(table)
-                    }
+                    // const effectPool = table.effectPool
+                    // if (Object.keys(effectPool).length == 0) {
+                    //     initSchema(table)
+                    // }
                     table.autoRefreshData()
                 }, unmounted() {
-                    const dialogMap = table.dialogMap
-                    Object.values(dialogMap).forEach(value => {
-                        table.destroyDialog(value)
-                    })
+                    // const dialogMap = table.dialogMap
+                    // Object.values(dialogMap).forEach(value => {
+                    //     table.destroyDialog(value)
+                    // })
                     const effectPool = table.effectPool
-                    Object.entries(effectPool).forEach(([key, effect]: any) => {
-                        if (effect) {
-                            effect()
-                            delete effectPool[key]
-                        }
-                    })
-
+                    effectPool['refreDataEffect']()
                 }
             }]]
         )
@@ -466,8 +460,6 @@ export const initComponent = (table: table) => {
         }), [[{
             mounted: (el, node) => {
                 table.pageRef.vxeGrid = xeinstacne.value as any
-                const scrollConfig = table.scrollConfig
-                table.scrollToPosition(scrollConfig.scrollLeft, scrollConfig.scrollTop)
             },
             unmounted: () => {
                 table.pageRef.vxeGrid = null as any
@@ -479,30 +471,20 @@ export const initComponent = (table: table) => {
         const inputBtn1 = h(VxeButton, {}, () => { return '查询' })
         const inputBtn2 = h(VxeButton, {
             onClick: () => {
-                console.log(table, 'testTable')
+                table.tableConfig.globalWhere = ''
                 table.closeGlobalWhere()
             }
         }, () => { return '关闭' })
-        // const inputDiv = withDirectives(h('div', { style: { height: "30px", background: "red", marginBottom: '4px', display: "flex", flexDirection: 'row' } as StyleType },
-        //     [
-        //         // h(inputView, { inputInstance: inputInstance, style: { width: "50%" } }),
-        //         inputBtn1,
-        //         inputBtn2
-        //     ]
-        // ), [[vShow,
-        //     // true
-        //     // globalInputShow.value
-        // ]])
         const inputDiv = withDirectives(
-            h('div', { class: ['flex flex-row'] }, [h(inputView, { inputInstance: inputInstance, style: { width: "50%" } },), inputBtn1,
+            h('div', { class: ['flex flex-row'], style: { width: '50%' } }, [h(inputView, { inputInstance: inputInstance, style: { width: "50%" } },), inputBtn1,
                 inputBtn2])
-            // h( inputView, { inputInstance: inputInstance, style: { width: "50%" } })
             , [[vShow,
                 globalInputShow.value
             ]])
+        const vxeGridDiv = h('div', { style: { flex: '1' } }, [vxeGridCom])
         const inSizeGrid = outSizeDiv([
             inputDiv,
-            vxeGridCom,
+            vxeGridDiv,
             _bodyMenu,
             _headerMenu,
         ])
@@ -531,8 +513,24 @@ export const initSchema = (table: table) => {
             if (_value != null) {
                 table.effectPool[`table${key}Effect`] = watchEffect(() => {
                     if (['data',].includes(key)) {
-                        tableData.data = schema['data'] as any || []
-                        tableData.showData = schema['data'] as any || []
+                        //外部数据刷新之前要处理的东西
+                        const _data = schema['data'] || []
+                        tableData.data = _data
+                        tableData.showData = _data
+                        nextTick(() => {
+                            _data.forEach(row => {
+                                let _str = ''
+                                table.tableConfig.columns.forEach(col => {
+                                    // const _value=col
+                                    let str = col.formatJsonRow(row)
+                                    if (str == '') {
+                                        return
+                                    }
+                                    _str = `${_str}^^^${str}`
+                                })
+                                row['vHtml'] = _str
+                            })
+                        })
                     } else {
                         _tableConfig[key] = schema[key]
                     }
@@ -541,6 +539,8 @@ export const initSchema = (table: table) => {
         }
     }
 }
+
+
 export const initTableColumn = (table: table) => {
     const schema = table.schema
     const tableConfig = table.tableConfig
@@ -578,7 +578,8 @@ export const initTableGlobalWhere = (table: table) => {
     const renderWhereInput = table.renderWhereInput
     renderWhereInput.type = 'text'
     renderWhereInput.onChange = ({ value }: any) => {
-        console.log(value, 'testValue')
+        table.tableConfig.globalWhere = value
+        console.log(table.tableConfig.globalWhere, 'testWhere')
     }
     renderWhereInput.modelValue = computed(() => {
         return table.tableConfig.globalWhere
