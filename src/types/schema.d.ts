@@ -61,6 +61,14 @@ export type sortconfig = {
 }
 
 export type tableConfig = {
+  checkLabelField?: string,
+  globalWhereShow?: boolean
+  hiddenCheckbox?: boolean
+  curRowChange?: (value: { row: any, table: table }) => Promise<void> | ((value: { row: any, table: table }) => void)
+  treeRowField?: string
+  treeTransform?: boolean
+  isTree?: boolean,
+  treeParentId?: string,
   globalWhere?: string
   limitSize?: number
   showBodyMenuDialog?: boolean,

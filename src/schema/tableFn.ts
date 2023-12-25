@@ -2,7 +2,7 @@ import { computed, getCurrentInstance, h, isReactive, nextTick, onMounted, react
 import { table } from "./table";
 import { StyleType, filterConfig, position, tableSchema } from "@/types/schema";
 import { column, createColumn } from "./column";
-import { VxeGridProps, VxeGrid, VxeColumnProps, VxeColumnSlotTypes, VxeSelect } from "vxe-table";
+import { VxeGridProps, VxeGrid, VxeColumnProps, VxeColumnSlotTypes, VxeSelect, VxeButton } from "vxe-table";
 import { getRenderFn } from "./columnFn";
 import { getDialogPosition } from "./dialogFn";
 import { getMouseEventPosition, styleBuilder } from "@/utils/utils";
@@ -16,6 +16,8 @@ import showValueCom from "./tableColumnCom/showValueCom";
 import inputView from "./schemaComponent/inputView";
 import { Select, TableColumn } from "ant-design-vue";
 import baseInfoInputView from "./schemaComponent/baseInfoInputView";
+import checkboxCom from "./tableColumnCom/checkboxCom";
+import { createInput } from "./input";
 
 export const getTableRowConfig = (table: table) => {
     const tableConfig = table?.tableConfig
@@ -58,56 +60,9 @@ export const getOptionsId = (table: table) => {
     })
 }
 
-export const getOptionsData = (table: table) => {
-    return computed(() => {
-        let showData = table.tableData.data
-        const filterConfig = table.tableConfig.filterConfig!
-        let arrayFilterConfig = filterConfig.filter(item => item.filterType == 'array')
-        const _data = showData.filter((row: any, i, arr) => {
-            let state = true
-            for (const config of arrayFilterConfig) {
-                let field = config.field!
-                let filterArr = config.filterData || []
-                if (filterArr.length == 0 || state == false) {
-                    continue
-                }
-                let _value: any = row[field]
-                //@ts-ignore
-                if (!filterArr.includes(_value)) {
-                    state = false
-                }
-            }
-            return state
-        })
-        //使用loadData获取好像更好一些
-        const _data1 = _data.slice(0)
-        table.tableData.showData = _data1
-        // nextTick(async () => {
-        //     const vxeGrid = table.pageRef.vxeGrid
-        //     vxeGrid?.reloadData(_data).then(res => {
-        //         const scrollConfig = table.scrollConfig
-        //         const scrollTop = scrollConfig.scrollTop
-        //         const scrollLeft = scrollConfig.scrollLeft
-        //         vxeGrid.scrollTo(scrollLeft, scrollTop)
-        //     })
-        // })
-        return _data1
-    })
 
-}
 
-export const getOptionsColumns = (table: table) => {
-    return computed(() => {
-        const tableConfig = table.tableConfig
-        const checkBoxColumn = tableConfig.showCheckBoxColumn == true ? { type: 'checkbox', width: 50, field: 'checkboxField', align: 'center', resizable: false } as VxeColumnProps : null
-        const seqColumn = tableConfig.showSeqColumn == true ? { type: "seq", width: 100, align: 'center', resizable: false } as VxeColumnProps : null
-        const defaultColumns = [seqColumn, checkBoxColumn].filter(col => col != null)
-        const columns = [
-            ...defaultColumns,
-            ...tableConfig.columns.map((col: any) => { return { ...col.renderColumn } }),]
-        return columns
-    })
-}
+
 //leader
 
 //手下
@@ -117,11 +72,6 @@ export const getOptionsColumns = (table: table) => {
 //未成年
 
 
-export const getOptionsTreeConfig = (table: table) => {
-    return computed(() => {
-        return null
-    })
-}
 
 
 export const getOptionsScrollX = (table: table) => {
@@ -209,16 +159,12 @@ export const getOptionsFilterConfig = (table: table) => {
     })
 }
 
-export const getOptionsCheckboxConfig = (table: table) => {
-    return computed(() => {
-        const tableConfig = table.tableConfig
-        return tableConfig.checkboxConfig
-    })
-}
+
 
 export const getOptionsHeight = (table: table) => {
     return computed(() => {
         const tableConfig = table.tableConfig
+
         let height = tableConfig.height
         if (typeof height == 'number') {
             height = `${height}px`
@@ -255,16 +201,44 @@ export const getOptionsShowHeader = (table: table) => {
 export const initGridOptions = (table: table) => {
     const gridOptions = table.gridOptions as VxeGridProps
     // table.tableConfig.columns
-    gridOptions.columns = getOptionsColumns(table) as any
-    // gridOptions.renderData = getOptionsData(table) as any
+    gridOptions.columns = computed(() => {
+        const tableConfig = table.tableConfig
+        // const checkboxConfig = tableConfig.checkboxConfig 
+        const checkBoxColumn = tableConfig.showCheckBoxColumn == true ? { type: 'checkbox', width: 50, field: 'checkboxField', treeNode: true, align: 'center', resizable: false, } as VxeColumnProps : null
+        const seqColumn = tableConfig.showSeqColumn == true ? { type: "seq", width: 100, align: 'center', resizable: false } as VxeColumnProps : null
+        const defaultColumns = [seqColumn, checkBoxColumn].filter(col => col != null)
+        if (tableConfig.isTree == true) {
+            if (checkBoxColumn) {
+                //@ts-ignore
+                checkBoxColumn.slots = { checkbox: "checkbox" }
+                checkBoxColumn.width = 300
+                checkBoxColumn.align = 'left'
+                checkBoxColumn.params = table
+            }
+            return [...defaultColumns]
+        }
+        const columns = [
+            ...defaultColumns,
+            ...tableConfig.columns.map((col: any) => { return { ...col.renderColumn } }),]
+        return columns
+    }) as any
     //@ts-ignore 
-    gridOptions.data = getOptionsData(table) as any
-    // gridOptions.treeConfig = getOptionsTreeConfig(table) as any
     gridOptions.scrollX = {//先写死吧
         enabled: true,
         gt: 10,
         oSize: 5,
     }
+    gridOptions.treeConfig = computed(() => {
+        let isTree = table.tableConfig.isTree
+        if (!isTree) {
+            return null
+        }
+        const parentId = table.tableConfig.treeParentId || 'parentId'
+        const rowField = table.tableConfig.treeRowField || 'id'
+        const transform = table.tableConfig.treeTransform
+        const obj = { parentId, rowField, transform, iconOpen: 'vxe-icon-square-minus', iconClose: 'vxe-icon-square-plus', accordion: true, line: true, }
+        return obj
+    }) as any
     // getOptionsScrollX(table) as any
     gridOptions.scrollY = {
         enabled: true,
@@ -278,10 +252,28 @@ export const initGridOptions = (table: table) => {
     gridOptions.rowClassName = getOptionsRowClassName(table) as any
     gridOptions.cellClassName = getOptionsCellClassName(table) as any
     gridOptions.filterConfig = getOptionsFilterConfig(table) as any
-    gridOptions.checkboxConfig = getOptionsCheckboxConfig(table) as any
+    gridOptions.checkboxConfig = computed(() => {
+        const tableConfig = table.tableConfig
+        let checkboxConfig = { ...tableConfig.checkboxConfig }
+        if (tableConfig.isTree == true) {
+            checkboxConfig.range = false
+        }
+        let checkLabelField = table.tableConfig.checkLabelField
+        if (Boolean(checkLabelField) != false) {
+            checkboxConfig.labelField = checkLabelField
+        }
+        let hiddenCheckbox = table.tableConfig.hiddenCheckbox
+        if (hiddenCheckbox == true) {
+            // checkboxConfig.visibleMethod = () => {
+            //     return false
+            // }
+        }
+        return checkboxConfig
+    }) as any
     gridOptions.showOverflow = 'ellipsis'
     gridOptions.showHeaderOverflow = 'ellipsis'
     gridOptions.height = getOptionsHeight(table) as any
+    // gridOptions.height = '400px'
     gridOptions.minHeight = '150px'
     gridOptions.headerAlign = 'center'
     gridOptions.showFooter = getOptionsShowFooter(table) as any
@@ -309,7 +301,11 @@ export const initComponent = (table: table) => {
     const destroy = computed(() => {
         return table.displayState == 'destroy'
     })
+
     //别用闭包，搞死人
+    const globalInputShow = computed(() => {
+        return table.tableConfig.globalWhereShow
+    })
     const _vNode = () => {
         const options = table.gridOptions
         if (destroy.value == true) {
@@ -318,7 +314,7 @@ export const initComponent = (table: table) => {
         const outSizeDiv = getRenderFn('div',
             {
                 class: ['grid-border-none'],
-                style: { height: '100%', width: '100%', position: 'relative' } as StyleType
+                style: { height: '100%', width: '100%', position: 'relative', display: "flex", flexDirection: 'column' } as StyleType
             },
             [[{
                 mounted(div) {
@@ -354,12 +350,7 @@ export const initComponent = (table: table) => {
                 if (typeof onCellClick == 'function') {
                     onCellClick({ row, column } as any)
                 }
-                let tableState = table.tableState
-                if (tableState == 'moreRowEdit') {
-                    table.tableData.editData = [...new Set([...table.tableData.editData, row])]
-                } else {
-                    table.tableData.editData.length && (table.tableData.editData = [])
-                }
+
             },
             onScroll: (params: any) => {
                 const { scrollTop, scrollWidth, bodyWidth, bodyHeight, scrollLeft } = params
@@ -389,6 +380,7 @@ export const initComponent = (table: table) => {
                 }
             },
             onCheckboxRangeEnd: (value) => {
+                console.log('checkboxChange')
                 const checkChange = table.tableConfig.onCheckboxChange as any
                 if (typeof checkChange == 'function') {
                     const row = value.records
@@ -410,8 +402,10 @@ export const initComponent = (table: table) => {
                 return h(defaultHeaderCom, { column: params.column.params })
             },
             showValue: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
-                // return h('div')
-                return h(showValueCom, { column: params.column.params, row: params.row })
+                return h(showValueCom, { column: params.column.params, row: params.row, })
+            },
+            checkbox: (params: any) => {
+                return h(checkboxCom, { indeterminate: params.indeterminate, column: params.column, checked: params.checked, row: params.row })
             },
             select: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
                 const column = params.column.params as column
@@ -481,11 +475,36 @@ export const initComponent = (table: table) => {
         }]])
         const _bodyMenu = table.tableConfig.showBodyMenuDialog == true ? h(contextMenuView, { contextMenuInstance: table.pageRef.bodyContext }) : null
         const _headerMenu = table.tableConfig.showHeaderMenuDialog == true ? h(contextMenuView, { contextMenuInstance: table.pageRef.headerContext }) : null
-        const inputDiv = h('div', { style: { height: '100px', width: "100px", background: 'red', position: 'absolute', } as StyleType })
-        const inSizeGrid = outSizeDiv([vxeGridCom,
+        const inputInstance = table.pageRef.globalInput
+        const inputBtn1 = h(VxeButton, {}, () => { return '查询' })
+        const inputBtn2 = h(VxeButton, {
+            onClick: () => {
+                console.log(table, 'testTable')
+                table.closeGlobalWhere()
+            }
+        }, () => { return '关闭' })
+        // const inputDiv = withDirectives(h('div', { style: { height: "30px", background: "red", marginBottom: '4px', display: "flex", flexDirection: 'row' } as StyleType },
+        //     [
+        //         // h(inputView, { inputInstance: inputInstance, style: { width: "50%" } }),
+        //         inputBtn1,
+        //         inputBtn2
+        //     ]
+        // ), [[vShow,
+        //     // true
+        //     // globalInputShow.value
+        // ]])
+        const inputDiv = withDirectives(
+            h('div', { class: ['flex flex-row'] }, [h(inputView, { inputInstance: inputInstance, style: { width: "50%" } },), inputBtn1,
+                inputBtn2])
+            // h( inputView, { inputInstance: inputInstance, style: { width: "50%" } })
+            , [[vShow,
+                globalInputShow.value
+            ]])
+        const inSizeGrid = outSizeDiv([
+            inputDiv,
+            vxeGridCom,
             _bodyMenu,
             _headerMenu,
-            // inputDiv
         ])
         const _inSizeGrid = withDirectives(inSizeGrid, [[vShow, show.value]])
         return _inSizeGrid
@@ -499,7 +518,6 @@ export const initSchema = (table: table) => {
     if (showHeaderFilter === false) {
         table.tableConfig.showHeaderFilter = false
     }
-    const tableConfig: any = table.tableConfig
     if (schema != null && Object.keys(schema).length > 0) {
         for (const key of Object.keys(schema)) {
             let tableConfig: any = table.tableConfig
@@ -508,10 +526,10 @@ export const initSchema = (table: table) => {
                 continue
             }
             const _value = schema[key]
+            const _tableConfig = table.tableConfig as any
+            const tableData = table.tableData
             if (_value != null) {
                 table.effectPool[`table${key}Effect`] = watchEffect(() => {
-                    const tableData = table.tableData
-                    const _tableConfig = table.tableConfig as any
                     if (['data',].includes(key)) {
                         tableData.data = schema['data'] as any || []
                         tableData.showData = schema['data'] as any || []
@@ -521,12 +539,6 @@ export const initSchema = (table: table) => {
                 })
             }
         }
-        // tableConfig.columns = schema['columns']?.map(col => {
-        //     if (col instanceof column) {
-        //         return col
-        //     }
-        //     return createColumn(col, table)
-        // })
     }
 }
 export const initTableColumn = (table: table) => {
@@ -555,12 +567,25 @@ export const initTableConfig = (table: table) => {
     initTableColumn(table)
     // 最后才会初始化Component
     initTableMenu(table)
+    initTableGlobalWhere(table)
     initGridOptions(table)
     initRenderFilterTable(table)
     initRenderFilterColTable(table)
     initComponent(table)
 }
-
+export const initTableGlobalWhere = (table: table) => {
+    // const renderInput=table.
+    const renderWhereInput = table.renderWhereInput
+    renderWhereInput.type = 'text'
+    renderWhereInput.onChange = ({ value }: any) => {
+        console.log(value, 'testValue')
+    }
+    renderWhereInput.modelValue = computed(() => {
+        return table.tableConfig.globalWhere
+    }) as any
+    const inputInstance = createInput(renderWhereInput)
+    table.pageRef.globalInput = inputInstance
+}
 export const initRenderFilterColTable = (table: table) => {
     const renderFilterColTable = table.renderFilterColTable
     if (table?.tableConfig.showHeaderFilter == false) {
@@ -628,17 +653,32 @@ export const initRenderFilterTable = (table: table) => {
 
 export const initTableMenu = (table: table) => {
     //只初始化一次
-    if (table.pageRef.bodyContext != null || table.pageRef.headerContext != null) {
-        return
-    }
-    const menuConfig = table.menuConfig
-    const headerList = menuConfig.headerMenu.list
-    const bodyList = menuConfig.bodyMenu.list
-    const headerContext = createContextMenu({ list: headerList })
-    const bodyContext = createContextMenu({ list: bodyList })
-    table.pageRef.headerContext = headerContext
-    table.pageRef.bodyContext = bodyContext
+    initHeaderMenu(table)
+    initBodyMenu(table)
 }
 
 
 
+export const initHeaderMenu = (table: table) => {
+    if (table.pageRef.headerContext != null) {
+        return
+    }
+    const menuConfig = table.menuConfig
+    const headerList = menuConfig.headerMenu.list
+    const headerContext = createContextMenu({ list: headerList })
+    headerContext.getTable = () => {
+        return table
+    }
+    table.pageRef.headerContext = headerContext
+}
+
+export const initBodyMenu = (table: table) => {
+    if (table.pageRef.bodyContext != null) {
+        return
+    }
+    const menuConfig = table.menuConfig
+    const bodyList = menuConfig.bodyMenu.list
+    const bodyContext = createContextMenu({ list: bodyList })
+    bodyContext.getTable = () => { return table }
+    table.pageRef.bodyContext = bodyContext
+}

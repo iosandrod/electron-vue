@@ -7,6 +7,8 @@ import { StyleType, menuConfig } from "@/types/schema";
 import { ItemGroup } from "ant-design-vue/es/menu";
 import menuItemView from "./schemaComponent/menuItemView";
 import { VxeInput, VxeInputProps } from "vxe-table";
+import { createInput } from "./input";
+import inputView from "./schemaComponent/inputView";
 
 export class menu extends base<MenuProps> {
     renderInput: VxeInputProps = {}
@@ -159,6 +161,8 @@ export class menu extends base<MenuProps> {
             renderInput.modelValue = value
             this.inputChange()
         }
+        const inputInstance = createInput(renderInput)
+        this.pageRef.inputInstance = inputInstance
     }
     menuItemClick(item: menuItem) {
         const menuConfig = this.menuConfig
@@ -171,6 +175,7 @@ export class menu extends base<MenuProps> {
         const menuConfig = this.menuConfig
         const _vNode = menuConfig.vNode as menuItem
         const renderMenu = this.renderMenu
+        const _this = this
         const vNode = () => {
             const menuCom = h(Menu, { ...renderMenu }, () => {
                 return _vNode.children.map((node: any) => {
@@ -185,11 +190,15 @@ export class menu extends base<MenuProps> {
                     width: "100%",
                     height: "100%"
                 } as StyleType
-            }, [h(VxeInput, {
-                ...this.renderInput, style: {
-                    width: "100%"
-                } as StyleType
-            }), menuCom])
+            }, [
+                h(inputView, { inputInstance: _this.pageRef.inputInstance, style: { height: '30px' } })
+                //     h(VxeInput, {
+                //     ...this.renderInput, style: {
+                //         width: "100%",
+                //         height: '30px'
+                //     } as StyleType
+                // })
+                , menuCom])
         }
         this.component = vNode
     }

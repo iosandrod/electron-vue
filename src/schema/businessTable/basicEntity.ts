@@ -29,14 +29,13 @@ import { propsConfig } from "../icon"
 import contextMenuView from "../schemaComponent/contextMenuView"
 import { contextMenu, createContextMenu } from "./contextMenu"
 import { mergeData } from "@/api/data4"
-import { tableMenuData } from "@/api/data3"
 import { createMenu, menu } from "../menu"
 import { createDialog, dialog } from "../dialog"
 import dialogView from "../schemaComponent/dialogView"
 import { VxeGrid } from "vxe-table"
 import modal from '@/components/modal.vue'
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
-  tabIndex: number = 0//使用tabIndex ,路由的tab
+  tabIndex: number = 0//使用tabIndex ,路由的tab 
   sub = new Subject()//动作发射器
   detailTable?: detailEntity[] = []
   http = http
@@ -97,7 +96,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     columns: []
   }
   menuConfig = {
-    list: JSON.parse(JSON.stringify(tableMenuData))
   }
   detailEntityConfig = {
     curDetailKey: ''

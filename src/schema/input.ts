@@ -107,7 +107,9 @@ export class input extends base {
             if (typeof getData == 'function' && typeof getField == 'function') {
                 let data = getData()
                 let field = getField()
-                data[field] = value
+                if (data && field) {
+                    data[field] = value
+                }
             }
             const _onChange = inputConfig.onChange as any
             inputConfig.modelValue = value

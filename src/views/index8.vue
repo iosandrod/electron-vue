@@ -107,7 +107,7 @@ import { createDialog, confirm } from '@/schema/dialog'
 import { createInput } from '@/schema/input'
 import { http } from '@/schema/http'
 import { createMenu } from '@/schema/menu'
-import { menuData, tableMenuData, } from '@/api/data3'
+import { menuData, } from '@/api/data3'
 import { testTableViewData } from '@/api/data5'
 import { createContextMenu } from '@/schema/businessTable/contextMenu'
 import { useLocalStorage } from '@vueuse/core'
@@ -129,7 +129,7 @@ const _menu = createMenu({
   rootTitle: '系统菜单',
 } as any)
 const contextMenu = createContextMenu({
-  list: JSON.parse(JSON.stringify(tableMenuData)),
+  list: [],
 })
 function inputChange({ value }: any) {
   _menu.inputChange()
@@ -277,14 +277,9 @@ async function btnClick9(params: any) {
 }
 async function btnClick10() {
   if (state == true) {
-    // _testTableViewData.columns[0].editType = 'string'
-    // table.changeColumnEditType('name', 'string')
     table.tableConfig.columns.forEach((col: any) => {
       if (col.columnConfig.editType == 'select') {
         col.columnConfig.options = [{ label: 'sfdsf11', value: 'sdfsdf11' }]
-        // col.options = [{ label: 'sfdsf', value: 'sdfsdf' }]
-        // col.renderFormitem.options.push({ label: "sdfsdf", value: 'sdfsd' })
-        // col.renderFormitem.options = [{ label: "sdfsdf", value: 'sdfsd' }]
 
       }
     })
@@ -292,12 +287,8 @@ async function btnClick10() {
     table.tableConfig.columns.forEach((col: any) => {
       if (col.columnConfig.editType == 'select') {
         col.columnConfig.options = [{ label: 'sfdsf11', value: 'sdfsdf11' }]
-        // col.renderFormitem.options.push({ label: "sdfsdf", value: 'sdfsd' })
-        // col.renderFormitem.options = [{ label: "sdfsdf", value: 'sdfsd' }]
       }
     })
-    // _testTableViewData.columns[0].editType = 'baseInfo'
-    // table.changeColumnEditType('name', 'select')
   }
   state = !state
 }

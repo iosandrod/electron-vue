@@ -1061,3 +1061,45 @@ export const initTableMenu = (table: table) => {
   // return h(entityView, { entityInstance: entity, })
   // return h(entityView, { entityName: route!.name, })
 })
+
+
+
+
+
+
+
+
+
+// const menu = h(Menu, {
+            //     onClick: (item: any) => {
+            //         nextTick(() => {
+            //             modelValue.value = false
+            //         })
+            //     },
+            //     mode: 'vertical',
+            //     items: contextMenuConfig.list,
+            // })
+
+            // const polldown = h(Dropdown, {
+            //     destroyPopupOnHide: true,
+            //     trigger: ['contextmenu',],
+            //     "onUpdate:open": (value) => {
+            //         modelValue.value = value
+            //     },
+            //     open: modelValue.value
+            // }, {
+            //     default: () => {
+            //         return h('div', {
+            //             style: {
+            //                 width: "250px",
+            //                 position: "fixed",
+            //                 left: `${position.value.left}px`,
+            //                 top: `${position.value.top}px`,
+            //                 background: 'red'
+            //             } as StyleType
+            //         }, [])
+            //     },
+            //     overlay: () => {
+            //         return menu
+            //     }
+            // })

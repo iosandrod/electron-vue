@@ -166,7 +166,6 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
     })
     const targetIcon = getIcon(null, "vxe-icon-funnel")
     return h(VxePulldown, {
-        // trigger: ['click'],
         transfer: true,
         destroyOnClose: true,
         modelValue: _column.columnConfig.filterPulldownShow,
@@ -376,4 +375,14 @@ export const initRenderColumn = (column: column) => {
     renderColumn.title = getColumnTitle(column) as any
     renderColumn.align = getColumnAlign(column) as any
     renderColumn.resizable = getColumnResizable(column) as any
+    renderColumn.treeNode = computed(() => {
+        const isTree = table?.tableConfig.isTree
+        if (isTree) {
+            const field = table.tableConfig.treeRowField
+            if (field == column.columnConfig.field) {
+                return true
+            }
+        }
+        return false
+    }) as any
 }

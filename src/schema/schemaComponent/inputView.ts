@@ -38,7 +38,6 @@ export default defineComponent({
             })
             inputInstance = createInput(createConfig)
         }
-
         inputInstance.getData = () => {
             return props.data
         }

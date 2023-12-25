@@ -13,16 +13,17 @@ import {
 } from "vxe-table"
 import * as tableFn from './tableFn'
 import { system, systemInstance } from "./system"
-import { StyleType, dialogConfig, dialogMap, pickKey, position, scrollConfig, tableConfig, tableData, tableSchema, tableState } from "@/types/schema"
+import { StyleType, dialogConfig, dialogMap, inputConfig, pickKey, position, scrollConfig, tableConfig, tableData, tableSchema, tableState } from "@/types/schema"
 import { column, createColumn } from "./column"
-import { getOptionsCellClassName, getOptionsCheckboxConfig, getOptionsColumns, getOptionsData, getOptionsFilterConfig, getOptionsHeight, getOptionsRowClassName, getOptionsRowConfig, getOptionsScrollX, getOptionsScrollY, getOptionsShowFooter, getOptionsShowHeader, getOptionsTreeConfig, getTableRowConfig, getTableStyle } from "./tableFn"
+import { getOptionsCellClassName, getOptionsFilterConfig, getOptionsHeight, getOptionsRowClassName, getOptionsRowConfig, getOptionsScrollX, getOptionsScrollY, getOptionsShowFooter, getOptionsShowHeader, getOptionsTreeConfig, getTableRowConfig, getTableStyle } from "./tableFn"
 import { closeDialog, createDialog, destroyDialog, dialog, openDialog } from "./dialog"
 import { createDialogConfig } from "./tableDialogConfig"
 import { tableMethod } from "./tableMethod"
-import { tableMenuData } from "@/api/data3"
 import { contextMenu } from "./businessTable/contextMenu"
-import { getMouseEventPosition } from "@/utils/utils"
 import { mergeConfig } from "@/api/data4"
+import { input } from "./input"
+import lodash from 'lodash'
+import { tableHeaderMenu, tableBodyMenu } from "./tableStaticData"
 
 
 export class table extends base<tableSchema> implements tableMethod {
@@ -32,14 +33,18 @@ export class table extends base<tableSchema> implements tableMethod {
   renderFilterTable: tableConfig = {
     columns: []
   }
+  renderWhereInput: inputConfig = {}
   tablePermission = {
-    canRefreshData: true//能否刷新数据
+    canRefreshData: true,//能否刷新数据
+    canChangeCurRow: true,//能否改变当前行数据
+    canChangeCurColumn: true
   }
   editWeakMap = new Map()
   renderFilterColTable: tableConfig = {
     columns: []
   }
   pageRef: {
+    globalInput?: input
     filterColTable?: table
     filterTable?: table
     vxeGrid?: VxeGridInstance,
@@ -52,20 +57,11 @@ export class table extends base<tableSchema> implements tableMethod {
   mergeColObj = {}
   menuConfig = {
     headerMenu: {
-      // position: {
-      //   left: 0,
-      //   top: 0
-      // },
-      // show: false,
-      list: JSON.parse(JSON.stringify(tableMenuData)).slice(2)
+      // list: JSON.parse(JSON.stringify(tableHeaderMenu))
+      list: lodash.cloneDeep(tableHeaderMenu)
     },
     bodyMenu: {
-      // position: {
-      //   left: 0,
-      //   top: 0
-      // },
-      // show: false,
-      list: JSON.parse(JSON.stringify(tableMenuData))
+      list: lodash.cloneDeep(tableBodyMenu)
     }
   }
   scrollConfig: scrollConfig = {
@@ -76,8 +72,10 @@ export class table extends base<tableSchema> implements tableMethod {
   tableConfig: tableConfig = {
     showFilterDialog: true,
     showBodyMenuDialog: true,
+    globalWhereShow: false,
     showHeaderMenuDialog: true,
-    columns: [],//列 
+    columns: [],//列
+    globalWhere: "",
     filterConfig: [],//过滤配置
     mergeConfig: {},//合并配置
     sortconfig: [],//处理排序
@@ -98,12 +96,15 @@ export class table extends base<tableSchema> implements tableMethod {
     showCheckBoxColumn: true,//显示选择项
     columnConfig: { resizable: true },
     showSeqColumn: true,//显示数字项目
+    checkLabelField: "",
     checkboxConfig: {
       range: true,
       checkAll: false,
       checkField: "checkboxField"
     },
     resizable: true,
+    isTree: false,
+    treeParentId: '',
     onCellClick: () => { }
   }
   searchConfig = {
@@ -145,7 +146,24 @@ export class table extends base<tableSchema> implements tableMethod {
     tableFn.initGridOptions(this)
   }
   async setCurRow(row: any) {//设置当前行
+    const permission = this.tablePermission.canChangeCurRow
+    if (permission == false) {
+      return
+    }
     this.tableData.curRow = row
+    let tableState = this.tableState
+    if (tableState == 'moreRowEdit') {
+      this.tableData.editData = [...new Set([...this.tableData.editData, row])]
+    } else {
+      this.tableData.editData.length && (this.tableData.editData = [])
+    }
+    await this.curRowChange()
+  }
+  async curRowChange() {
+    const curRowChange = this.tableConfig.curRowChange
+    if (typeof curRowChange == 'function') {
+      await curRowChange({ row: this.tableData.curRow, table: this })
+    }
   }
   async setCurColumn(col: any) {
     const params = col?.params
@@ -191,6 +209,14 @@ export class table extends base<tableSchema> implements tableMethod {
     } catch (error) {
       console.error('没有找到vxeGrid实例')
     }
+  }
+  openGlobalWhere() {
+    const tableConfig = this.tableConfig
+    tableConfig.globalWhereShow = true
+  }
+  closeGlobalWhere() {
+    const tableConfig = this.tableConfig
+    tableConfig.globalWhereShow = false
   }
   //设置合并配置
   async setMergeConfig(rows?: any[], cols?: any[]) {//行 
@@ -239,6 +265,10 @@ export class table extends base<tableSchema> implements tableMethod {
       return
     }
     vxeGrid?.setCheckboxRow(rowArr, true)
+  }
+  toggleCheckboxRow(row: any) {
+    const vxeGrid = this.pageRef.vxeGrid
+    vxeGrid?.toggleCheckboxRow(row)
   }
   changeColumnEditType(field: string, type: string) {
     let targetCol = this.tableConfig.columns.find(col => {
