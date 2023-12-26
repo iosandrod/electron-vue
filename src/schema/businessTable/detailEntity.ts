@@ -1,10 +1,11 @@
 import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { systemInstance } from "../system"
-import { entityConfig, layoutItem } from "@/types/schema"
+import { StyleType, entityConfig, layoutItem } from "@/types/schema"
 import { mainEntity } from "./mainEntity"
 import { TabPaneProps } from "ant-design-vue"
 import { createEntityButton } from "../entityButton"
+import { createDetailEntityGroup } from "./detailEntityGroup"
 
 export class detailEntity extends basicEntity {
   detailTable: detailEntity[] = []
@@ -40,40 +41,44 @@ export class detailEntity extends basicEntity {
     renderDetailTab.destroyInactiveTabPane = true
     // renderDetailTab
   }
-  //子表暂时不需要初始化子表
-  async initDetailEntity() {
-    // const schema = this.schema
-    // const originTableInfo = this.originTableInfo
-    // const tableInfo = this.tableInfo
-    // const detailTable: [] = schema.detailTable || []//子表 是一个数组
-    // const detaialEntity = detailTable.map(table => {
-    // return createDetailEntity('t_SdOrderEntry')
-    // })
-  }
-  initRenderButtonGroup() {
-    const entity = this.getMainTable()
-    const tableInfo = entity.tableInfo
-    const buttons = tableInfo?.tableButtons! || []//
-    const buttonCategory = this.buttonCategory
-    const entityName = this.entityName
-    let _button = buttons?.find((btn) => {
-      const category = btn.category
-      const tableName = btn.tableName
-      if (category == buttonCategory && entityName == tableName) {
-        return true
+  //@ts-ignore 
+  async initRenderDetailEntity() {
+    const _this = this
+    if (_this.pageRef.dEntityInstance != null) {
+      return { instance: _this.pageRef.dEntityInstance }
+    }
+    const tableInfo = _this.tableInfo
+    const detailTable = tableInfo?.detailTable! || []
+    const detailEntity = await Promise.all(detailTable.map(async (table) => {
+      const dTable = await createDetailEntity(table.tableName, table)//表名
+      dTable.mainEntity = _this as any
+      return dTable
+    }))
+    _this.detailTable = detailEntity as any//业务逻辑类型的子组件
+    const renderDetailEntity = _this.renderDetailEntity
+    renderDetailEntity.entityGroup = computed(() => {
+      return _this.detailTable
+    }) as any
+    renderDetailEntity.type = computed(() => {
+      return 'card'
+    }) as any
+    renderDetailEntity.tabBarStyle = computed(() => {
+      const detailTable = _this.detailTable
+      const obj = {
+        margin: '0 0 0 0 !important',
+        height: '30px'
+      } as StyleType
+      if (detailTable!?.length <= 1) {
+        obj.display = 'none'
       }
-    })
-    _button = _button || buttons?.find((btn) => {
-      const category = btn.category
-      return category == buttonCategory
-    })
-    const targetButtons = _button?.buttons || []//获取到这个东西
-    this.renderButtonGroup = targetButtons?.map(btn => {
-      const _btn = createEntityButton(btn, this)
-      return _btn
-    })
-    return { entity: this, buttons: this.renderButtonGroup }
+      return obj
+    }) as any
+    const dEntityInstance = createDetailEntityGroup(renderDetailEntity)
+    _this.pageRef.dEntityInstance = dEntityInstance
+    _this.detailEntityConfig.curDetailKey = _this.detailTable?.[0]?.tableInfo?.tableName || ''
+    return { instance: _this.pageRef.dEntityInstance }
   }
+  //子表暂时不需要初始化子表
 }
 
 export const createDetailEntity = (entityName: string, tableInfo: any) => {

@@ -93,6 +93,43 @@ export class mainEditEntity extends basicEntity {
         const system = this.system as system
         const entityVetor = system.entityVetor//获取主要的表格
     }
+    //@ts-ignore 
+    async initRenderDetailEntity() {
+        const _this = this
+        if (_this.pageRef.dEntityInstance != null) {
+            return { instance: _this.pageRef.dEntityInstance }
+        }
+        const tableInfo = _this.tableInfo
+        const detailTable = tableInfo?.detailTable! || []
+        const detailEntity = await Promise.all(detailTable.map(async (table) => {
+            const dTable = await createDetailEntity(table.tableName, table)//表名
+            dTable.mainEntity = _this as any
+            return dTable
+        }))
+        _this.detailTable = detailEntity as any//业务逻辑类型的子组件
+        const renderDetailEntity = _this.renderDetailEntity
+        renderDetailEntity.entityGroup = computed(() => {
+            return _this.detailTable
+        }) as any
+        renderDetailEntity.type = computed(() => {
+            return 'card'
+        }) as any
+        renderDetailEntity.tabBarStyle = computed(() => {
+            const detailTable = _this.detailTable
+            const obj = {
+                margin: '0 0 0 0 !important',
+                height: '30px'
+            } as StyleType
+            if (detailTable!?.length <= 1) {
+                obj.display = 'none'
+            }
+            return obj
+        }) as any
+        const dEntityInstance = createDetailEntityGroup(renderDetailEntity)
+        _this.pageRef.dEntityInstance = dEntityInstance
+        _this.detailEntityConfig.curDetailKey = _this.detailTable?.[0]?.tableInfo?.tableName || ''
+        return { instance: _this.pageRef.dEntityInstance }
+    }
 }
 
 //业务

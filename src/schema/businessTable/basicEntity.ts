@@ -11,7 +11,7 @@ import { tableMethod } from "../tableMethod"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -35,10 +35,12 @@ import dialogView from "../schemaComponent/dialogView"
 import { VxeGrid } from "vxe-table"
 import modal from '@/components/modal.vue'
 import { buttonGroup, createButtonGroup } from "../buttonGroup"
+import { createDetailEntityGroup, detailEntityGroup } from "./detailEntityGroup"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   tabIndex: number = 0//使用tabIndex ,路由的tab 
   sub = new Subject()//动作发射器
   detailTable?: detailEntity[] = []
+  renderDetailEntity: entityGroupConfig = {}
   http = http
   isEditEntity = false
   entityTabKey?: string
@@ -83,6 +85,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   schema?: {} = {}
   entityName = ''
   pageRef: {
+    dEntityInstance?: detailEntityGroup
     buttonGroup?: buttonGroup
     // menuRef?: menu,
     searchDialog?: dialog
@@ -484,7 +487,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     return { instance: buttonGroup }
   }
   async initRenderDetailEntity() {
-    return await entityRenderFn.getRenderDetailEntity(this as any)
+
   }
   getDetailEntity(entityName: string) {
     const detailTable = this.detailTable
@@ -525,3 +528,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
 export const createBasicEntity = async () => {
   return null
 }
+// import createFn from '../createFn'
+
+// export let getCreateFn = (): any => {
+//   return createFn
+// }
+// console.log(getCreateFn, 'testCreate')

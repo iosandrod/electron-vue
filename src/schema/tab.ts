@@ -41,13 +41,19 @@ export class tab extends base {
             }
             const tabCom = h(Tabs, this.renderTab, () => {
                 const tabItems = tabConfig.tabItems
-                return tabItems?.map(item => {
+                return tabItems?.map((item: any) => {
                     return h(TabPane, item,
-                        //      {
-                        //     tab: (params: any) => {
-                        //         return h('div', [''])
-                        //     }
-                        // }
+                        {
+                            tab: (params: any) => {
+
+                            },
+                            default: () => {
+                                const component = item.component
+                                if (typeof component == 'function') {
+                                    return component()
+                                }
+                            }
+                        }
                     )
                 })
             })

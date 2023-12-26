@@ -540,3 +540,7 @@ export type entityType = 'main' | 'detail' | 'search' | 'edit'
 export type baseInfoConfig = {
   tableName?: string
 }
+
+export type entityGroupConfig = {
+  entityGroup?: any[]
+} & TabsProps
