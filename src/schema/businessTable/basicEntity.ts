@@ -34,6 +34,7 @@ import { createDialog, dialog } from "../dialog"
 import dialogView from "../schemaComponent/dialogView"
 import { VxeGrid } from "vxe-table"
 import modal from '@/components/modal.vue'
+import { buttonGroup, createButtonGroup } from "../buttonGroup"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   tabIndex: number = 0//使用tabIndex ,路由的tab 
   sub = new Subject()//动作发射器
@@ -82,6 +83,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   schema?: {} = {}
   entityName = ''
   pageRef: {
+    buttonGroup?: buttonGroup
     // menuRef?: menu,
     searchDialog?: dialog
     vxeGrid?: table,
@@ -282,12 +284,12 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       }) as any//处理表格 
       renderTable.data = computed(() => {
         return entity.tableData.data
-      }) as any//行与列 
+      }) as any//行与列  
       const table = createTable(renderTable)
       entity.pageRef.vxeGrid = table//只初始化一次
-      return { tableInstance: table }
+      return { tableInstance: table, instance: table }
     } catch (error) {
-      return Promise.reject("表格数据获取出错")
+      return Promise.reject("表格组件初始化失败")
     }
   }
   async initEntity(initConfig?: any): Promise<void> {//
@@ -338,7 +340,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       let _col = new entityColumn()
       _col.initColumn(col)
       _col.getEntity = () => { return this }
-      //@tsin
+      //@ts-ignore 
       return _col
     })
     this.tableConfig.columns = _columns!
@@ -454,6 +456,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     return this.mainEntity || this//获取主表实例
   }
   initRenderButtonGroup() {
+    if (this.pageRef.buttonGroup != null) {
+      return { instance: this.pageRef.buttonGroup }
+    }
     const entity = this.getMainTable()
     const tableInfo = entity.tableInfo
     let buttons: any = tableInfo?.tableButtons! || []//
@@ -474,11 +479,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       return category == buttonCategory
     })
     const targetButtons = _button?.buttons || []//获取到这个东西
-    this.renderButtonGroup = targetButtons?.map((btn: any) => {
-      const _btn = createEntityButton(btn, this)
-      return _btn
-    })
-    return { entity: this, buttons: this.renderButtonGroup } as any
+    const buttonGroup = createButtonGroup({ buttons: targetButtons })
+    this.pageRef.buttonGroup = buttonGroup
+    return { instance: buttonGroup }
   }
   async initRenderDetailEntity() {
     return await entityRenderFn.getRenderDetailEntity(this as any)

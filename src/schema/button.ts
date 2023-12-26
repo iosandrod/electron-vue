@@ -1,11 +1,14 @@
-import { buttonConfig, concatAny } from "@/types/schema";
+import { buttonConfig, concatAny, pickKey } from "@/types/schema";
 import { base } from "./base";
 import { VxeButtonProps, VxeButtonEventProps, VxeButton, VxeButtonDefines, VxeButtonSlots, VxeButtonEmits, VxeButtonEvents } from "vxe-table";
-import { h, reactive, useSlots, watchEffect } from "vue";
+import { computed, h, reactive, useSlots, watchEffect } from "vue";
 import * as buttonFn from './buttonFn'
 import { systemInstance } from "./system";
+import { getButtonSlotsDefault } from "./buttonFn";
 export class button extends base<VxeButtonProps> {
-    buttonConfig: buttonConfig = {}
+    buttonConfig: buttonConfig = {
+        content: ''
+    }
     buttonName = 'buttonName'
     renderButton: buttonConfig = {
     }
@@ -26,7 +29,20 @@ export class button extends base<VxeButtonProps> {
     async initRenderButton() {
         const buttonConfig = this.buttonConfig
         const renderButton = this.renderButton
-        renderButton.slots = buttonFn.getButtonSlots(this) as any
+        const button = this
+        renderButton.slots = computed(() => {
+            const slots: pickKey<VxeButtonSlots> = {}
+            slots.default = (params: any) => {
+                const slots = useSlots()
+                const _default = slots.default
+                if (_default) {
+                    return _default(button)
+                }
+                const buttonConfig = button.buttonConfig
+                return h('div', [buttonConfig.content || buttonConfig.cButtonText])
+            }
+            return slots
+        }) as any
         renderButton.onClick = (item) => {
             const _onClick = buttonConfig.onClick
             if (typeof _onClick == 'function') {

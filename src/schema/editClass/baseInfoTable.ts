@@ -1,10 +1,11 @@
-import { mainTableInfo, tableConfig } from "@/types/schema";
+import { baseInfoConfig, mainTableInfo, tableConfig } from "@/types/schema";
 import { systemInstance } from "../system";
 import { table } from "../table";
 import { reactive } from 'vue'
 import { getTableConfig } from "@/api/httpApi";
 import { entityColumn } from "../entityColumn";
 import { createColumn } from "../column";
+import { http } from "../http";
 
 class baseInfoTable extends table {
     tableInfo: mainTableInfo = {} as any
@@ -46,6 +47,12 @@ class baseInfoTable extends table {
             }
         })
         this.tableConfig.columns = columns
+    }
+    getBaseInfoData(value: string, config?: baseInfoConfig,) {
+        const _config = config || this.schema!.baseInfoTable
+        // const tableName = _config.tableName//string
+        // const cCodeColumn = this.tableInfo.cCodeColumn
+        // const getDataSql = `select * from ${tableName} where ${cCodeColumn} like ${value}`
 
     }
 }
@@ -56,7 +63,9 @@ export const createBaseInfoTable = (schema: any) => {
         showHeaderMenuDialog: false,
         showBodyMenuDialog: false,
         data: [],
-        baseInfoTable: schema
+        baseInfoTable: schema,
+        showSeqColumn: false,
+        showHeader: false,
     }
     const baseTable = reactive(new baseInfoTable(systemInstance, defaluBaseInfoConfig))
     baseTable.initTableConfig()

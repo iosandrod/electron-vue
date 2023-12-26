@@ -163,6 +163,9 @@ export class entityButton extends button {
                 // return h()
             }
         }) as any
+        renderButton.content = computed(() => {
+            return this.buttonConfig.cButtonText
+        }) as any
     }
     async initComponent() {
         const renderButton = this.renderButton

@@ -23,9 +23,11 @@ export default defineComponent({
   },
   render() {
     const table = this.table
-    return table.component()
-    // console.log(table, 'testTable')
-    // return h(VxeGrid, table.gridOptions)
+    const component = table.component
+    if (component) {
+      return component()
+    }
+    return null
   }
 })
 

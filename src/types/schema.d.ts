@@ -530,6 +530,13 @@ export type inputConfig = VxeInputProps & {
 } & VxeInputEventProps & { [key in VxeInputEmits[number]]?: any } & { options?: { key: string, value: string }[] } & SelectProps
 
 
-export type buttonConfig = VxeButtonProps & { slots?: VxeButtonProps } & VxeButtonEventProps
+export type buttonConfig = VxeButtonProps & { slots?: VxeButtonProps } & VxeButtonEventProps & {
+  cButtonText?: string,
+  cButtonName?: string
+}
 
 export type entityType = 'main' | 'detail' | 'search' | 'edit'
+
+export type baseInfoConfig = {
+  tableName?: string
+}

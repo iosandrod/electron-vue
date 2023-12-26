@@ -228,7 +228,7 @@ export const initGridOptions = (table: table) => {
     gridOptions.scrollX = {//先写死吧
         enabled: true,
         gt: 10,
-        oSize: 5,
+        oSize: 10,
     }
     gridOptions.treeConfig = computed(() => {
         let isTree = table.tableConfig.isTree
