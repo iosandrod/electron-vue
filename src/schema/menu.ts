@@ -3,7 +3,7 @@ import { base } from "./base";
 import { systemInstance } from "./system";
 import { Menu, MenuItem, MenuItemProps, MenuProps, SubMenu, SubMenuProps } from "ant-design-vue";
 import { createEmitAndSemanticDiagnosticsBuilderProgram } from "typescript";
-import { StyleType, menuConfig } from "@/types/schema";
+import { StyleType, formConfig, menuConfig } from "@/types/schema";
 import { ItemGroup } from "ant-design-vue/es/menu";
 import menuItemView from "./schemaComponent/menuItemView";
 import { VxeInput, VxeInputProps } from "vxe-table";
@@ -11,35 +11,39 @@ import { createInput, input } from "./input";
 import inputView from "./schemaComponent/inputView";
 import { createContextMenu } from "./businessTable/contextMenu";
 import instanceView from "./schemaComponent/instanceView";
+import { form } from "./form";
 
 export class menu extends base<MenuProps> {
     renderInput: VxeInputProps = {}
+    currentMenuItem = {}
+    renderAddForm: formConfig = {
+        items: []
+    }
+    getCurrentContextItem?: () => menuItem
     renderContext = {
         list: [{
-            key: '1',
+            key: 'addItem',
             // icon: () => h(MailOutlined),
-            label: 'Navigation One',
-            title: 'Navigation One',
-            onClick: () => {
-                console.log(this)
+            label: '添加子节点',
+            onClick: (value: any) => {
+                const currentMenuItem = this.getCurrentContextItem!()
+                console.log(currentMenuItem, 'testItem')
             }
         },
         {
-            key: 'sub1',
-            // icon: () => h(AppstoreOutlined),
-            label: 'Navigation Three',
-            title: 'Navigation Three',
+            key: 'deleteItem',
+            label: '删除该节点',
             onClick: (value: any) => {
-                console.log(value)
+
             },
         },]
     }
-    pageRef: { contextMenu?: menu, contextInstance?: menu, inputInstance?: input } = {
+    pageRef: { formInstance?: form, contextMenu?: menu, contextInstance?: menu, inputInstance?: input } = {
 
     }
     menuConfig: menuConfig = {
         mode: 'inline',
-        data: [],//菜单数据
+        data: [],//菜单数据 
         titleKey: 'title',
         parentKey: 'parentId',//父级的key的string 父级字段名称
         key: "id",
@@ -75,11 +79,15 @@ export class menu extends base<MenuProps> {
                 _menuConfig[key] = schema[key]
             })
         })
+        this.initRenderForm()
         this.buildData()
         this.initRenderMenu()
         this.initRenderInput()
         this.initRenderContext()
         this.initComponent()
+    }
+    initRenderForm() {
+        const renderAddForm = this.renderAddForm
     }
     initRenderContext() {
         const renderContext = this.renderContext
@@ -218,13 +226,18 @@ export class menu extends base<MenuProps> {
         const renderMenu = this.renderMenu
         const _this = this
         const vNode = () => {
-            const menuCom = h(Menu, { ...renderMenu }, () => {
+            const menuCom = h(Menu, {
+                ...renderMenu,
+            }, () => {
                 return _vNode.children.map((node: any) => {
                     return node.component()
                 })
             })
             const contextMenu = h(instanceView, { instance: _this.pageRef.contextInstance })
             return h('div', {
+                onContextmenu: ($event) => {
+                    console.log('contextMenu')
+                },
                 style: {
                     display: 'flex',
                     flexDirection: "column",
@@ -296,6 +309,7 @@ export class menuItem extends base {
         this.initComponent()
     }
     initRenderMenuItem() {
+        const _this = this
         const schema = this.schema
         const renderMenuItem = this.renderMenuItem
         const menu = this.getMenu()
@@ -306,8 +320,14 @@ export class menuItem extends base {
         renderMenuItem.id = `${schema[key]}`
         //@ts-ignore
         renderMenuItem.key = schema[key]
+        //@ts-ignore
+        renderMenuItem.onContextmenu = ($event: MouseEvent) => {
+            $event.stopPropagation()
+            const menu = _this.getMenu()
+            menu.getCurrentContextItem = () => { return this }
+            menu.openContext($event)
+        }
         const renderSubMenu = this.renderSubMenu
-        // renderSubMenu.title = schema[titleKey]
     }
     buildData() {
         const schema = this.schema!
@@ -352,6 +372,16 @@ export class menuItem extends base {
             return res
         }, [])]
     }
+    addMenuItem(item: any) {
+        const newItem = createMenuItem(item, this.getMenu())
+        newItem.getParent = () => {
+            return this
+        }
+        this.children.push(newItem)
+    }
+    deleteMenuItem() {
+
+    }
     getParentKeys(): any {
         const parent = this.getParent()
         //@ts-ignore
@@ -389,15 +419,10 @@ export class menuItem extends base {
                     })
                 } else {
                     return h('div', {
-                        onClick: ($event) => {
+                        onClick: ($event: MouseEvent) => {
                             const menu = _this.getMenu()
                             menu.menuItemClick(_this)
                         },
-                        onContextmenu: ($event) => {
-                            const menu = _this.getMenu()
-                            menu.openContext($event)
-                            // console.log($event, 'testEvent')
-                        }
                     }, [renderMenuItem.title])
                 }
             })

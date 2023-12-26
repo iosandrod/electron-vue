@@ -72,7 +72,7 @@ export class system extends base {
     await this.initRenderTab()
     this.displayState = 'show'
     setTimeout(() => {
-      this.routeOpen({ entityName: "t_SdOrder" })
+      // this.routeOpen({ entityName: "t_SdOrder" })
       // this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
       // this.routeOpen('index9')
       // const router = this.getRouter()

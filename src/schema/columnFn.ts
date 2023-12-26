@@ -184,6 +184,7 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
                     }).filter(row => row !== null && row !== undefined))].map(row => { return { value: row } })
                     const left = pObj.left
                     _column.columnConfig.filterLeft = left
+                    _column.table!.pageRef.filterTable!.tableConfig.globalWhere = ''
                     _column.table!.pageRef.filterTable!.setTableData(curData)
                 }
             })

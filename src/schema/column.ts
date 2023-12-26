@@ -9,7 +9,6 @@ import * as columnFn from './columnFn'
 import { getColumnAlign, getColumnField, getColumnResizable, getColumnSlot, getColumnTitle, getColumnType, getColumnVisiable, getColumnWidth, getInSizeDiv, getOutSizeDiv, getSlotDefault } from "./columnFn"
 import XEUtils from "xe-utils"
 import * as dateFns from 'date-fns'
-import { createFormItem } from "./formitem"
 export class column extends base<VxeTableDefines.ColumnOptions> {
   getTableShowData: () => any[] = () => {
     return []
@@ -57,6 +56,31 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
   constructor(system: system, schema?: any, table?: table) {
     super(system, schema)
     this.table = table
+  }
+  string_format(row: any) {
+
+  }
+  number_format(row: any) {
+
+  }
+  int_format(row: any) {
+
+  }
+  baseInfo_format(row: any) {
+
+  }
+  select_format(row: any) {
+
+  }
+  date_format(row: any) {
+
+  }
+  datetime_format(row: any) {
+
+  }
+  time_format(row: any) {
+    const _this = this
+    const columnConfig = this.columnConfig
   }
   async initColumnConfig() {
     columnFn.initColumnConfig(this)

@@ -296,7 +296,7 @@ export const useSystem = (): system => {
 }
 
 export const getTransformPosition = (el: HTMLDivElement): any => {
-    const parent = el.parentNode as HTMLDivElement
+    const parent = el?.parentNode as HTMLDivElement
     if (parent == null) {
         return null
     }

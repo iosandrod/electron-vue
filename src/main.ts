@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
-import "./style.css"
 import App from './App.vue'
+import "./style.css"
 import './samples/node-api'
 import '@quasar/extras/material-icons/material-icons.css'
 import "@/style/index.scss"
@@ -17,7 +17,8 @@ import ganttastic from './components/gantt/vue-ganttastic'
 import { getSystem } from './schema/system'
 const app = createApp(App)
 app.config.globalProperties['system'] = getSystem()
-app.use(VXETable)
+app
+  .use(VXETable)
   .use(Antd)
   .use(router)
   .use(register)

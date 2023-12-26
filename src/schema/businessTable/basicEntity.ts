@@ -337,20 +337,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       return _col
     })
     this.tableConfig.columns = _columns!
-    this.tableConfig.columns!.forEach((col: any) => {
-      if (col.field == 'cCustNo') {
-        // col.getRowEditType = (row: any, col: any) => {
-        //   if (row['cSdOrderNo'] == '1111') {
-        //     return 'string'
-        //   } else {
-        //     return 'select'
-        //   }
-        // }
-      }
-      if (col.editType == 'select') {
-        col.options = [{ label: '小风', value: 'xiaofeng' }, { label: '小峰', value: 'xiaofeng1' }]
-      }
-    })
   }
   async initRenderLayout() {
     const renderLayout = this.renderLayout
