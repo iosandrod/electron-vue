@@ -65,19 +65,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       // icon: () => h(AppstoreOutlined),
       label: 'Navigation Three',
       title: 'Navigation Three',
-      onClick: () => {
-        console.log(this)
+      onClick: (value: any) => {
+        console.log(value)
       },
-      children: [
-        {
-          key: '3',
-          label: 'Option 3',
-          title: 'Option 3',
-          onClick: () => {
-            console.log(this)
-          }
-        },
-      ],
     },]
   }
   mainEntity?: mainEntity

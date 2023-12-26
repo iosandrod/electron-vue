@@ -7,11 +7,36 @@ import { StyleType, menuConfig } from "@/types/schema";
 import { ItemGroup } from "ant-design-vue/es/menu";
 import menuItemView from "./schemaComponent/menuItemView";
 import { VxeInput, VxeInputProps } from "vxe-table";
-import { createInput } from "./input";
+import { createInput, input } from "./input";
 import inputView from "./schemaComponent/inputView";
+import { createContextMenu } from "./businessTable/contextMenu";
+import instanceView from "./schemaComponent/instanceView";
 
 export class menu extends base<MenuProps> {
     renderInput: VxeInputProps = {}
+    renderContext = {
+        list: [{
+            key: '1',
+            // icon: () => h(MailOutlined),
+            label: 'Navigation One',
+            title: 'Navigation One',
+            onClick: () => {
+                console.log(this)
+            }
+        },
+        {
+            key: 'sub1',
+            // icon: () => h(AppstoreOutlined),
+            label: 'Navigation Three',
+            title: 'Navigation Three',
+            onClick: (value: any) => {
+                console.log(value)
+            },
+        },]
+    }
+    pageRef: { contextMenu?: menu, contextInstance?: menu, inputInstance?: input } = {
+
+    }
     menuConfig: menuConfig = {
         mode: 'inline',
         data: [],//菜单数据
@@ -30,6 +55,13 @@ export class menu extends base<MenuProps> {
     constructor(schema: any, system: any) {
         super(system, schema)
     }
+    openContext($event: any) {
+        const pageRef = this.pageRef
+        const contextInstance = pageRef.contextInstance
+        if (contextInstance) {
+            contextInstance.openContext($event)
+        }
+    }
     initMenu() {
         const schema = this.schema!
         Object.keys(schema).forEach(key => {
@@ -41,7 +73,15 @@ export class menu extends base<MenuProps> {
         this.buildData()
         this.initRenderMenu()
         this.initRenderInput()
+        this.initRenderContext()
         this.initComponent()
+    }
+    initRenderContext() {
+        const renderContext = this.renderContext
+        // const list = renderContext.list
+        const contextInstance = createContextMenu(renderContext)
+        //@ts-ignore
+        this.pageRef.contextInstance = contextInstance
     }
     buildData() {
         const menuConfig = this.menuConfig
@@ -138,10 +178,6 @@ export class menu extends base<MenuProps> {
         renderMenu['onUpdate:selectedKeys'] = (value) => {
             renderMenu.selectedKeys = value
         }
-
-        // setTimeout(() => {
-        //     renderMenu.selectedKeys = [1243]
-        // }, 5000);
     }
     initRenderInput() {//输入框初始化
         const renderInput = this.renderInput as VxeInputProps
@@ -182,7 +218,7 @@ export class menu extends base<MenuProps> {
                     return node.component()
                 })
             })
-            // return menuCom
+            const contextMenu = h(instanceView, { instance: _this.pageRef.contextInstance })
             return h('div', {
                 style: {
                     display: 'flex',
@@ -192,13 +228,8 @@ export class menu extends base<MenuProps> {
                 } as StyleType
             }, [
                 h(inputView, { inputInstance: _this.pageRef.inputInstance, style: { height: '30px' } })
-                //     h(VxeInput, {
-                //     ...this.renderInput, style: {
-                //         width: "100%",
-                //         height: '30px'
-                //     } as StyleType
-                // })
-                , menuCom])
+                , menuCom, contextMenu
+            ])
         }
         this.component = vNode
     }
@@ -353,9 +384,14 @@ export class menuItem extends base {
                     })
                 } else {
                     return h('div', {
-                        onClick: () => {
+                        onClick: ($event) => {
                             const menu = _this.getMenu()
                             menu.menuItemClick(_this)
+                        },
+                        onContextmenu: ($event) => {
+                            const menu = _this.getMenu()
+                            menu.openContext($event)
+                            // console.log($event, 'testEvent')
                         }
                     }, [renderMenuItem.title])
                 }

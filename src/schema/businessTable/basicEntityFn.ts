@@ -117,6 +117,9 @@ export const initRenderSearchForm = (entity: basicEntity) => {
 
 export const initRenderEditForm = (entity: basicEntity) => {
     const _this = entity
+    if (_this.pageRef.vxeForm != null) {
+        return { instance: _this.pageRef.vxeForm }
+    }
     const renderEditForm = _this.renderEditForm
     renderEditForm.data = computed(() => {
         return {}
@@ -144,7 +147,7 @@ export const initRenderEditForm = (entity: basicEntity) => {
     const vxeForm = createForm(renderEditForm)
     //@ts-ignore
     _this.pageRef.vxeForm = vxeForm
-    return { formInstance: vxeForm }
+    return { formInstance: vxeForm, instance: _this.pageRef.vxeForm }
 }
 
 export const initRenderSearchDialog = (entity: basicEntity) => {

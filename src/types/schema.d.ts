@@ -544,3 +544,14 @@ export type baseInfoConfig = {
 export type entityGroupConfig = {
   entityGroup?: any[]
 } & TabsProps
+
+
+export type propsConfig = {
+  onClick?: (event: MouseEvent) => void,
+  style?: StyleType,//
+  onContextmenu?: (event: MouseEvent) => void,
+  onMousedown?: (event: MouseEvent) => void
+  class?: any//类型,
+  directive?: Array<Array<Directive>>
+  capture?: boolean
+}

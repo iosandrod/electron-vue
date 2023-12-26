@@ -58,7 +58,6 @@ export class mainEntity extends basicEntity {
   async initEntity() {
     try {
       await super.initEntity({ show: false })
-      // await this.initDetailEntity()
       await this.initRenderSearchForm()
       await this.initRenderSearchDialog()
       this.displayState = 'show'
