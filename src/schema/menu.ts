@@ -50,12 +50,17 @@ export class menu extends base<MenuProps> {
         inputValue: '',
         inlineCollapsed: false,
         showInput: true,
+        isDesign: true
     }
     renderMenu: MenuProps = {}
     constructor(schema: any, system: any) {
         super(system, schema)
     }
     openContext($event: any) {
+        const menuConfig = this.menuConfig
+        if (menuConfig.isDesign == false) {
+            return
+        }
         const pageRef = this.pageRef
         const contextInstance = pageRef.contextInstance
         if (contextInstance) {

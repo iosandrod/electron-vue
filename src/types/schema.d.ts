@@ -507,7 +507,9 @@ type _menuConfig = {
   rootTitle?: string,
   showInput?: boolean
 }
-export type menuConfig = MenuProps & _menuConfig
+export type menuConfig = MenuProps & _menuConfig & {
+  isDesign?: boolean
+}
 
 export type tabItem = TabPaneProps & {
   title?: string//标题
