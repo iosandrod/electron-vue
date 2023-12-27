@@ -1,4 +1,4 @@
-import { computed, h, nextTick, reactive } from "vue"
+import { computed, h, isProxy, nextTick, reactive } from "vue"
 import { VxeButton, VxeTableDefines } from "vxe-table"
 import { base } from "./base"
 import { createMenu, menu } from "./menu"
@@ -84,9 +84,11 @@ export class system extends base {
     const data = JSON.parse(JSON.stringify(menuData))
     const renderMenu = this.renderMenu
     const _this = this
-    renderMenu.data = computed(() => {
-      return data
-    }) as any
+    // renderMenu.data = computed(() => {
+    //   console.log(data, 'testMenuData')
+    //   return data
+    // }) as any
+    renderMenu.data = []
     renderMenu.key = 'id'
     renderMenu.parentKey = 'parentId'
     renderMenu.titleKey = 'menuName'

@@ -1,4 +1,4 @@
-export const menuData = [
+export const menuData1 = [
     {
         "menu_Id": 4550,
         "id": 4550,
@@ -5591,6 +5591,10 @@ export const menuData = [
     }
 ]
 
+
+export const menuData=menuData1.filter(row=>{
+    return row.parentId==0  
+}) 
 export const testTableViewData = {
     onCellClick: () => { },
     onCellMenu: () => { },

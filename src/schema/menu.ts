@@ -1,17 +1,18 @@
-import { computed, h, reactive, vShow, watchEffect, withDirectives } from "vue";
+import { computed, h, isProxy, reactive, vShow, watchEffect, withDirectives } from "vue";
 import { base } from "./base";
 import { systemInstance } from "./system";
 import { Menu, MenuItem, MenuItemProps, MenuProps, SubMenu, SubMenuProps } from "ant-design-vue";
 import { createEmitAndSemanticDiagnosticsBuilderProgram } from "typescript";
 import { StyleType, formConfig, menuConfig } from "@/types/schema";
-import { ItemGroup } from "ant-design-vue/es/menu";
+import { ItemGroup, ItemType } from "ant-design-vue/es/menu";
 import menuItemView from "./schemaComponent/menuItemView";
 import { VxeInput, VxeInputProps } from "vxe-table";
 import { createInput, input } from "./input";
 import inputView from "./schemaComponent/inputView";
 import { createContextMenu } from "./businessTable/contextMenu";
 import instanceView from "./schemaComponent/instanceView";
-import { form } from "./form";
+import { createForm, form } from "./form";
+import { menuData } from "@/api/data3";
 
 export class menu extends base<MenuProps> {
     renderInput: VxeInputProps = {}
@@ -23,22 +24,36 @@ export class menu extends base<MenuProps> {
     renderContext = {
         list: [{
             key: 'addItem',
+            disabled: false,
             // icon: () => h(MailOutlined),
             label: '添加子节点',
-            onClick: (value: any) => {
-                const currentMenuItem = this.getCurrentContextItem!()
-                console.log(currentMenuItem, 'testItem')
+            runFun: (value: any) => {
+                const contextMenu = value.contextMenu
+                const menu = contextMenu.getParent()
+                const _this = menu as menu
+                const currentMenuItem = _this.getCurrentContextItem!()
+                const data = menuData
+                const someItem = data[Math.floor(Math.random() * 6)]
+                if (currentMenuItem == null) {
+                    _this.addMenuItem(someItem, null)
+                } else {
+                    _this.addMenuItem(someItem, currentMenuItem)
+                }
+                setTimeout(() => {
+                    console.log(_this.menuConfig.vNode, 'testVNode')
+                }, 500);
             }
         },
         {
             key: 'deleteItem',
             label: '删除该节点',
+            disabled: false,
             onClick: (value: any) => {
 
             },
-        },]
+        },] as ItemType[]
     }
-    pageRef: { formInstance?: form, contextMenu?: menu, contextInstance?: menu, inputInstance?: input } = {
+    pageRef: { editForm?: form, formInstance?: form, contextMenu?: menu, contextInstance?: menu, inputInstance?: input } = {
 
     }
     menuConfig: menuConfig = {
@@ -71,6 +86,15 @@ export class menu extends base<MenuProps> {
             contextInstance.openContext($event)
         }
     }
+    addMenuItem(item: any, parentItem: any) {
+        const menuConfig = this.menuConfig
+        if (parentItem == null) {
+            const vNode = menuConfig.vNode
+            vNode?.addMenuItem(item)
+        } else {
+            parentItem.addMenuItem(item)
+        }
+    }
     initMenu() {
         const schema = this.schema!
         Object.keys(schema).forEach(key => {
@@ -91,10 +115,18 @@ export class menu extends base<MenuProps> {
     }
     initRenderContext() {
         const renderContext = this.renderContext
-        // const list = renderContext.list
         const contextInstance = createContextMenu(renderContext)
+        contextInstance.getParent = () => {
+            return this
+        }
         //@ts-ignore
         this.pageRef.contextInstance = contextInstance
+    }
+    initRenderEditForm() {
+        const menuConfig = this.menuConfig
+        const formitems = menuConfig.formitems || []//构建一个form
+        const editform = createForm({ item: formitems })
+        this.pageRef.editForm = editform as any
     }
     buildData() {
         const menuConfig = this.menuConfig
@@ -235,8 +267,9 @@ export class menu extends base<MenuProps> {
             })
             const contextMenu = h(instanceView, { instance: _this.pageRef.contextInstance })
             return h('div', {
-                onContextmenu: ($event) => {
-                    console.log('contextMenu')
+                onContextmenu: ($event: MouseEvent) => {
+                    _this.getCurrentContextItem = () => null as any
+                    _this.openContext($event)
                 },
                 style: {
                     display: 'flex',
@@ -377,7 +410,7 @@ export class menuItem extends base {
         newItem.getParent = () => {
             return this
         }
-        this.children.push(newItem)
+        this.children = [...this.children, newItem]
     }
     deleteMenuItem() {
 

@@ -509,6 +509,7 @@ type _menuConfig = {
 }
 export type menuConfig = MenuProps & _menuConfig & {
   isDesign?: boolean
+  formitems?: formItemConfig[]
 }
 
 export type tabItem = TabPaneProps & {
