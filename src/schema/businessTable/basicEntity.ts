@@ -462,8 +462,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       return category == buttonCategory
     })
     const targetButtons = _button?.buttons || []//获取到这个东西
-    const buttonGroup = createButtonGroup({ buttons: targetButtons })
-    this.pageRef.buttonGroup = buttonGroup
+    const buttonGroup = createButtonGroup({ buttons: targetButtons, buttonType: 'entityButton' }, this)
+    this.pageRef.buttonGroup = buttonGroup as any
     return { instance: buttonGroup }
   }
   async initRenderDetailEntity() {

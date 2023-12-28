@@ -7,16 +7,21 @@ import { tabConfig } from "@/types/schema";
 import { createTab, tab } from "./tab";
 import tabView from "./schemaComponent/tabView";
 import instanceView from "./schemaComponent/instanceView";
+import { createEntityButton } from "./entityButton";
+import { mainEntity } from "./businessTable/mainEntity";
 
 export class buttonGroup extends base {
+    getEntity: (() => mainEntity) = () => null as any
     pageRef: { tabInstance?: tab } = {
     }
     buttonGroupConfig = {
-        buttons: []
+        buttons: [],
+        buttonType: "button"
     }
     renderTab: TabPaneProps = {}
-    constructor(schema: any, system: any) {
+    constructor(schema: any, system: any, entity) {
         super(system, schema)
+        this.getEntity = () => entity
     }
     initButtonGroup() {
         const schema = this.schema
@@ -57,7 +62,13 @@ export class buttonGroup extends base {
             if (btn instanceof button) {
                 return btn
             }
-            return createButton(btn)
+            const buttonType = this.buttonGroupConfig.buttonType
+            if (buttonType == 'button') {
+                return createButton(btn)
+            } else {
+                const entity = this.getEntity()
+                return createEntityButton(btn, entity)
+            }
         })
         this.buttonGroupConfig.buttons = _buttons as any
     }
@@ -70,8 +81,8 @@ export class buttonGroup extends base {
     }
 }
 
-export const createButtonGroup = (schema: any) => {
-    const btnGroup = reactive(new buttonGroup(schema, systemInstance))
+export const createButtonGroup = (schema: any, entity) => {
+    const btnGroup = reactive(new buttonGroup(schema, systemInstance, entity))
     btnGroup.initButtonGroup()
     return btnGroup
 }

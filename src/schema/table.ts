@@ -298,7 +298,6 @@ export class table extends base<tableSchema> implements tableMethod {
     this.tableData.data = _data
   }
   async autoRefreshData() {
-
     const effectPool = this.effectPool
     const table = this
     effectPool.refreDataEffect = watchEffect(() => {
@@ -333,14 +332,14 @@ export class table extends base<tableSchema> implements tableMethod {
         })
       }
       table.tableData.showData = _data1
-      nextTick(async () => {
-        const vxeGrid = table.pageRef.vxeGrid
+      setTimeout(async () => {
         let canRefreshData = table.tablePermission.canRefreshData
         if (canRefreshData == true) {
           table.tablePermission.canRefreshData = false
-          //使用节流处理
+          //使用节流处理 
           setTimeout(() => {
             try {
+              const vxeGrid = table.pageRef.vxeGrid
               let showData = this.tableData.showData
               vxeGrid?.reloadData(showData).then(res => {
                 const scrollConfig = table.scrollConfig
@@ -349,12 +348,13 @@ export class table extends base<tableSchema> implements tableMethod {
                 vxeGrid.scrollTo(scrollLeft, scrollTop)
                 table.tablePermission.canRefreshData = true
               })
+              table.tablePermission.canRefreshData = true
             } catch (error) {
               table.tablePermission.canRefreshData = true
             }
           }, 100);
         }
-      })
+      }, 0)
     })
   }
 }

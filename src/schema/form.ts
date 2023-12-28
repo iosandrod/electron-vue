@@ -91,7 +91,6 @@ export class form extends base<formConfig> {
       return res
     }, { x: 0, y: 0 })
     renderLayout.layout = _layout
-    console.log(renderLayout.layout)
     renderLayout.colNum = 24
     renderLayout.isDraggable = computed(() => {
       return formConfig.isDraggable

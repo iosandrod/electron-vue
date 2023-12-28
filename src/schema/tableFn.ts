@@ -338,7 +338,7 @@ export const initComponent = (table: table) => {
         )
         const xeinstacne = ref(null)
         const vxeGridCom = withDirectives(h(VxeGrid, {
-            ...options, ref: xeinstacne,
+            ...options, ref: 'xeinstacne',
             onCellClick: ({ row, column }: any) => {
                 _this.setCurRow(row)
                 _this.setCurColumn(column)
@@ -462,7 +462,10 @@ export const initComponent = (table: table) => {
             },
         }), [[{
             mounted: (el, node) => {
-                table.pageRef.vxeGrid = xeinstacne.value as any
+                // console.log(node)
+                // table.pageRef.vxeGrid = xeinstacne.value as any 
+                table.pageRef!.vxeGrid = node.instance?.$refs.xeinstacne as any
+
             },
             unmounted: () => {
                 table.pageRef.vxeGrid = null as any

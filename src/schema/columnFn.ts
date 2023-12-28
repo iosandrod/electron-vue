@@ -148,22 +148,7 @@ export const getSlotHeader = (_column: column) => {
 
 export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的图标
     const divRef = ref(null)
-    const filterIconFn = useMousePoint({
-        capture: true,
-        onClick: (event: MouseEvent) => {
-            _column.table!.tableData.curFilterColumn = _column
-            const _position = getMouseEventPosition(event)
-            const position1 = _column.columnConfig.filterPosition!
-            //@ts-ignore
-            position1.mouseLeft = _position.left
-            //@ts-ignore
-            position1.mouseTop = _position.top
-            event.stopPropagation()
-            nextTick(() => {
-                _column.columnConfig.filterPulldownShow = true
-            })
-        },
-    })
+
     const targetIcon = getIcon(null, "vxe-icon-funnel")
     return h(VxePulldown, {
         transfer: true,
@@ -191,6 +176,24 @@ export const getSlotHeaderFilterIcon = (_column: column) => {//获取头部的�
         }
     }, {
         default: () => {
+            const filterIconFn = useMousePoint({
+                capture: true,
+                onClick: (event: MouseEvent) => {
+                    setTimeout(() => {
+                        _column.table!.tableData.curFilterColumn = _column
+                        const _position = getMouseEventPosition(event)
+                        const position1 = _column.columnConfig.filterPosition!
+                        //@ts-ignore
+                        position1.mouseLeft = _position.left
+                        //@ts-ignore
+                        position1.mouseTop = _position.top
+                        event.stopPropagation()
+                        setTimeout(() => {
+                            _column.columnConfig.filterPulldownShow = true
+                        }, 0)
+                    }, 300);
+                },
+            })
             return filterIconFn(targetIcon())
         },
         dropdown: () => {

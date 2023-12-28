@@ -130,9 +130,11 @@ export class entityButton extends button {
     visible: boolean = true
     dropBtns: any[] = []
     entity?: basicEntity
-    constructor(schema: any, system: any) {
+    getEntity: (() => basicEntity) | (() => null) = () => null
+    constructor(schema: any, system: any, entity: any) {
         super(schema, system)
         this.displayState = 'destroy'
+        this.getEntity = () => entity
     }
     async initButton() {
         const schema = this.schema as any
@@ -142,12 +144,12 @@ export class entityButton extends button {
         });
         if (_this.dropBtns && _this.dropBtns.length) {
             _this.dropBtns = _this.dropBtns.map((v: any) => {
-                return createEntityButton(v, this.entity)
+                const entity = this.getEntity!()
+                return createEntityButton(v, entity)
             });
         }//先把自身赋值
         await super.initButton()
         this.displayState = 'show'
-
     }
     async initRenderButton() {
         await super.initRenderButton()
@@ -159,8 +161,7 @@ export class entityButton extends button {
         renderButton.slots = computed(() => {
             const obj = {} as any
             obj.default = () => {
-                // const cButtonText=this.buttonConfig.cButton
-                // return h()
+
             }
         }) as any
         renderButton.content = computed(() => {
@@ -179,8 +180,8 @@ export class entityButton extends button {
             }
             return h(VxeButton, {
                 ...renderButton, onClick: () => {
-                    console.log('clickFn')
-                    console.log(_this)
+                    const entity = this.getEntity()
+                    console.log(entity, 'testEntity', this)
                 }
             }, {
                 default: () => {
@@ -194,8 +195,7 @@ export class entityButton extends button {
 }
 
 export const createEntityButton = (schema: any, table: any) => {
-    const _button = reactive(new entityButton(schema, systemInstance))
-    _button.entity = table
+    const _button = reactive(new entityButton(schema, systemInstance, table))
     _button.initButton()
     return _button
 }
