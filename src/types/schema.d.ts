@@ -560,3 +560,6 @@ export type propsConfig = {
   directive?: Array<Array<Directive>>
   capture?: boolean
 }
+
+
+export type routeOpenConfig = { entityName: string, isEdit?: boolean, path?: string }

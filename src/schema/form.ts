@@ -11,7 +11,7 @@ import formitemView from "./editComponent/formitemView"
 export class form extends base<formConfig> {
   formConfig: formConfig = {
     isDraggable: true,
-    isResizable: false,
+    isResizable: true,
     items: [],//编辑项
   }
   renderForm: VxeFormProps = {

@@ -9,7 +9,7 @@ import menuItemView from "./schemaComponent/menuItemView";
 import { VxeInput, VxeInputProps } from "vxe-table";
 import { createInput, input } from "./input";
 import inputView from "./schemaComponent/inputView";
-import { createContextMenu } from "./businessTable/contextMenu";
+import { contextMenu, createContextMenu } from "./businessTable/contextMenu";
 import instanceView from "./schemaComponent/instanceView";
 import { createForm, form } from "./form";
 import { menuData, menuData1 } from "@/api/data3";
@@ -26,27 +26,31 @@ export class menu extends base<MenuProps> {
             key: 'addItem',
             disabled: false,
             // icon: () => h(MailOutlined),
-            label: '添加子节点',
+            label: '新建模块',
             runFun: (value: any) => {
-                const contextMenu = value.contextMenu
-                const menu = contextMenu.getParent()
+                const contextMenu = value.contextMenu as contextMenu
+                const menu = contextMenu.getParent!()
                 const _this = menu as menu
                 const currentMenuItem = _this.getCurrentContextItem!()
                 const data = menuData
                 const someItem = JSON.parse(JSON.stringify(data[Math.floor(Math.random() * 6)]))
-                if (currentMenuItem == null) {
-                    _this.addMenuItem(someItem, null as any)
-                } else {
-                    _this.addMenuItem(someItem, currentMenuItem)
-                }
+                _this.addMenuItem(someItem, currentMenuItem)
             }
         },
         {
             key: 'deleteItem',
-            label: '删除该节点',
+            label: '删除模块',
             disabled: false,
-            onClick: (value: any) => {
-
+            runFun: (value: any) => {
+                const contextMenu = value.contextMenu as contextMenu
+                const menu = contextMenu.getParent!()
+                const _this = menu as menu
+                const currentMenuItem = _this.getCurrentContextItem!()
+                if (currentMenuItem == null) {
+                    return
+                } else {
+                    _this.deleteMenuItem(currentMenuItem)
+                }
             },
         },] as ItemType[]
     }
@@ -89,12 +93,22 @@ export class menu extends base<MenuProps> {
             const vNode = menuConfig.vNode
             vNode?.addMenuItem(item)
         } else {
-            console.log(parentItem, 'pItem')
             const _item = menuData1.find(row => {
-                console.log(`${row.parentId}` == `${parentItem.schema.id}`)
                 return row.parentId == parentItem.schema.id
             })
             parentItem.addMenuItem(_item)
+        }
+    }
+    deleteMenuItem(item: menuItem) {
+        const parent = item.getParent()
+        console.log(parent, 'testP')
+        const children = parent.children
+        const index = children.findIndex(chi => {
+            return chi == item
+        })
+        console.log(index, 'testIndex')
+        if (index != -1) {
+            children.splice(index, 1)
         }
     }
     initMenu() {
@@ -416,16 +430,10 @@ export class menuItem extends base {
         }, [])]
     }
     addMenuItem(item: any) {
-        // const menuItemConfig = this.menuItemConfig as any
-        // const key = this.getMenu().menuConfig.key! 
-        // const keyValue = menuItemConfig[key]
-        // item[key] = item[key] + Math.floor(Math.random() * 100)
-        // console.log(item, this.schema)
         const newItem = createMenuItem(item, this.getMenu())
         newItem.getParent = () => {
             return this
         }
-        // this.children = [...this.children, newItem]
         this.children.push(newItem)
     }
     deleteMenuItem() {

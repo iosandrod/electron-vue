@@ -3,7 +3,7 @@ import { VxeButton, VxeTableDefines } from "vxe-table"
 import { base } from "./base"
 import { createMenu, menu } from "./menu"
 import { menuData, menuData1 } from "@/api/data3"
-import { StyleType, localStorageValue, menuConfig, tabConfig, tableConfig } from "@/types/schema"
+import { StyleType, localStorageValue, menuConfig, routeOpenConfig, tabConfig, tableConfig } from "@/types/schema"
 import { useLocalStorage } from '@vueuse/core'
 import { createMainEntity, mainEntity } from "./businessTable/mainEntity"
 import { getRouter } from "@/router"
@@ -72,9 +72,9 @@ export class system extends base {
     await this.initRenderTab()
     this.displayState = 'show'
     setTimeout(() => {
-      // this.routeOpen({ entityName: "t_SdOrder" })
+      this.routeOpen({ entityName: "t_SdOrder" })
       // this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
-      this.routeOpen('index9')
+      // this.routeOpen('index9')
       // const router = this.getRouter()
       // router.push({ path: '/index8' })
     }, 1000);
@@ -159,7 +159,7 @@ export class system extends base {
     localStorage.token = useLocalStorage('token', '') as any
   }
   //打开路由
-  routeOpen(openConfig: { entityName: string, isEdit?: boolean, path?: string } | string) {//打开某个路由 以路由基础,是否编辑页面 
+  routeOpen(openConfig: routeOpenConfig | string) {//打开某个路由 以路由基础,是否编辑页面 
     //判断是否有这个路由
     if (typeof openConfig == 'string') {
       const reg = new RegExp(/_edit$/)

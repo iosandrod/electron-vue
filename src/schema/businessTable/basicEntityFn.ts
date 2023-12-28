@@ -180,3 +180,19 @@ export const initRenderSearchDialog = (entity: basicEntity) => {
     const dialog = createDialog('entitySearchDialog', renderSearchDialog, false)
     _this.pageRef.searchDialog = dialog as any
 }
+
+
+export const jumpToEditPage = (entity: mainEntity) => {
+    const _this = entity
+    const system = _this.system
+    system.routeOpen({ entityName: _this.entityName, isEdit: true })
+}
+// export cosnt  
+
+export const curRowChange = (entity: mainEntity) => {
+
+}
+
+export const getPageData = (entity: mainEntity) => {
+
+}

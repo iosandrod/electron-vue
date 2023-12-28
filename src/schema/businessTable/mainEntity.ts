@@ -1,7 +1,7 @@
 import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { systemInstance } from "../system"
-import { StyleType, displayState, entityConfig, layoutItem } from "@/types/schema"
+import { StyleType, displayState, entityConfig, layoutItem, routeOpenConfig } from "@/types/schema"
 import { createPage } from "./pageTree"
 import { getTableConfig, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
@@ -89,6 +89,17 @@ export class mainEntity extends basicEntity {
   initEditEntity() {
 
   }
+  //跳转当前路由表的编辑页面
+  jumpToEditPage() {
+    const _this = this
+    const system = _this.system
+    const openConfig: routeOpenConfig = {
+      entityName: _this.entityName,
+      isEdit: true
+    }
+    system.routeOpen(openConfig)
+  }
+
 }
 
 //业务

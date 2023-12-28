@@ -21,7 +21,7 @@
         minHeight: '280px',
       }">
         <div class="flex flex-col w-full h-full">
-          <div class="w-full bg-gray-400" style="height: 30px;">
+          <div class="w-full " style="height: 30px;">
             <tab-view :tabInstance="systemInstance.pageRef.tabRef"></tab-view>
           </div>
           <div>

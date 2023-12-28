@@ -503,14 +503,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       targetCol!.editType! = type
     }
   }
+
 }
 
 export const createBasicEntity = async () => {
   return null
 }
-// import createFn from '../createFn'
-
-// export let getCreateFn = (): any => {
-//   return createFn
-// }
-// console.log(getCreateFn, 'testCreate')
