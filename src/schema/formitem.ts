@@ -1,8 +1,8 @@
-import { ReactiveEffect, computed, h, reactive, watch, watchEffect } from "vue";
+import { ReactiveEffect, computed, h, reactive, resolveComponent, watch, watchEffect } from "vue";
 import { base } from "./base";
 import { system, systemInstance } from "./system";
 import { VxeButton, VxeFormItemProps } from 'vxe-table'
-import { dialogConfig, inputConfig, itemConfig, pickKey, tableConfig } from "@/types/schema";
+import { dialogConfig, inputConfig, itemConfig, layoutItem, pickKey, tableConfig } from "@/types/schema";
 import { column } from "./column";
 import * as formitemFn from './formitemFn'
 import { baseEdit } from "./baseEdit";
@@ -14,6 +14,7 @@ import { createInput } from "./input";
 import { instancePool } from "./formitemComFn";
 import inputView from "./schemaComponent/inputView";
 export class formitem extends baseEdit<any> {
+    itemIndex?: number
     form?: form
     getForm?: () => form
     getTable?: () => table
@@ -25,18 +26,21 @@ export class formitem extends baseEdit<any> {
         isFocus: false
     }
     renderInput: inputConfig = {}
+    renderLayoutItem: layoutItem = {
+        i: "",
+        x: 0,
+        y: 0,
+        w: 0,
+        h: 0
+    }
     table?: table
     column?: column
+    //@ts-ignore
     itemConfig: itemConfig & inputConfig = {
         isPulldownFocus: false,
         folding: false, //折叠
         type: "text",
         isFocus: false,//是否聚焦
-        // baseInfoTable: {//
-        //     tableName: 't_Item',//表名 
-        //     tableData: [],//表的数据
-        //     columns: [],//表的列
-        // },
         baseInfoTable: null,
         options: [] as any,
         layout: undefined,
@@ -78,7 +82,18 @@ export class formitem extends baseEdit<any> {
         this.initRenderItem()
         this.initBaseInfoDialog()
         this.initInputInstance()
+        this.initRenderLayoutItem()
         this.initComponent()
+    }
+    initRenderLayoutItem() {
+        const form = this.form
+        const field = this.itemConfig.field
+        this.renderLayoutItem = computed(() => {
+            const renderLayout = form?.renderLayout.layout?.find(layout => {
+                return layout.i == field
+            })
+            return renderLayout
+        }) as any
     }
     initInputInstance() {
         const _this = this
@@ -139,17 +154,24 @@ export class formitem extends baseEdit<any> {
 
     }
     async initComponent() {
+        const _this = this
         const vNode = () => {
-            return h(inputView, { inputInstance: this.pageRef.inputInstance })
+            const formitem = resolveComponent('vxe-form-item')
+            const renderItem = _this.renderItem
+            let renderVxeitem = h(formitem, { ...renderItem }, () => {
+                const input = h(inputView, { inputInstance: this.pageRef.inputInstance })
+                return input
+            })
+            return renderVxeitem
         }
         this.component = vNode
     }
     async initRenderItem() {
         const renderItem = this.renderItem
-        renderItem.slots = formitemFn.getFormitemSlots(this).value as any
+        // renderItem.slots = formitemFn.getFormitemSlots(this).value as any
         renderItem.span = formitemFn.getFormitemSpan(this) as any
-        renderItem.visible = formitemFn.getFormItemVisible(this) as any
-        renderItem.folding = formitemFn.getFormItemFolding(this) as any
+        // renderItem.visible = formitemFn.getFormItemVisible(this) as any
+        // renderItem.folding = formitemFn.getFormItemFolding(this) as any
         renderItem.field = formitemFn.getFormItemField(this) as any
     }
 }

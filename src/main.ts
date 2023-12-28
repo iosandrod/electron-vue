@@ -15,6 +15,9 @@ import 'ant-design-vue/dist/reset.css';
 import VueGridLayout from 'vue-grid-layout'
 import ganttastic from './components/gantt/vue-ganttastic'
 import { getSystem } from './schema/system'
+import { createFn } from './schema/createFn'
+import { basicEntity } from './schema/businessTable/basicEntity'
+basicEntity.prototype.createFn = createFn
 const app = createApp(App)
 app.config.globalProperties['system'] = getSystem()
 app

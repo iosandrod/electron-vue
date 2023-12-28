@@ -198,7 +198,7 @@ export type itemConfig = VxeFormItemProps & {
 
 export type formConfig = VxeFormProps & {
   items: formitem[]
-}
+} & layoutConfig
 
 
 export type selectConfig = pickKey<SelectProps & {
@@ -239,6 +239,8 @@ export type layoutItem = {
   component?: any
 }
 export type layoutConfig = {
+  ['onUpdate:layout']?: (value: any) => void
+  preventCollision?: boolean
   margin?: number[]
   contextMenuPosition?: position
   layout?: Array<layoutItem>

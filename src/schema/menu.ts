@@ -12,7 +12,7 @@ import inputView from "./schemaComponent/inputView";
 import { createContextMenu } from "./businessTable/contextMenu";
 import instanceView from "./schemaComponent/instanceView";
 import { createForm, form } from "./form";
-import { menuData } from "@/api/data3";
+import { menuData, menuData1 } from "@/api/data3";
 
 export class menu extends base<MenuProps> {
     renderInput: VxeInputProps = {}
@@ -33,15 +33,12 @@ export class menu extends base<MenuProps> {
                 const _this = menu as menu
                 const currentMenuItem = _this.getCurrentContextItem!()
                 const data = menuData
-                const someItem = data[Math.floor(Math.random() * 6)]
+                const someItem = JSON.parse(JSON.stringify(data[Math.floor(Math.random() * 6)]))
                 if (currentMenuItem == null) {
-                    _this.addMenuItem(someItem, null)
+                    _this.addMenuItem(someItem, null as any)
                 } else {
                     _this.addMenuItem(someItem, currentMenuItem)
                 }
-                setTimeout(() => {
-                    console.log(_this.menuConfig.vNode, 'testVNode')
-                }, 500);
             }
         },
         {
@@ -86,13 +83,18 @@ export class menu extends base<MenuProps> {
             contextInstance.openContext($event)
         }
     }
-    addMenuItem(item: any, parentItem: any) {
+    addMenuItem(item: any, parentItem: menuItem) {
         const menuConfig = this.menuConfig
         if (parentItem == null) {
             const vNode = menuConfig.vNode
             vNode?.addMenuItem(item)
         } else {
-            parentItem.addMenuItem(item)
+            console.log(parentItem, 'pItem')
+            const _item = menuData1.find(row => {
+                console.log(`${row.parentId}` == `${parentItem.schema.id}`)
+                return row.parentId == parentItem.schema.id
+            })
+            parentItem.addMenuItem(_item)
         }
     }
     initMenu() {
@@ -262,7 +264,8 @@ export class menu extends base<MenuProps> {
                 ...renderMenu,
             }, () => {
                 return _vNode.children.map((node: any) => {
-                    return node.component()
+                    // return node.component()
+                    return h(menuItemView, { menuItem: node })
                 })
             })
             const contextMenu = h(instanceView, { instance: _this.pageRef.contextInstance })
@@ -291,6 +294,7 @@ export class menu extends base<MenuProps> {
 
 
 export class menuItem extends base {
+    menuItemConfig = {}
     children: menuItem[] = []
     renderMenuItem: MenuItemProps = {}
     renderSubMenu: SubMenuProps = {}
@@ -338,12 +342,19 @@ export class menuItem extends base {
     }
     initMenuItem(data: []) {
         //
+        const schema = this.schema
+        const menuItemConfig: any = this.menuItemConfig
+        for (const key of Object.keys(schema)) {
+            this.effectPool[`menuItem${key}Effect`] = watchEffect(() => {
+                menuItemConfig[key] = schema[key]
+            })
+        }
         this.initRenderMenuItem()
         this.initComponent()
     }
     initRenderMenuItem() {
         const _this = this
-        const schema = this.schema
+        const schema: any = this.menuItemConfig
         const renderMenuItem = this.renderMenuItem
         const menu = this.getMenu()
         const titleKey = menu.menuConfig.titleKey || 'title'
@@ -360,7 +371,6 @@ export class menuItem extends base {
             menu.getCurrentContextItem = () => { return this }
             menu.openContext($event)
         }
-        const renderSubMenu = this.renderSubMenu
     }
     buildData() {
         const schema = this.schema!
@@ -406,11 +416,17 @@ export class menuItem extends base {
         }, [])]
     }
     addMenuItem(item: any) {
+        // const menuItemConfig = this.menuItemConfig as any
+        // const key = this.getMenu().menuConfig.key! 
+        // const keyValue = menuItemConfig[key]
+        // item[key] = item[key] + Math.floor(Math.random() * 100)
+        // console.log(item, this.schema)
         const newItem = createMenuItem(item, this.getMenu())
         newItem.getParent = () => {
             return this
         }
-        this.children = [...this.children, newItem]
+        // this.children = [...this.children, newItem]
+        this.children.push(newItem)
     }
     deleteMenuItem() {
 
@@ -426,15 +442,10 @@ export class menuItem extends base {
     }
     initComponent() {
         const renderMenuItem = this.renderMenuItem
-        const renderCom = computed(() => {
-            const children = this.children
-            if (children?.length > 0) {
-                return SubMenu
-            } else {
-                return MenuItem
-            }
-        })
         const _this = this
+        const showItem = computed(() => {
+            return _this.displayState == 'show' && _this.children.length == 0
+        })
         const show = computed(() => {
             return _this.displayState == 'show'
         })
@@ -445,22 +456,27 @@ export class menuItem extends base {
             if (destroy.value == true) {
                 return null
             }
-            const node = h(renderCom.value, renderMenuItem, () => {
-                if (this.children.length > 0) {
-                    return this.children.map((chi: any) => {
+            if (_this.children.length > 0) {
+                const node = h(SubMenu, { ...renderMenuItem, }, () => {
+                    return _this.children.map((chi: menuItem) => {
                         return h(menuItemView, { menuItem: chi })
                     })
-                } else {
+                })
+                const node1 = h('div', [node])
+                return withDirectives(node1, [[vShow, show.value]])
+            } else {
+                const node = h(MenuItem, renderMenuItem, () => {
                     return h('div', {
                         onClick: ($event: MouseEvent) => {
                             const menu = _this.getMenu()
                             menu.menuItemClick(_this)
                         },
                     }, [renderMenuItem.title])
-                }
-            })
-            const node1 = h('div', [node])
-            return withDirectives(node1, [[vShow, show.value]])
+                })
+                const node1 = h('div', [node])
+                return withDirectives(node1, [[vShow, showItem.value]])
+            }
+
         }
         this.component = vNode//初始化节点
     }

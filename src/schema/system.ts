@@ -2,12 +2,12 @@ import { computed, h, isProxy, nextTick, reactive } from "vue"
 import { VxeButton, VxeTableDefines } from "vxe-table"
 import { base } from "./base"
 import { createMenu, menu } from "./menu"
-import { menuData } from "@/api/data3"
+import { menuData, menuData1 } from "@/api/data3"
 import { StyleType, localStorageValue, menuConfig, tabConfig, tableConfig } from "@/types/schema"
 import { useLocalStorage } from '@vueuse/core'
 import { createMainEntity, mainEntity } from "./businessTable/mainEntity"
 import { getRouter } from "@/router"
-import { dialogPool } from "./dialog"
+// import { dialogPool } from "./dialog"
 import { RouteRecordSingleView } from "vue-router"
 import ViewGrid from '@/views/layout/ViewGrid.vue'
 import { TabPaneProps } from "ant-design-vue"
@@ -64,7 +64,7 @@ export class system extends base {
   }
   //都是使用entity作为路由基础组件
   async systemInit() {
-    dialogPool.initDialogPool()
+    // dialogPool.initDialogPool()
     //初始化menu 实例数据
     await this.initBaseInfoTable('')
     await this.initLocalStorage()
@@ -74,21 +74,17 @@ export class system extends base {
     setTimeout(() => {
       // this.routeOpen({ entityName: "t_SdOrder" })
       // this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
-      // this.routeOpen('index9')
+      this.routeOpen('index9')
       // const router = this.getRouter()
       // router.push({ path: '/index8' })
     }, 1000);
   }
   async initSystemPermission() { }
   async initRenderMenu() {//菜单数据
-    const data = JSON.parse(JSON.stringify(menuData))
+    const data = JSON.parse(JSON.stringify(menuData1))
     const renderMenu = this.renderMenu
     const _this = this
-    // renderMenu.data = computed(() => {
-    //   console.log(data, 'testMenuData')
-    //   return data
-    // }) as any
-    renderMenu.data = []
+    renderMenu.data = data
     renderMenu.key = 'id'
     renderMenu.parentKey = 'parentId'
     renderMenu.titleKey = 'menuName'
@@ -157,15 +153,13 @@ export class system extends base {
     }
     let _baseInfoTable = createBaseInfoTable(baseInfoConfig)
     this.baseInfoTableMap[tableName] = _baseInfoTable
-    // const tableInfo = await getTableConfig(tableName)
-
   }
   async initLocalStorage() {
     const localStorage = this.localStorage
     localStorage.token = useLocalStorage('token', '') as any
   }
   //打开路由
-  routeOpen(openConfig: { entityName: string, isEdit?: boolean, path?: string }) {//打开某个路由 以路由基础,是否编辑页面 
+  routeOpen(openConfig: { entityName: string, isEdit?: boolean, path?: string } | string) {//打开某个路由 以路由基础,是否编辑页面 
     //判断是否有这个路由
     if (typeof openConfig == 'string') {
       const reg = new RegExp(/_edit$/)

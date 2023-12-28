@@ -36,11 +36,15 @@ import { VxeGrid } from "vxe-table"
 import modal from '@/components/modal.vue'
 import { buttonGroup, createButtonGroup } from "../buttonGroup"
 import { createDetailEntityGroup, detailEntityGroup } from "./detailEntityGroup"
+import { createFn } from "../createFn"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   tabIndex: number = 0//使用tabIndex ,路由的tab 
   sub = new Subject()//动作发射器
   detailTable?: detailEntity[] = []
   renderDetailEntity: entityGroupConfig = {}
+  utils = {
+  } as any
+  createFn: typeof createFn = null as any
   http = http
   isEditEntity = false
   entityTabKey?: string

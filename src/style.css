@@ -123,3 +123,11 @@ body{
 .global-where-color{
     background:yellow
 }
+
+.vue-grid-item.vue-grid-placeholder {
+    background: none !important; 
+}
+
+.vxe-form--item{
+    width:100% !important 
+}

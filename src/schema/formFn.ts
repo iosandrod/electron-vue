@@ -8,7 +8,6 @@ export const getFormItems = (form: form) => {
             return item.renderItem
         }).filter(item1 => item1 != null)
         return _items
-        // return []
     })
 }
 

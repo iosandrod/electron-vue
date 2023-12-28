@@ -124,7 +124,11 @@ export const initRenderEditForm = (entity: basicEntity) => {
     renderEditForm.data = computed(() => {
         return {}
     }) as any
-    renderEditForm.items = _this.tableConfig.columns?.filter(col => Boolean(col.editType) == true).map(col => {
+    renderEditForm.items = _this.tableConfig.columns?.filter(col => Boolean(col.editType) == true).sort((c1, c2) => {
+        const o1 = c1.editOrderNo!
+        const o2 = c2.editOrderNo!
+        return o1 - o2!
+    }).map(col => {
         const obj: formItemConfig = {} as any
         obj.type = computed(() => {
             return col.editType
@@ -133,8 +137,11 @@ export const initRenderEditForm = (entity: basicEntity) => {
             return col.field
         }) as any
         obj.span = computed(() => {
-            // return col.editColSize! * 2
-            return 6
+            const num = Number(col.editColSize)
+            if (isNaN(num)) {
+                return 6
+            }
+            return num! * 2
         }) as any
         obj.title = computed(() => {
             return col.editTitle || col.title

@@ -14,11 +14,11 @@ export const initComponent = (layout: layoutGrid) => {
             const renderLayoutItem = chi.nodeConfig
             const nodeName = chi.nodeName
             const dragDiv = computed(() => {
-                let drag = renderLayout.isDraggable && renderLayout.isResizable
-                if (drag == true) {
-                    return h('div', { style: { position: "absolute", top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType })
-                }
-                return null
+                // let drag = renderLayout.isDraggable && renderLayout.isResizable
+                // if (drag == true) {
+                //     return h('div', { style: { position: "absolute", top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px' } as StyleType })
+                // }
+                // return null
             })
             return h(layoutItemCom, { ...renderLayoutItem },
                 () => {

@@ -128,12 +128,8 @@ const contextMenu = createContextMenu({
 function inputChange({ value }: any) {
   _menu.inputChange()
 }
-let state = true;
 function btnClick() {
-  _testTableViewData1.data.forEach(row => {
-    row['checkboxField'] = !state
-  })
-  state = !state
+
 }
 const showValue = ref(true)
 // const vNode = h('div', {

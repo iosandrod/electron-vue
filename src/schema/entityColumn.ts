@@ -298,6 +298,7 @@ export class entityColumn {
     getEntity?: () => basicEntity
     editType: string = ''
     field: string = ''
+    editOrderNo?: number
     editColSize?: number
     title: string = ''
     editTitle: string = ''

@@ -17,6 +17,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     dialogPool?: DialogPool
     dialogComponent: any = shallowRef(dialogComponent)
     modalInstance?: VxeModalInstance
+    dialogData = {}
     // dialogConfig: concatAny<VxeModalProps & { dialogPrimaryName?: string }> = {//modalData 是模态框的存储数据
     dialogConfig: dialogConfig = {
         modelValue: false,//默认是不打开弹框
@@ -145,8 +146,8 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         await destroyDialog(this.dialogConfig.dialogPrimaryName!)
     }
     getTableView() {
-        const modalData = this.dialogConfig.modalData
-        return modalData.table
+        // const modalData = this.dialogConfig.modalData
+        // return modalData.table
     }
 }
 
@@ -183,31 +184,31 @@ export class DialogPool {
         }
     }
     initVxeDynamics() {
-        const VxeDynamics = defineComponent({
-            setup() {
-                const modals = dialogPool.getActiveDialog();
-                return () => {
-                    return h(
-                        "div",
-                        {
-                            class: "vxe-dynamics--modal",
-                        },
-                        modals.value.map((item) => {
-                            return h(VxeModal, item)
-                        }
-                        )
-                    );
-                };
-            },
-        });
-        this.dynamicApp = shallowRef(createApp(VxeDynamics)) as any
-        nextTick(() => {
-            this.dynamicApp!.use(VXETable)
-            this.dynamicApp!.use(register)
-        })
+        // const VxeDynamics = defineComponent({
+        //     setup() {
+        //         const modals = dialogPool.getActiveDialog();
+        //         return () => {
+        //             return h(
+        //                 "div",
+        //                 {
+        //                     class: "vxe-dynamics--modal",
+        //                 },
+        //                 modals.value.map((item) => {
+        //                     return h(VxeModal, item)
+        //                 }
+        //                 )
+        //             );
+        //         };
+        //     },
+        // });
+        // this.dynamicApp = shallowRef(createApp(VxeDynamics)) as any
+        // nextTick(() => {
+        //     this.dynamicApp!.use(VXETable)
+        //     this.dynamicApp!.use(register)
+        // })
     }
 }
-export const dialogPool = reactive(new DialogPool())
+// export const dialogPool = reactive(new DialogPool())
 
 
 export const createDialog = (schemaName: string = 'codeEdit', schema: concatAny<VxeModalProps & {
@@ -218,85 +219,85 @@ export const createDialog = (schemaName: string = 'codeEdit', schema: concatAny<
     //schemaName这个是弹框的名称
     const Dialog = reactive(new dialog(schemaName, schema, getSystem()))
     Dialog.initDialog()
-    if (global == true) {
-        addDialog(Dialog as any)//在页面进行新增
-    }
+    // if (global == true) {
+    //     addDialog(Dialog as any)//在页面进行新增
+    // }
     return Dialog
 }
 
 export const addDialog = (dialog: dialog) => {
-    const dialogArr = dialogPool.dialogArr
-    const key = dialog.dialogConfig.dialogPrimaryName
-    const hasDialog = dialogArr.find(dia => dia.dialogConfig.dialogPrimaryName == key)
-    if (hasDialog) {
-        return
-    }
-    dialogArr.push(dialog as any)
+    // const dialogArr = dialogPool.dialogArr
+    // const key = dialog.dialogConfig.dialogPrimaryName
+    // const hasDialog = dialogArr.find(dia => dia.dialogConfig.dialogPrimaryName == key)
+    // if (hasDialog) {
+    //     return
+    // }
+    // dialogArr.push(dialog as any)
 }
 
 export const openDialog = (config: openDialogConfig) => {
-    const key = config.key
-    const dialogArr = dialogPool.dialogArr
-    const targetDialog = dialogArr.find(dia => {
-        const primaryKey = dia.dialogConfig.dialogPrimaryName
-        return primaryKey != null && primaryKey == key
-    })
-    if (targetDialog) {
-        const position = config.position
-        if (position != null && typeof position == 'object') {
-            targetDialog.dialogConfig.position = position
-        }
-        targetDialog.dialogConfig.modelValue = true
-    }
+    // const key = config.key
+    // const dialogArr = dialogPool.dialogArr
+    // const targetDialog = dialogArr.find(dia => {
+    //     const primaryKey = dia.dialogConfig.dialogPrimaryName
+    //     return primaryKey != null && primaryKey == key
+    // })
+    // if (targetDialog) {
+    //     const position = config.position
+    //     if (position != null && typeof position == 'object') {
+    //         targetDialog.dialogConfig.position = position
+    //     }
+    //     targetDialog.dialogConfig.modelValue = true
+    // }
 }
 
 export const closeDialog = (key: string) => {
-    const dialogArr = dialogPool.dialogArr
-    const targetDialog = dialogArr.find(dia => {
-        const primaryKey = dia.dialogConfig.dialogPrimaryName
-        return primaryKey != null && primaryKey == key
-    })
-    if (targetDialog) {
-        targetDialog.dialogConfig.modelValue = false
-    }
+    // const dialogArr = dialogPool.dialogArr
+    // const targetDialog = dialogArr.find(dia => {
+    //     const primaryKey = dia.dialogConfig.dialogPrimaryName
+    //     return primaryKey != null && primaryKey == key
+    // })
+    // if (targetDialog) {
+    //     targetDialog.dialogConfig.modelValue = false
+    // }
 }
 
 export const destroyDialog = (key: string) => {
-    closeDialog(key)
-    nextTick(() => {
-        const index = dialogPool.dialogArr.findIndex(dia => {
-            return dia.dialogConfig.dialogPrimaryName == key
-        })
-        if (index != -1) {
-            dialogPool.dialogArr.splice(index, 1)
-        }
-    });
+    // closeDialog(key)
+    // nextTick(() => {
+    //     const index = dialogPool.dialogArr.findIndex(dia => {
+    //         return dia.dialogConfig.dialogPrimaryName == key
+    //     })
+    //     if (index != -1) {
+    //         dialogPool.dialogArr.splice(index, 1)
+    //     }
+    // });
 }
 
 
 export const confirm = async (confirmConfig: confirmConfig) => {
-    let createFn = () => async () => { }
-    let callback = confirmConfig.callback || createFn()
-    let cancelCallback = confirmConfig.cancelCallback || createFn()
-    const buttons = [{
-        btnFun: async (dialog: dialog) => {
-            await callback(dialog)
-            dialog.destroy()
-        }, text: "确认"
-    }, {
-        btnFun: async (dialog: dialog) => {
-            await cancelCallback(dialog)
-            dialog.destroy()
-        }, text: "取消"
-    }]
-    const _confirmConfig: dialogConfig = Object.assign({
-        message: "确认提示",
-        type: "modal",
-        buttons: buttons,
-        height: 200,
-        width: 350,//正方形的弹框
-    } as dialogConfig, confirmConfig)
-    const dia = createDialog('confirm', _confirmConfig)
-    dia.open()
-    return dia
+    // let createFn = () => async () => { }
+    // let callback = confirmConfig.callback || createFn()
+    // let cancelCallback = confirmConfig.cancelCallback || createFn()
+    // const buttons = [{
+    //     btnFun: async (dialog: dialog) => {
+    //         await callback(dialog)
+    //         dialog.destroy()
+    //     }, text: "确认" 
+    // }, {
+    //     btnFun: async (dialog: dialog) => {
+    //         await cancelCallback(dialog)
+    //         dialog.destroy()
+    //     }, text: "取消"
+    // }]
+    // const _confirmConfig: dialogConfig = Object.assign({
+    //     message: "确认提示",
+    //     type: "modal",
+    //     buttons: buttons,
+    //     height: 200,
+    //     width: 350,//正方形的弹框
+    // } as dialogConfig, confirmConfig)
+    // const dia = createDialog('confirm', _confirmConfig)
+    // dia.open()
+    // return dia
 }

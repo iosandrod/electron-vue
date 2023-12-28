@@ -323,6 +323,7 @@ export const initRenderFormitem = (column: column) => {
     //     let type = column.columnConfig.editType
     //     return type
     // }) as any
+    //@ts-ignore
     renderFormitem.type = column.columnConfig.editType
     renderFormitem.onChange = (value: any) => {
         const _onChange = columnConfig.onChange
@@ -334,7 +335,6 @@ export const initRenderFormitem = (column: column) => {
     // renderFormitem.field = computed(() => {
     //     return column.columnConfig.field
     // }) as any
-
     renderFormitem.options = computed(() => {
         return columnConfig.options
     }) as any//下拉框的数据绑定

@@ -20,13 +20,7 @@ export class layoutGrid extends base {
         this.pageTree = pageTree
     }
     initLayoutGrid() {
-        // const schema = this.schema
-        // for (const key of Object.keys(schema)) {
-        //     let layoutConfig: any = this.layoutConfig
-        //     this.effectPool[`layoutGrid${key}Effect`] = watchEffect(() => {
-        //         layoutConfig[key] = schema[key]
-        //     })
-        // }
+
         this.initRenderLayout()
         this.initComponent()
     }
