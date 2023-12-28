@@ -1,6 +1,7 @@
 import { tableData, tableInfo, tableinfo1 } from "@/api/data";
 import { columnConfig } from "@/types/schema";
 import { basicEntity } from "./businessTable/basicEntity";
+import { mainEntity } from "./businessTable/mainEntity";
 
 const alignType = {
     left: ['string'],
@@ -305,6 +306,7 @@ export class entityColumn {
     searchType: string = ''
     sBindField: string = ''
     options: any[] = []
+    cDefaultValue: ((value?: mainEntity) => any) | string | number = ''
     baseInfoTable?: { tableName: string }
     initColumn(column: any) {
         const _this: any = this

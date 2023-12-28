@@ -86,8 +86,28 @@ export class mainEntity extends basicEntity {
       _refName.displayState = state
     }
   }
-  initEditEntity() {
+  //初始化默认实体数据
+  initDefaultEntity() {
 
+  }
+  async getDefaultModel() {
+    const _this = this
+    const columns = _this.tableConfig.columns
+    const obj: any = {}
+    for (const col of columns!) {
+      try {
+        const field = col.field
+        let value = col.cDefaultValue
+        const cDefaultValue = col.cDefaultValue
+        if (typeof cDefaultValue == 'function') {
+          value = await cDefaultValue()
+        }
+        obj[field] = value
+      } catch (error) {
+        console.log('some error')
+      }
+    }
+    return obj
   }
   //跳转当前路由表的编辑页面
   jumpToEditPage() {
@@ -99,7 +119,6 @@ export class mainEntity extends basicEntity {
     }
     system.routeOpen(openConfig)
   }
-
 }
 
 //业务
