@@ -49,7 +49,7 @@
     "@vue/test-utils": "^2.4.2",
     "@vueuse/core": "^10.6.1",
     "@vueuse/integrations": "^10.6.1",
-    "ant-design-vue": "4.0.6",
+    "ant-design-vue": "4.0.8",
     "axios": "^1.6.0",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.10",
