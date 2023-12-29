@@ -100,7 +100,8 @@ export class formitem extends baseEdit<any> {
         const renderInput = this.renderInput
         const itemConfig = this.itemConfig
         renderInput.type = computed(() => {
-            return this.itemConfig.type
+            let type = this.itemConfig.type
+            return type
         }) as any
         renderInput.onChange = (value) => {
             const _onChange = itemConfig.onChange
@@ -114,6 +115,19 @@ export class formitem extends baseEdit<any> {
                 return options
             }
             return []
+        }) as any
+        renderInput.disabled = computed(() => {
+            const form = this.form
+            const formDisabled = form?.formConfig.disabled
+            if (formDisabled == true) {
+                return true
+            }
+            // const data = form?.formConfig.data
+            // const field = _this.itemConfig.field
+            // if (data['cSdOrderNo'] == '111' && field == 'cCustName') {
+            //     return true
+            // }
+            return false
         }) as any
         renderInput.modelValue = computed(() => {
             let value = ''
@@ -170,8 +184,7 @@ export class formitem extends baseEdit<any> {
         const renderItem = this.renderItem
         // renderItem.slots = formitemFn.getFormitemSlots(this).value as any
         renderItem.span = formitemFn.getFormitemSpan(this) as any
-        // renderItem.visible = formitemFn.getFormItemVisible(this) as any
-        // renderItem.folding = formitemFn.getFormItemFolding(this) as any
+        // renderItem.visible = formitemFn.getFormItemVisible(this) as any 
         renderItem.field = formitemFn.getFormItemField(this) as any
     }
 }

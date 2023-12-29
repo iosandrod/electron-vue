@@ -1,5 +1,7 @@
 import { tableinfo1 } from "@/api/data"
 import { detailEntity } from "@/schema/businessTable/detailEntity"
+import { mainEditEntity } from "@/schema/businessTable/mainEditEntity"
+import { mainEntity } from "@/schema/businessTable/mainEntity"
 import { nodeConfig, pageTreeNode } from "@/schema/businessTable/pageTree"
 import { column } from "@/schema/column"
 import { dialog } from "@/schema/dialog"
@@ -197,6 +199,7 @@ export type itemConfig = VxeFormItemProps & {
 }
 
 export type formConfig = VxeFormProps & {
+  disabled?: boolean,
   items: formitem[]
 } & layoutConfig
 
@@ -563,3 +566,27 @@ export type propsConfig = {
 
 
 export type routeOpenConfig = { entityName: string, isEdit?: boolean, path?: string }
+
+
+export type entityTableConfig = {
+  columns: entityColumn[],
+  editItems: formitem[],
+  searchItems: formitem[]
+}
+
+export type entityState = 'scan' | 'add' | 'edit'//基于crud
+
+export type tabFormConfig = {
+  items: formitem[]
+}
+
+export type codeEditRender = {
+  type: string
+}
+
+export type command = {
+  targetEntityName: string//目标页面
+  targetEntityType: string//目标页面类型
+  targetEntityKey?: string
+  runFun: (config: { entity: mainEntity | mainEditEntity | detailEntity, [key: string]: any }) => void
+}

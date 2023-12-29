@@ -42,6 +42,9 @@ const columnObj = [
         if (value == 'undefined') {
             return null
         }
+        if (value == 'string') {
+            value = 'codeEdit'
+        }
         return value
     }),
     new Translate('visible', 'isDisplay', function (targetValue, column) {

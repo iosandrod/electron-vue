@@ -15,8 +15,14 @@ import { baseInfoInit, baseInfoInitComponent, initBaseInfoTable } from "./editCl
 import { initComponent } from "./editClass/string";
 import { dateInit, datetimeInit, timeInit } from "./editClass/time";
 import { numberInit } from "./editClass/number";
+import { codeEditInitComponent, initRenderCodeEdit } from "./editClass/codeEdit";
+import * as monaco from 'monaco-editor'
 export class input extends base {
     hasInit = false
+    codeEditRender = {}
+    pageRef: {
+        codeEdit?: monaco.editor.IStandaloneCodeEditor
+    } = {}
     updateFn?: (value: any) => void
     getData?: () => any
     getField?: () => any
@@ -36,7 +42,7 @@ export class input extends base {
     }
     renderInput: inputConfig = {}
     renderSelect: SelectProps = {}
-    constructor(schema: any, system: system) {
+    constructor(schema: any, system: any) {
         super(system, schema)
     }
     initInput() {
@@ -103,6 +109,22 @@ export class input extends base {
                 return inputConfig.modelValue
             }
         }) as any
+        renderInput.placeholder = computed({
+            set: (value) => {
+                renderInput.placeholder = value
+            },
+            get: () => {
+                return inputConfig.placeholder || ''
+            }
+        })
+        renderInput.disabled = computed({
+            set: (value) => {
+                _this.inputConfig.disabled = value
+            },
+            get: () => {
+                return _this.inputConfig.disabled
+            }
+        }) as any
         renderInput.onChange = ({ value }: any) => {
             const getData = _this.getData
             const getField = _this.getField
@@ -140,6 +162,10 @@ export class input extends base {
     selectInit() {
         this.initRenderSelect()
         this.selectInitComponent()
+    }
+    codeEditInit() {
+        initRenderCodeEdit(this)
+        codeEditInitComponent(this)
     }
     initRenderSelect() {
         initRenderSelect(this)
@@ -180,8 +206,9 @@ export class input extends base {
     }
 }
 
-export const createInput = (schema: any) => {
-    const _input = reactive(new input(schema, systemInstance))
+export const createInput = (schema: inputConfig) => {
+    const _system = systemInstance
+    const _input = reactive(new input(schema, _system))
     _input.initInput()
     return _input
 }

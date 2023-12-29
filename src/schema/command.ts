@@ -1,3 +1,5 @@
-export class command {
-  constructor() {}
+
+
+export const createCommand = () => {
+
 }

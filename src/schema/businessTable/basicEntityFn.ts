@@ -124,6 +124,13 @@ export const initRenderEditForm = (entity: basicEntity) => {
     renderEditForm.data = computed(() => {
         return {}
     }) as any
+    renderEditForm.disabled = computed(() => {
+        const entityState = _this.entityState
+        if (entityState == 'scan') {
+            return true
+        }
+        return false
+    }) as any
     renderEditForm.items = _this.tableConfig.columns?.filter(col => Boolean(col.editType) == true).sort((c1, c2) => {
         const o1 = c1.editOrderNo!
         const o2 = c2.editOrderNo!
@@ -148,6 +155,9 @@ export const initRenderEditForm = (entity: basicEntity) => {
         }) as any
         obj.baseInfoTable = computed(() => {
             return col.baseInfoTable
+        }) as any
+        obj.options = computed(() => {
+            return col.options || []
         }) as any
         return obj
     }) as any

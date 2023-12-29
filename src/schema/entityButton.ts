@@ -34,7 +34,7 @@ const _button = [
     new Translate('dropBtns', 'dropBtns'),
     new Translate('cButtonText', 'cButtonText'),
     new Translate('cIcon', 'cIcon'),
-    new Translate('cFunName', 'cFunName', function (targetValue) {
+    new Translate('cFunName', 'cFunName', function (targetValue, btn, entityBtn) {
         if (targetValue == null) return 'default'
         let _value = targetValue
             .replace(/this.(\S*)\((\S*)\)/g, `$1 $2`)
@@ -130,6 +130,12 @@ export class entityButton extends button {
     visible: boolean = true
     dropBtns: any[] = []
     entity?: basicEntity
+    entityButtonConfig = {
+        cButtonName: '',
+        cButtonText: '',
+        cFunName: '',
+
+    }
     getEntity: (() => basicEntity) | (() => null) = () => null
     constructor(schema: any, system: any, entity: any) {
         super(schema, system)
@@ -137,10 +143,13 @@ export class entityButton extends button {
         this.getEntity = () => entity
     }
     async initButton() {
+        await super.initButton()
         const schema = this.schema as any
         const _this: any = this
-        _button.forEach((v) => {//按钮配置信息
-            _this.buttonConfig[v.key] = v.transFn!.call(_this, schema[v.targetKey], v, _this);
+        const entityButtonConfig: any = this.entityButtonConfig
+        _button.forEach((v) => {//按钮配置信息 
+            const targetValue = v.transFn!.call(_this, schema[v.targetKey], v, _this)
+            entityButtonConfig[v.key] = targetValue
         });
         if (_this.dropBtns && _this.dropBtns.length) {
             _this.dropBtns = _this.dropBtns.map((v: any) => {
@@ -148,7 +157,6 @@ export class entityButton extends button {
                 return createEntityButton(v, entity)
             });
         }//先把自身赋值
-        await super.initButton()
         this.displayState = 'show'
     }
     async initRenderButton() {
@@ -173,6 +181,7 @@ export class entityButton extends button {
         const displayState = computed(() => {
             return this.displayState
         })
+        const _this = this
         const vNode = () => {
             const _this = this
             if (displayState.value == 'destroy') {
@@ -181,7 +190,7 @@ export class entityButton extends button {
             return h(VxeButton, {
                 ...renderButton, onClick: () => {
                     const entity = this.getEntity()
-                    console.log(entity, 'testEntity', this)
+                    entity?.runButtonMethod(this)
                 }
             }, {
                 default: () => {

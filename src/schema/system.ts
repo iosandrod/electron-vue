@@ -3,7 +3,7 @@ import { VxeButton, VxeTableDefines } from "vxe-table"
 import { base } from "./base"
 import { createMenu, menu } from "./menu"
 import { menuData, menuData1 } from "@/api/data3"
-import { StyleType, localStorageValue, menuConfig, routeOpenConfig, tabConfig, tableConfig } from "@/types/schema"
+import { StyleType, command, localStorageValue, menuConfig, routeOpenConfig, tabConfig, tableConfig } from "@/types/schema"
 import { useLocalStorage } from '@vueuse/core'
 import { createMainEntity, mainEntity } from "./businessTable/mainEntity"
 import { getRouter } from "@/router"
@@ -22,6 +22,9 @@ import { getTableConfig } from "@/api/httpApi"
 import { createBaseInfoTable } from "./editClass/baseInfoTable"
 
 export class system extends base {
+  commandQueue: command[] = [
+
+  ]
   getRouter = getRouter
   defaultTableConfig = {}//默认的全体表的配置信息
   localStorage: localStorageValue = {}
@@ -74,7 +77,7 @@ export class system extends base {
     setTimeout(() => {
       this.routeOpen({ entityName: "t_SdOrder" })
       // this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
-      // this.routeOpen('index9')
+      // this.routeOpen('index10')
       // const router = this.getRouter()
       // router.push({ path: '/index8' })
     }, 1000);
@@ -287,12 +290,16 @@ export class system extends base {
     }
     const _table = createTable(renderTable)
   }
+  addCommand(command: command) {
+    // this.commandQueue = [...this.commandQueue, command]
+    this.commandQueue.push(command)
+  }
 }
 //
 const systemInstance = reactive(new system())
 
 
 export const getSystem = (): system => {
-  return systemInstance
+  return systemInstance as system
 }
 export { systemInstance }

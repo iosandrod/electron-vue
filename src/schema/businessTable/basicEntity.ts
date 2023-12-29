@@ -1,5 +1,5 @@
 import { Subject } from "rxjs"
-import { reactive, h, computed, resolveComponent, Suspense, Teleport, isProxy, nextTick } from "vue"
+import { reactive, h, computed, resolveComponent, Suspense, Teleport, isProxy, nextTick, watchEffect } from "vue"
 import { base } from "../base"
 import { pageTree } from "./pageTree"
 import layoutGridView from "../schemaComponent/layoutGridView"
@@ -11,7 +11,7 @@ import { tableMethod } from "../tableMethod"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -23,7 +23,7 @@ import { withDirectives, vShow } from 'vue'
 import { pageloadMiddleware } from "@/middleware/pageloadMiddleware"
 import { confirmMiddleware } from "@/middleware/confirmMiddleware"
 import { detailEntity } from "./detailEntity"
-import { createEntityButton } from "../entityButton"
+import { createEntityButton, entityButton } from "../entityButton"
 import { createForm, form } from "../form"
 import { propsConfig } from "../icon"
 import contextMenuView from "../schemaComponent/contextMenuView"
@@ -38,8 +38,10 @@ import { buttonGroup, createButtonGroup } from "../buttonGroup"
 import { createDetailEntityGroup, detailEntityGroup } from "./detailEntityGroup"
 import { createFn } from "../createFn"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
+  buttonMethod: { [key: string]: Function } = {}
   tabIndex: number = 0//使用tabIndex ,路由的tab 
   sub = new Subject()//动作发射器
+  entityState: entityState = 'scan'
   detailTable?: detailEntity[] = []
   renderDetailEntity: entityGroupConfig = {}
   utils = {
@@ -92,9 +94,14 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       vxeForm: undefined,
       contextMenu: undefined,
     }
-  tableConfig: { columns?: entityColumn[] } = {//表格配置
+  tableConfig: entityTableConfig = {//表格配置
     //表格配置
-    columns: []
+    columns: [],
+    editItems: [],
+    searchItems: [],
+  }
+  tableData = {
+    data: []
   }
   menuConfig = {
   }
@@ -118,9 +125,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   nodeArr: [] = []
   renderTableInfo: any = {}
   util: any
-  tableData = {
-    data: []
-  }
+
   curRowChange: any
   constructor(schema: any, system: any) {
     super(schema, system)
@@ -205,7 +210,14 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
           })),
           h(dialogView, { dialogInstance: _this.pageRef.searchDialog })
         ])
-        , [[vShow, show.value]])
+        , [[vShow, show.value], [{
+          mounted() {
+            _this.runWatchSystemCommand()
+          },
+          unmounted() {
+            _this.destroyEffect('systemCommandEffect')
+          }
+        }]])
       return entityCom
     }
     this.component = vNode as any
@@ -283,13 +295,14 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         return entity.tableData.data
       }) as any//行与列  
       const table = createTable(renderTable)
+      //@ts-ignore
       entity.pageRef.vxeGrid = table//只初始化一次
       return { tableInstance: table, instance: table }
     } catch (error) {
       return Promise.reject("表格组件初始化失败")
     }
   }
-  async initEntity(initConfig?: any): Promise<void> {//
+  async initEntity(initConfig?: any): Promise<void> {// 接受system的指令
     this.displayState = 'destroy'//显示状态
     await this.initTableInfo()
     nextTick(async () => {
@@ -302,9 +315,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     if (show != false) {
       this.displayState = 'show'
     }
-    setTimeout(() => {
-      this.getPageData()
-    }, 1000);
+    // setTimeout(() => {
+    //   this.getPageData()
+    // }, 1000);
   }
   initDetailEntity() {
     //基类没有初始化子表的配置的东西
@@ -503,7 +516,81 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       targetCol!.editType! = type
     }
   }
+  //保存主表数据
+  saveTableData() {
 
+  }
+  //表格添加一行数据
+  addTableRow(num: number, rows?: any[], insertStatus = false) {
+
+  }
+  //表单新增数据
+  addNewRow() {
+
+  }
+  //编辑当前行
+  editCurRow() {
+
+  }
+  //跳转到编辑页面
+  jumpToEditPage() {
+
+  }
+  runButtonMethod(btn: entityButton) {
+    const btnConfig = btn.entityButtonConfig
+    const funName = btnConfig.cFunName
+    const buttonMethod = this.buttonMethod
+    const runFun = buttonMethod[funName]
+    if (typeof runFun == 'function') {
+      runFun.call(this, this)
+    }
+  }
+  //监听系统指令,基于指令模式
+  runWatchSystemCommand() {
+    const effectPool = this.effectPool
+    const m_entityName = this.entityName
+    const entityType = this.entityType
+    const _this = this
+    effectPool['systemCommandEffect'] = watchEffect(() => {
+      const system = this.system
+      const commandQueue = system.commandQueue
+      const myCommands = commandQueue.filter(command => {
+        return command.targetEntityName == m_entityName && command.targetEntityType == entityType
+      })
+      myCommands.forEach(command => {
+        const index = commandQueue.findIndex(row => {
+          return commandQueue.includes(command)
+        })
+        if (index != -1) {
+          commandQueue.splice(index, 1)
+        }
+      })//删除当前指令
+      nextTick(() => {
+        myCommands.forEach(command => {
+          _this.runSystemCommand(command)
+        })
+      })
+    })
+  }
+  runSystemCommand(command: command) {
+    const _this: any = this
+    try {
+      const runFun = command.runFun
+      if (typeof runFun == 'function') {
+        runFun({ entity: _this })
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  destroyEffect(effectName: string) {
+    const effectPool = this.effectPool
+    const targetEffect = effectPool[effectName]
+    if (targetEffect) {
+      targetEffect()
+    }
+    delete effectPool[effectName]
+  }
 }
 
 export const createBasicEntity = async () => {

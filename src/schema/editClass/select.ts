@@ -37,6 +37,9 @@ export const initRenderSelect = (input: input) => {
         }
         return ''
     }) as any
+    renderSelect.disabled = computed(() => {
+        return _this.inputConfig.disabled
+    }) as any
     renderSelect.onChange = (value: any) => {
         const data = _this.getData!()
         const field = _this.getField!()

@@ -13,6 +13,7 @@ export class form extends base<formConfig> {
     isDraggable: true,
     isResizable: true,
     items: [],//编辑项
+    disabled: false,
   }
   renderForm: VxeFormProps = {
   }

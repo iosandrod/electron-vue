@@ -1,19 +1,26 @@
 import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { systemInstance } from "../system"
-import { StyleType, displayState, entityConfig, layoutItem, routeOpenConfig } from "@/types/schema"
+import { StyleType, displayState, entityConfig, layoutItem, routeOpenConfig, command } from "@/types/schema"
 import { createPage } from "./pageTree"
 import { getTableConfig, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
 import { base } from "../base"
 import { createDetailEntityGroup } from "./detailEntityGroup"
+// import mainEntityMethod from ''
+import * as mainMethod from '@/entityMethods/mainTableMethods'
+
 export class mainEntity extends basicEntity {
   //页面树
+
   constructor(schema: any, entityName: string, system: any) {//schema 是entity的数据
     //schema是配置
     super(schema, system);//外部的数据应该是静态数据
     this.entityName = entityName
+    this.entityType = 'main'
+    this.entityState = 'scan'//扫描状态
     this.buttonCategory = 'ViewGrid'
+    this.buttonMethod = mainMethod
   }
   //@ts-ignore
   async initRenderDetailEntity() {
@@ -117,6 +124,14 @@ export class mainEntity extends basicEntity {
       entityName: _this.entityName,
       isEdit: true
     }
+    const command: command = {
+      targetEntityName: this.entityName,
+      targetEntityType: 'edit',
+      runFun: (entity) => {
+        console.log(entity, 'testEntity')
+      }
+    }
+    system.addCommand(command)
     system.routeOpen(openConfig)
   }
 }

@@ -98,9 +98,13 @@ export class mainEditEntity extends basicEntity {
             return obj
         }) as any
         const dEntityInstance = createDetailEntityGroup(renderDetailEntity)
+        //@ts-ignore
         _this.pageRef.dEntityInstance = dEntityInstance
         _this.detailEntityConfig.curDetailKey = _this.detailTable?.[0]?.tableInfo?.tableName || ''
         return { instance: _this.pageRef.dEntityInstance }
+    }
+    getTableData(where: any) {//使用where条件
+
     }
 }
 

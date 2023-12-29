@@ -131,3 +131,6 @@ body{
 .vxe-form--item{
     width:100% !important 
 }
+.vxe-form--item-content{
+    height:100% !important
+}

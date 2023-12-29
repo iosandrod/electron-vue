@@ -5,11 +5,15 @@ import vue from '@vitejs/plugin-vue'
 import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 import { notBundle } from 'vite-plugin-electron/plugin'
-import AutoImport from 'unplugin-auto-import/vite'
+// import AutoImport from 'unplugin-auto-import/vite'
 import pkg from './package.json'
 import { resolve } from 'path'
+import monacoEditorPlugin from 'vite-plugin-monaco-editor'
+// import MonacoEditorPlugin  from 'monaco-editor-webpack-plugin'
+// import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 
-import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
+
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   rmSync('dist-electron', { recursive: true, force: true })
@@ -26,19 +30,20 @@ export default defineConfig(({ command }) => {
       }
     },
     plugins: [
-      AutoImport(
-        {
-          imports: [
-            'vue',
-            'vue-router',
-            'pinia'
-          ]
-        }
-      ),
+      // AutoImport(
+      //   {
+      //     imports: [
+      //       'vue',
+      //       'vue-router',
+      //       'pinia'
+      //     ]
+      //   }
+      // ), 
       vue(),
-      quasar({
-        sassVariables: 'src/quasar-variables.sass'
-      }),
+      monacoEditorPlugin({}),
+      // quasar({
+      //   sassVariables: 'src/quasar-variables.sass'
+      // }),
       electron([
         {
           // Main process entry file of the Electron App.

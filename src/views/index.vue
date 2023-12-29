@@ -37,6 +37,7 @@
             <vxe-button @click="changeEditType111">scrollTo</vxe-button>
             <vxe-button @click="changeEditType1111">scrollTo11</vxe-button>
             <vxe-button @click="changeEditType11111">进入编辑路由</vxe-button>
+            <vxe-button @click="changeEditType111111">修改编辑状态</vxe-button>
           </div>
           <div class="flex-1 w-full">
             <router-view></router-view>
@@ -226,6 +227,21 @@ function changeEditType11111() {
     // entity.addEntityItem(obj)
   } else {
     // entity.removeEntityItem(obj)
+  }
+  state11 = !state11
+}
+function changeEditType111111() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  const entityName = entity.entityName
+  const system = entity.system!
+  if (state11) {
+    entity.entityState = 'scan'
+    // entity.addEntityItem(obj)
+  } else {
+    // entity.removeEntityItem(obj)
+    entity.entityState = 'edit'
   }
   state11 = !state11
 }

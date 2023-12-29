@@ -1,96 +1,92 @@
 <template>
-  <div>
-    <a-switch :checked="state.mode === 'vertical'" @change="changeMode" />
-    Change Mode
-    <span class="ant-divider" style="margin: 0 1em;" />
-    <a-switch :checked="state.theme === 'dark'" @change="changeTheme" />
-    Change Theme
-    <br />
-    <br />
-    <a-menu
-      v-model:openKeys="state.openKeys"
-      v-model:selectedKeys="state.selectedKeys"
-      style="width: 256px;"
-      :mode="state.mode"
-      :theme="state.theme"
-    >
-      <template v-for="item in items">
-        <template v-if="item.children">
-          <a-sub-menu :title="item.label" v-bind="item">
-            <template v-for="item1 in item.children">
-              <a-menu-item v-bind="item1">
-                {{ item1.label }}
-              </a-menu-item>
-            </template>
-          </a-sub-menu>
-        </template>
-        <template v-else>
-          <a-menu-item v-bind="item">
-            {{ item.label }}
-          </a-menu-item>
-        </template>
-      </template>
-    </a-menu>
+  <div class="w-full h-full" id="">
+    <div class="w-full h-full" ref="container">
+      <input-view :inputInstance="input"></input-view>
+    </div>
   </div>
 </template>
-<script lang="ts" setup>
-import { h, reactive } from 'vue'
+
+<script setup lang="ts">
+import { createPage, nodeConfig } from '@/schema/businessTable/pageTree'
+import tableView from '@/schema/schemaComponent/tableView'
+import { createTable } from '@/schema/table'
 import {
-  MailOutlined,
-  CalendarOutlined,
-  AppstoreOutlined,
-  SettingOutlined,
-} from '@ant-design/icons-vue'
-import type { MenuMode, MenuTheme } from 'ant-design-vue'
-import { ItemType } from 'ant-design-vue'
-
-const state = reactive({
-  mode: 'inline' as MenuMode,
-  theme: 'light' as MenuTheme,
-  selectedKeys: ['1'],
-  openKeys: ['sub1'],
+  computed,
+  getCurrentInstance,
+  h,
+  isProxy,
+  nextTick,
+  onMounted,
+  reactive,
+  ref,
+  vShow,
+  withDirectives,
+} from 'vue'
+import { createMainEntity } from '@/schema/businessTable/mainEntity'
+import { getTableConfig } from '@/api/httpApi'
+import { _columns } from '@/schema/entityColumn'
+import { mainEntity } from '@/schema/businessTable/mainEntity'
+import Mousetrap from 'mousetrap'
+import { tableData, tableData2 } from '@/api/data'
+import { tableData3 } from '@/api/data2'
+import { createDialog, confirm } from '@/schema/dialog'
+import { createInput } from '@/schema/input'
+import { http } from '@/schema/http'
+import { createMenu } from '@/schema/menu'
+import { menuData, } from '@/api/data3'
+import { testTableViewData } from '@/api/data5'
+import { createContextMenu } from '@/schema/businessTable/contextMenu'
+import { useLocalStorage } from '@vueuse/core'
+import { RouteRecordSingleView } from 'vue-router'
+import entityView from '@/schema/schemaComponent/entityView'
+import Index9 from './index9.vue'
+import { VxeInput } from 'vxe-table'
+import { createForm } from '@/schema/form'
+import { treeTableConfig } from '@/api/data6'
+import * as monaco from 'monaco-editor'
+// import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
+// import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
+// import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
+// import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
+// import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
+// const container = ref(null)
+// self.MonacoEnvironment = {
+//   getWorker(_, label) { 
+//     if (label === 'json') {
+//       return new jsonWorker()
+//     }
+//     if (label === 'css' || label === 'scss' || label === 'less') {
+//       return new cssWorker()
+//     }
+//     if (label === 'html' || label === 'handlebars' || label === 'razor') {
+//       return new htmlWorker()
+//     }
+//     if (label === 'typescript' || label === 'javascript') {
+//       return new tsWorker()
+//     }
+//     return new editorWorker()
+//   }
+// }
+const { proxy: instance } = getCurrentInstance()!
+const input = createInput({
+  //@ts-ignore
+  type: "codeEdit",
+  field: "test"
 })
-
-function getItem(
-  label: string,
-  key: string,
-  icon?: any,
-  children?: ItemType[],
-  type?: 'group',
-): ItemType {
-  return {
-    key,
-    icon,
-    children,
-    label,
-    type,
-  } as ItemType
-}
-
-const items: any[] = reactive([
-  getItem('Navigation One', '1', h(MailOutlined)),
-  getItem('Navigation Two', '2', h(CalendarOutlined)),
-  getItem('Navigation Two', 'sub1', h(AppstoreOutlined), [
-    getItem('Option 3', '3'),
-    getItem('Option 4', '4'),
-    getItem('Submenu', 'sub1-2', null, [
-      getItem('Option 5', '5'),
-      getItem('Option 6', '6'),
-    ]),
-  ]),
-  getItem('Navigation Three', 'sub2', h(SettingOutlined), [
-    getItem('Option 7', '7'),
-    getItem('Option 8', '8'),
-    getItem('Option 9', '9'),
-    getItem('Option 10', '10'),
-  ]),
-])
-console.log(items, 'testItems')
-const changeMode = (checked: boolean) => {
-  state.mode = checked ? 'vertical' : 'inline'
-}
-
-const changeTheme = (checked: boolean) => {
-  state.theme = checked ? 'dark' : 'light'
-}
+onMounted(() => {
+  // console.log(monaco, 'testCo')
+  // const divIns = (instance?.$refs.container) as any
+  // const edit = monaco.editor.create(divIns, {
+  //   value: "function hello() {\n\talert('Hello world!');\n}",
+  //   language: 'javascript',
+  // })
+  // edit.onDidChangeModelContent((value) => {
+  //   console.log(value, 'testValue')
+  //   const context = edit.getValue()
+  //   console.log(context, 'testContext')
+  // })
+  // console.log(edit, 'testEdit')
+})
 </script>
+
+<style scoped></style>

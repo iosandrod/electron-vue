@@ -30,8 +30,9 @@ export const initComponent = (input: input) => {
         if (typeof updateFn !== 'function') {
             updateFn = () => { }
         }
+        const inputCom = h(VxeInput, { ...renderInput, style: { width: '100%' } })
         const com = withDirectives(
-            h('div', { style: { height: "100%", width: '100%' } as StyleType, attrs: attrs }, h(VxeInput, { ...renderInput, style: { width: '100%' } }))
+            h('div', { style: { height: "100%", width: '100%' } as StyleType, attrs: attrs }, [inputCom])
             , [[vShow, show.value]]
         )
         return com
