@@ -55,7 +55,7 @@
     "dayjs": "^1.11.10",
     "electron-devtools-installer": "^3.2.0",
     "focus-trap": "^7.5.4",
-    "handsontable": "^13.1.0",
+    "handsontable": "^14.0.0",
     "json5": "^2.2.3",
     "keyboardjs": "^2.7.0",
     "lodash": "^4.17.21",
