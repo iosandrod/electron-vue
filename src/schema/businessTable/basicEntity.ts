@@ -21,7 +21,7 @@ import { mainEntity } from "./mainEntity"
 import { tableData3 } from "@/api/data2"
 import { withDirectives, vShow } from 'vue'
 import { pageloadMiddleware } from "@/middleware/pageloadMiddleware"
-import { confirmMiddleware } from "@/middleware/confirmMiddleware"
+import { confirmBefore, confirmMiddleware } from "@/middleware/confirmMiddleware"
 import { detailEntity } from "./detailEntity"
 import { createEntityButton, entityButton } from "../entityButton"
 import { createForm, form } from "../form"
@@ -227,32 +227,34 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   async dispatch(eventName = '') {//触发某个函数
 
   }
-  async getPageData() {//获取页面数据,与实体相关的
+  async getPageData(getDataConfig: any) {//获取页面数据,与实体相关的
     try {
-      const { params, url } = await getTableData(this)
-      const payload = { entity: this, params, url }
-      const fn = async (payload: any, next: any) => {
-        const params = payload.params
-        const url = payload.url
-        const result: any = await http.postZkapsApi(url, params)//这里模拟获取数据
-        const { status, msg, dtMain: rows, total, data } = result
-        let _rows = rows
-        let _total = total
-        if (_rows == null) {
-          _rows = data
-        }
-        if (_total == null) {
-          _total = data?.length || 0
-        }
-        this.tableData.data = _rows
-        await next()
-      }
-      // const data = JSON.parse(JSON.stringify(tableData))//这里是数据  
-      // this.tableData.data = data
-      const middleArr = [pageloadMiddleware
-        // , confirmMiddleware 
-        , fn]//两个中间件
-      await this.runMiddlewares(payload, middleArr, 0)
+      await confirmBefore()
+      console.log('getData')
+      // const { params, url } = await getTableData(this)
+      // const payload = { entity: this, params, url }
+      // const fn = async (payload: any, next: any) => {
+      //   const params = payload.params
+      //   const url = payload.url
+      //   const result: any = await http.postZkapsApi(url, params)//这里模拟获取数据
+      //   const { status, msg, dtMain: rows, total, data } = result
+      //   let _rows = rows
+      //   let _total = total
+      //   if (_rows == null) {
+      //     _rows = data
+      //   }
+      //   if (_total == null) {
+      //     _total = data?.length || 0
+      //   }
+      //   this.tableData.data = _rows
+      //   await next()
+      // }
+      // // const data = JSON.parse(JSON.stringify(tableData))//这里是数据  
+      // // this.tableData.data = data
+      // const middleArr = [pageloadMiddleware
+      //   // , confirmMiddleware 
+      //   , fn]//两个中间件
+      // await this.runMiddlewares(payload, middleArr, 0)
     } catch (error) {
       console.error(error, 'testError')
     }

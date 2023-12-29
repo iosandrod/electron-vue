@@ -104,6 +104,8 @@ export class mainEditEntity extends basicEntity {
         return { instance: _this.pageRef.dEntityInstance }
     }
     getTableData(where: any) {//使用where条件
+    }
+    setCurEditRow(where: any) {
 
     }
 }

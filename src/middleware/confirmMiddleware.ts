@@ -18,3 +18,18 @@ export const confirmMiddleware = (payload: any, next: any) => {
         }
     })
 }
+
+
+export const confirmBefore = async () => {
+    return new Promise((resolve, reject) => {
+        confirm({
+            callback: async (dialog) => {
+                resolve(true)
+            },
+            cancelCallback: async (dia) => {
+                resolve(false)
+            },
+            message: '提示信息'
+        })
+    })
+}

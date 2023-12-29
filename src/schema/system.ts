@@ -3,7 +3,7 @@ import { VxeButton, VxeTableDefines } from "vxe-table"
 import { base } from "./base"
 import { createMenu, menu } from "./menu"
 import { menuData, menuData1 } from "@/api/data3"
-import { StyleType, command, localStorageValue, menuConfig, routeOpenConfig, tabConfig, tableConfig } from "@/types/schema"
+import { StyleType, command, dialogConfig, localStorageValue, menuConfig, routeOpenConfig, tabConfig, tableConfig } from "@/types/schema"
 import { useLocalStorage } from '@vueuse/core'
 import { createMainEntity, mainEntity } from "./businessTable/mainEntity"
 import { getRouter } from "@/router"
@@ -293,6 +293,13 @@ export class system extends base {
   addCommand(command: command) {
     // this.commandQueue = [...this.commandQueue, command]
     this.commandQueue.push(command)
+  }
+  //添加全局弹出框
+  addGlobalDialog(dialogConfig: dialogConfig) {
+
+  }
+  removeGlobalDialog(key: string) {
+
   }
 }
 //
