@@ -41,6 +41,7 @@
             <vxe-button @click="changeEditType1111111">添加弹框</vxe-button>
             <vxe-button @click="changeEditType11111111">删除弹框</vxe-button>
             <vxe-button @click="changeEditType111111111">默认值</vxe-button>
+            <vxe-button @click="changeEditType1111111111">默认值11</vxe-button>
             <!-- 
               changeEditType11111111
              -->
@@ -71,6 +72,7 @@ import entityView from '@/schema/schemaComponent/entityView';
 import { mainEntity } from '@/schema/businessTable/mainEntity';
 import XEUtils from 'xe-utils';
 import { layoutItemConfig } from '@/types/schema';
+import { http } from '@/schema/http'
 const pageConfig = computed(() => {
   return systemInstance.pageConfig
 })
@@ -275,6 +277,13 @@ async function changeEditType111111111() {
     // entity.removeEntityItem(obj)
   }
   state11 = !state11
+}
+async function changeEditType1111111111() {
+  http.getTableInfo('t_SdOrder').then(res => {
+    console.log(res)
+  }).catch(err => {
+    console.error(err)
+  })
 }
 const collapsed = ref<boolean>(false)
 </script>

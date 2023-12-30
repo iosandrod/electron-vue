@@ -64,6 +64,7 @@ export type sortconfig = {
 }
 
 export type tableConfig = {
+  refreshData_after?: (table: table) => void
   dbCurRowChange?: (value: { row: any, table: table }) => Promise<void> | ((value: { row: any, table: table }) => void)
   baseInfoTable?: any
   checkLabelField?: string,
@@ -102,6 +103,7 @@ export type tableConfig = {
   // [key in keyof ]:[]
 } & VxeTableProps & VxeTableEventProps
 export type tableData = {
+  curMenuRow: any//右键菜单
   data: any[],
   editData: any[]
   showData: any[],
@@ -639,3 +641,8 @@ export type runAfterConfig = {
 export type alignType = 'left' | 'center' | 'right'
 
 export type fixedType = 'left' | 'right' | null
+
+export type jumpConfig = {
+  type?: entityState,
+  wheres?: whereObj[]
+}

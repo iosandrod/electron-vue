@@ -125,8 +125,13 @@ export const initRenderEditForm = (entity: basicEntity) => {
         return { instance: _this.pageRef.vxeForm }
     }
     const renderEditForm = _this.renderEditForm
-    renderEditForm.data = computed(() => {
-        return {}
+    renderEditForm.data = computed({
+        set: (value: any) => {
+            renderEditForm.data = value
+        },
+        get: () => {
+            return _this.tableData.curRow
+        }
     }) as any
     renderEditForm.disabled = computed(() => {
         const entityState = _this.entityState

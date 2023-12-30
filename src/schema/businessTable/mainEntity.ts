@@ -1,7 +1,7 @@
 import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { systemInstance } from "../system"
-import { StyleType, displayState, entityConfig, layoutItem, routeOpenConfig, command } from "@/types/schema"
+import { StyleType, displayState, entityConfig, layoutItem, routeOpenConfig, command, jumpConfig } from "@/types/schema"
 import { createPage } from "./pageTree"
 import { getTableConfig, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
@@ -10,6 +10,7 @@ import { createDetailEntityGroup } from "./detailEntityGroup"
 // import mainEntityMethod from ''
 import * as mainMethod from '@/entityMethods/mainTableMethods'
 import * as mainEntityExtend from './mainEntityExtend'
+import { mainEditEntity } from "./mainEditEntity"
 
 export class mainEntity extends basicEntity {
   //页面树
@@ -60,18 +61,21 @@ export class mainEntity extends basicEntity {
   }
 
   //跳转当前路由表的编辑页面
-  jumpToEditPage() {
+  jumpToEditPage(jumpConfig: jumpConfig = { type: 'add' }) {
     const _this = this
     const system = _this.system
     const openConfig: routeOpenConfig = {
       entityName: _this.entityName,
       isEdit: true
     }
+    const type = jumpConfig.type
+    const wheres = jumpConfig.wheres || []
     const command: command = {
       targetEntityName: this.entityName,
       targetEntityType: 'edit',
-      runFun: (entity) => {
-        console.log(entity, 'testEntity')
+      runFun: async (command) => {
+        const _entity: mainEditEntity = command.entity as any
+        await _entity.addModel()
       }
     }
     system.addCommand(command)

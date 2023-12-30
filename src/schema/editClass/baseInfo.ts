@@ -106,7 +106,9 @@ export const baseInfoInitComponent = (input: input) => {
                         if (options?.find(row => row.key == modelValue)?.value == null) {
                             const data = _this.getData!()
                             const field = _this.getField!()
-                            data[field] = ''
+                            if (data) {
+                                data[field] = ''
+                            }
                         }
                     }
                 },

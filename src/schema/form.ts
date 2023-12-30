@@ -23,7 +23,7 @@ export class form extends base<formConfig> {
   }
   async initForm() {
     const schema = this.schema!
-    const formConfig = this.formConfig
+    const formConfig: any = this.formConfig
     const effectPool = this.effectPool
     for (const key of Object.keys(schema)) {
       const value = schema[key]
@@ -40,22 +40,18 @@ export class form extends base<formConfig> {
             }
             return _item
           })
-          formConfig.items.forEach(item => {
-            //@ts-ignore
-            item.getData = () => {
-              return schema.data || {}
-            }
-          })
+          // formConfig.items.forEach(item => {
+          //   //@ts-ignore
+          //   item.getData = () => {
+          //     return schema.data || {}
+          //   }
+          // })
         }) as any
         continue
       }
-      if (value != null) {
-        const effectPool = this.effectPool
-        const formConfig = this.formConfig as any
-        effectPool[`form${key}Effect`] = watchEffect(() => {
-          formConfig[key] = schema[key]
-        })
-      }
+      effectPool[`form${key}Effect`] = watchEffect(() => {
+        formConfig[key] = schema[key]
+      })
     }
     this.initRenderForm()
     this.initRenderLayout()

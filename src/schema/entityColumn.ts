@@ -103,8 +103,14 @@ export class entityColumn {
         _this.editType = type
     }
     toSearchWhere(row: any) {
-
+        const _this = this
+        const searchType = _this.searchType
     }
+}
+
+
+const searchTypeWhere = {
+
 }
 
 const columns = tableInfo.tableColumns

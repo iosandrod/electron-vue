@@ -378,7 +378,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       this.displayState = 'show'
     }
     setTimeout(() => {
-      this.getTableData()
+      // this.getTableData()
     }, 1000);
   }
   initDetailEntity() {
@@ -669,7 +669,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
 
   }
   //跳转到编辑页面
-  jumpToEditPage() {
+  jumpToEditPage(jumpConfig: any) {
 
   }
   runButtonMethod(btn: entityButton) {
@@ -718,6 +718,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     } catch (error) {
       console.error(error)
     }
+  }
+  clearTableData() {
+    this.tableData.data = []
   }
   destroyEffect(effectName: string) {
     const effectPool = this.effectPool

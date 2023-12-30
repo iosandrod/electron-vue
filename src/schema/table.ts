@@ -24,6 +24,7 @@ import { mergeConfig } from "@/api/data4"
 import { input } from "./input"
 import lodash from 'lodash'
 import { tableHeaderMenu, tableBodyMenu } from "./tableStaticData"
+import { refreData_after } from "./businessTable/basicEntityExtend"
 
 
 export class table extends base<tableSchema> implements tableMethod {
@@ -124,6 +125,7 @@ export class table extends base<tableSchema> implements tableMethod {
     data: [],
     editData: [],
     curRow: undefined,
+    curMenuRow: undefined,
     curColumn: undefined,
     curFilterColumn: undefined
   }
@@ -291,9 +293,10 @@ export class table extends base<tableSchema> implements tableMethod {
     const table = this
     _data.forEach((row: any) => {
       let _str = ''
-      table.tableConfig.columns.forEach(col => {
+      table.tableConfig.columns.forEach((col) => {
         // const _value=col
-        let str = col.formatJsonRow(row)
+        const _col: column = col as column
+        let str = _col.formatJsonRow(row)
         if (str == '') {
           return
         }
@@ -306,6 +309,7 @@ export class table extends base<tableSchema> implements tableMethod {
   async autoRefreshData() {
     const effectPool = this.effectPool
     const table = this
+    const _this = this
     effectPool.refreDataEffect = watchEffect(() => {
       let showData = table.tableData.data
       const filterConfig = table.tableConfig.filterConfig!
@@ -357,6 +361,11 @@ export class table extends base<tableSchema> implements tableMethod {
                 const scrollLeft = scrollConfig.scrollLeft
                 vxeGrid.scrollTo(scrollLeft, scrollTop)
                 table.tablePermission.canRefreshData = true
+              }).then(res => {
+                const refreshData_after = table.tableConfig.refreshData_after
+                if (typeof refreshData_after == 'function') {
+                  refreData_after(_this)
+                }
               })
               table.tablePermission.canRefreshData = true
             } catch (error) {
@@ -386,6 +395,23 @@ export class table extends base<tableSchema> implements tableMethod {
     }
     this.tableData.data.push(...addRows)
     this.tableData.curRow = addRows.slice(-1).pop()
+  }
+  //清空当前数据
+  clearTableData() {
+    const tableData = this.tableData
+    tableData.curRow = null
+    tableData.editData = []
+    tableData.showData = []
+    tableData.curMenuRow = null
+  }
+  //清空过滤状态
+  clearFilterConfig() {
+    const tableConfig = this.tableConfig
+    tableConfig.filterConfig?.forEach(config => {
+      config.filterData = []
+      config.calCondition = []
+    })
+    tableConfig.globalWhere = ''
   }
 }
 

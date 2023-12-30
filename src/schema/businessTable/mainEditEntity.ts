@@ -113,8 +113,11 @@ export class mainEditEntity extends basicEntity {
     setCurEditRow(where: any) {
 
     }
-    setTableAddRow() {
-
+    //添加一行
+    async addModel() {
+        const defaultValue = await this.getDefaultModel()
+        this.tableData.curRow = defaultValue
+        console.log(this.tableData.curRow, 'testCurRow')
     }
 }
 

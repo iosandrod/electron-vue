@@ -73,6 +73,12 @@ export class myHttp {
     const data = await this.post(_url, _body)
     return data
   }
+  async getTableInfo(entityName: string) {
+    const url = `/entity/zkGetTableInfo`
+    const body = { tableName: entityName }
+    const data = await this.post(url, body)
+    return data
+  }
   private interceptors() {
     this.interceptorsRequest()
     this.interceptorsResponse()
