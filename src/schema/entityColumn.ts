@@ -12,6 +12,7 @@ const mapFnType = {
     String: ['string', 'text', 'select', 'float', 'number', 'decimal', 'int'],
     Boolean: ['bool', 'byte']
 }
+
 const fixedObj = {
     right: ['number', 'float', 'decimal'],
     cneter: [''],
@@ -152,7 +153,9 @@ const columnObj = [
     }),
     new Translate('cDefaultValue', 'cDefaultValue', function (targetValue, column, entityColumn) {
         if (targetValue != null) {
-            return entityColumn.formatFunData(targetValue, column.columnType.toLocaleLowerCase(), true)
+            let _value = entityColumn.formatFunData(targetValue, column.columnType.toLocaleLowerCase(), true)
+            console.log(typeof _value)
+            return _value
         }
         return ''
     }),
@@ -336,7 +339,41 @@ export class entityColumn {
             return mapType[type]
         }
     }
-    formatFunData() { }
+    formatFunData(value: any, type: string, defaultValue = false) {
+        let _type =
+            Object.entries(mapFnType).find(([key, value]) => {
+                return value.includes(type)
+            })?.[0] || `String`
+        let fn = null
+        let testNumber = Number(value)
+        let isNumber = true
+        if (isNaN(testNumber)) {
+            isNumber = false
+        }
+        try {
+            let _fn = new Function(`return ${value}`).call(null)
+            fn = _fn
+            if (isNumber) {
+                fn = value
+            }
+        } catch (error) {
+            try {
+                let _fn1 = null
+                if (_type == 'String') {
+                    _fn1 = new Function(`return (new ${_type}('${value}'))+''`).call(null)
+                } else {
+                    _fn1 = new Function(`return new ${_type}('${value}')`).call(null)
+                }
+                fn = _fn1
+            } catch (error) {
+                fn = null
+            }
+        }
+        if (typeof fn != 'function' && this.editType == 'select' && defaultValue) {
+            return value
+        }
+        return fn
+    }
     changeEditType(type: string = 'string') {
         const _this: any = this
         _this.editType = type

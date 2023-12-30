@@ -40,6 +40,7 @@
             <vxe-button @click="changeEditType111111">修改编辑状态</vxe-button>
             <vxe-button @click="changeEditType1111111">添加弹框</vxe-button>
             <vxe-button @click="changeEditType11111111">删除弹框</vxe-button>
+            <vxe-button @click="changeEditType111111111">默认值</vxe-button>
             <!-- 
               changeEditType11111111
              -->
@@ -258,6 +259,21 @@ async function changeEditType1111111() {
 }
 function changeEditType11111111() {
   systemInstance.removeGlobalDialog('')
+}
+async function changeEditType111111111() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  const entityName = entity.entityName
+  const system = entity.system!
+  const model = await entity.getDefaultModel()
+  console.log(model, 'testModel')
+  if (state11) {
+    // entity.addEntityItem(obj)
+  } else {
+    // entity.removeEntityItem(obj)
+  }
+  state11 = !state11
 }
 const collapsed = ref<boolean>(false)
 </script>

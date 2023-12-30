@@ -520,6 +520,25 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     return { instance: _this.pageRef.dEntityInstance }
 
   }
+  async getDefaultModel() {
+    const _this = this
+    const columns = _this.tableConfig.columns
+    const obj: any = {}
+    for (const col of columns!) {//当前的entityColumn类名
+      try {
+        const field = col.field
+        let value = col.cDefaultValue
+        const cDefaultValue = col.cDefaultValue
+        if (typeof cDefaultValue == 'function') {
+          value = await cDefaultValue(_this)//当前类传过去
+        }
+        obj[field] = value
+      } catch (error) {
+        console.log('some error')
+      }
+    }
+    return obj
+  }
   getDetailEntity(entityName: string) {
     const detailTable = this.detailTable
     const targetTable = detailTable?.find(table => {

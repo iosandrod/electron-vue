@@ -4,7 +4,7 @@ import "./style.css"
 import './samples/node-api'
 import '@quasar/extras/material-icons/material-icons.css'
 import "@/style/index.scss"
-import "@/style/vxe-table/index.scss"
+import 'vxe-table/styles/index.scss'
 import "@/style.css"
 import VXETable from 'vxe-table'
 import router from './router'

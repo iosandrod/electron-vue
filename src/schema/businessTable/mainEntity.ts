@@ -97,25 +97,7 @@ export class mainEntity extends basicEntity {
   initDefaultEntity() {
 
   }
-  async getDefaultModel() {
-    const _this = this
-    const columns = _this.tableConfig.columns
-    const obj: any = {}
-    for (const col of columns!) {
-      try {
-        const field = col.field
-        let value = col.cDefaultValue
-        const cDefaultValue = col.cDefaultValue
-        if (typeof cDefaultValue == 'function') {
-          value = await cDefaultValue()
-        }
-        obj[field] = value
-      } catch (error) {
-        console.log('some error')
-      }
-    }
-    return obj
-  }
+
   //跳转当前路由表的编辑页面
   jumpToEditPage() {
     const _this = this
