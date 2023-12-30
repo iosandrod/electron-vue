@@ -20,8 +20,10 @@ import entityView from "./schemaComponent/entityView"
 import { createMainEditEntity } from "./businessTable/mainEditEntity"
 import { getTableConfig } from "@/api/httpApi"
 import { createBaseInfoTable } from "./editClass/baseInfoTable"
-
+import { createDialog, dialog } from "./dialog"
+import { confirmConfig } from '@/types/schema'
 export class system extends base {
+  dialogPool: any[] = []
   commandQueue: command[] = [
 
   ]
@@ -75,7 +77,7 @@ export class system extends base {
     await this.initRenderTab()
     this.displayState = 'show'
     setTimeout(() => {
-      this.routeOpen({ entityName: "t_SdOrder" })
+      // this.routeOpen({ entityName: "t_SdOrder" })
       // this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
       // this.routeOpen('index10')
       // const router = this.getRouter()
@@ -295,15 +297,53 @@ export class system extends base {
     this.commandQueue.push(command)
   }
   //添加全局弹出框
-  addGlobalDialog(dialogConfig: dialogConfig) {
-
+  async confirm(confirmConfig?: confirmConfig) {
+    const _this = this
+    return new Promise((resolve, reject) => {
+      // let createFn = () => async () => { } 
+      // let callback = confirmConfig?.callback || createFn()
+      // let cancelCallback = confirmConfig?.cancelCallback || createFn()
+      const buttons = [{
+        btnFun: async (dialog: dialog) => {
+          // await callback(dialog)
+          resolve(true)
+          // dialog.destroy()
+          _this.confirm()
+        }, text: "确认"
+      }, {
+        btnFun: async (dialog: dialog) => {
+          // await cancelCallback(dialog)
+          resolve(false)
+          dialog.destroy()
+          // setTimeout(() => {
+          //   console.log(_this)
+          // }, 2000);
+        }, text: "取消"
+      }]
+      const _confirmConfig: dialogConfig = Object.assign({
+        message: "确认提示",
+        type: "modal",
+        buttons: buttons,
+        modelValue: true,
+        height: 200,
+        width: 350,//正方形的弹框
+      } as dialogConfig, confirmConfig)
+      this.addGlobalDialog('confirm', _confirmConfig)
+    })
+    // const dia = createDialog('confirm', _confirmConfig)
+  }
+  addGlobalDialog(dialogName: string, dialogConfig?: dialogConfig) {
+    const _dialogConfig: any = dialogConfig
+    const targetDialog = createDialog(dialogName, _dialogConfig)
+    this.dialogPool.push(targetDialog as any)
   }
   removeGlobalDialog(key: string) {
-
+    const dialogPool = this.dialogPool
+    dialogPool.pop()
   }
 }
 //
-const systemInstance = reactive(new system())
+const systemInstance: system = reactive(new system()) as system
 
 
 export const getSystem = (): system => {

@@ -1173,3 +1173,65 @@ export const initTableMenu = (table: table) => {
     // const dEntityInstance = createDetailEntityGroup(renderDetailEntity)
     // this.pageRef.dEntityInstance = dEntityInstance
     // this.detailEntityConfig.curDetailKey = this.detailTable?.[0]?.tableInfo?.tableName || ''
+
+
+
+
+
+    export class DialogPool {
+    dynamicContainerElem?: HTMLDivElement
+    dialogArr: dialog[] = []
+    vNode?: dialog = undefined
+    currentDialog?: dialog//当前的活动弹框
+    VxeDynamics?: App<Element>
+    dynamicApp?: App<Element> 
+    constructor() { }
+    initDialogPool() {
+        this.vNode = new dialog('vNode', {}, getSystem())
+        this.initVxeDynamics()//初始化app
+        this.checkDynamic();//检测挂载
+    }
+    closeDialog() { }
+    getActiveDialog() {
+        return computed(() => {
+            const dialogArr = [...new Set(this.dialogArr)]
+            const dialogRenderArr = dialogArr.map(dia => {
+                return dia.renderDialog
+            })
+            return dialogRenderArr//这个是弹框的东西
+        })
+    }
+    checkDynamic() {
+        let dynamicContainerElem = this.dynamicContainerElem//这个是异步的app
+        if (!dynamicContainerElem) {
+            dynamicContainerElem = (document.createElement("div")) as any;
+            dynamicContainerElem!.className = "vxe-dynamics";
+            document.body.appendChild(dynamicContainerElem!);
+            this.dynamicApp!.mount(dynamicContainerElem!);
+        }
+    }
+    initVxeDynamics() {
+        // const VxeDynamics = defineComponent({
+        //     setup() {
+        //         const modals = dialogPool.getActiveDialog();
+        //         return () => {
+        //             return h(
+        //                 "div",
+        //                 {
+        //                     class: "vxe-dynamics--modal",
+        //                 },
+        //                 modals.value.map((item) => {
+        //                     return h(VxeModal, item)
+        //                 }
+        //                 )
+        //             );
+        //         };
+        //     },
+        // });
+        // this.dynamicApp = shallowRef(createApp(VxeDynamics)) as any
+        // nextTick(() => {
+        //     this.dynamicApp!.use(VXETable)
+        //     this.dynamicApp!.use(register)
+        // })
+    }
+}

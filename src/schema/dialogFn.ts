@@ -33,17 +33,7 @@ export const getDialogSlots = (dialog: dialog) => {
 export const getDialogSlotsHeader = (dialog: dialog) => {
     return computed(() => {
         return (params: ModalDefaultSlotParams) => {
-            let com: any = null
-            const dialogComponent = dialog.dialogComponent
-            const dialogName = dialog.dialogName! as keyof typeof dialogComponent
-            const defaultCom = dialogComponent[dialogName]?.header
-            if (defaultCom != null) {
-                const modalData = dialog.dialogConfig.modalData
-                com = h(defaultCom, { dialog: dialog, modalData: modalData })
-            } else {
-                com = h('div', ['弹框'])
-            }
-            return com
+
         }
     })
 }

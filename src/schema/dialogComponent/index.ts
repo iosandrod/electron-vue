@@ -1,6 +1,12 @@
-import confirmDialog from './confirmDialog'
+import { confirm_init } from "./confirmDialog"
 
 export default {
     // globalForm
-    confirm: confirmDialog,
+    // confirm: confirmDialog,
+}
+
+
+
+export const initFun = {
+    confirm: confirm_init
 }

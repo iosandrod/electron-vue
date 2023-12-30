@@ -101,12 +101,10 @@ export class menu extends base<MenuProps> {
     }
     deleteMenuItem(item: menuItem) {
         const parent = item.getParent()
-        console.log(parent, 'testP')
         const children = parent.children
         const index = children.findIndex(chi => {
             return chi == item
         })
-        console.log(index, 'testIndex')
         if (index != -1) {
             children.splice(index, 1)
         }
@@ -277,9 +275,11 @@ export class menu extends base<MenuProps> {
             const menuCom = h(Menu, {
                 ...renderMenu,
             }, () => {
-                return _vNode.children.map((node: any) => {
+                return _vNode.children.map((node: menuItem) => {
                     // return node.component()
-                    return h(menuItemView, { menuItem: node })
+                    // const id=n
+                    const key = node.getPrimaryId()
+                    return h(menuItemView, { menuItem: node, key: key })
                 })
             })
             const contextMenu = h(instanceView, { instance: _this.pageRef.contextInstance })
@@ -436,9 +436,6 @@ export class menuItem extends base {
         }
         this.children.push(newItem)
     }
-    deleteMenuItem() {
-
-    }
     getParentKeys(): any {
         const parent = this.getParent()
         //@ts-ignore
@@ -447,6 +444,12 @@ export class menuItem extends base {
             return [key, ...parent.getParentKeys()]
         }
         return [key]
+    }
+    getPrimaryId() {
+        const menu = this.getMenu()
+        const keyField = menu.menuConfig.key!
+        const schema = this.schema
+        return schema[keyField]
     }
     initComponent() {
         const renderMenuItem = this.renderMenuItem
@@ -467,7 +470,8 @@ export class menuItem extends base {
             if (_this.children.length > 0) {
                 const node = h(SubMenu, { ...renderMenuItem, }, () => {
                     return _this.children.map((chi: menuItem) => {
-                        return h(menuItemView, { menuItem: chi })
+                        const key = chi.getPrimaryId()
+                        return h(menuItemView, { menuItem: chi, key: key })
                     })
                 })
                 const node1 = h('div', [node])

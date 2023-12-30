@@ -167,7 +167,7 @@ export type dialogButton = {
   btnFun: (dialog: dialog) => Promise<void>,//立即执行函数
   text: string,
 }
-export type dialogConfig = concatAny<VxeModalDefines.ModalOptions & { dialogPrimaryName?: string, hasOpen?: boolean, modalData?: any, buttons?: dialogButton[] }>
+export type dialogConfig = concatAny<VxeModalDefines.ModalOptions & { dialogPrimaryName?: string, dialogName?: string, hasOpen?: boolean, modalData?: any, buttons?: dialogButton[] }>
 
 
 export type dialogComponent = {

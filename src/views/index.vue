@@ -38,17 +38,24 @@
             <vxe-button @click="changeEditType1111">scrollTo11</vxe-button>
             <vxe-button @click="changeEditType11111">进入编辑路由</vxe-button>
             <vxe-button @click="changeEditType111111">修改编辑状态</vxe-button>
+            <vxe-button @click="changeEditType1111111">添加弹框</vxe-button>
+            <vxe-button @click="changeEditType11111111">删除弹框</vxe-button>
+            <!-- 
+              changeEditType11111111
+             -->
           </div>
           <div class="flex-1 w-full">
             <router-view></router-view>
           </div>
         </div>
+        <dialogPoolView></dialogPoolView>
       </a-layout-content>
     </a-layout>
   </a-layout>
 </template>
 <script lang="ts" setup>
 import { computed, getCurrentInstance, h, isProxy, ref } from 'vue'
+import dialogPoolView from '@/schema/schemaComponent/dialogPoolView'
 import {
   UserOutlined,
   VideoCameraOutlined,
@@ -244,6 +251,13 @@ function changeEditType111111() {
     entity.entityState = 'edit'
   }
   state11 = !state11
+}
+async function changeEditType1111111() {
+  await systemInstance.confirm()
+  console.log('testAwait')
+}
+function changeEditType11111111() {
+  systemInstance.removeGlobalDialog('')
 }
 const collapsed = ref<boolean>(false)
 </script>

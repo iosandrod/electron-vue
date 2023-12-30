@@ -2,61 +2,51 @@ import { computed, defineComponent, h } from 'vue'
 import { dialog } from '../dialog'
 import { VxeButton } from 'vxe-table'
 import { message } from 'ant-design-vue'
-const obj: any = {
 
+
+
+
+export const confirm_init = (dialog: dialog) => {
+    const _this = dialog
+    confirm_header_init(_this)
+    confirm_default_init(_this)
+    confirm_footer_init(_this)
 }
 
-obj.default = defineComponent({
-    props: ['dialog', 'modalData', 'dialogConfig'],
-    setup(props, context) {
-        const modalData = props.modalData
-        const dialog = props.dialog as dialog//弹出框
-        const dialogConfig = dialog.dialogConfig
-        const message = computed(() => {
-            return dialogConfig.message as string
-        })
-        return () => {
-            return h('div', [message.value])
-        }
-    },
-})
 
-obj.header = defineComponent({
-    props: ['dialog'],
-    setup(props, context) {
-        const dialog = props.dialog
-    },
-    render() {
-        return
+export const confirm_header_init = (dialog: dialog) => {
+}
+
+export const confirm_default_init = (dialog: dialog) => {
+    const dialogConfig = dialog.dialogConfig
+    const message = computed(() => {
+        return dialogConfig.message as string
+    })
+    const vNode = () => {
+        // return h('div', [message.value])
+        return h('div', Array(10000).fill(1))
     }
-})
+    dialog.defaultComponent = vNode
+}
 
-obj.footer = defineComponent({
-    props: ['dialog'],
-    setup(props, context) {
-        const dialog = props.dialog as dialog
-        const buttons = computed(() => {
-            const _buttons = dialog.dialogConfig.buttons || []
-            return _buttons
-        })
-        return () => {
-            return h('div', {}, buttons.value.map(btn => {
-                return h(VxeButton, {
-                    onClick: async () => {
-                        const btnFun = btn.btnFun as Function
-                        if (typeof btnFun == 'function') {
-                            await btnFun(dialog)
-                        } else {
-                            message.error('未找到执行函数')
-                        }
+export const confirm_footer_init = (dialog: dialog) => {
+    const buttons = computed(() => {
+        const _buttons = dialog.dialogConfig.buttons || []
+        return _buttons
+    })
+    const vNode = () => {
+        return h('div', {}, buttons.value.map(btn => {
+            return h(VxeButton, {
+                onClick: async () => {
+                    const btnFun = btn.btnFun as Function
+                    if (typeof btnFun == 'function') {
+                        await btnFun(dialog)
+                    } else {
+                        message.error('未找到执行函数')
                     }
-                }, () => h('div', [btn.text || '']))
-            }))
-        }
-    },
-})
-
-
-//
-
-export default obj
+                }
+            }, () => h('div', [btn.text || '']))
+        }))
+    }
+    dialog.footerComponent = vNode
+}

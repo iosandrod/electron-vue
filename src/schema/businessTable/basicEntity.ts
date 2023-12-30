@@ -35,8 +35,8 @@ import dialogView from "../schemaComponent/dialogView"
 import { VxeGrid } from "vxe-table"
 import modal from '@/components/modal.vue'
 import { buttonGroup, createButtonGroup } from "../buttonGroup"
-import { createDetailEntityGroup, detailEntityGroup } from "./detailEntityGroup"
 import { createFn } from "../createFn"
+import { createDetailEntityGroup, detailEntityGroup } from "./detailEntityGroup"
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   buttonMethod: { [key: string]: Function } = {}
   tabIndex: number = 0//使用tabIndex ,路由的tab 
@@ -46,7 +46,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   renderDetailEntity: entityGroupConfig = {}
   utils = {
   } as any
-  createFn: typeof createFn = null as any
   http = http
   isEditEntity = false
   entityTabKey?: string
@@ -268,6 +267,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   //执行之前做的事情
   async getRunBefore() {
   }
+  //执行后做的事情
   async getRunAfter() {
   }
   setDataPermission(params: any) {
@@ -396,7 +396,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       try {
         await this.addEntityItem(config)
       } catch (error) {
-        console.error('节点初始化失败')
+        console.error('节点初始化失败', error)
       }
     }
   }
@@ -482,6 +482,42 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     return { instance: buttonGroup }
   }
   async initRenderDetailEntity() {
+    const _this = this
+    if (_this.pageRef.dEntityInstance != null) {
+      return { instance: _this.pageRef.dEntityInstance }
+    }
+    const tableInfo = _this.tableInfo
+    const detailTable = tableInfo?.detailTable! || []
+    const detailEntity = await Promise.all(detailTable.map(async (table) => {
+      const createFn = _this.createFn
+      const dTable = await createFn.createDetailEntity(table.tableName, table)//表名
+      dTable.mainEntity = _this as any
+      return dTable
+    }))
+    _this.detailTable = detailEntity as any//业务逻辑类型的子组件
+    const renderDetailEntity = _this.renderDetailEntity
+    renderDetailEntity.entityGroup = computed(() => {
+      return _this.detailTable
+    }) as any
+    renderDetailEntity.type = computed(() => {
+      return 'card'
+    }) as any
+    renderDetailEntity.tabBarStyle = computed(() => {
+      const detailTable = _this.detailTable
+      const obj = {
+        margin: '0 0 0 0 !important',
+        height: '30px'
+      } as StyleType
+      if (detailTable!?.length <= 1) {
+        obj.display = 'none'
+      }
+      return obj
+    }) as any
+    const dEntityInstance = _this.createFn.createDetailEntityGroup(renderDetailEntity)
+    //@ts-ignore
+    _this.pageRef.dEntityInstance = dEntityInstance
+    _this.detailEntityConfig.curDetailKey = _this.detailTable?.[0]?.tableInfo?.tableName || ''
+    return { instance: _this.pageRef.dEntityInstance }
 
   }
   getDetailEntity(entityName: string) {
@@ -593,6 +629,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
     delete effectPool[effectName]
   }
+
 }
 
 export const createBasicEntity = async () => {
