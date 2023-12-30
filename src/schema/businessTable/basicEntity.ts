@@ -7,11 +7,11 @@ import { GridLayout, GridItem } from 'vue-grid-layout'
 import * as layoutGrid from 'vue-grid-layout'
 import { http } from "../http"
 
-import { tableMethod } from "../tableMethod"
+// import { tableMethod } from "../tableMethod"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -37,6 +37,10 @@ import modal from '@/components/modal.vue'
 import { buttonGroup, createButtonGroup } from "../buttonGroup"
 import { createFn } from "../createFn"
 import { createDetailEntityGroup, detailEntityGroup } from "./detailEntityGroup"
+import * as basicEntityExtend from './basicEntityExtend'
+interface tableMethod {
+
+}
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   buttonMethod: { [key: string]: Function } = {}
   tabIndex: number = 0//使用tabIndex ,路由的tab 
@@ -44,6 +48,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   entityState: entityState = 'scan'
   detailTable?: detailEntity[] = []
   renderDetailEntity: entityGroupConfig = {}
+  tableExtend: { [key: string]: Array<Function> } = {}//表格扩展函数
   utils = {
   } as any
   http = http
@@ -99,8 +104,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     editItems: [],
     searchItems: [],
   }
-  tableData: { data: any[] } = {
-    data: []
+  tableData: { data: any[], curRow: any } = {
+    data: [],
+    curRow: null
   }
   menuConfig = {
   }
@@ -131,6 +137,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     this.system = system
     this.displayState = 'destroy'
     this.schema = schema
+    Object.entries(basicEntityExtend).forEach(([key, value]) => {
+      this.addExtendMethod(key, value)
+    })
   }
   getTableKey() {
     //获取表格主键
@@ -226,7 +235,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   async dispatch(eventName = '') {//触发某个函数
 
   }
-  async getTableData(getDataConfig: any) {//获取页面数据,与实体相关的
+  async getTableData(getDataConfig?: any) {//获取页面数据,与实体相关的
     try {
       // await this.getRunBefore('getTableData')
       // await confirmBefore()
@@ -259,7 +268,24 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     return table.getCurRow()
   }
   //执行之前做的事情
-  async getRunBefore() {
+  async getRunBefore(beforeConfig: runBeforeConfig | string) {
+    const _this = this
+    let config = beforeConfig as runBeforeConfig
+    if (typeof beforeConfig == 'string') {
+      let obj: runBeforeConfig = {
+        methodName: beforeConfig,
+        table: _this
+      }
+      config = obj
+    }
+    config.table = this
+    const methods = await this.getBeforeMethod(config)
+  }
+  async getBeforeMethod(beforeConfig: runBeforeConfig) {
+
+  }
+  async getAfterMethod() {
+
   }
   //执行后做的事情
   async getRunAfter() {
@@ -492,6 +518,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const tableInfo = _this.tableInfo
     const detailTable = tableInfo?.detailTable! || []
     const detailEntity = await Promise.all(detailTable.map(async (table) => {
+      //@ts-ignore
       const createFn = _this.createFn
       const dTable = await createFn.createDetailEntity(table.tableName, table)//表名
       dTable.mainEntity = _this as any
@@ -516,6 +543,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       }
       return obj
     }) as any
+    //@ts-ignore
     const dEntityInstance = _this.createFn.createDetailEntityGroup(renderDetailEntity)
     //@ts-ignore
     _this.pageRef.dEntityInstance = dEntityInstance
@@ -668,7 +696,11 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
     delete effectPool[effectName]
   }
-
+  addExtendMethod(methodName: string, method: Function) {
+    const methodExtend = this.tableExtend//扩展
+    const extendArr = methodExtend[methodName]
+    extendArr.push(method)//扩展函数 
+  }
 }
 
 export const createBasicEntity = async () => {

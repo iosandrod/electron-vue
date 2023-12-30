@@ -1,4 +1,5 @@
 import { tableinfo1 } from "@/api/data"
+import { basicEntity } from "@/schema/businessTable/basicEntity"
 import { detailEntity } from "@/schema/businessTable/detailEntity"
 import { mainEditEntity } from "@/schema/businessTable/mainEditEntity"
 import { mainEntity } from "@/schema/businessTable/mainEntity"
@@ -598,4 +599,39 @@ export type addTableRowConfig = {
   rows: any[],
   num: number,
   insertStatus: boolean
+}
+export type orderType = 'desc' | 'asc'
+export type sortObj = { colName: string, order: orderType }
+export enum paramType {
+  'sqlType' = 3
+}
+export type whereObj = {
+  name: string,
+  value: string | number,
+  paramType: paramType,
+  displayType: 'Equal' | 'thanorequal' | 'lessorequal'
+}
+export type dataSource = 'APS' | 'MRP'
+export type getDataConfig = {
+  "companyId": string,
+  "order": orderType,
+  "page": number,
+  "rows": number,
+  "sort": Array<sortObj>,
+  "tableName": "t_SdOrder",
+  "wheres": Array<sortObj>,
+  "cOperater": string,
+  "DBSource": dataSource
+}
+
+export type runBeforeConfig = {
+  methodName: string,
+  table: basicEntity,
+  [key: string]: any
+}
+
+export type runAfterConfig = {
+  methodName: string,
+  table: basicEntity,
+  [key: string]: any
 }

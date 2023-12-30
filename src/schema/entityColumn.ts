@@ -311,7 +311,7 @@ export class entityColumn {
     searchType: string = ''
     sBindField: string = ''
     options: any[] = []
-    cDefaultValue: ((value?: mainEntity) => any) | string | number = ''
+    cDefaultValue: ((value?: mainEntity | basicEntity) => any) | string | number = ''
     baseInfoTable?: { tableName: string }
     initColumn(column: any) {
         const _this: any = this

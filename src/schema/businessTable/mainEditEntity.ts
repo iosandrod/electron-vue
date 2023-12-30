@@ -1,7 +1,7 @@
 import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { system, systemInstance } from "../system"
-import { StyleType, displayState, entityConfig, layoutItem } from "@/types/schema"
+import { StyleType, displayState, entityConfig, formItemConfig, layoutItem } from "@/types/schema"
 import { createPage } from "./pageTree"
 import { getTableConfig, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
@@ -9,6 +9,7 @@ import { base } from "../base"
 import { createEntityButton } from "../entityButton"
 import { mainEntity } from "./mainEntity"
 import { createDetailEntityGroup } from "./detailEntityGroup"
+import { createForm } from "../form"
 
 export class mainEditEntity extends basicEntity {
     //页面树
@@ -33,16 +34,57 @@ export class mainEditEntity extends basicEntity {
         await super.initComponent()
     }
     //初始化子表数据
-    async initDetailEntity() {
-        // const tableInfo = this.tableInfo
-        // const detailTable = tableInfo?.detailTable! || []
-        // const detailEntity = await Promise.all(detailTable.map(async (table) => {
-        //     const dTable = await createDetailEntity(table.tableName, table)//表名
-        //     dTable.mainEntity = this as any
-        //     return dTable
-        // }))
-        // this.detailTable = detailEntity as any//业务逻辑类型的子组件
-        // this.detailEntityConfig.curDetailKey = this.detailTable?.[0]?.tableInfo?.tableName || ''
+    async initRenderEditForm() {
+        const _this = this
+        if (_this.pageRef.vxeForm != null) {
+            return { instance: _this.pageRef.vxeForm }
+        }
+        const renderEditForm = _this.renderEditForm
+        renderEditForm.data = computed(() => {
+            return _this.tableData.curRow
+        }) as any
+        renderEditForm.disabled = computed(() => {
+            const entityState = _this.entityState
+            if (entityState == 'scan') {
+                return true
+            }
+            return false
+        }) as any
+        renderEditForm.items = _this.tableConfig.columns?.filter(col => Boolean(col.editType) == true).sort((c1, c2) => {
+            const o1 = c1.editOrderNo!
+            const o2 = c2.editOrderNo!
+            return o1 - o2!
+        }).map(col => {
+            const obj: formItemConfig = {} as any
+            obj.type = computed(() => {
+                return col.editType
+            }) as any
+            obj.field = computed(() => {
+                return col.field
+            }) as any
+            obj.span = computed(() => {
+                const num = Number(col.editColSize)
+                if (isNaN(num)) {
+                    return 6
+                }
+                return num! * 2
+            }) as any
+            obj.title = computed(() => {
+                return col.editTitle || col.title
+            }) as any
+            obj.baseInfoTable = computed(() => {
+                return col.baseInfoTable
+            }) as any
+            obj.options = computed(() => {
+                return col.options || []
+            }) as any
+            return obj
+        }) as any
+
+        const vxeForm = createForm(renderEditForm)
+        //@ts-ignore
+        _this.pageRef.vxeForm = vxeForm
+        return { formInstance: vxeForm, instance: _this.pageRef.vxeForm }
     }
     setNodeDisplayState(refName: string | Object, state: displayState) {
         const pageRef = this.pageRef as any//
@@ -69,6 +111,9 @@ export class mainEditEntity extends basicEntity {
     getTableData(where: any) {//使用where条件
     }
     setCurEditRow(where: any) {
+
+    }
+    setTableAddRow() {
 
     }
 }
