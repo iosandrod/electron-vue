@@ -626,7 +626,7 @@ export type getDataConfig = {
 
 export type runBeforeConfig = {
   methodName: string,
-  table: basicEntity,
+  table?: basicEntity,
   [key: string]: any
 }
 

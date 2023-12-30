@@ -240,6 +240,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       // await this.getRunBefore('getTableData')
       // await confirmBefore()
       const { params, url } = await getTableData(this)
+      this.getRunBefore({ methodName: "getTableData", params: params, url: url })
       const result: any = await http.postZkapsApi(url, params)//这里模拟获取数据
       const { status, msg, dtMain: rows, total, data } = result
       let _rows = rows
@@ -280,12 +281,28 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
     config.table = this
     const methods = await this.getBeforeMethod(config)
+    await methods.reduce(async (res, item) => {
+      await res
+      const _res = await item(config)
+      return _res
+    }, Promise.resolve()).finally(() => {
+      this.getRunFinally(config)
+    })
+  }
+  async getRunFinally(config: runBeforeConfig) {
+
   }
   async getBeforeMethod(beforeConfig: runBeforeConfig) {
-
+    const methodName = beforeConfig.methodName
+    const tableExtend = this.tableExtend
+    const methodArr = tableExtend[`${methodName}_before`]
+    return methodArr
   }
-  async getAfterMethod() {
-
+  async getAfterMethod(beforeConfig: runBeforeConfig) {
+    const methodName = beforeConfig.methodName
+    const tableExtend = this.tableExtend
+    const methodArr = tableExtend[`${methodName}_after`]
+    return methodArr
   }
   //执行后做的事情
   async getRunAfter() {
