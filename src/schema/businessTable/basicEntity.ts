@@ -11,7 +11,7 @@ import { http } from "../http"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -100,6 +100,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
   tableConfig: entityTableConfig = {//表格配置
     //表格配置
+    searchFormFields: {},
     columns: [],
     editItems: [],
     searchItems: [],
@@ -237,11 +238,10 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   async getTableData(getDataConfig?: any) {//获取页面数据,与实体相关的
     try {
-      // await this.getRunBefore('getTableData')
-      // await confirmBefore()
       const { params, url } = await getTableData(this)
-      this.getRunBefore({ methodName: "getTableData", params: params, url: url })
-      const result: any = await http.postZkapsApi(url, params)//这里模拟获取数据
+      let config = { methodName: 'getTableData', params, url }
+      await this.getRunBefore(config)
+      const result: any = await http.getTableData(config.url, config.params)//这里模拟获取数据
       const { status, msg, dtMain: rows, total, data } = result
       let _rows = rows
       let _total = total
@@ -252,12 +252,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         _total = data?.length || 0
       }
       this.tableData.data = _rows
-      // // const data = JSON.parse(JSON.stringify(tableData))//这里是数据  
-      // // this.tableData.data = data
-      // const middleArr = [pageloadMiddleware
-      //   // , confirmMiddleware 
-      //   , fn]//两个中间件
-      // await this.runMiddlewares(payload, middleArr, 0)
+      await this.getRunAfter(config)
     } catch (error) {
       console.error(error, 'testError')
     }
@@ -289,24 +284,43 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       this.getRunFinally(config)
     })
   }
+  async getRunAfter(afterConfig: runAfterConfig) {
+    const _this = this
+    let config = afterConfig as runBeforeConfig
+    if (typeof afterConfig == 'string') {
+      let obj: runBeforeConfig = {
+        methodName: afterConfig,
+        table: _this
+      }
+      config = obj
+    }
+    config.table = this
+    const methods = await this.getAfterMethod(config)
+    await methods.reduce(async (res, item) => {
+      await res
+      const _res = await item(config)
+      return _res
+    }, Promise.resolve()).finally(() => {
+      this.getRunFinally(config)
+    })
+  }
   async getRunFinally(config: runBeforeConfig) {
-
+    console.log('run finally')
   }
   async getBeforeMethod(beforeConfig: runBeforeConfig) {
     const methodName = beforeConfig.methodName
     const tableExtend = this.tableExtend
-    const methodArr = tableExtend[`${methodName}_before`]
+    const methodArr = tableExtend[`${methodName}_before`] || []
     return methodArr
   }
   async getAfterMethod(beforeConfig: runBeforeConfig) {
     const methodName = beforeConfig.methodName
     const tableExtend = this.tableExtend
-    const methodArr = tableExtend[`${methodName}_after`]
+    const methodArr = tableExtend[`${methodName}_after`] || []
     return methodArr
   }
   //执行后做的事情
-  async getRunAfter() {
-  }
+
   setDataPermission(params: any) {
   }
   sortTableData(_rows: any) {
@@ -715,8 +729,12 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   addExtendMethod(methodName: string, method: Function) {
     const methodExtend = this.tableExtend//扩展
-    const extendArr = methodExtend[methodName]
-    extendArr.push(method)//扩展函数 
+    let extendArr = methodExtend[methodName]
+    if (extendArr == null) {
+      methodExtend[methodName] = []
+      extendArr = methodExtend[methodName]
+    }
+    extendArr.push(method)//扩展函数  
   }
 }
 

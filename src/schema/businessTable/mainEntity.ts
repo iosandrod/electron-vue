@@ -9,6 +9,7 @@ import { base } from "../base"
 import { createDetailEntityGroup } from "./detailEntityGroup"
 // import mainEntityMethod from ''
 import * as mainMethod from '@/entityMethods/mainTableMethods'
+import * as mainEntityExtend from './mainEntityExtend'
 
 export class mainEntity extends basicEntity {
   //页面树
@@ -21,46 +22,9 @@ export class mainEntity extends basicEntity {
     this.entityState = 'scan'//扫描状态
     this.buttonCategory = 'ViewGrid'
     this.buttonMethod = mainMethod
-  }
-  //@ts-ignore
-  async initRenderDetailEntity() {
-    const _this = this
-    if (_this.pageRef.dEntityInstance != null) {
-      return { instance: _this.pageRef.dEntityInstance }
-    }
-    const tableInfo = _this.tableInfo
-    const detailTable = tableInfo?.detailTable! || []
-    const detailEntity = await Promise.all(detailTable.map(async (table) => {
-      const dTable = await createDetailEntity(table.tableName, table)//表名
-      dTable.mainEntity = _this as any
-      return dTable
-    }))
-    _this.detailTable = detailEntity as any//业务逻辑类型的子组件
-    const renderDetailEntity = _this.renderDetailEntity
-    renderDetailEntity.entityGroup = computed(() => {
-      return _this.detailTable
-    }) as any
-    renderDetailEntity.type = computed(() => {
-      return 'card'
-    }) as any
-    renderDetailEntity.tabBarStyle = computed(() => {
-      const detailTable = _this.detailTable
-      const obj = {
-        margin: '0 0 0 0 !important',
-        height: '30px'
-      } as StyleType
-      if (detailTable!?.length <= 1) {
-        obj.display = 'none'
-      }
-      return obj
-    }) as any
-    renderDetailEntity.activeKey = computed(() => {
-      return _this.detailEntityConfig.curDetailKey
-    }) as any
-    _this.detailEntityConfig.curDetailKey = _this.detailTable?.[0]?.tableInfo?.tableName || ''
-    const dEntityInstance = createDetailEntityGroup(renderDetailEntity)
-    _this.pageRef.dEntityInstance = dEntityInstance
-    return { instance: _this.pageRef.dEntityInstance }
+    Object.entries(mainEntityExtend).forEach(([key, value]) => {
+      this.addExtendMethod(key, value)
+    })
   }
   async initEntity() {
     try {
@@ -75,10 +39,7 @@ export class mainEntity extends basicEntity {
   async initComponent() {//初始化节点
     await super.initComponent()
   }
-  //初始化子表数据
-  async initDetailEntity() {
-
-  }
+  //初始化子表数据 
   getMainEntity() {
     return this
   }

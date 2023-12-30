@@ -50,11 +50,22 @@ export class myHttp {
     return token
   }
   async postZkapsApi(url: string, body?: any, headers?: any) {
-
     const _body: any = {
       url, body: body || {},
     }
     const _url = '/entity/postZkapsApi'
+    const system = this.getSystem()
+    const token = system.localStorage.token
+    const _headers = headers || {}
+    _body.headers = Object.assign(_headers, { Authorization: `Bearer ${token}` })
+    const data = await this.post(_url, _body)
+    return data
+  }
+  async getTableData(url: string, body?: any, headers?: any) {
+    const _body: any = {
+      url, body: body || {},
+    }
+    const _url = '/entity/zkGetTableData'
     const system = this.getSystem()
     const token = system.localStorage.token
     const _headers = headers || {}

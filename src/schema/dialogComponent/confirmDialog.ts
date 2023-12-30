@@ -24,7 +24,7 @@ export const confirm_default_init = (dialog: dialog) => {
     })
     const vNode = () => {
         // return h('div', [message.value])
-        return h('div', Array(10000).fill(1))
+        return h('div', message.value)
     }
     dialog.defaultComponent = vNode
 }

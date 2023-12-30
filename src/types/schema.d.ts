@@ -55,7 +55,7 @@ export type mergeConfig = {
     rowArr: any[][]
   }
 }
-
+export type sortType = 'desc' | 'asc'
 export type sortconfig = {
   //排序配置
   field: string,//排序字段
@@ -573,6 +573,7 @@ export type routeOpenConfig = { entityName: string, isEdit?: boolean, path?: str
 
 
 export type entityTableConfig = {
+  searchFormFields: any
   columns: entityColumn[],
   editItems: formitem[],
   searchItems: formitem[]
@@ -635,3 +636,6 @@ export type runAfterConfig = {
   table: basicEntity,
   [key: string]: any
 }
+export type alignType = 'left' | 'center' | 'right'
+
+export type fixedType = 'left' | 'right' | null

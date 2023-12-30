@@ -171,7 +171,6 @@ export const getTableData = async (entity: basicEntity) => {
     const systemConfig = system.systemConfig
     const companyId = systemConfig.companyConfig.companyId
     const order = tableInfo?.sortOrder || 'desc'
-    // const colName = tableInfo?.tableColumns.slice(0, 1).pop()?.columnName
     const colName = tableInfo?.sortName || tableInfo?.tableColumns.find(col => col.isKey == true)?.columnName || ''
     const page = 1
     const rows = 100
@@ -182,17 +181,16 @@ export const getTableData = async (entity: basicEntity) => {
         order,
         page,
         rows,
-        sort: JSON.stringify([
+        sort: [
             {
                 colName,
                 order
             }
-        ]),
+        ],
         tableName,
-        wheres: JSON.stringify([
-        ])
+        wheres: []
     }
-    const url = `/api/${TableEntity}/getTableData`
+    const url = `/api/${TableEntity}/getPageData`
     return { url, params }
 }
 

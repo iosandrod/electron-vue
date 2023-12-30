@@ -85,10 +85,14 @@ export const getRenderDetailEntity = async <T extends mainEntity>(entity: T) => 
 }
 
 export const initRenderSearchForm = (entity: basicEntity) => {
+    const searchForm = entity.pageRef.searchForm
+    if (searchForm != null) {
+        return { instance: searchForm }
+    }
     const _this = entity
     const renderSearchForm = _this.renderSearchForm
     renderSearchForm.data = computed(() => {
-        return {}
+        return _this.tableConfig.searchFormFields
     }) as any
     renderSearchForm.items = _this.tableConfig.columns!.filter(col => Boolean(col.searchType) !== false).map(col => {
         let obj: itemConfig = {} as any
