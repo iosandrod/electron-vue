@@ -192,7 +192,7 @@ export const getTableData = async (entity: basicEntity) => {
         wheres: JSON.stringify([
         ])
     }
-    const url = `/api/${TableEntity}/getPageData`
+    const url = `/api/${TableEntity}/getTableData`
     return { url, params }
 }
 

@@ -13,7 +13,7 @@ import {
 } from "vxe-table"
 import * as tableFn from './tableFn'
 import { system, systemInstance } from "./system"
-import { StyleType, dialogConfig, dialogMap, inputConfig, pickKey, position, scrollConfig, tableConfig, tableData, tableSchema, tableState } from "@/types/schema"
+import { StyleType, addTableRowConfig, dialogConfig, dialogMap, inputConfig, pickKey, position, scrollConfig, tableConfig, tableData, tableSchema, tableState } from "@/types/schema"
 import { column, createColumn } from "./column"
 import { getOptionsCellClassName, getOptionsFilterConfig, getOptionsHeight, getOptionsRowClassName, getOptionsRowConfig, getOptionsScrollX, getOptionsScrollY, getOptionsShowFooter, getOptionsShowHeader, getOptionsTreeConfig, getTableRowConfig, getTableStyle } from "./tableFn"
 import { closeDialog, createDialog, destroyDialog, dialog, openDialog } from "./dialog"
@@ -165,6 +165,12 @@ export class table extends base<tableSchema> implements tableMethod {
     const curRowChange = this.tableConfig.curRowChange
     if (typeof curRowChange == 'function') {
       await curRowChange({ row: this.tableData.curRow, table: this })
+    }
+  }
+  async dbCurRowChange() {
+    const dbCurRowChange = this.tableConfig.dbCurRowChange
+    if (typeof dbCurRowChange == 'function') {
+      await dbCurRowChange({ row: this.tableData.curRow, table: this })
     }
   }
   async setCurColumn(col: any) {
@@ -341,6 +347,10 @@ export class table extends base<tableSchema> implements tableMethod {
             try {
               const vxeGrid = table.pageRef.vxeGrid
               let showData = this.tableData.showData
+              let curRow = this.tableData.curRow
+              if (!showData.includes(curRow)) {
+                this.tableData.curRow = null
+              }
               vxeGrid?.reloadData(showData).then(res => {
                 const scrollConfig = table.scrollConfig
                 const scrollTop = scrollConfig.scrollTop
@@ -356,6 +366,26 @@ export class table extends base<tableSchema> implements tableMethod {
         }
       }, 0)
     })
+  }
+  addTableRow(config: addTableRowConfig) {
+    config = config || {}
+    const num = config.num || 1
+    const rows = config.rows || []
+    const insertStatus = config.insertStatus || false
+    const curRow = this.tableData.curRow
+    let addRows = Array(num).fill(null).reduce((res, item, i) => {
+      const targetObj = rows[i] || {}
+      res.push(targetObj)
+      return res
+    }, [])
+    if (insertStatus == true && curRow != null) {
+      let curIndex = this.tableData.data.findIndex(row => row == curRow)
+      this.tableData.data.splice(curIndex, 0, ...addRows)
+      this.tableData.curRow = addRows.slice(-1).pop()
+      return
+    }
+    this.tableData.data.push(...addRows)
+    this.tableData.curRow = addRows.slice(-1).pop()
   }
 }
 

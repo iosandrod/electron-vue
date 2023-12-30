@@ -129,7 +129,7 @@ function getTableData() {
   const key = systemConfig.activeKey
   const entity = systemInstance.entityVetor[key]
   if (entity) {
-    entity.getPageData()
+    entity.getTableData()
   }
 }
 function routeOpen() {
@@ -267,9 +267,10 @@ async function changeEditType111111111() {
   const entityName = entity.entityName
   const system = entity.system!
   const model = await entity.getDefaultModel()
-  console.log(model, 'testModel')
+  // console.log(model, 'testModel')
   if (state11) {
     // entity.addEntityItem(obj)
+    entity.addTableRow(10)
   } else {
     // entity.removeEntityItem(obj)
   }

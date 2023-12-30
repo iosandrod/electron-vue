@@ -2,7 +2,7 @@ import { computed, getCurrentInstance, h, isReactive, nextTick, onMounted, react
 import { table } from "./table";
 import { StyleType, filterConfig, position, tableSchema } from "@/types/schema";
 import { column, createColumn } from "./column";
-import { VxeGridProps, VxeGrid, VxeColumnProps, VxeColumnSlotTypes, VxeSelect, VxeButton } from "vxe-table";
+import { VxeGridProps, VxeGridEventProps, VxeGrid, VxeColumnProps, VxeColumnSlotTypes, VxeSelect, VxeButton, VxeGridEmits, VxeGridEvents } from "vxe-table";
 import { getRenderFn } from "./columnFn";
 import { getDialogPosition } from "./dialogFn";
 import { getMouseEventPosition, styleBuilder } from "@/utils/utils";
@@ -121,86 +121,10 @@ export const getOptionsRowConfig = (table: table) => {
     })
 }
 
-export const getOptionsRowClassName = (table: table) => {
-    return computed(() => {
-        return ({ row }: any) => {
-            const arr = ['']
-            const tableConfig = table.tableConfig
-            const hiddenBorder = tableConfig.hiddenBorder
-            const curRow = table.tableData.curRow
-            if (curRow === row) {
-                arr.push('curRowClass')
-            }
-            if (hiddenBorder == true) {
-                arr.push('')
-            }
-            return arr
-        }
-    })
-}
-
-export const getOptionsCellClassName = (table: table) => {
-    return computed(() => {
-        return ({ row, column }: any) => {
-            const curRow = table.tableData.curRow
-            const curColumn = table.tableData.curColumn
-            if (row == curRow && column?.field == curColumn?.columnConfig?.field && column?.field != null) {
-                return ['rowSelect', 'cellDefaultClass']
-            }
-            return ['cellDefaultClass']
-        }
-    })
-}
-
-export const getOptionsFilterConfig = (table: table) => {
-    return computed(() => {
-        return {
-            showIcon: true
-        }
-    })
-}
-
-
-
-export const getOptionsHeight = (table: table) => {
-    return computed(() => {
-        const tableConfig = table.tableConfig
-
-        let height = tableConfig.height
-        if (typeof height == 'number') {
-            height = `${height}px`
-        }
-        return height
-    })
-}
-
-export const getOptionsShowFooter = (table: table) => {
-    return computed(() => {
-        const columns = table.tableConfig.columns
-        const showFooter = columns.reduce((res: boolean, item) => {
-            if (res == true) {
-                return res
-            }
-            const showFooter: any = item.showFooter!
-            if (showFooter === true) {
-                return true
-            }
-            return res
-        }, false)
-        return showFooter
-    })
-}
-
-export const getOptionsShowHeader = (table: table) => {
-    return computed(() => {
-        return table.tableConfig.showHeader
-    })
-}
-
 
 
 export const initGridOptions = (table: table) => {
-    const gridOptions = table.gridOptions as VxeGridProps
+    const gridOptions = table.gridOptions as VxeGridProps & VxeGridEventProps
     // table.tableConfig.columns
     gridOptions.columns = computed(() => {
         const tableConfig = table.tableConfig
@@ -249,11 +173,47 @@ export const initGridOptions = (table: table) => {
         oSize: 0,
     }
     // getOptionsScrollY(table) as any
-    gridOptions.rowConfig = getOptionsRowConfig(table) as any
-    gridOptions.columnConfig = getOptionsColumnConfig(table) as any
-    gridOptions.rowClassName = getOptionsRowClassName(table) as any
-    gridOptions.cellClassName = getOptionsCellClassName(table) as any
-    gridOptions.filterConfig = getOptionsFilterConfig(table) as any
+    gridOptions.rowConfig = computed(() => {
+        const rowConfig = table.tableConfig.rowConfig
+        const rowHeight = rowConfig?.rowHeight
+        return {
+            height: rowHeight,
+            isHover: true,
+            useKey: false
+        }
+    }) as any
+    gridOptions.columnConfig = computed(() => {
+        return {
+            useKey: false,
+            minWidth: 100
+        }
+    }) as any
+    gridOptions.rowClassName = computed(() => {
+        return ({ row }: any) => {
+            const arr = ['']
+            const tableConfig = table.tableConfig
+            const hiddenBorder = tableConfig.hiddenBorder
+            const curRow = table.tableData.curRow
+            if (curRow === row) {
+                arr.push('curRowClass')
+            }
+            if (hiddenBorder == true) {
+                arr.push('')
+            }
+            return arr
+        }
+    }) as any
+    gridOptions.cellClassName = computed(() => {
+        return ({ row, column }: any) => {
+            const curRow = table.tableData.curRow
+            const curColumn = table.tableData.curColumn
+            if (row == curRow && column?.field == curColumn?.columnConfig?.field && column?.field != null) {
+                return ['rowSelect', 'cellDefaultClass']
+            }
+            return ['cellDefaultClass']
+        }
+    }) as any
+    // gridOptions.filterConfig = getOptionsFilterConfig(table) as any
     gridOptions.checkboxConfig = computed(() => {
         const tableConfig = table.tableConfig
         let checkboxConfig = { ...tableConfig.checkboxConfig }
@@ -268,33 +228,52 @@ export const initGridOptions = (table: table) => {
         if (hiddenCheckbox == true) {
             // checkboxConfig.visibleMethod = () => {
             //     return false
-            // }
+            // } 
         }
         return checkboxConfig
     }) as any
     gridOptions.showOverflow = 'ellipsis'
     gridOptions.showHeaderOverflow = 'ellipsis'
-    gridOptions.height = getOptionsHeight(table) as any
+    gridOptions.height = computed(() => {
+        const tableConfig = table.tableConfig
+
+        let height = tableConfig.height
+        if (typeof height == 'number') {
+            height = `${height}px`
+        }
+        return height
+    }) as any
     // gridOptions.height = '400px'
     gridOptions.minHeight = '150px'
     gridOptions.headerAlign = 'center'
-    gridOptions.showFooter = getOptionsShowFooter(table) as any
-    gridOptions.showHeader = getOptionsShowHeader(table) as any
+    gridOptions.showFooter = computed(() => {
+        const columns = table.tableConfig.columns
+        const showFooter = columns.reduce((res: boolean, item) => {
+            if (res == true) {
+                return res
+            }
+            const showFooter: any = item.columnConfig.showFooter
+            if (showFooter === true) {
+                return true
+            }
+            return res
+        }, false)
+        return showFooter
+    }) as any
+    gridOptions.showHeader = computed(() => {
+        return table.tableConfig.showHeader
+    }) as any
     gridOptions.headerRowStyle = {
         height: `${table.tableConfig.headerConfig?.rowHeight}px`
     }
     gridOptions.stripe = true
     gridOptions.border = true
     gridOptions.menuConfig = { enabled: true }
+    gridOptions.onCellClick = () => {
+
+    }
 }
-export const getOptionsColumnConfig = (table: table) => {
-    return computed(() => {
-        return {
-            useKey: false,
-            minWidth: 100
-        }
-    })
-}
+
 export const initComponent = (table: table) => {
     const _this = table
     const show = computed(() => {
@@ -320,26 +299,18 @@ export const initComponent = (table: table) => {
             },
             [[{
                 mounted(div) {
-                    // const effectPool = table.effectPool
-                    // if (Object.keys(effectPool).length == 0) {
-                    //     initSchema(table)
-                    // }
                     table.autoRefreshData()
                 }, unmounted() {
                     table.tableConfig.globalWhere = ''
-                    // const dialogMap = table.dialogMap
-                    // Object.values(dialogMap).forEach(value => {
-                    //     table.destroyDialog(value)
-                    // })
                     const effectPool = table.effectPool
                     effectPool['refreDataEffect']()
                 }
             }]]
         )
-        const xeinstacne = ref(null)
         const vxeGridCom = withDirectives(h(VxeGrid, {
             ...options, ref: 'xeinstacne',
             onCellClick: ({ row, column }: any) => {
+                console.log('cellClick')
                 _this.setCurRow(row)
                 _this.setCurColumn(column)
                 const tableConfig = _this.tableConfig
@@ -348,6 +319,9 @@ export const initComponent = (table: table) => {
                     onCellClick({ row, column } as any)
                 }
 
+            },
+            onCellDblclick: ({ row, column }) => {
+                console.log('cellDbClick')
             },
             onScroll: (params: any) => {
                 const { scrollTop, scrollWidth, bodyWidth, bodyHeight, scrollLeft } = params
@@ -377,7 +351,6 @@ export const initComponent = (table: table) => {
                 }
             },
             onCheckboxRangeEnd: (value) => {
-                console.log('checkboxChange')
                 const checkChange = table.tableConfig.onCheckboxChange as any
                 if (typeof checkChange == 'function') {
                     const row = value.records
@@ -633,7 +606,7 @@ export const initRenderFilterColTable = (table: table) => {
     }]
     const filterColTable = createTable(renderFilterColTable)
     filterColTable.tableState = 'fullEdit'
-    table.pageRef.filterColTable = filterColTable
+    table.pageRef.filterColTable = filterColTable as any
 }
 
 export const initRenderFilterTable = (table: table) => {
@@ -642,7 +615,9 @@ export const initRenderFilterTable = (table: table) => {
     }
     const renderFilterTable = table.renderFilterTable
     renderFilterTable.columns = [{
-        field: "value",
+        // field: "value",
+        // title: "值",
+        field: 'value',
         title: "值",
         width: 150
     }]

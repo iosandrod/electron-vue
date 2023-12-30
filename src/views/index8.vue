@@ -212,7 +212,7 @@ async function btnClick() {
 function btnClick2() {
   let _entity: any = instance?.$refs.entity
   const _entity1 = _entity?.entity
-  _entity1.getPageData()
+  _entity1.getTableData()
 }
 let state = false
 function btnClick1() {

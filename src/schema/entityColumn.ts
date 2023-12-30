@@ -154,7 +154,6 @@ const columnObj = [
     new Translate('cDefaultValue', 'cDefaultValue', function (targetValue, column, entityColumn) {
         if (targetValue != null) {
             let _value = entityColumn.formatFunData(targetValue, column.columnType.toLocaleLowerCase(), true)
-            console.log(typeof _value)
             return _value
         }
         return ''

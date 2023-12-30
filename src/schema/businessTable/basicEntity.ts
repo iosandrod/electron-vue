@@ -99,7 +99,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     editItems: [],
     searchItems: [],
   }
-  tableData = {
+  tableData: { data: any[] } = {
     data: []
   }
   menuConfig = {
@@ -226,28 +226,22 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   async dispatch(eventName = '') {//触发某个函数
 
   }
-  async getPageData(getDataConfig: any) {//获取页面数据,与实体相关的
+  async getTableData(getDataConfig: any) {//获取页面数据,与实体相关的
     try {
-      await confirmBefore()
-      console.log('getData')
-      // const { params, url } = await getTableData(this)
-      // const payload = { entity: this, params, url }
-      // const fn = async (payload: any, next: any) => {
-      //   const params = payload.params
-      //   const url = payload.url
-      //   const result: any = await http.postZkapsApi(url, params)//这里模拟获取数据
-      //   const { status, msg, dtMain: rows, total, data } = result
-      //   let _rows = rows
-      //   let _total = total
-      //   if (_rows == null) {
-      //     _rows = data
-      //   }
-      //   if (_total == null) {
-      //     _total = data?.length || 0
-      //   }
-      //   this.tableData.data = _rows
-      //   await next()
-      // }
+      // await this.getRunBefore('getTableData')
+      // await confirmBefore()
+      const { params, url } = await getTableData(this)
+      const result: any = await http.postZkapsApi(url, params)//这里模拟获取数据
+      const { status, msg, dtMain: rows, total, data } = result
+      let _rows = rows
+      let _total = total
+      if (_rows == null) {
+        _rows = data
+      }
+      if (_total == null) {
+        _total = data?.length || 0
+      }
+      this.tableData.data = _rows
       // // const data = JSON.parse(JSON.stringify(tableData))//这里是数据  
       // // this.tableData.data = data
       // const middleArr = [pageloadMiddleware
@@ -295,7 +289,16 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       }) as any//处理表格 
       renderTable.data = computed(() => {
         return entity.tableData.data
-      }) as any//行与列  
+      }) as any//行与列
+      renderTable.curRowChange = () => {
+
+      }
+      renderTable.dbCurRowChange = () => {
+
+      }
+      renderTable.onCellClick = () => {
+
+      }
       const table = createTable(renderTable)
       //@ts-ignore
       entity.pageRef.vxeGrid = table//只初始化一次
@@ -317,9 +320,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     if (show != false) {
       this.displayState = 'show'
     }
-    // setTimeout(() => {
-    //   this.getPageData()
-    // }, 1000);
+    setTimeout(() => {
+      this.getTableData()
+    }, 1000);
   }
   initDetailEntity() {
     //基类没有初始化子表的配置的东西
@@ -530,11 +533,15 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         let value = col.cDefaultValue
         const cDefaultValue = col.cDefaultValue
         if (typeof cDefaultValue == 'function') {
-          value = await cDefaultValue(_this)//当前类传过去
+          try {
+            value = await cDefaultValue(_this)//当前类传过去
+          } catch (error) {
+            value = ''
+          }
         }
         obj[field] = value
       } catch (error) {
-        console.log('some error')
+        console.log('some error', error)
       }
     }
     return obj
@@ -578,8 +585,21 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
 
   }
   //表格添加一行数据
-  addTableRow(num: number, rows?: any[], insertStatus = false) {
-
+  async addTableRow(num: number, rows?: any[], insertStatus = false) {
+    if (!Array.isArray(rows)) {
+      rows = []
+    }
+    let resArr = []
+    for (const i of Object.keys(Array(num).fill(null))) {
+      let obj = rows[Number(i)]
+      if (obj == null) {
+        obj = await this.getDefaultModel()
+      }
+      resArr.push(obj)
+    }
+    this.tableData.data.push(...resArr)
+    // const vxeGrid = this.pageRef.vxeGrid
+    // vxeGrid?.addTableRow({ num: resArr.length, rows: resArr, insertStatus: false })
   }
   //表单新增数据
   addNewRow() {

@@ -203,6 +203,6 @@ export const curRowChange = (entity: mainEntity) => {
 
 }
 
-export const getPageData = (entity: mainEntity) => {
+export const getTableData = (entity: mainEntity) => {
 
 }

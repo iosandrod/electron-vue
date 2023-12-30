@@ -63,6 +63,7 @@ export type sortconfig = {
 }
 
 export type tableConfig = {
+  dbCurRowChange?: (value: { row: any, table: table }) => Promise<void> | ((value: { row: any, table: table }) => void)
   baseInfoTable?: any
   checkLabelField?: string,
   globalWhereShow?: boolean
@@ -82,7 +83,7 @@ export type tableConfig = {
   hiddenBorder?: boolean,
   showCheckBoxColumn?: boolean,
   showSeqColumn?: boolean,
-  columns: column[] = [],
+  columns: Array<column | columnConfig> = [],
   filterConfig?: filterConfig[],
   mergeConfig?: mergeConfig,
   sortconfig?: sortconfig[]
@@ -120,6 +121,8 @@ export type roundType = {
 }
 
 export type columnConfig = {
+  title?: string,
+  width?: number
   renderColumn?: any,
   filterPosition?: position
   visible?: boolean
@@ -589,4 +592,10 @@ export type command = {
   targetEntityType: string//目标页面类型
   targetEntityKey?: string
   runFun: (config: { entity: mainEntity | mainEditEntity | detailEntity, [key: string]: any }) => void
+}
+
+export type addTableRowConfig = {
+  rows: any[],
+  num: number,
+  insertStatus: boolean
 }
