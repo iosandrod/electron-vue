@@ -310,7 +310,7 @@ export const initComponent = (table: table) => {
         const vxeGridCom = withDirectives(h(VxeGrid, {
             ...options, ref: 'xeinstacne',
             onCellClick: ({ row, column }: any) => {
-                console.log('cellClick')
+                // _this.curRowChange()
                 _this.setCurRow(row)
                 _this.setCurColumn(column)
                 const tableConfig = _this.tableConfig
@@ -491,40 +491,49 @@ export const initSchema = (table: table) => {
     if (showHeaderFilter === false) {
         table.tableConfig.showHeaderFilter = false
     }
+    const _this = table
     if (schema != null && Object.keys(schema).length > 0) {
+        const _tableConfig = table.tableConfig as any
+        const tableData = table.tableData
+        const effectPool = _this.effectPool
+        const permission: any = _this.tablePermission
         for (const key of Object.keys(schema)) {
-            let tableConfig: any = table.tableConfig
             if (key == 'columns') {
                 //这种就不需要了呀
                 continue
             }
+            if (/^can/i.test(key)) {//使用权限
+                effectPool[`table${key}Effect`] = watchEffect(() => {
+                    permission[key] = schema[key]
+                })
+                continue
+            }
+            if (key == 'data') {
+                effectPool['tabledataEffect'] = watchEffect(() => {
+                    const _data = schema['data'] || []
+                    tableData.data = _data
+                    tableData.showData = _data
+                    nextTick(() => {
+                        _data.forEach(row => {
+                            let _str = ''
+                            table.tableConfig.columns.forEach((col) => {
+                                const _col: column = col as any
+                                let str = _col.formatJsonRow(row)
+                                if (str == '') {
+                                    return
+                                }
+                                _str = `${_str}^^^${str}`
+                            })
+                            row['vHtml'] = _str
+                        })
+                    })
+                })
+                continue
+            }
             const _value = schema[key]
-            const _tableConfig = table.tableConfig as any
-            const tableData = table.tableData
             if (_value != null) {
                 table.effectPool[`table${key}Effect`] = watchEffect(() => {
-                    if (['data',].includes(key)) {
-                        //外部数据刷新之前要处理的东西
-                        const _data = schema['data'] || []
-                        tableData.data = _data
-                        tableData.showData = _data
-                        nextTick(() => {
-                            _data.forEach(row => {
-                                let _str = ''
-                                table.tableConfig.columns.forEach(col => {
-                                    // const _value=col
-                                    let str = col.formatJsonRow(row)
-                                    if (str == '') {
-                                        return
-                                    }
-                                    _str = `${_str}^^^${str}`
-                                })
-                                row['vHtml'] = _str
-                            })
-                        })
-                    } else {
-                        _tableConfig[key] = schema[key]
-                    }
+                    _tableConfig[key] = schema[key]
                 })
             }
         }

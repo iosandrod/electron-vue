@@ -11,7 +11,7 @@ import { http } from "../http"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -132,7 +132,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   renderTableInfo: any = {}
   util: any
 
-  curRowChange: any
   constructor(schema: any, system: any) {
     super(schema, system)
     this.system = system
@@ -738,6 +737,18 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       extendArr = methodExtend[methodName]
     }
     extendArr.push(method)//扩展函数  
+  }
+  async curRowChange(curRowConfig: curRowConfig) {
+    const _this = this
+    const beforeConfig: runBeforeConfig = {
+      methodName: "curRowChange",
+      table: _this
+    }
+    await this.getRunBefore(beforeConfig)
+    await this.getRunAfter(beforeConfig as any)
+  }
+  async dbCurRowChange() {
+
   }
 }
 

@@ -13,9 +13,9 @@ import {
 } from "vxe-table"
 import * as tableFn from './tableFn'
 import { system, systemInstance } from "./system"
-import { StyleType, addTableRowConfig, dialogConfig, dialogMap, inputConfig, pickKey, position, scrollConfig, tableConfig, tableData, tableSchema, tableState } from "@/types/schema"
+import { StyleType, addTableRowConfig, curRowConfig, dialogConfig, dialogMap, inputConfig, pickKey, position, scrollConfig, tableConfig, tableData, tableSchema, tableState } from "@/types/schema"
 import { column, createColumn } from "./column"
-import { getOptionsCellClassName, getOptionsFilterConfig, getOptionsHeight, getOptionsRowClassName, getOptionsRowConfig, getOptionsScrollX, getOptionsScrollY, getOptionsShowFooter, getOptionsShowHeader, getOptionsTreeConfig, getTableRowConfig, getTableStyle } from "./tableFn"
+import { getTableRowConfig, getTableStyle } from "./tableFn"
 import { closeDialog, createDialog, destroyDialog, dialog, openDialog } from "./dialog"
 import { createDialogConfig } from "./tableDialogConfig"
 import { tableMethod } from "./tableMethod"
@@ -161,9 +161,12 @@ export class table extends base<tableSchema> implements tableMethod {
     } else {
       this.tableData.editData.length && (this.tableData.editData = [])
     }
-    await this.curRowChange()
   }
-  async curRowChange() {
+  async curRowChange(config: curRowConfig) {
+    const row = config.row
+    const column = config.column
+    await this.setCurRow(row)
+    await this.setCurColumn(column)
     const curRowChange = this.tableConfig.curRowChange
     if (typeof curRowChange == 'function') {
       await curRowChange({ row: this.tableData.curRow, table: this })
@@ -176,6 +179,9 @@ export class table extends base<tableSchema> implements tableMethod {
     }
   }
   async setCurColumn(col: any) {
+    if (col == null) {
+      return
+    }
     const params = col?.params
     if (params instanceof column) {
       this.tableData.curColumn = params
@@ -190,14 +196,7 @@ export class table extends base<tableSchema> implements tableMethod {
     closeDialog(key)
   }
   destroyDialog(key: string) {
-    destroyDialog(key)
-    const dialogMap: any = this.dialogMap
-    const _key = Object.entries(dialogMap).find(([key1, value]) => {
-      return value == key
-    })?.[0]
-    if (_key != null) {
-      dialogMap[_key!] = null
-    }
+    //删除当前页面弹框
   }
   openBodyMenu($event: MouseEvent) {
     const bodyContext = this.pageRef.bodyContext!

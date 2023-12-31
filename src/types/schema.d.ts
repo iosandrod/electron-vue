@@ -646,3 +646,9 @@ export type jumpConfig = {
   type?: entityState,
   wheres?: whereObj[]
 }
+
+export type curRowConfig = {
+  row: any,
+  column?: column
+  table?: table
+}
