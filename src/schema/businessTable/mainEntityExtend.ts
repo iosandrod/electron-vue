@@ -7,16 +7,37 @@ import { uid } from "quasar";
 export const getTableData_before = (runBeforeConfig: runBeforeConfig) => {
     const table = runBeforeConfig.table
     const _this = table!
+    //获取一些where条件
     const tableConfig = table?.tableConfig.searchFormFields
     const searchWhere = table?.tableConfig.columns.map(col => {
         return
     })
     //把当前行缓存
-    const curRow = _this.getCurRow()
-    // runBeforeConfig.oldRow=
+    const curRow = _this.getCurRow(true)
+    runBeforeConfig.oldCurRow = curRow
 }
-export const getTableData_after = (runAfterConfig: runAfterConfig) => {
-    const table = runAfterConfig
+export const getTableData_after = async (runAfterConfig: runAfterConfig) => {
+    const table = runAfterConfig.table!
+    const _this = table
+    const tableKey = _this.getTableInfoKey("key") as string
+    //旧的当前行
+    let oldCurRow = runAfterConfig.oldCurRow
+    if (oldCurRow != null) {
+        const oldKeyValue = oldCurRow[tableKey]
+        const data = _this.tableData.data
+        const targetRow = data.find(row => {
+            return row[tableKey] == oldKeyValue
+        })
+        if (targetRow != null) {
+            await _this.setCurRow(targetRow)
+        }
+    } else {
+        let data = _this.tableData.data
+        const targetRow = data[0]
+        if (targetRow) {
+            await _this.setCurRow(targetRow)
+        }
+    }
 }
 
 
