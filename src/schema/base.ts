@@ -2,8 +2,10 @@ import { StyleType, componentConfig, concatAny, displayState, schema } from "@/t
 import { system } from "./system"
 // import * as Rx from "rxjs"
 import { ShallowRef, VNode, computed, h, shallowRef } from "vue"
+import XEUtils from "xe-utils"
 
 export class base<T = any> {
+  uniqueId: string = ''
   system: system
   comopnentConfig?: concatAny<componentConfig>
   componentType?: string
@@ -18,6 +20,7 @@ export class base<T = any> {
     this.system = system
     this.schema = schema
     this.context = context
+    this.uniqueId = XEUtils.uniqueId()
   }
   initBase() { }
   initComponent() { }

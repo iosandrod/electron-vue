@@ -160,6 +160,9 @@ export class form extends base<formConfig> {
     }
     this.component = vNode
   }
+  getEditItems() {
+    return this.formConfig.items
+  }
 }
 
 export const createForm = (schema: any) => {

@@ -165,7 +165,7 @@ export class table extends base<tableSchema> implements tableMethod {
     const row = config.row
     const column = config.column
     await this.setCurRow(row)
-    await this.setCurColumn(column)
+    await this.setCurColumn(column)//处理组件内部状态
     const curRowChange = this.tableConfig.curRowChange
     if (typeof curRowChange == 'function') {
       await curRowChange({ row: this.tableData.curRow, table: this })

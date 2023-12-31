@@ -124,6 +124,7 @@ export const getOptionsRowConfig = (table: table) => {
 
 
 export const initGridOptions = (table: table) => {
+    const _this = table
     const gridOptions = table.gridOptions as VxeGridProps & VxeGridEventProps
     // table.tableConfig.columns
     gridOptions.columns = computed(() => {
@@ -269,8 +270,17 @@ export const initGridOptions = (table: table) => {
     gridOptions.stripe = true
     gridOptions.border = true
     gridOptions.menuConfig = { enabled: true }
-    gridOptions.onCellClick = () => {
-
+    gridOptions.onCellClick = async (value) => {
+        // _this.curRowChange()
+        const row = value.row
+        const column = value.column?.params
+        await _this.curRowChange({ row: row, column: column })
+        //cellCloick
+        const tableConfig = _this.tableConfig
+        const onCellClick = tableConfig.onCellClick
+        if (typeof onCellClick == 'function') {
+            onCellClick(value as any)//cell点击事件
+        }
     }
 }
 
@@ -309,20 +319,20 @@ export const initComponent = (table: table) => {
         )
         const vxeGridCom = withDirectives(h(VxeGrid, {
             ...options, ref: 'xeinstacne',
-            onCellClick: ({ row, column }: any) => {
-                // _this.curRowChange()
-                _this.setCurRow(row)
-                _this.setCurColumn(column)
-                const tableConfig = _this.tableConfig
-                const onCellClick = tableConfig.onCellClick
-                if (typeof onCellClick == 'function') {
-                    onCellClick({ row, column } as any)
-                }
+            // onCellClick: ({ row, column }: any) => {
+            //     // _this.curRowChange()
+            //     _this.setCurRow(row)
+            //     _this.setCurColumn(column)
+            //     const tableConfig = _this.tableConfig
+            //     const onCellClick = tableConfig.onCellClick
+            //     if (typeof onCellClick == 'function') {
+            //         onCellClick({ row, column } as any)
+            //     }
 
-            },
-            onCellDblclick: ({ row, column }) => {
-                console.log('cellDbClick')
-            },
+            // },
+            // onCellDblclick: ({ row, column }) => {
+            //     console.log('cellDbClick')
+            // },
             onScroll: (params: any) => {
                 const { scrollTop, scrollWidth, bodyWidth, bodyHeight, scrollLeft } = params
                 table.scrollConfig.scrollTop = scrollTop

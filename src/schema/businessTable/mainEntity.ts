@@ -78,8 +78,18 @@ export class mainEntity extends basicEntity {
         await _entity.addModel()
       }
     }
-    system.addCommand(command)
     system.routeOpen(openConfig)
+    const editEntityId = _this.getMainEditEntity().uniqueId
+    command.uniqueId = editEntityId
+    system.addCommand(command)
+  }
+  getMainEditEntity() {
+    const _this = this
+    const system = _this.system
+    const entityPool = system.entityVetor
+    const entityNameEdit = `${this.entityName}_edit`
+    const editEntity = entityPool[entityNameEdit]
+    return editEntity
   }
 }
 

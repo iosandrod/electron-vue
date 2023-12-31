@@ -233,14 +233,17 @@ export const getFn = {
 
     },
     searchItems: (_this: basicEntity) => {
+        const searchForm = _this.pageRef.searchForm
+        return searchForm?.getEditItems() || []
     },
     editItems: (_this: basicEntity) => {
-
+        const editForm = _this.pageRef.vxeForm
+        return editForm?.getEditItems()
     },
     editForm: (_this: basicEntity) => {
-
+        return _this.pageRef.vxeForm
     },
     searchForm: (_this: basicEntity) => {
-
+        return _this.pageRef.searchForm
     }
 }

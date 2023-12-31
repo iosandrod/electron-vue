@@ -1,5 +1,6 @@
 import { tableinfo1 } from "@/api/data"
 import { basicEntity } from "@/schema/businessTable/basicEntity"
+import { getFn } from "@/schema/businessTable/basicEntityFn"
 import { detailEntity } from "@/schema/businessTable/detailEntity"
 import { mainEditEntity } from "@/schema/businessTable/mainEditEntity"
 import { mainEntity } from "@/schema/businessTable/mainEntity"
@@ -592,6 +593,7 @@ export type codeEditRender = {
 }
 
 export type command = {
+  uniqueId?: string
   targetEntityName: string//目标页面
   targetEntityType: string//目标页面类型
   targetEntityKey?: string
@@ -652,3 +654,5 @@ export type curRowConfig = {
   column?: column
   table?: table
 }
+
+export type tableKeyType = keyof typeof getFn

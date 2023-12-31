@@ -6,7 +6,7 @@ import { mainEntity } from "./mainEntity"
 import { TabPaneProps } from "ant-design-vue"
 import { createEntityButton } from "../entityButton"
 import { createDetailEntityGroup } from "./detailEntityGroup"
-
+import * as detailExtends from './detailEntityExtend'
 export class detailEntity extends basicEntity {
   detailTable: detailEntity[] = []
   renderDetailTab: TabPaneProps = {}
@@ -18,6 +18,9 @@ export class detailEntity extends basicEntity {
     this.entityName = entityName
     this.tableInfo = schema
     this.buttonCategory = 'ViewDetailTable'
+    Object.entries(detailExtends).forEach(([key, value]) => {
+      this.addExtendMethod(key, value)
+    })
   }
 
   async initEntity() {

@@ -11,7 +11,7 @@ import { http } from "../http"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig, tableKeyType } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -122,7 +122,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   tableInfo?: mainTableInfo = {} as any//远程获取的数据
   renderLayout: layoutConfig = {}//渲染节点数据
   renderLayoutItems: Array<layoutItem> = []
-  renderTable: any = {}//渲染表格的数据
+  renderTable: tableConfig = {} as any//渲染表格的数据
   renderEditForm: formConfig = {} as any //渲染编辑表格 
   renderEditEntity: any = {}//初始化编辑表格
   renderSearchForm: any = {}//渲染查询表格
@@ -306,7 +306,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     })
   }
   async getRunFinally(config: runBeforeConfig) {
-    console.log('run finally')
   }
   async getBeforeMethod(beforeConfig: runBeforeConfig) {
     const methodName = beforeConfig.methodName
@@ -341,6 +340,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         return { tableInstance: this.pageRef.vxeGrid }
       }
       const entity = this
+      const _this = this
       const renderTable = entity.renderTable//这个是渲染表格的数据
       renderTable.columns = computed(() => {
         return this.tableConfig.columns
@@ -348,11 +348,12 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       renderTable.data = computed(() => {
         return entity.tableData.data
       }) as any//行与列
-      renderTable.curRowChange = () => {
-
+      renderTable.curRowChange = async (value) => {
+        await _this.curRowChange(value)
       }
-      renderTable.dbCurRowChange = () => {
-
+      renderTable.dbCurRowChange = async (value) => {
+        // console.log('dbCurRowChange entity')
+        await _this.dbCurRowChange(value)
       }
       renderTable.onCellClick = () => {
 
@@ -379,7 +380,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       this.displayState = 'show'
     }
     setTimeout(() => {
-      // this.getTableData()
+      this.getTableData()
     }, 1000);
   }
   initDetailEntity() {
@@ -692,7 +693,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       const system = this.system
       const commandQueue = system.commandQueue
       const myCommands = commandQueue.filter(command => {
-        return command.targetEntityName == m_entityName && command.targetEntityType == entityType
+        // return (command.targetEntityName == m_entityName && command.targetEntityType == entityType) || command.uniqueId == _this.uniqueId
+        return command.uniqueId == _this.uniqueId
       })
       myCommands.forEach(command => {
         const index = commandQueue.findIndex(row => {
@@ -702,10 +704,19 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
           commandQueue.splice(index, 1)
         }
       })//删除当前指令
-      nextTick(() => {
-        myCommands.forEach(command => {
-          _this.runSystemCommand(command)
-        })
+      nextTick(async () => {
+        //依次执行队列指令
+        // myCommands.forEach(command => {
+        //   _this.runSystemCommand(command)
+        // })
+        await myCommands.reduce(async (res, command) => {
+          try {
+            await res
+            return await _this.runSystemCommand(command)
+          } catch (error) {
+            console.error('command run error')
+          }
+        }, Promise.resolve())
       })
     })
   }
@@ -744,16 +755,23 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const _this = this
     const beforeConfig: runBeforeConfig = {
       methodName: "curRowChange",
-      table: _this
+      table: _this,
+      row: curRowConfig.row,
+      column: curRowConfig.column
     }
-    await this.getRunBefore(beforeConfig)
+    await this.getRunBefore(beforeConfig)//当前行改变之前 
     await this.getRunAfter(beforeConfig as any)
   }
-  async dbCurRowChange() {
-
+  async dbCurRowChange(config: curRowConfig) {
+    console.log('dbCurRowChange')
   }
-  getTableInfoKey(keyName: string) {
-
+  getTableInfoKey(keyName: tableKeyType) {
+    const _this = this
+    const getFn = this.getFn
+    const targetFn = getFn[keyName]
+    if (typeof targetFn == 'function') {
+      return targetFn(_this)
+    }
   }
 }
 
