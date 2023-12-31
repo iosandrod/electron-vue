@@ -11,7 +11,7 @@ import { http } from "../http"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig, tableKeyType } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig, tableKeyType, pickKey, getDataConfig, detailTableConfig } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -32,8 +32,6 @@ import { mergeData } from "@/api/data4"
 import { createMenu, menu } from "../menu"
 import { createDialog, dialog } from "../dialog"
 import dialogView from "../schemaComponent/dialogView"
-import { VxeGrid } from "vxe-table"
-import modal from '@/components/modal.vue'
 import { buttonGroup, createButtonGroup } from "../buttonGroup"
 import { createFn } from "../createFn"
 import { createDetailEntityGroup, detailEntityGroup } from "./detailEntityGroup"
@@ -53,6 +51,15 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   tableExtend: { [key: string]: Array<Function> } = {}//表格扩展函数
   utils = {
   } as any
+  detailTableConfig: detailTableConfig = {
+    keyCodeColumn: "",
+    clsKey: "",
+    keyCode: "",
+    cnName: "",
+    tableName: "",
+    foreignKey: "",
+    needData: ""
+  }
   http = http
   isEditEntity = false
   entityTabKey?: string
@@ -237,10 +244,12 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   async dispatch(eventName = '') {//触发某个函数
 
   }
-  async getTableData(getDataConfig?: any) {//获取页面数据,与实体相关的
+  async getTableData(getDataConfig?: pickKey<getDataConfig>) {//获取页面数据,与实体相关的
     try {
+      let _config = getDataConfig || {}
       const { params, url } = await getTableData(this)
-      let config = { methodName: 'getTableData', params, url }
+      lodash.merge(params, _config)
+      let config: runBeforeConfig = { methodName: 'getTableData', params, url }
       await this.getRunBefore(config)
       const result: any = await http.getTableData(config.url, config.params)//这里模拟获取数据
       const { status, msg, dtMain: rows, total, data } = result
@@ -253,6 +262,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         _total = data?.length || 0
       }
       this.tableData.data = _rows
+      config.rows = rows
+      config.total = total
       await this.getRunAfter(config)
     } catch (error) {
       console.error(error, 'testError')
@@ -260,9 +271,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   setPageLoading(arg0: boolean) {
   }
-  getCurRow() {
+  getCurRow(json = false) {
     const table = this.pageRef.vxeGrid!
-    return table.getCurRow()
+    let _row = table?.getCurRow()
+    if (_row != null && json == true) {
+      _row = JSON.parse(JSON.stringify(_row))
+    }
+    return _row
   }
   //执行之前做的事情
   async getRunBefore(beforeConfig: runBeforeConfig | string) {
@@ -379,9 +394,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     if (show != false) {
       this.displayState = 'show'
     }
-    setTimeout(() => {
-      this.getTableData()
-    }, 1000);
+
   }
   initDetailEntity() {
     //基类没有初始化子表的配置的东西
@@ -772,6 +785,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     if (typeof targetFn == 'function') {
       return targetFn(_this)
     }
+  }
+  async setCurRow(row: any) {
+    if (row == null) {
+      return
+    }
+    const vxeGrid = this.pageRef.vxeGrid
+    await vxeGrid?.curRowChange({ row: row })
   }
 }
 

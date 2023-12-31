@@ -150,6 +150,7 @@ export const getTableConfig = async (tableName?: string, origin = false) => {//�
         const detailTable = xTableInfo?.detailTable || []
         const _detailTable = await Promise.all(detailTable?.map(async (table) => {
             let _config = await getTableConfig(table.tableName)
+            _config.detailTableConfig = table
             _config.tableButtons = JSON.parse(JSON.stringify(_info.tableButtons))
             return _config
         }))//子表配置

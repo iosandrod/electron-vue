@@ -1,15 +1,16 @@
 import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { system, systemInstance } from "../system"
-import { StyleType, displayState, entityConfig, formItemConfig, layoutItem } from "@/types/schema"
+import { StyleType, displayState, entityConfig, formItemConfig, getDataConfig, layoutItem, pickKey, runBeforeConfig } from "@/types/schema"
 import { createPage } from "./pageTree"
-import { getTableConfig, getTableInfo } from "@/api/httpApi"
+import { getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
 import { base } from "../base"
 import { createEntityButton } from "../entityButton"
 import { mainEntity } from "./mainEntity"
 import { createDetailEntityGroup } from "./detailEntityGroup"
 import { createForm } from "../form"
+import * as mainEditExtend from './mainEditEntityExtend'
 
 export class mainEditEntity extends basicEntity {
     //页面树
@@ -20,6 +21,9 @@ export class mainEditEntity extends basicEntity {
         this.entityType = 'edit'//编辑类型的entity
         this.entityName = entityName
         this.buttonCategory = 'ViewFormGridEdit'
+        Object.entries(mainEditExtend).forEach(([key, value]) => {
+            this.addExtendMethod(key, value)
+        })
     }
     async initEntity() {
         try {
@@ -107,9 +111,25 @@ export class mainEditEntity extends basicEntity {
         const system = this.system as system
         const entityVetor = system.entityVetor//获取主要的表格
     }
-    //@ts-ignore 
-    getTableData(where: any) {//使用where条件
+    getCurRow() {
+        return this.tableData.curRow
     }
+    //@ts-ignore 
+    // async getTableData(getDataConfig: pickKey<getDataConfig>) {//使用wheres条件
+    //     const _this = this
+    //     const { url, params } = await getTableData(_this)
+    //     const _params = Object.assign(params, getDataConfig)
+    //     const config: runBeforeConfig = {
+    //         methodName: "getTableData",
+    //         table: _this,
+    //         params: _params,//获取数据的params
+    //         url: url
+    //     }
+    //     await _this.getRunBefore(config)
+    //     const result = await _this.http.getTableData(config.url, config.params)
+    //     config.result = result
+    //     await _this.getRunAfter(config)
+    // }
     setCurEditRow(where: any) {
 
     }

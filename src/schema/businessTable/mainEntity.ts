@@ -1,7 +1,7 @@
 import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { systemInstance } from "../system"
-import { StyleType, displayState, entityConfig, layoutItem, routeOpenConfig, command, jumpConfig } from "@/types/schema"
+import { StyleType, displayState, entityConfig, layoutItem, routeOpenConfig, command, jumpConfig, whereObj, paramType } from "@/types/schema"
 import { createPage } from "./pageTree"
 import { getTableConfig, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
@@ -33,6 +33,9 @@ export class mainEntity extends basicEntity {
       await this.initRenderSearchForm()
       await this.initRenderSearchDialog()
       this.displayState = 'show'
+      setTimeout(() => {
+        this.getTableData()
+      }, 1000);
     } catch (error) {
       console.error(error)
     }
@@ -69,13 +72,26 @@ export class mainEntity extends basicEntity {
       isEdit: true
     }
     const type = jumpConfig.type
-    const wheres = jumpConfig.wheres || []
+    let curRow = _this.getCurRow()
+    const tableKey = _this.getTableInfoKey('key') as string
+    const whereObjArr: whereObj[] = [{
+      name: tableKey,
+      value: curRow?.[tableKey],
+      displayType: "Equal"
+    }]
+    if (type == 'edit' && curRow == null) {
+      return Promise.reject("主表没有当前行")
+    }
     const command: command = {
       targetEntityName: this.entityName,
       targetEntityType: 'edit',
       runFun: async (command) => {
         const _entity: mainEditEntity = command.entity as any
-        await _entity.addModel()
+        if (type == 'add') {
+          await _entity.addModel()
+        } else if (type == 'edit') {
+          await _entity.getTableData({ wheres: whereObjArr })
+        }
       }
     }
     system.routeOpen(openConfig)

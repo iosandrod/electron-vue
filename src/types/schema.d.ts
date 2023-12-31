@@ -594,8 +594,8 @@ export type codeEditRender = {
 
 export type command = {
   uniqueId?: string
-  targetEntityName: string//目标页面
-  targetEntityType: string//目标页面类型
+  targetEntityName?: string//目标页面
+  targetEntityType?: string//目标页面类型
   targetEntityKey?: string
   runFun: (config: { entity: mainEntity | mainEditEntity | detailEntity, [key: string]: any }) => void
 }
@@ -613,7 +613,7 @@ export enum paramType {
 export type whereObj = {
   name: string,
   value: string | number,
-  paramType: paramType,
+  paramType?: paramType,
   displayType: 'Equal' | 'thanorequal' | 'lessorequal'
 }
 export type dataSource = 'APS' | 'MRP'
@@ -624,7 +624,7 @@ export type getDataConfig = {
   "rows": number,
   "sort": Array<sortObj>,
   "tableName": "t_SdOrder",
-  "wheres": Array<sortObj>,
+  "wheres": Array<whereObj>,
   "cOperater": string,
   "DBSource": dataSource
 }
@@ -635,11 +635,7 @@ export type runBeforeConfig = {
   [key: string]: any
 }
 
-export type runAfterConfig = {
-  methodName: string,
-  table: basicEntity,
-  [key: string]: any
-}
+export type runAfterConfig = runBeforeConfig
 export type alignType = 'left' | 'center' | 'right'
 
 export type fixedType = 'left' | 'right' | null
@@ -656,3 +652,18 @@ export type curRowConfig = {
 }
 
 export type tableKeyType = keyof typeof getFn
+
+
+export type getDataConfig = {
+
+}
+
+export type detailTableConfig = {
+  "keyCodeColumn": string
+  "clsKey": string,
+  "keyCode": string,
+  "cnName": string
+  "tableName": string,
+  "foreignKey": string,
+  "needData": string
+}
