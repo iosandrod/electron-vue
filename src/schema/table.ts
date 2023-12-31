@@ -135,10 +135,9 @@ export class table extends base<tableSchema> implements tableMethod {
     super(system, schema)
   }
   getTableKey() {
-    throw new Error("Method not implemented.")
+
   }
   getTableKeyCode() {
-    throw new Error("Method not implemented.")
   }
   getCurRow() {
     return this.tableData.curRow

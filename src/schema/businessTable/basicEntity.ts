@@ -38,6 +38,7 @@ import { buttonGroup, createButtonGroup } from "../buttonGroup"
 import { createFn } from "../createFn"
 import { createDetailEntityGroup, detailEntityGroup } from "./detailEntityGroup"
 import * as basicEntityExtend from './basicEntityExtend'
+import { getFn } from "./basicEntityFn"
 interface tableMethod {
 
 }
@@ -45,6 +46,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   buttonMethod: { [key: string]: Function } = {}
   tabIndex: number = 0//使用tabIndex ,路由的tab 
   sub = new Subject()//动作发射器
+  getFn = getFn
   entityState: entityState = 'scan'
   detailTable?: detailEntity[] = []
   renderDetailEntity: entityGroupConfig = {}
@@ -748,6 +750,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     await this.getRunAfter(beforeConfig as any)
   }
   async dbCurRowChange() {
+
+  }
+  getTableInfoKey(keyName: string) {
 
   }
 }

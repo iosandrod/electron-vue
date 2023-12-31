@@ -215,3 +215,32 @@ export const curRowChange = (entity: mainEntity) => {
 export const getTableData = (entity: mainEntity) => {
 
 }
+
+export const getFn = {
+    key: (_this: basicEntity) => {
+        const tableInfo = _this.tableInfo
+        return tableInfo?.cKeyColumn
+    },
+    keyCode: (_this: basicEntity) => {
+        const tableInfo = _this.tableInfo
+        return tableInfo?.cKeyColumn
+    },
+    entity: (_this: basicEntity) => {
+        const tableInfo = _this.tableInfo
+        return tableInfo?.tableEntity
+    },
+    maxKey: async (_this: basicEntity) => {
+
+    },
+    searchItems: (_this: basicEntity) => {
+    },
+    editItems: (_this: basicEntity) => {
+
+    },
+    editForm: (_this: basicEntity) => {
+
+    },
+    searchForm: (_this: basicEntity) => {
+
+    }
+}
