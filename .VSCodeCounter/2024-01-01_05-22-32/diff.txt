@@ -1,0 +1,185 @@
+Date : 2024-01-01 05:22:32
+Directory : d:\share2\electron-vue\src
+Total : 125 files,  250461 codes, 6065 comments, 622 blanks, all 257148 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| TypeScript |         96 |    247,695 |      5,852 |        389 |    253,936 |
+| Vue        |         24 |      2,458 |        161 |        176 |      2,795 |
+| SCSS       |          1 |        216 |         27 |         35 |        278 |
+| PostCSS    |          1 |         89 |         25 |         22 |        136 |
+| XML        |          3 |          3 |          0 |          0 |          3 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                              | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                 |        125 |    250,461 |      6,065 |        622 |    257,148 |
+| . (Files)                                                                         |          7 |        167 |         27 |         28 |        222 |
+| api                                                                               |          8 |    244,380 |      5,630 |         30 |    250,040 |
+| assets                                                                            |          3 |          3 |          0 |          0 |          3 |
+| components                                                                        |         22 |      1,755 |         12 |        212 |      1,979 |
+| components (Files)                                                                |          1 |         38 |          0 |          4 |         42 |
+| components\gantt                                                                  |         21 |      1,717 |         12 |        208 |      1,937 |
+| components\gantt (Files)                                                          |          5 |        321 |          1 |         43 |        365 |
+| components\gantt\components                                                       |          6 |        715 |          3 |         87 |        805 |
+| components\gantt\composables                                                      |          6 |        638 |          8 |         68 |        714 |
+| components\gantt\provider                                                         |          4 |         43 |          0 |         10 |         53 |
+| entityMethods                                                                     |          3 |          9 |          1 |          4 |         14 |
+| middleware                                                                        |          3 |         44 |          0 |          4 |         48 |
+| plugin                                                                            |          1 |         42 |          0 |          1 |         43 |
+| router                                                                            |          2 |        150 |         28 |         15 |        193 |
+| samples                                                                           |          1 |          0 |         11 |          3 |         14 |
+| schema                                                                            |         54 |      1,175 |        129 |         95 |      1,399 |
+| schema (Files)                                                                    |         28 |        499 |         25 |         23 |        547 |
+| schema\businessTable                                                              |         10 |        459 |         35 |         33 |        527 |
+| schema\buttonMethod                                                               |          3 |         51 |         62 |         14 |        127 |
+| schema\dialogComponent                                                            |          6 |         97 |          4 |         20 |        121 |
+| schema\editClass                                                                  |          4 |         47 |          2 |          1 |         50 |
+| schema\editComponent                                                              |          1 |          4 |          1 |          1 |          6 |
+| schema\schemaComponent                                                            |          1 |         17 |          0 |          1 |         18 |
+| schema\tableColumnCom                                                             |          1 |          1 |          0 |          2 |          3 |
+| style                                                                             |          1 |        216 |         27 |         35 |        278 |
+| systemData                                                                        |          1 |         14 |          1 |          3 |         18 |
+| types                                                                             |          1 |        570 |         15 |         84 |        669 |
+| utils                                                                             |          3 |        404 |         26 |         41 |        471 |
+| views                                                                             |         15 |      1,532 |        158 |         67 |      1,757 |
+| views (Files)                                                                     |         13 |      1,504 |        158 |         61 |      1,723 |
+| views\auth                                                                        |          1 |          5 |          0 |          3 |          8 |
+| views\layout                                                                      |          1 |         23 |          0 |          3 |         26 |
++-----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                          | language   | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| d:\share2\electron-vue\src\App.vue                                                | Vue        |         15 |          0 |          2 |         17 |
+| d:\share2\electron-vue\src\api\axios.ts                                           | TypeScript |          4 |          0 |          1 |          5 |
+| d:\share2\electron-vue\src\api\data.ts                                            | TypeScript |    173,189 |      5,199 |          7 |    178,395 |
+| d:\share2\electron-vue\src\api\data2.ts                                           | TypeScript |          6 |          0 |          2 |          8 |
+| d:\share2\electron-vue\src\api\data3.ts                                           | TypeScript |      5,654 |        189 |          4 |      5,847 |
+| d:\share2\electron-vue\src\api\data4.ts                                           | TypeScript |     54,277 |          0 |          1 |     54,278 |
+| d:\share2\electron-vue\src\api\data5.ts                                           | TypeScript |         60 |        204 |          1 |        265 |
+| d:\share2\electron-vue\src\api\data6.ts                                           | TypeScript |     11,026 |         14 |          3 |     11,043 |
+| d:\share2\electron-vue\src\api\httpApi.ts                                         | TypeScript |        164 |         24 |         11 |        199 |
+| d:\share2\electron-vue\src\assets\electron.svg                                    | XML        |          1 |          0 |          0 |          1 |
+| d:\share2\electron-vue\src\assets\vite.svg                                        | XML        |          1 |          0 |          0 |          1 |
+| d:\share2\electron-vue\src\assets\vue.svg                                         | XML        |          1 |          0 |          0 |          1 |
+| d:\share2\electron-vue\src\components\gantt\GanttPlayground.vue                   | Vue        |        158 |          0 |         16 |        174 |
+| d:\share2\electron-vue\src\components\gantt\color-schemes.ts                      | TypeScript |        117 |          0 |         16 |        133 |
+| d:\share2\electron-vue\src\components\gantt\components\GGanttBar.vue              | Vue        |        146 |          0 |         18 |        164 |
+| d:\share2\electron-vue\src\components\gantt\components\GGanttBarTooltip.vue       | Vue        |        114 |          0 |         19 |        133 |
+| d:\share2\electron-vue\src\components\gantt\components\GGanttChart.vue            | Vue        |        232 |          3 |         20 |        255 |
+| d:\share2\electron-vue\src\components\gantt\components\GGanttGrid.vue             | Vue        |         38 |          0 |          6 |         44 |
+| d:\share2\electron-vue\src\components\gantt\components\GGanttRow.vue              | Vue        |        100 |          0 |         15 |        115 |
+| d:\share2\electron-vue\src\components\gantt\components\GGanttTimeaxis.vue         | Vue        |         85 |          0 |          9 |         94 |
+| d:\share2\electron-vue\src\components\gantt\composables\createBarDrag.ts          | TypeScript |        110 |          0 |         18 |        128 |
+| d:\share2\electron-vue\src\components\gantt\composables\useBarDragLimit.ts        | TypeScript |        156 |          5 |          8 |        169 |
+| d:\share2\electron-vue\src\components\gantt\composables\useBarDragManagement.ts   | TypeScript |        189 |          0 |         17 |        206 |
+| d:\share2\electron-vue\src\components\gantt\composables\useDayjsHelper.ts         | TypeScript |         37 |          0 |          9 |         46 |
+| d:\share2\electron-vue\src\components\gantt\composables\useTimePositionMapping.ts | TypeScript |         25 |          0 |          7 |         32 |
+| d:\share2\electron-vue\src\components\gantt\composables\useTimeaxisUnits.ts       | TypeScript |        121 |          3 |          9 |        133 |
+| d:\share2\electron-vue\src\components\gantt\playground.ts                         | TypeScript |          4 |          0 |          2 |          6 |
+| d:\share2\electron-vue\src\components\gantt\provider\provideConfig.ts             | TypeScript |          9 |          0 |          2 |         11 |
+| d:\share2\electron-vue\src\components\gantt\provider\provideEmitBarEvent.ts       | TypeScript |          9 |          0 |          2 |         11 |
+| d:\share2\electron-vue\src\components\gantt\provider\provideGetChartRows.ts       | TypeScript |          9 |          0 |          2 |         11 |
+| d:\share2\electron-vue\src\components\gantt\provider\symbols.ts                   | TypeScript |         16 |          0 |          4 |         20 |
+| d:\share2\electron-vue\src\components\gantt\types.ts                              | TypeScript |         16 |          1 |          2 |         19 |
+| d:\share2\electron-vue\src\components\gantt\vue-ganttastic.ts                     | TypeScript |         26 |          0 |          7 |         33 |
+| d:\share2\electron-vue\src\components\modal.vue                                   | Vue        |         38 |          0 |          4 |         42 |
+| d:\share2\electron-vue\src\entityMethods\detailTableMehods.ts                     | TypeScript |          0 |          0 |          1 |          1 |
+| d:\share2\electron-vue\src\entityMethods\mainTableMethods.ts                      | TypeScript |          9 |          1 |          2 |         12 |
+| d:\share2\electron-vue\src\entityMethods\searchTableMethods.ts                    | TypeScript |          0 |          0 |          1 |          1 |
+| d:\share2\electron-vue\src\keyboardjs.d.ts                                        | TypeScript |          1 |          0 |          0 |          1 |
+| d:\share2\electron-vue\src\main.ts                                                | TypeScript |         55 |          1 |          2 |         58 |
+| d:\share2\electron-vue\src\middleware\confirmMiddleware.ts                        | TypeScript |         33 |          0 |          2 |         35 |
+| d:\share2\electron-vue\src\middleware\entityMiddleWare.ts                         | TypeScript |          4 |          0 |          1 |          5 |
+| d:\share2\electron-vue\src\middleware\pageloadMiddleware.ts                       | TypeScript |          7 |          0 |          1 |          8 |
+| d:\share2\electron-vue\src\mousetrap.d.ts                                         | TypeScript |          1 |          0 |          0 |          1 |
+| d:\share2\electron-vue\src\plugin\register.ts                                     | TypeScript |         42 |          0 |          1 |         43 |
+| d:\share2\electron-vue\src\router\helper.ts                                       | TypeScript |         47 |         13 |          6 |         66 |
+| d:\share2\electron-vue\src\router\index.ts                                        | TypeScript |        103 |         15 |          9 |        127 |
+| d:\share2\electron-vue\src\samples\node-api.ts                                    | TypeScript |          0 |         11 |          3 |         14 |
+| d:\share2\electron-vue\src\schema\base.ts                                         | TypeScript |          3 |          0 |          0 |          3 |
+| d:\share2\electron-vue\src\schema\businessTable\basicEntity.ts                    | TypeScript |        251 |          5 |          9 |        265 |
+| d:\share2\electron-vue\src\schema\businessTable\basicEntityExtend.ts              | TypeScript |          5 |          0 |          5 |         10 |
+| d:\share2\electron-vue\src\schema\businessTable\basicEntityFn.ts                  | TypeScript |         69 |          0 |          8 |         77 |
+| d:\share2\electron-vue\src\schema\businessTable\detailEntity.ts                   | TypeScript |          8 |          0 |          0 |          8 |
+| d:\share2\electron-vue\src\schema\businessTable\detailEntityExtend.ts             | TypeScript |         29 |          0 |          2 |         31 |
+| d:\share2\electron-vue\src\schema\businessTable\mainEditEntity.ts                 | TypeScript |         -8 |         15 |          2 |          9 |
+| d:\share2\electron-vue\src\schema\businessTable\mainEditEntityExtend.ts           | TypeScript |         30 |         10 |          1 |         41 |
+| d:\share2\electron-vue\src\schema\businessTable\mainEntity.ts                     | TypeScript |         14 |          1 |          2 |         17 |
+| d:\share2\electron-vue\src\schema\businessTable\mainEntityExtend.ts               | TypeScript |         55 |          4 |          4 |         63 |
+| d:\share2\electron-vue\src\schema\businessTable\searchEntity.ts                   | TypeScript |          6 |          0 |          0 |          6 |
+| d:\share2\electron-vue\src\schema\buttonGroup.ts                                  | TypeScript |         11 |          0 |          0 |         11 |
+| d:\share2\electron-vue\src\schema\buttonMethod\detailButton.ts                    | TypeScript |          0 |          0 |          1 |          1 |
+| d:\share2\electron-vue\src\schema\buttonMethod\editButton.ts                      | TypeScript |          0 |          0 |          1 |          1 |
+| d:\share2\electron-vue\src\schema\buttonMethod\mainButton.ts                      | TypeScript |         51 |         62 |         12 |        125 |
+| d:\share2\electron-vue\src\schema\column.ts                                       | TypeScript |         17 |          0 |          7 |         24 |
+| d:\share2\electron-vue\src\schema\columnFn.ts                                     | TypeScript |          3 |          1 |          0 |          4 |
+| d:\share2\electron-vue\src\schema\command.ts                                      | TypeScript |         -1 |          0 |          2 |          1 |
+| d:\share2\electron-vue\src\schema\createFn.ts                                     | TypeScript |         13 |         -3 |          0 |         10 |
+| d:\share2\electron-vue\src\schema\dialog.ts                                       | TypeScript |        -29 |         -2 |          7 |        -24 |
+| d:\share2\electron-vue\src\schema\dialogComponent\codeEditDialog.ts               | TypeScript |         54 |          1 |          7 |         62 |
+| d:\share2\electron-vue\src\schema\dialogComponent\confirmDialog.ts                | TypeScript |        -11 |          0 |          1 |        -10 |
+| d:\share2\electron-vue\src\schema\dialogComponent\entityDialog.ts                 | TypeScript |         54 |          1 |          7 |         62 |
+| d:\share2\electron-vue\src\schema\dialogComponent\entitySearchDialog.ts           | TypeScript |        -53 |          0 |         -4 |        -57 |
+| d:\share2\electron-vue\src\schema\dialogComponent\formDialog.ts                   | TypeScript |         54 |          1 |          5 |         60 |
+| d:\share2\electron-vue\src\schema\dialogComponent\index.ts                        | TypeScript |         -1 |          1 |          4 |          4 |
+| d:\share2\electron-vue\src\schema\dialogDefault.ts                                | TypeScript |          9 |          0 |          1 |         10 |
+| d:\share2\electron-vue\src\schema\dialogFn.ts                                     | TypeScript |        -13 |          2 |          1 |        -10 |
+| d:\share2\electron-vue\src\schema\dialogFooter.ts                                 | TypeScript |          9 |          0 |          1 |         10 |
+| d:\share2\electron-vue\src\schema\dialogHeader.ts                                 | TypeScript |          9 |          0 |          1 |         10 |
+| d:\share2\electron-vue\src\schema\editClass\baseInfo.ts                           | TypeScript |          2 |          0 |          0 |          2 |
+| d:\share2\electron-vue\src\schema\editClass\codeEdit.ts                           | TypeScript |         41 |          2 |          1 |         44 |
+| d:\share2\electron-vue\src\schema\editClass\select.ts                             | TypeScript |          3 |          0 |          0 |          3 |
+| d:\share2\electron-vue\src\schema\editClass\string.ts                             | TypeScript |          1 |          0 |          0 |          1 |
+| d:\share2\electron-vue\src\schema\editComponent\formitemView.ts                   | TypeScript |          4 |          1 |          1 |          6 |
+| d:\share2\electron-vue\src\schema\entityButton.ts                                 | TypeScript |         10 |         -2 |          1 |          9 |
+| d:\share2\electron-vue\src\schema\entityColumn.ts                                 | TypeScript |       -204 |        -23 |          3 |       -224 |
+| d:\share2\electron-vue\src\schema\entityColumnTran.ts                             | TypeScript |        265 |         21 |          1 |        287 |
+| d:\share2\electron-vue\src\schema\form.ts                                         | TypeScript |         75 |         11 |          1 |         87 |
+| d:\share2\electron-vue\src\schema\formFn.ts                                       | TypeScript |          0 |         -1 |          0 |         -1 |
+| d:\share2\electron-vue\src\schema\formitem.ts                                     | TypeScript |         32 |          3 |          0 |         35 |
+| d:\share2\electron-vue\src\schema\http.ts                                         | TypeScript |         18 |          0 |         -1 |         17 |
+| d:\share2\electron-vue\src\schema\input.ts                                        | TypeScript |         27 |          0 |          0 |         27 |
+| d:\share2\electron-vue\src\schema\layoutGrid.ts                                   | TypeScript |          0 |         -7 |          1 |         -6 |
+| d:\share2\electron-vue\src\schema\layoutGridFn.ts                                 | TypeScript |         -5 |          5 |          0 |          0 |
+| d:\share2\electron-vue\src\schema\menu.ts                                         | TypeScript |        132 |         -6 |          1 |        127 |
+| d:\share2\electron-vue\src\schema\schemaComponent\dialogPoolView.ts               | TypeScript |         17 |          0 |          1 |         18 |
+| d:\share2\electron-vue\src\schema\system.ts                                       | TypeScript |         38 |         13 |         -1 |         50 |
+| d:\share2\electron-vue\src\schema\tabForm.ts                                      | TypeScript |         41 |          0 |          4 |         45 |
+| d:\share2\electron-vue\src\schema\table.ts                                        | TypeScript |         51 |          3 |          0 |         54 |
+| d:\share2\electron-vue\src\schema\tableColumnCom\columnFilterCom.ts               | TypeScript |          1 |          0 |          2 |          3 |
+| d:\share2\electron-vue\src\schema\tableFn.ts                                      | TypeScript |         -7 |         10 |         -6 |         -3 |
+| d:\share2\electron-vue\src\schema\tableFnCom.ts                                   | TypeScript |          0 |          0 |         -1 |         -1 |
+| d:\share2\electron-vue\src\schema\tableMethod.ts                                  | TypeScript |         -5 |          0 |          0 |         -5 |
+| d:\share2\electron-vue\src\style.css                                              | PostCSS    |         89 |         25 |         22 |        136 |
+| d:\share2\electron-vue\src\style\index.scss                                       | SCSS       |        216 |         27 |         35 |        278 |
+| d:\share2\electron-vue\src\systemData\menuForm.ts                                 | TypeScript |         14 |          1 |          3 |         18 |
+| d:\share2\electron-vue\src\types\schema.d.ts                                      | TypeScript |        570 |         15 |         84 |        669 |
+| d:\share2\electron-vue\src\utils\equal.ts                                         | TypeScript |         31 |          1 |         12 |         44 |
+| d:\share2\electron-vue\src\utils\styleBuilder.ts                                  | TypeScript |         88 |          0 |          3 |         91 |
+| d:\share2\electron-vue\src\utils\utils.ts                                         | TypeScript |        285 |         25 |         26 |        336 |
+| d:\share2\electron-vue\src\views\auth\login.vue                                   | Vue        |          5 |          0 |          3 |          8 |
+| d:\share2\electron-vue\src\views\home.vue                                         | Vue        |          7 |          0 |          3 |         10 |
+| d:\share2\electron-vue\src\views\index.vue                                        | Vue        |        287 |          3 |          5 |        295 |
+| d:\share2\electron-vue\src\views\index1.vue                                       | Vue        |        119 |         10 |          2 |        131 |
+| d:\share2\electron-vue\src\views\index10.vue                                      | Vue        |         90 |          0 |          3 |         93 |
+| d:\share2\electron-vue\src\views\index11.vue                                      | Vue        |         58 |          0 |          1 |         59 |
+| d:\share2\electron-vue\src\views\index2.vue                                       | Vue        |        116 |          5 |          3 |        124 |
+| d:\share2\electron-vue\src\views\index3.vue                                       | Vue        |        116 |          5 |          3 |        124 |
+| d:\share2\electron-vue\src\views\index4.vue                                       | Vue        |        168 |          7 |          5 |        180 |
+| d:\share2\electron-vue\src\views\index5.vue                                       | Vue        |         51 |          1 |          3 |         55 |
+| d:\share2\electron-vue\src\views\index6.vue                                       | Vue        |        146 |          0 |         13 |        159 |
+| d:\share2\electron-vue\src\views\index7.vue                                       | Vue        |         10 |          0 |          3 |         13 |
+| d:\share2\electron-vue\src\views\index8.vue                                       | Vue        |        251 |         63 |          7 |        321 |
+| d:\share2\electron-vue\src\views\index9.vue                                       | Vue        |         85 |         64 |         10 |        159 |
+| d:\share2\electron-vue\src\views\layout\ViewGrid.vue                              | Vue        |         23 |          0 |          3 |         26 |
+| d:\share2\electron-vue\src\vite-env.d.ts                                          | TypeScript |          5 |          1 |          2 |          8 |
+| d:\share2\electron-vue\src\vue-grid-layout.d.ts                                   | TypeScript |          1 |          0 |          0 |          1 |
+| Total                                                                             |            |    250,461 |      6,065 |        622 |    257,148 |
++-----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

@@ -137,7 +137,7 @@ export class mainEditEntity extends basicEntity {
     async addModel() {
         const defaultValue = await this.getDefaultModel()
         this.tableData.curRow = defaultValue
-        console.log(this.tableData.curRow, 'testCurRow')
+        // console.log(this.tableData.curRow, 'testCurRow')
     }
 }
 

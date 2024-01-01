@@ -1,4 +1,4 @@
-import { runBeforeConfig, whereObj } from "@/types/schema";
+import { runAfterConfig, runBeforeConfig, whereObj } from "@/types/schema";
 import { detailEntity } from "./detailEntity";
 
 export const getTableData_before = (beforeConfig: runBeforeConfig) => {
@@ -18,5 +18,14 @@ export const getTableData_before = (beforeConfig: runBeforeConfig) => {
     if (curRow == null) {
         _this.clearTableData()
         return Promise.reject("主表没有当前行")
+    }
+}
+
+export const getTableData_after = async (afterConfig: runAfterConfig) => {
+    const _this = afterConfig.table!
+    const data = _this.tableData.data
+    const targetRow = data[0]
+    if (targetRow != null) {
+        _this.setCurRow(targetRow)
     }
 }
