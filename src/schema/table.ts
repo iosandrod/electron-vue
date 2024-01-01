@@ -18,13 +18,14 @@ import { column, createColumn } from "./column"
 import { getTableRowConfig, getTableStyle } from "./tableFn"
 import { closeDialog, createDialog, destroyDialog, dialog, openDialog } from "./dialog"
 import { createDialogConfig } from "./tableDialogConfig"
-import { tableMethod } from "./tableMethod"
 import { contextMenu } from "./businessTable/contextMenu"
 import { mergeConfig } from "@/api/data4"
 import { input } from "./input"
 import lodash from 'lodash'
 import { tableHeaderMenu, tableBodyMenu } from "./tableStaticData"
-import { refreData_after } from "./businessTable/basicEntityExtend"
+interface tableMethod {
+
+}
 
 
 export class table extends base<tableSchema> implements tableMethod {
@@ -359,13 +360,15 @@ export class table extends base<tableSchema> implements tableMethod {
                 const scrollLeft = scrollConfig.scrollLeft
                 vxeGrid.scrollTo(scrollLeft, scrollTop)
                 table.tablePermission.canRefreshData = true
-              }).then(res => {
+              }).then(async res => {
                 const refreshData_after = table.tableConfig.refreshData_after
                 if (typeof refreshData_after == 'function') {
-                  refreData_after(_this)
+                  await refreshData_after({ table: _this, rows: showData })
                 }
+                table.tablePermission.canRefreshData = true
+              }).finally(() => {
+                table.tablePermission.canRefreshData = true
               })
-              table.tablePermission.canRefreshData = true
             } catch (error) {
               table.tablePermission.canRefreshData = true
             }

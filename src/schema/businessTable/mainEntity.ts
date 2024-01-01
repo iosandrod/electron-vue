@@ -64,7 +64,7 @@ export class mainEntity extends basicEntity {
   }
 
   //跳转当前路由表的编辑页面
-  jumpToEditPage(jumpConfig: jumpConfig = { type: 'add' }) {
+  jumpToEditPage(jumpConfig: jumpConfig = { type: 'add' }) {//跳转到编辑页面
     const _this = this
     const system = _this.system
     const openConfig: routeOpenConfig = {
@@ -90,7 +90,7 @@ export class mainEntity extends basicEntity {
         if (type == 'add') {
           await _entity.addModel()
         } else if (type == 'edit') {
-          await _entity.getTableData({ wheres: whereObjArr })
+          await _entity.editModel({ wheres: whereObjArr })
         }
       }
     }

@@ -77,7 +77,7 @@ export class system extends base {
     await this.initRenderTab()
     this.displayState = 'show'
     setTimeout(() => {
-      this.routeOpen({ entityName: "t_SdOrder" })
+      this.routeOpen({ entityName: "t_SdOrder" })//跳转
       // this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
       // this.routeOpen('index10')
       // const router = this.getRouter()
@@ -305,19 +305,13 @@ export class system extends base {
       // let cancelCallback = confirmConfig?.cancelCallback || createFn()
       const buttons = [{
         btnFun: async (dialog: dialog) => {
-          // await callback(dialog)
           resolve(true)
-          // dialog.destroy()
           _this.confirm()
         }, text: "确认"
       }, {
         btnFun: async (dialog: dialog) => {
-          // await cancelCallback(dialog)
           resolve(false)
           dialog.destroy()
-          // setTimeout(() => {
-          //   console.log(_this)
-          // }, 2000);
         }, text: "取消"
       }]
       const _confirmConfig: dialogConfig = Object.assign({

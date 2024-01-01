@@ -17,19 +17,11 @@ export const getTableData_after = (config: runAfterConfig) => {//改变当前行
     //获取所有的单一ID 
     const uniqueIdArr = detailEntity?.map(table => {
         const id = table.uniqueId//唯一Id 
-        // const foreignId = table.detailTableConfig.foreignKey//外键
-        // const foreignValue = curRow[foreignId]
-        // const whereObj: whereObj = {
-        //     name: foreignId,
-        //     value: foreignValue,
-        //     displayType: "Equal"
-        // }
-        // const whereArr = [whereObj]
         const command: command = {
             uniqueId: id,
             runFun: function (config: { [key: string]: any; entity: mainEntity | detailEntity | mainEditEntity; }): void {
                 const entity = config.entity
-                entity.getTableData({})
+                entity.getTableData({})//子表获取数据默认使用
             }
         }
         return command

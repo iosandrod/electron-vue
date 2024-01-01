@@ -1,14 +1,13 @@
 import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { system, systemInstance } from "../system"
-import { StyleType, displayState, entityConfig, formItemConfig, getDataConfig, layoutItem, pickKey, runBeforeConfig } from "@/types/schema"
+import { StyleType, displayState, entityConfig, formItemConfig, getDataConfig, layoutItem, pickKey, runBeforeConfig, whereObj } from "@/types/schema"
 import { createPage } from "./pageTree"
 import { getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
 import { base } from "../base"
 import { createEntityButton } from "../entityButton"
 import { mainEntity } from "./mainEntity"
-import { createDetailEntityGroup } from "./detailEntityGroup"
 import { createForm } from "../form"
 import * as mainEditExtend from './mainEditEntityExtend'
 
@@ -135,9 +134,33 @@ export class mainEditEntity extends basicEntity {
     }
     //添加一行
     async addModel() {
+        //添加一个实体
         const defaultValue = await this.getDefaultModel()
         this.tableData.curRow = defaultValue
-        // console.log(this.tableData.curRow, 'testCurRow')
+        const beforeConfig: runBeforeConfig = {
+            methodName: "addModel",//添加行之后处理的事情
+            row: defaultValue,//
+        }
+        await this.getRunBefore(beforeConfig)
+    }
+    async editModel(getDataConfig: pickKey<getDataConfig>) {
+        //编辑当前行
+        let _getDataConfig = getDataConfig
+        if (_getDataConfig == null && this.entityState == 'edit') {//编辑状态是编辑数据
+            const curRow = this.tableData.curRow
+            const key = this.getTableInfoKey('key') as string
+            const whereObj: whereObj = {
+                name: key,
+                value: curRow[key],
+                displayType: "Equal"
+            }
+            const getDataObj = { wheres: [whereObj] }
+            _getDataConfig = getDataObj
+        }
+        if (_getDataConfig == null) {
+            return Promise.reject('找不到行数据')
+        }
+        await this.getTableData(getDataConfig)//获取数据相当于编辑当前行了
     }
 }
 

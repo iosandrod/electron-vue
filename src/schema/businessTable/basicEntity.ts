@@ -793,6 +793,16 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const vxeGrid = this.pageRef.vxeGrid
     await vxeGrid?.curRowChange({ row: row })
   }
+  async refreshData_after(config: any) {
+    const _this = this
+    const rows: any[] = config.rows//显示的数据
+    const afterConfig: runAfterConfig = {
+      methodName: "refreshData",
+      table: _this,
+      rows: rows
+    }
+    await this.getRunAfter(afterConfig)//刷新数据之后
+  }
 }
 
 export const createBasicEntity = async () => {

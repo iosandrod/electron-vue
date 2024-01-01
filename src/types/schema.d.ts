@@ -65,7 +65,7 @@ export type sortconfig = {
 }
 
 export type tableConfig = {
-  refreshData_after?: (table: table) => void
+  refreshData_after?: (table: { table: table, rows: any[] }) => void
   dbCurRowChange?: (value: { row: any, table: table }) => Promise<void> | ((value: { row: any, table: table }) => void)
   baseInfoTable?: any
   checkLabelField?: string,
