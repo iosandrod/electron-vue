@@ -7,14 +7,12 @@ import { StyleType, command, dialogConfig, localStorageValue, menuConfig, routeO
 import { useLocalStorage } from '@vueuse/core'
 import { createMainEntity, mainEntity } from "./businessTable/mainEntity"
 import { getRouter } from "@/router"
-// import { dialogPool } from "./dialog"
 import { RouteRecordSingleView } from "vue-router"
 import ViewGrid from '@/views/layout/ViewGrid.vue'
 import { TabPaneProps } from "ant-design-vue"
 import { createTab, tab } from "./tab"
 import index9Vue from "@/views/index9.vue"
 import index10Vue from "@/views/index10.vue"
-import index1Vue from "@/views/index1.vue"
 import { createTable, table } from "./table"
 import entityView from "./schemaComponent/entityView"
 import { createMainEditEntity } from "./businessTable/mainEditEntity"
@@ -84,6 +82,7 @@ export class system extends base {
       // router.push({ path: '/index8' })
     }, 1000);
   }
+  //初始化系统权限
   async initSystemPermission() { }
   async initRenderMenu() {//菜单数据
     const data = JSON.parse(JSON.stringify(menuData1))

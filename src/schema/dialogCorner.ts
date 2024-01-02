@@ -5,7 +5,6 @@ export default defineComponent({
     props: ['dialog'],
     setup(props) {
         const dialog = props.dialog as dialog
-        return dialog.headerComponent
+        return dialog.cornerComponent
     }
 })
-

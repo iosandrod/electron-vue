@@ -269,9 +269,9 @@ async function btnClick9(params: any) {
   // formConfig.data = {}
   // _form.formConfig.data = {}
   if (state == true) {
-    _entity.setTableEdit('fullEdit')
+    _entity.setEntityEdit('fullEdit')
   } else {
-    _entity.setTableEdit('scan')
+    _entity.setEntityEdit('scan')
   }
   state = !state
 }

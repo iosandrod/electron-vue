@@ -29,6 +29,10 @@ export class detailEntity extends basicEntity {
     await super.initEntity({ show: false })
     await this.initDetailEntity()
     await this.initDetailTab()
+    const mainEntity = this.mainEntity
+    if (mainEntity?.entityState != 'scan') {
+      this.setEntityEdit('fullEdit')
+    }
     this.displayState = 'show'
   }
 
@@ -79,7 +83,7 @@ export class detailEntity extends basicEntity {
       return obj
     }) as any
     const dEntityInstance = createDetailEntityGroup(renderDetailEntity)
-    _this.pageRef.dEntityInstance = dEntityInstance
+    _this.pageRef.dEntityInstance = dEntityInstance as any
     _this.detailEntityConfig.curDetailKey = _this.detailTable?.[0]?.tableInfo?.tableName || ''
     return { instance: _this.pageRef.dEntityInstance }
   }

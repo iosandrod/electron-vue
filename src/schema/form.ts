@@ -10,8 +10,8 @@ import instanceView from "./schemaComponent/instanceView"
 import formitemView from "./editComponent/formitemView"
 export class form extends base<formConfig> {
   formConfig: formConfig = {
-    isDraggable: true,
-    isResizable: true,
+    isDraggable: false,
+    isResizable: false,
     items: [],//编辑项
     disabled: false,
   }
@@ -162,6 +162,10 @@ export class form extends base<formConfig> {
   }
   getEditItems() {
     return this.formConfig.items
+  }
+  setFormDisabled(disabled: boolean) {
+    const _disabled = Boolean(disabled)
+    this.formConfig.disabled = _disabled
   }
 }
 

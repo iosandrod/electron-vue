@@ -9,8 +9,8 @@ body{
     --vxe-table-column-padding-default: 0px 0 ;
     --vxe-table-cell-padding-left: 0px;
     --vxe-table-cell-padding-right: 0px;
---vxe-table-row-height-default:none
-
+--vxe-table-row-height-default:none;
+--vxe-input-height-default:30px; 
     /* --vxe-table-border-color:none; */
     /* --vxe-table-border-width:0 */
 }

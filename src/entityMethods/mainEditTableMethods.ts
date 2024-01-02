@@ -17,3 +17,7 @@ export const lastRow = (entity: mainEditEntity) => {
 }
 
 //各种按钮
+
+export const boxEdit = (entity: mainEditEntity) => {
+    entity.setEntityEdit('fullEdit')
+}

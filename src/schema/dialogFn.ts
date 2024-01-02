@@ -20,23 +20,23 @@ export const getDialogMaskCloseAble = (dialog: dialog) => {
     })
 }
 
-export const getDialogSlots = (dialog: dialog) => {
-    const slots: any = {}
-    slots.header = getDialogSlotsHeader(dialog).value
-    slots.default = getDialogSlotsDefault(dialog).value
-    slots.footer = getDialogSlotsFooter(dialog).value
-    return slots
-    // return computed(() => {
-    // }) 
-}
+// export const getDialogSlots = (dialog: dialog) => {
+//     const slots: any = {}
+//     slots.header = getDialogSlotsHeader(dialog).value
+//     slots.default = getDialogSlotsDefault(dialog).value
+//     slots.footer = getDialogSlotsFooter(dialog).value
+//     return slots
+//     // return computed(() => {
+//     // }) 
+// }
 
-export const getDialogSlotsHeader = (dialog: dialog) => {
-    return computed(() => {
-        return (params: ModalDefaultSlotParams) => {
+// export const getDialogSlotsHeader = (dialog: dialog) => {
+//     return computed(() => {
+//         return (params: ModalDefaultSlotParams) => {
 
-        }
-    })
-}
+//         }
+//     })
+// }
 
 export const getDialogSlotsDefault = (dialog: dialog) => {
     return computed(() => {

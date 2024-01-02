@@ -31,3 +31,12 @@ export const getTableData_after = (config: runAfterConfig) => {//改变当前行
         system.addCommand(command)
     })
 }
+
+export const addModel_after = (config: runAfterConfig) => {
+    const _this = config.table//mainEditEntity 新增之后的事情
+    const detailTable = _this?.detailTable || []
+    detailTable.forEach(table => {
+        table.clearTableData()
+        table.addTableRow(12)
+    })
+}

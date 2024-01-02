@@ -29,3 +29,16 @@ export const getTableData_after = async (afterConfig: runAfterConfig) => {
         _this.setCurRow(targetRow)
     }
 }
+
+export const addTableRow_after = async (afterConfig: runAfterConfig) => {
+    const _this = afterConfig.table
+    const rows = afterConfig.rows
+    const detailTableConfig = _this?.detailTableConfig
+    const foreignKey = detailTableConfig?.foreignKey!//外键
+    const mainTable = _this?.mainEntity
+    const mainCurRow = mainTable?.getCurRow()
+    const foreignValue = mainCurRow[foreignKey]
+    rows.forEach((row: any) => {
+        row[foreignKey] = foreignValue
+    })
+}

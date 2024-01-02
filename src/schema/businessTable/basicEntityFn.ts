@@ -176,29 +176,6 @@ export const initRenderEditForm = (entity: basicEntity) => {
     return { formInstance: vxeForm, instance: _this.pageRef.vxeForm }
 }
 
-export const initRenderSearchDialog = (entity: basicEntity) => {
-    const _this = entity
-    const renderSearchDialog = _this.renderSearchDialog
-    renderSearchDialog.showFooter = true
-    renderSearchDialog.transfer = false
-    renderSearchDialog.modalData = { entity: _this }
-    renderSearchDialog.buttons = [{
-        text: "查询",
-        btnFun: async (dialog: dialog) => {
-            console.log(_this)
-        }
-    }, {
-        text: "取消",
-        btnFun: async (dialog: dialog) => {
-            dialog?.close();
-        }
-    }]
-    renderSearchDialog.maskClosable = false
-    renderSearchDialog.height = 'auto'
-    renderSearchDialog.width = 400
-    const dialog = createDialog('entitySearchDialog', renderSearchDialog, false)
-    _this.pageRef.searchDialog = dialog as any
-}
 
 
 export const jumpToEditPage = (entity: mainEntity) => {
@@ -217,6 +194,9 @@ export const getTableData = (entity: mainEntity) => {
 }
 
 export const getFn = {
+    tableCnName: (_this: basicEntity) => {
+        return _this.tableInfo?.cnName
+    },
     key: (_this: basicEntity) => {
         const tableInfo = _this.tableInfo
         return tableInfo?.cKeyColumn

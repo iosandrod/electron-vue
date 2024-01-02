@@ -1,7 +1,7 @@
 import { withDirectives, isVNode, createApp, ComponentOptions, computed, defineComponent, h, nextTick, reactive, resolveComponent, watchEffect, App, VueElement, shallowRef, vShow, VNode } from "vue";
 import { base } from "./base";
 import { system, getSystem } from "./system";
-import VXETable, { VxeModalProps, VxeModalDefines, VxeModal, VxeModalInstance, VxeTable } from "vxe-table";
+import VXETable, { VxeModalProps, VxeModalDefines, VxeModal, VxeModalInstance, VxeTable, VxeButton } from "vxe-table";
 import { StyleType, concatAny, confirmConfig, dialogConfig, openDialogConfig } from "@/types/schema";
 import { getDialogDestroyOnClose, getDialogHeight, getDialogLockView, getDialogMaskClosable, getDialogMinHeight, getDialogMinMask, getDialogMinWidth, getDialogModelValue, getDialogOnHide, getDialogOnShow, getDialogPosition, getDialogPrimaryId, getDialogResize, getDialogShowFooter, getDialogSlots, getDialogType, getDialogWidth } from "./dialogFn";
 import { Subject } from "rxjs";
@@ -14,14 +14,18 @@ import { getRenderFn } from "./columnFn";
 import dialogFooter from "./dialogFooter";
 import dialogDefault from "./dialogDefault";
 import dialogHeader from "./dialogHeader";
+import instanceView from "./schemaComponent/instanceView";
+import dialogCorner from "./dialogCorner";
+import { getIcon } from "./icon";
 export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     renderDialog: VxeModalDefines.ModalOptions = {}
     footerComponent?: (() => null) | (() => VNode) = () => null
     headerComponent?: (() => null) | (() => VNode) = () => null
     defaultComponent?: (() => null) | (() => VNode) = () => null
+    cornerComponent?: (() => null) | (() => VNode) = () => null
     childDialog: dialog[] = []//子节点
     parentDialog?: dialog
-    dialogPool?: DialogPool
+    // dialogPool?: DialogPool
     dialogComponent: any = shallowRef(dialogComponent)
     modalInstance?: VxeModalInstance
     dialogData = {}
@@ -88,6 +92,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         this.initHeaderComponent()
         this.initDefaultComponent()
         this.initFooterComponent()
+        this.initCornerComponent()
         this.initComponent()
         this.runInitFun()
     }
@@ -111,7 +116,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         const renderDialog = this.renderDialog
         renderDialog.type = getDialogType(this) as any
         renderDialog.showFooter = getDialogShowFooter(this) as any
-        // renderDialog.slots = getDialogSlots(this) as any
+        renderDialog.showClose = true
         renderDialog.slots = {
             header: () => {
                 return h(dialogHeader, { dialog: _this })
@@ -121,29 +126,73 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
             },
             footer: () => {
                 return h(dialogFooter, { dialog: _this })
+            },
+            corner: () => {
+                return h(dialogCorner, { dialog: _this })
+            }
+        }
+        renderDialog.onBeforeHide = () => {
+            const onBeforeHide: any = _this.dialogConfig.onBeforeHide
+            if (typeof onBeforeHide == 'function') {
+                onBeforeHide(_this)
             }
         }
         renderDialog.id = this.dialogConfig.dialogPrimaryName
         renderDialog.height = getDialogHeight(this) as any
         renderDialog.width = getDialogWidth(this) as any
-        renderDialog.resize = getDialogResize(this) as any
-        renderDialog.minWidth = getDialogMinWidth(this) as any
-        renderDialog.minHeight = getDialogMinHeight(this) as any
-        renderDialog.minHeight = getDialogMinWidth(this) as any
+        renderDialog.resize = _this.dialogConfig.resize
+        renderDialog.minHeight = _this.dialogConfig.minHeight
+        renderDialog.minWidth = _this.dialogConfig.minWidth
         renderDialog.mask = getDialogMinMask(this) as any
         renderDialog.maskClosable = getDialogMaskClosable(this) as any
         renderDialog.modelValue = getDialogModelValue(this) as any
-        renderDialog.onHide = getDialogOnHide(this) as any
-        renderDialog.onShow = getDialogOnShow(this) as any
+        renderDialog.onHide = (params: any) => {
+            const $modal = params.$modal
+            dialog.modalInstance = ($modal)
+            const onShow = dialog.dialogConfig.onShow
+            if (typeof onShow == 'function') {
+                onShow(params)
+            }
+        }
+        renderDialog.onShow = (params: any) => {
+            const $modal = params.$modal
+            dialog.modalInstance = ($modal)
+            const onShow = dialog.dialogConfig.onShow
+            if (typeof onShow == 'function') {
+                onShow(params)
+            }
+        }
         renderDialog.destroyOnClose = true
-        renderDialog.lockView = getDialogLockView(this) as any
+        renderDialog.lockView = _this.dialogConfig.lockView
         renderDialog.position = getDialogPosition(this) as any
         renderDialog.transfer = Boolean(this.dialogConfig.transfer)
     }
     async initHeaderComponent() {
         const dialog = this
+        const _this = dialog
+        const headerTitle = computed(() => {
+            return _this.dialogConfig.title || '弹框'
+        })
         const vNode = () => {
-            return h('div', ['header'])
+            const closeIcon = h('div', [getIcon({
+                style: { cursor: 'pointer' },
+                onClick: () => {
+                    _this.close()
+                }
+            }, 'vxe-icon-close')()])
+            const titleCom = h('div', [headerTitle.value])
+            return h('div', {
+                style: {
+                    height: '30px',
+                    width: "100%",
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: "space-between",
+                    paddingLeft: "10px",
+                    alignItems: "center",
+                    paddingRight: '10px'
+                } as StyleType
+            }, [titleCom, closeIcon])
         }
         this.headerComponent = vNode
     }
@@ -153,44 +202,67 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
             let com: any = null
             const dialogComponent = dialog.dialogComponent
             const dialogName = dialog.dialogName! as keyof typeof dialogComponent
-            const defaultCom = dialogComponent[dialogName]?.default
-            if (defaultCom != null) {
-                const modalData = dialog.dialogConfig.modalData
-                const outSizeDiv = getRenderFn('div', {
-                    style: {
-                        paddingLeft: "10px",
-                        paddingRight: "10px",
-                        width: "100%",
-                        height: "100%",
-                        maxHeight: '800px',
-                        overflow: 'auto'
-                    } as StyleType
-                })
-                com = outSizeDiv(
-                    h(defaultCom, { dialog: dialog, modalData: modalData })
-                )
-            } else {
-                com = h('div', ['弹框'])
-            }
+            const defaultCom = dialogComponent[dialogName]?.default || instanceView
+            const instance = dialog.dialogConfig.instance//内部的实例
+            const modalData = dialog.dialogConfig.modalData
+            const outSizeDiv = getRenderFn('div', {
+                style: {
+                    paddingLeft: "10px",
+                    paddingRight: "10px",
+                    width: "100%",
+                    height: "100%",
+                    maxHeight: '800px',
+                    overflow: 'auto'
+                } as StyleType
+            })
+            com = outSizeDiv(
+                h(defaultCom, { dialog: dialog, modalData: modalData, instance: instance })
+            )
             return com
         }
         this.defaultComponent = vNode
     }
+    async initCornerComponent() {
+        const _this = this
+        const vNode = () => {
+            return h('div', ['X'])
+        }
+        this.cornerComponent = vNode
+    }
     async initFooterComponent() {
         const dialog = this
+        const _this = dialog
+        const dialogConfig = _this.dialogConfig
+        const dialogButtons = computed(() => {
+            return dialogConfig.buttons
+        })
         const vNode = () => {
-            let com: any = null
-            const dialogComponent = dialog.dialogComponent
-            const dialogName = dialog.dialogName! as keyof typeof dialogComponent
-            const _com = dialogComponent[dialogName] as any
-            const defaultCom = _com?.footer
-            if (defaultCom != null) {
-                const modalData = dialog.dialogConfig.modalData
-                com = h(defaultCom, { dialog: dialog, modalData: modalData })
-            } else {
-                com = h('div', ['footer'])
-            }
-            return com
+            return dialogButtons.value?.map(button => {
+                return h(VxeButton, {
+                    ...button, onClick: async () => {
+                        const runFun = button.btnFun
+                        console.log(button, 'tsetBtn')
+                        if (typeof runFun == 'function') {
+                            await runFun(_this)
+                        }
+                    }
+                }, () => {
+                    return h('div', [button.text || button.context])
+                })
+            })
+            // let com: any = null
+            // const dialogComponent = dialog.dialogComponent
+            // const dialogName = dialog.dialogName! as keyof typeof dialogComponent
+            // const _com = dialogComponent[dialogName] as any
+            // const defaultCom = _com?.footer
+            // if (defaultCom != null) {
+            //     const modalData = dialog.dialogConfig.modalData
+            //     com = h(defaultCom, { dialog: dialog, modalData: modalData })
+            // } else {
+            //     com = h('div', ['footer'])
+            // }
+            // return com
+
         }
         this.footerComponent = vNode
     }

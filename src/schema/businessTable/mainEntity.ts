@@ -1,16 +1,18 @@
 import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { systemInstance } from "../system"
-import { StyleType, displayState, entityConfig, layoutItem, routeOpenConfig, command, jumpConfig, whereObj, paramType } from "@/types/schema"
+import { StyleType, displayState, entityConfig, layoutItem, routeOpenConfig, command, jumpConfig, whereObj, paramType, dialogConfig, curRowConfig } from "@/types/schema"
 import { createPage } from "./pageTree"
 import { getTableConfig, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
 import { base } from "../base"
 import { createDetailEntityGroup } from "./detailEntityGroup"
+
 // import mainEntityMethod from ''
 import * as mainMethod from '@/entityMethods/mainTableMethods'
 import * as mainEntityExtend from './mainEntityExtend'
-import { mainEditEntity } from "./mainEditEntity"
+import { createMainEditEntity, mainEditEntity } from "./mainEditEntity"
+import { createDialog } from "../dialog"
 
 export class mainEntity extends basicEntity {
   //页面树
@@ -62,7 +64,26 @@ export class mainEntity extends basicEntity {
   initDefaultEntity() {
 
   }
+  openDialogEditPage(openConfig: jumpConfig = { type: "add" }) {
+    //构建编辑实例
+    const _this = this
+    const entityName = _this.entityName
+    if (this.pageRef.editEntity == null) {
+      this.pageRef.editEntity = createMainEditEntity(entityName) as any
+    }
+    let editDialog = this.pageRef.editEntityDialog!
+    if (editDialog == null) {
+      const editEntity = this.pageRef.editEntity
+      editDialog = createDialog('editEntity', { height: 400, width: 600, instance: editEntity }) as any
+      this.pageRef.editEntityDialog = editDialog as any//弹框
+    }
+    editDialog.open()
+  }
 
+  async dbCurRowChange(config: curRowConfig) {
+    const _this = this
+    _this.jumpToEditPage({ type: 'edit' })
+  }
   //跳转当前路由表的编辑页面
   jumpToEditPage(jumpConfig: jumpConfig = { type: 'add' }) {//跳转到编辑页面
     const _this = this

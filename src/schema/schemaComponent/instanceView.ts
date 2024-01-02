@@ -8,6 +8,12 @@ export default defineComponent({
     props: ['instance'] as Array<keyof TabsProps | 'instance' | 'tabInstance' | 'tabItems'>,
     setup(props) {
         const instance = props.instance
-        return instance.component
+        let com: any = instance?.component
+        if (com == null) {
+            com = () => {
+                return h('div', {})
+            }
+        }
+        return com
     }
 })

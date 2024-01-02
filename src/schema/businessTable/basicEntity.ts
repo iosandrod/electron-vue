@@ -11,7 +11,7 @@ import { http } from "../http"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig, tableKeyType, pickKey, getDataConfig, detailTableConfig } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig, tableKeyType, pickKey, getDataConfig, detailTableConfig, entityDialogConfig, jumpConfig } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -37,6 +37,9 @@ import { createFn } from "../createFn"
 import { createDetailEntityGroup, detailEntityGroup } from "./detailEntityGroup"
 import * as basicEntityExtend from './basicEntityExtend'
 import { getFn } from "./basicEntityFn"
+import { mainEditEntity } from "./mainEditEntity"
+import instanceView from "../schemaComponent/instanceView"
+import dialogPoolView from "../schemaComponent/dialogPoolView"
 interface tableMethod {
 
 }
@@ -64,6 +67,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   isEditEntity = false
   entityTabKey?: string
   entityType: entityType = 'main'//这里默认是主表
+  // dialogArr
+  dialogPool: Array<dialog> = []
   layoutConfig: layoutConfig = {
     rowHeight: 10,
     isDraggable: false,
@@ -94,6 +99,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   schema?: {} = {}
   entityName = ''
   pageRef: {
+    editEntityDialog?: dialog
+    editEntity?: mainEditEntity
     dEntityInstance?: detailEntityGroup
     buttonGroup?: buttonGroup
     // menuRef?: menu,
@@ -182,6 +189,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         return null
       }
       const _divStyle = { position: 'absolute', top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px', zIndex: 999 } as StyleType
+      const dialogPool = _this.dialogPool
       const entityCom = withDirectives(
         h('div', { class: 'h-full w-full' }, [
           h(layoutCom, { ...renderLayout, style: { height: '100%', width: '100%' } as StyleType, }, () => schema!.map((item: any) => {
@@ -225,7 +233,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
               }
             )
           })),
-          h(dialogView, { dialogInstance: _this.pageRef.searchDialog })
+          h(dialogPoolView, { dialogPool: _this.dialogPool })
+          // h(dialogView, { dialogInstance: _this.pageRef.searchDialog }),
+          // h(instanceView, { instance: _this.pageRef.editEntityDialog })
         ])
         , [[vShow, show.value], [{
           mounted() {
@@ -359,7 +369,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       const renderTable = entity.renderTable//这个是渲染表格的数据
       renderTable.columns = computed(() => {
         return this.tableConfig.columns
-      }) as any//处理表格 
+      }) as any//处理表格
       renderTable.data = computed(() => {
         return entity.tableData.data
       }) as any//行与列
@@ -410,7 +420,75 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     contextInstance?.openContext(event)
   }
   async initRenderSearchDialog() {
-    entityRenderFn.initRenderSearchDialog(this)
+    const entity = this
+    const _this = entity
+    const renderSearchDialog = _this.renderSearchDialog
+    renderSearchDialog.showFooter = true
+    renderSearchDialog.transfer = false
+    renderSearchDialog.modalData = { entity: _this }
+    renderSearchDialog.title = computed(() => {
+      const cnName = _this.getTableInfoKey('tableCnName')
+      return `${cnName}查询`
+    }) as any
+    renderSearchDialog.buttons = [{
+      text: "查询",
+      btnFun: async (dialog: dialog) => {
+        console.log(_this)
+      }
+    }, {
+      text: "取消",
+      btnFun: async (dialog: dialog) => {
+        dialog?.close();
+      }
+    }]
+    renderSearchDialog.maskClosable = false
+    renderSearchDialog.height = 600
+    renderSearchDialog.width = 400
+    renderSearchDialog.instance = _this.pageRef.searchForm//查询表单
+    this.addEntityDialog({
+      dialogName: "instanceView",
+      dialogConfig: renderSearchDialog,
+      dialogKey: "searchDialog"
+    })
+  }
+  //openConfig
+  addEntityDialog(config: entityDialogConfig) {
+    const dialogConfig = config.dialogConfig
+    const closeOnDestroy = config.closeOnDestroy
+    const dialogName = config.dialogName
+    const dialogKey = config.dialogKey
+    const pageRef = this.pageRef
+    if (dialogKey != null) {
+      //@ts-ignore
+      const cacheRef = pageRef[dialogKey]
+      if (cacheRef != null) {
+        return cacheRef
+      }
+    }
+    const onBeforeHide_old = dialogConfig.onBeforeHide
+    const dialogPool = this.dialogPool
+    if (closeOnDestroy == true) {
+      dialogConfig.onBeforeHide = (dialogInstance) => {
+        if (typeof onBeforeHide_old == 'function') {
+          onBeforeHide_old(dialogInstance)
+        }
+        //@ts-ignore
+        const index = dialogPool.findIndex(dialog => dialog === dialogInstance)
+        if (index != -1) {
+          setTimeout(() => {
+            dialogPool.splice(index, 1)
+          }, 200);
+        }
+      }
+    }
+    const _dialog = createDialog(dialogName, dialogConfig) as any
+    console.log(_dialog, 'testDialog')
+    this.dialogPool.push(_dialog)
+    if (Boolean(dialogKey) != false) {
+      //@ts-ignore
+      this.pageRef[dialogKey!] = _dialog
+    }
+    return _dialog
   }
   async initRenderSearchForm() {
     return entityRenderFn.initRenderSearchForm(this)
@@ -638,12 +716,15 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const vxeGrid = this.pageRef.vxeGrid
     vxeGrid?.setMergeConfig()
   }
-  setTableEdit(state: tableState) {
+  setEntityEdit(state: tableState) {
     const vxeGrid = this.pageRef.vxeGrid
     if (vxeGrid == null) {
       return
     }
-    vxeGrid.tableState = state
+    if (state == 'fullEdit' || state == 'scan') {
+      // vxeGrid.tableState = state
+      vxeGrid.setTableEdit(state)
+    }
   }
   //改变编辑类型
   changeColumnEditType(field: string, type: string) {
@@ -663,6 +744,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     if (!Array.isArray(rows)) {
       rows = []
     }
+    const _this = this
     let resArr = []
     for (const i of Object.keys(Array(num).fill(null))) {
       let obj = rows[Number(i)]
@@ -672,8 +754,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       resArr.push(obj)
     }
     this.tableData.data.push(...resArr)
-    // const vxeGrid = this.pageRef.vxeGrid
-    // vxeGrid?.addTableRow({ num: resArr.length, rows: resArr, insertStatus: false })
+    //
+    const afterConfig: runAfterConfig = {
+      methodName: "addTableRow",
+      table: _this,
+      rows: resArr
+    }
+    await this.getRunAfter(afterConfig)
   }
   //表单新增数据
   addNewRow() {
@@ -684,8 +771,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
 
   }
   //跳转到编辑页面
-  jumpToEditPage(jumpConfig: any) {
-
+  jumpToEditPage(jumpConfig: jumpConfig) {
+    return
   }
   runButtonMethod(btn: entityButton) {
     const btnConfig = btn.entityButtonConfig
@@ -776,7 +863,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     await this.getRunAfter(beforeConfig as any)
   }
   async dbCurRowChange(config: curRowConfig) {
-    console.log('dbCurRowChange')
   }
   getTableInfoKey(keyName: tableKeyType) {
     const _this = this

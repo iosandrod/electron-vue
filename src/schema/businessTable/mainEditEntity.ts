@@ -1,7 +1,7 @@
 import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { system, systemInstance } from "../system"
-import { StyleType, displayState, entityConfig, formItemConfig, getDataConfig, layoutItem, pickKey, runBeforeConfig, whereObj } from "@/types/schema"
+import { StyleType, displayState, entityConfig, formItemConfig, getDataConfig, layoutItem, pickKey, runBeforeConfig, tableState, whereObj } from "@/types/schema"
 import { createPage } from "./pageTree"
 import { getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
@@ -10,7 +10,7 @@ import { createEntityButton } from "../entityButton"
 import { mainEntity } from "./mainEntity"
 import { createForm } from "../form"
 import * as mainEditExtend from './mainEditEntityExtend'
-
+import * as mainMethod from '@/entityMethods/mainEditTableMethods'
 export class mainEditEntity extends basicEntity {
     //页面树
     isEditEntity = true
@@ -20,6 +20,7 @@ export class mainEditEntity extends basicEntity {
         this.entityType = 'edit'//编辑类型的entity
         this.entityName = entityName
         this.buttonCategory = 'ViewFormGridEdit'
+        this.buttonMethod = mainMethod
         Object.entries(mainEditExtend).forEach(([key, value]) => {
             this.addExtendMethod(key, value)
         })
@@ -132,6 +133,21 @@ export class mainEditEntity extends basicEntity {
     setCurEditRow(where: any) {
 
     }
+    setEntityEdit(state: tableState) {
+        super.setEntityEdit(state)
+        const vxeForm = this.pageRef.vxeForm
+        if (state !== 'scan' && state != null) {
+            vxeForm?.setFormDisabled(false)
+            this.detailTable?.forEach(table => {
+                table.setEntityEdit('fullEdit')
+            })
+        } else {
+            vxeForm?.setFormDisabled(true)
+            this.detailTable?.forEach(table => {
+                table.setEntityEdit('scan')
+            })
+        }
+    }
     //添加一行
     async addModel() {
         //添加一个实体
@@ -141,7 +157,9 @@ export class mainEditEntity extends basicEntity {
             methodName: "addModel",//添加行之后处理的事情
             row: defaultValue,//
         }
-        await this.getRunBefore(beforeConfig)
+        this.entityState = 'add'
+        this.setEntityEdit("fullEdit")
+        await this.getRunAfter(beforeConfig)
     }
     async editModel(getDataConfig: pickKey<getDataConfig>) {
         //编辑当前行
@@ -161,6 +179,7 @@ export class mainEditEntity extends basicEntity {
             return Promise.reject('找不到行数据')
         }
         await this.getTableData(getDataConfig)//获取数据相当于编辑当前行了
+        this.setEntityEdit('scan')
     }
 }
 

@@ -165,6 +165,10 @@ export class table extends base<tableSchema> implements tableMethod {
   async curRowChange(config: curRowConfig) {
     const row = config.row
     const column = config.column
+    if (this.tableData.curRow == row) {
+      await this.setCurColumn(column)
+      return
+    }
     await this.setCurRow(row)
     await this.setCurColumn(column)//处理组件内部状态
     const curRowChange = this.tableConfig.curRowChange
@@ -172,7 +176,7 @@ export class table extends base<tableSchema> implements tableMethod {
       await curRowChange({ row: this.tableData.curRow, table: this })
     }
   }
-  async dbCurRowChange() {
+  async dbCurRowChange(value: { row: any, column: column }) {
     const dbCurRowChange = this.tableConfig.dbCurRowChange
     if (typeof dbCurRowChange == 'function') {
       await dbCurRowChange({ row: this.tableData.curRow, table: this })

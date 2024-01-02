@@ -4,10 +4,10 @@ import instanceView from "./instanceView";
 import { dialog } from "../dialog";
 
 export default defineComponent({
+    props: ['dialogPool'],
     setup(props) {
-        console.log('render dialog')
         const _system = systemInstance
-        const dialogPool = _system.dialogPool
+        const dialogPool = props.dialogPool || _system.dialogPool
         return () => {
             return h('div', {},
                 dialogPool.map((dialog: dialog) => {

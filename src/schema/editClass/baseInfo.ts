@@ -57,7 +57,7 @@ export const baseInfoInitComponent = (input: input) => {
         return _this.displayState == 'destroy'
     })
     const baseInfoTable = input.inputConfig.baseInfoTable
-    const tableName = baseInfoTable.tableName || 't_SdOrder'
+    const tableName = baseInfoTable?.tableName || 't_SdOrder'
     const tableRef = computed(() => {
         const _table = _this.system.baseInfoTableMap[tableName] || {}
         console.log('baseInfoTable', _table)

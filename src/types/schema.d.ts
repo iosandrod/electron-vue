@@ -171,10 +171,11 @@ export type pickKey<T = any> = {
 }
 
 export type dialogButton = {
-  btnFun: (dialog: dialog) => Promise<void>,//立即执行函数
+  context?: string
+  btnFun: ((dialog: dialog) => Promise<void>) | ((dialog: dialog) => void),//立即执行函数 
   text: string,
 }
-export type dialogConfig = concatAny<VxeModalDefines.ModalOptions & { dialogPrimaryName?: string, dialogName?: string, hasOpen?: boolean, modalData?: any, buttons?: dialogButton[] }>
+export type dialogConfig = concatAny<VxeModalDefines.ModalOptions & { dialogPrimaryName?: string, dialogName?: string, instance?: any, hasOpen?: boolean, entity?: basicEntity, modalData?: any, buttons?: dialogButton[] }>//没有modelData
 
 
 export type dialogComponent = {
@@ -666,4 +667,11 @@ export type detailTableConfig = {
   "tableName": string,
   "foreignKey": string,
   "needData": string
+}
+
+export type entityDialogConfig = {
+  dialogName: string,
+  dialogConfig: dialogConfig,
+  closeOnDestroy?: boolean,
+  dialogKey?: string
 }

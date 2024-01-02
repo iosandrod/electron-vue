@@ -282,6 +282,12 @@ export const initGridOptions = (table: table) => {
             onCellClick(value as any)//cell点击事件
         }
     }
+
+    gridOptions.onCellDblclick = async (value) => {
+        const row = value.row
+        const column = value.column?.params
+        await _this.dbCurRowChange({ row: row, column: column })
+    }
 }
 
 export const initComponent = (table: table) => {
@@ -435,6 +441,24 @@ export const initComponent = (table: table) => {
                 const field = column.columnConfig.field
                 return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table, column: column })
             },
+            float: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                const column = params.column.params as column
+                const renderFormitem = column.renderFormitem
+                const field = column.columnConfig.field
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table, column: column })
+            },
+            int: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                const column = params.column.params as column
+                const renderFormitem = column.renderFormitem
+                const field = column.columnConfig.field
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table, column: column })
+            },
+            decimal: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
+                const column = params.column.params as column
+                const renderFormitem = column.renderFormitem
+                const field = column.columnConfig.field
+                return h(inputView, { renderFormitem, field: field, data: params.row, key: column.columnConfig.editType, table: column.table, column: column })
+            },
             rowEdit: (params: VxeColumnSlotTypes.DefaultSlotParams) => {
                 const column = params.column.params as column
                 const renderFormitem = column.renderFormitem
@@ -445,8 +469,6 @@ export const initComponent = (table: table) => {
             },
         }), [[{
             mounted: (el, node) => {
-                // console.log(node)
-                // table.pageRef.vxeGrid = xeinstacne.value as any 
                 table.pageRef!.vxeGrid = node.instance?.$refs.xeinstacne as any
 
             },

@@ -42,6 +42,7 @@
             <vxe-button @click="changeEditType11111111">删除弹框</vxe-button>
             <vxe-button @click="changeEditType111111111">默认值</vxe-button>
             <vxe-button @click="changeEditType1111111111">默认值11</vxe-button>
+            <vxe-button @click="changeEditType11111111111">默认值111</vxe-button>
             <!-- 
               changeEditType11111111
              -->
@@ -144,10 +145,10 @@ function changeEditType() {
   const entity = systemInstance.entityVetor[key]
   const vxeGrid = entity.pageRef.vxeGrid
   if (state1) {
-    vxeGrid?.setTableEdit('fullEdit')
+    vxeGrid?.setEntityEdit('fullEdit')
     // vxeGrid?.changeColumnEditType('cCustName', 'select')
   } else {
-    vxeGrid?.setTableEdit('scan')
+    vxeGrid?.setEntityEdit('scan')
     // vxeGrid?.changeColumnEditType('cCustName', 'string')
   }
   state1 = !state1
@@ -160,12 +161,12 @@ function changeEditType1() {
   const vxeGrid = entity.pageRef.vxeGrid
   if (state11) {
     entity?.changeColumnEditType('cSdOrderNo', 'baseInfo')
-    // vxeGrid?.setTableEdit('fullEdit') 
+    // vxeGrid?.setEntityEdit('fullEdit') 
     // vxeGrid?.changeColumnEditType('cSdOrderNo', 'baseInfo')
     // console.log(vxeGrid)
   } else {
     entity?.changeColumnEditType('cSdOrderNo', 'string')
-    // vxeGrid?.setTableEdit('scan')
+    // vxeGrid?.setEntityEdit('scan')
     // vxeGrid?.changeColumnEditType('cSdOrderNo', 'string')
     // console.log(vxeGrid)
   }
@@ -183,9 +184,9 @@ function changeEditType11() {
         col.options = [{ label: '小风1', value: 'xiaofeng1' }, { label: '小峰1', value: 'xiaofeng11' }]
       }
     })
-    // vxeGrid?.setTableEdit('fullEdit')
+    // vxeGrid?.setEntityEdit('fullEdit')
   } else {
-    // vxeGrid?.setTableEdit('scan')
+    // vxeGrid?.setEntityEdit('scan')
     entity.tableConfig.columns!.forEach((col: any) => {
       if (col.editType == 'select') {
         col.options = [{ label: '小风11', value: 'xiaofeng11' }, { label: '小峰11', value: 'xiaofeng111' }]
@@ -284,6 +285,21 @@ async function changeEditType1111111111() {
   }).catch(err => {
     console.error(err)
   })
+}
+async function changeEditType11111111111() {
+  const systemConfig = systemInstance.systemConfig
+  const key = systemConfig.activeKey
+  const entity = systemInstance.entityVetor[key]
+  const entityName = entity.entityName
+  const system = entity.system!
+  const model = await entity.getDefaultModel()
+  if (state11) {
+    // entity.addTableRow(10)
+    entity.openDialogEditPage({ type: "add" })
+  } else {
+    // entity.removeEntityItem(obj)
+  }
+  state11 = !state11
 }
 const collapsed = ref<boolean>(false)
 </script>
