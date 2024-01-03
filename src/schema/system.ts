@@ -77,7 +77,7 @@ export class system extends base {
     this.displayState = 'show'
     setTimeout(() => {
       // this.routeOpen({ entityName: "t_SdOrder" })//跳转
-      // this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
+      this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
       // this.routeOpen('index8')
       // this.routeOpen('index13')
       // const router = this.getRouter()
@@ -144,7 +144,6 @@ export class system extends base {
       })
       return entityArr//使用vetor的tab
     }) as any
-    renderTab.tabItems = []
     renderTab.activeKey = computed(() => {
       return this.systemConfig.activeKey
     }) as any
@@ -366,16 +365,12 @@ export class system extends base {
     const _table = createTable(renderTable)
   }
   addCommand(command: command) {
-    // this.commandQueue = [...this.commandQueue, command]
     this.commandQueue.push(command)
   }
   //添加全局弹出框
   async confirm(confirmConfig?: confirmConfig) {
     const _this = this
     return new Promise((resolve, reject) => {
-      // let createFn = () => async () => { } 
-      // let callback = confirmConfig?.callback || createFn()
-      // let cancelCallback = confirmConfig?.cancelCallback || createFn()
       const buttons = [{
         btnFun: async (dialog: dialog) => {
           resolve(true)
@@ -398,10 +393,27 @@ export class system extends base {
       this.addGlobalDialog('confirm', _confirmConfig)
     })
     // const dia = createDialog('confirm', _confirmConfig)
-  }
+  }//移除一些东西
   addGlobalDialog(dialogName: string, dialogConfig?: dialogConfig) {
-    const _dialogConfig: any = dialogConfig
-    const targetDialog = createDialog(dialogName, _dialogConfig)
+    const _this = this
+    const _dialogConfig = dialogConfig!//全局的弹框基本都是不要的
+    _dialogConfig.maskClosable = false
+    const onBeforeHide = dialogConfig?.onBeforeHide
+    _dialogConfig!.onBeforeHide = async (params) => {
+      if (typeof onBeforeHide == 'function') {
+        try {
+          onBeforeHide(params)
+        } catch (error) {
+          console.log('error beforeHidden')
+        }
+      }
+      const _dialogPool = _this.dialogPool
+      setTimeout(() => {
+        const index = _dialogPool.findIndex(dialog => dialog == _this)
+        _dialogPool.splice(index, 1)
+      }, 200);
+    }
+    const targetDialog = createDialog(dialogName, _dialogConfig as any)
     this.dialogPool.push(targetDialog as any)
   }
   removeGlobalDialog(key: string) {

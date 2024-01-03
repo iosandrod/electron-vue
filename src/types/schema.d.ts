@@ -208,7 +208,8 @@ export type itemConfig = VxeFormItemProps & {
   options?: selectOptions[],
   layout?: layoutItem,
   disable?: boolean,
-  itemChange?: () => void
+  formitems?: itemConfig[],
+  itemChange?: (value?: valueChangeParams) => void
 } & VxeInputEventProps
 
 export type formConfig = VxeFormProps & {
@@ -545,6 +546,7 @@ export type localStorageValue = {
 }
 
 export type inputConfig = VxeInputProps & {
+  formitems?: formitem[]
   itemChange?: (value: any) => void
   field?: string
   baseInfoTable?: any

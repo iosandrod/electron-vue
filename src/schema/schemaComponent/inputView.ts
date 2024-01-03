@@ -1,4 +1,4 @@
-import { computed, defineComponent, watch, onUnmounted, watchEffect, h, ref, toRef, onMounted, nextTick, reactive } from 'vue'
+import { isProxy, computed, defineComponent, watch, onUnmounted, watchEffect, h, ref, toRef, onMounted, nextTick, reactive } from 'vue'
 import { createInput, input } from '../input'
 import { inputConfig } from '@/types/schema'
 import { table } from '../table'
@@ -59,7 +59,11 @@ export default defineComponent({
                     nextTick(() => {
                         const itemChange = inputInstance.inputConfig.itemChange
                         if (typeof itemChange == 'function') {
-                            itemChange(value)
+                            let form = null
+                            if (inputInstance.getForm) {
+                                form = inputInstance.getForm()
+                            }
+                            itemChange({ value: value, form: form, inputInstance: inputInstance })
                         }
                     })
                 } catch (error) {

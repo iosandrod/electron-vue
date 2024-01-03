@@ -18,14 +18,28 @@ export const codeEditCom = defineComponent({
             const attrs = useAttrs()
             const codeEditCom = withDirectives(h('div', { ref: codeDiv, },), [[{
                 mounted(div, node) {
+                    const inputValue = input.getBindValue()
                     //@ts-ignore
-                    input.pageRef.codeEdit = shallowRef(monaco.editor.create(codeDiv.value, { value: '', overviewRulerBorder: false, language: "javascript", lineNumbers: 'off', minimap: { enabled: false, } },))
+                    input.pageRef.codeEdit = shallowRef(monaco.editor.create(codeDiv.value, {
+                        value: inputValue,
+                        overviewRulerBorder: false,
+                        language: "javascript",
+                        lineNumbers: 'off',
+                        minimap: { enabled: false, },
+                    },))
                     let codeEdit = input.pageRef.codeEdit
+                    codeEdit!.onDidChangeModelContent((value) => {
+                        const context = codeEdit?.getValue()
+                        if (input.updateData) {
+                            input.updateData(context)
+                        }
+                    })
                     nextTick(() => {
                         codeEdit?.layout({
                             height: height,
                             width: width
                         })
+
                     })
                 },
                 unmounted() {

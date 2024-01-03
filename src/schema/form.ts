@@ -2,7 +2,7 @@ import { computed, h, reactive, resolveComponent, vShow, watchEffect, withDirect
 import { base } from "./base"
 import { system, systemInstance } from "./system"
 import { VxeFormItem, VxeFormProps } from "vxe-table"
-import { StyleType, formConfig, layoutConfig, layoutItem, layoutItemConfig } from "@/types/schema"
+import { StyleType, formConfig, itemConfig, layoutConfig, layoutItem, layoutItemConfig } from "@/types/schema"
 import * as formFn from './formFn'
 import { styleBuilder } from "@/utils/utils"
 import { createFormItem, formitem } from "./formitem"
@@ -59,7 +59,7 @@ export class form extends base<formConfig> {
     this.initComponent()
   }
   //计算
-  calculateLayout() {
+  calculateLayout(reset = false) {
     const _this = this
     const formConfig = _this.formConfig
     const items: formitem[] = formConfig.items
@@ -89,6 +89,9 @@ export class form extends base<formConfig> {
       }
       return res
     }, { x: 0, y: 0 })
+    if (reset) {
+      this.renderLayout.layout = _layout
+    }
     return _layout
   }
   async initRenderLayout() {
@@ -152,7 +155,6 @@ export class form extends base<formConfig> {
                   return item.itemConfig.visible == true
                 }).map((item: formitem, i) => {
                   const obj = item.renderLayoutItem
-                  // return h(layoutItemCom, _item,
                   return h(layoutItemCom, { ...obj, key: item.itemConfig.field },
                     () => {
                       const inputCom = h(formitemView, { formitem: item, data: _this.formConfig.data })
@@ -177,6 +179,22 @@ export class form extends base<formConfig> {
     const _disabled = Boolean(disabled)
     this.formConfig.disabled = _disabled
   }
+  addFormItem(itemConfig: itemConfig) {
+    const item = createFormItem(itemConfig, this)
+    this.formConfig.items.push(item as any)
+    this.calculateLayout(true)
+  }
+  removeFormItem(field: string) {
+    const formConfig = this.formConfig
+    const items = formConfig.items
+    const targetIndex = items.findIndex((item: formitem) => {
+      return item.itemConfig.field == field
+    })
+    if (targetIndex == -1) {
+      return
+    }
+    items.splice(targetIndex, 1)
+  }
   setItemDisplay(field: string | Array<string>, status?: boolean) {
     let fieldArr: any = null
     if (typeof field == 'string') {
@@ -197,8 +215,8 @@ export class form extends base<formConfig> {
   }
 }
 
-export const createForm = (schema: formConfig) => {
+export const createForm = (schema: formConfig): form => {
   const _form = reactive(new form(schema, systemInstance))
   _form.initForm()
-  return _form
+  return _form as form
 }

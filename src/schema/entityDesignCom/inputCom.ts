@@ -32,16 +32,15 @@ options: [{
 export const inputComItems: formItemConfig[] = [
     {
         field: "type", title: '类型', type: "select",
-        onChange: (value: valueChangeParams) => {
-            const _value = value.value
-            const _form: form = value.form!
-            if (_value == 'select') {
-                _form.setItemDisplay(['options', 'bindField'], true)
-            } else {
-                _form.setItemDisplay(['options', 'bindField'], false)
-            }
-        }
-        ,
+        // itemChange: (value?: valueChangeParams) => {
+        //     const _value = value?.value
+        //     const _form: form = value?.form!
+        //     if (_value == 'select') {
+        //         _form.setItemDisplay(['options', 'bindField'], true)
+        //     } else {
+        //         _form.setItemDisplay(['options', 'bindField'], false)
+        //     }
+        // },
         options: [{
             label: "文本",
             value: 'string'
@@ -70,9 +69,9 @@ export const inputComItems: formItemConfig[] = [
     {
         field: "bindField", type: 'string', title: '下拉项源'
     },
-    {
-        field: "validate", type: "codeEdit", title: "校验"
-    },
+    // {
+    //     field: "validate", type: "form", title: "校验", formitems: [{ field: "ruleType", title: "校验类型", type: "select", options: [] }, { field: "ruleFn", type: "codeEdit" }]
+    // },
 ]
 
 

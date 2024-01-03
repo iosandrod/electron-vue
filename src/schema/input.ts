@@ -1,7 +1,7 @@
 import { Directive, computed, h, isProxy, nextTick, reactive, ref, useAttrs, vShow, watch, watchEffect, withDirectives } from "vue";
 import { base } from "./base";
 import { system, systemInstance } from "./system";
-import { StyleType, inputConfig } from "@/types/schema";
+import { StyleType, formConfig, inputConfig } from "@/types/schema";
 import { VxeInput, VxeInputEventProps, VxeInputInstance, VxeInputProps, VxePulldown, VxePulldownInstance } from "vxe-table";
 import { Select, SelectOption, SelectProps } from "ant-design-vue";
 import { formitem } from "./formitem";
@@ -17,11 +17,17 @@ import { dateInit, datetimeInit, timeInit } from "./editClass/time";
 import { numberInit } from "./editClass/number";
 import { codeEditInitComponent, initRenderCodeEdit } from "./editClass/codeEdit";
 import * as monaco from 'monaco-editor'
+import { formInitComponent, initRenderForm } from "./entityDesignCom/formCom";
+
+
+
 export class input extends base {
     hasInit = false
     codeEditRender = {}
+    renderForm: formConfig = {} as any
     pageRef: {
         codeEdit?: monaco.editor.IStandaloneCodeEditor,
+        formRef?: form
         [key: string]: any
     } = {}
     updateFn?: (value: any) => void
@@ -39,7 +45,8 @@ export class input extends base {
         allowClear: true,
         clearable: true,
         field: '',
-        baseInfoTable: null
+        baseInfoTable: null,
+        formitems: []
     }
     renderInput: inputConfig = {}
     renderSelect: SelectProps = {}
@@ -96,8 +103,36 @@ export class input extends base {
             initMethod.call(this)
         }
     }
-    valueChange(value: any) {
-
+    getBindValue() {
+        try {
+            const _this = this
+            const data = _this.getData!()
+            const field = _this.inputConfig.field!
+            const value = data[field]
+            return value
+        } catch (error) {
+            return ''
+        }
+    }
+    updateData(value: any) {
+        const _this = this
+        let getData = _this.getData
+        if (getData == null) {
+            const updateFn = _this.updateFn
+            if (updateFn == null) {
+                return
+            }
+            if (typeof updateFn == 'function') {
+                updateFn(value)
+            }
+            return
+        }
+        let field = _this.inputConfig.field
+        if (field == null) {
+            field = this.getField!() as string
+        }
+        const data = _this.getData!()
+        data[field] = value
     }
     initRenderInput() {
         const _this = this
@@ -128,15 +163,7 @@ export class input extends base {
             }
         }) as any
         renderInput.onChange = ({ value }: any) => {
-            const getData = _this.getData
-            const getField = _this.getField
-            if (typeof getData == 'function' && typeof getField == 'function') {
-                let data = getData()
-                let field = getField()
-                if (data && field) {
-                    data[field] = value
-                }
-            }
+            _this.updateData(value)
             const _onChange = inputConfig.onChange as any
             inputConfig.modelValue = value
             if (typeof _onChange == 'function') {
@@ -155,30 +182,18 @@ export class input extends base {
         }) as any
         //@ts-ignore 
     }
-    update(value: any) {
-        const updateFn = this.updateFn
-    }
     initComponent() {
         initComponent(this)
     }
     selectInit() {
-        this.initRenderSelect()
-        this.selectInitComponent()
+        initRenderSelect(this)
+        selectInitComponent(this)
     }
     codeEditInit() {
         initRenderCodeEdit(this)
         codeEditInitComponent(this)
     }
-    initRenderSelect() {
-        initRenderSelect(this)
-    }
-    selectInitComponent() {
-        selectInitComponent(this)
-    }
     stringInit() {
-        this.stringInitComponent()
-    }
-    stringInitComponent() {
         this.initComponent()
     }
     baseInfoInit() {
@@ -202,11 +217,15 @@ export class input extends base {
     floatInit() {
 
     }
-
+    formInit() {
+        initRenderForm(this)
+        formInitComponent(this)
+    }
     initBaseInfoTable() {
         initBaseInfoTable(this)
     }
 }
+
 
 export const createInput = (schema: inputConfig, form?: any) => {
     const _system = systemInstance

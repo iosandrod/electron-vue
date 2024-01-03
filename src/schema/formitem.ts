@@ -2,7 +2,7 @@ import { ReactiveEffect, computed, h, reactive, resolveComponent, watch, watchEf
 import { base } from "./base";
 import { system, systemInstance } from "./system";
 import { VxeButton, VxeFormItemProps } from 'vxe-table'
-import { dialogConfig, inputConfig, itemConfig, layoutItem, pickKey, tableConfig } from "@/types/schema";
+import { dialogConfig, inputConfig, itemConfig, layoutItem, pickKey, tableConfig, valueChangeParams } from "@/types/schema";
 import { column } from "./column";
 import * as formitemFn from './formitemFn'
 import { baseEdit } from "./baseEdit";
@@ -104,6 +104,7 @@ export class formitem extends baseEdit<any> {
             let type = this.itemConfig.type
             return type
         }) as any
+        renderInput.field = itemConfig.field
         renderInput.onChange = (value) => {
             const _onChange = itemConfig.onChange
             if (typeof _onChange == 'function') {
@@ -145,6 +146,15 @@ export class formitem extends baseEdit<any> {
         renderInput.baseInfoTable = computed(() => {
             return itemConfig.baseInfoTable
         })
+        renderInput.itemChange = (value: valueChangeParams) => {
+            const _itemChange = itemConfig.itemChange
+            if (typeof _itemChange == 'function') {
+                _itemChange(value)
+            }
+        }
+        renderInput.formitems = computed(() => {
+            return itemConfig.formitems || []
+        }) as any
         const inputInstance = createInput(this.renderInput, this.form)
         inputInstance.getField = () => {
             return itemConfig.field

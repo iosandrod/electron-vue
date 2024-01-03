@@ -14,10 +14,6 @@
     <div style="" class="w-full h-full" v-if="showValue">
       <!-- <input-view v-model="testValue" :inputInstance="_input"></input-view> -->
       <instance-view :instance="_form"></instance-view>
-      <!-- <codeEditCom :inputInstance="_input" :style="{
-        height: '500px',
-        width: '1200px',
-      }"></codeEditCom> -->
     </div>
   </div>
 </template>

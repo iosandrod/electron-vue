@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import "./style.css"
-import './samples/node-api'
 import '@quasar/extras/material-icons/material-icons.css'
 import "@/style/index.scss"
 import 'vxe-table/styles/index.scss'

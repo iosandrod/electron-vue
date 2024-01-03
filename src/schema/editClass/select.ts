@@ -67,7 +67,8 @@ export const selectInitComponent = (input: input) => {
         if (destroy.value == true) {
             return null
         }
-        const selectStyle = styleBuilder.setFullWidth().setFullHeight().getStyle()
+        const selectStyle = styleBuilder.setFullWidth().getStyle()
+        selectStyle.height = '30px'
         const selectCom = h(Select, { ..._this.renderSelect, style: selectStyle },
             {
                 option: (params: any) => {

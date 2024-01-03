@@ -250,21 +250,9 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
                     return h('div', [button.text || button.context])
                 })
             })
-            // let com: any = null
-            // const dialogComponent = dialog.dialogComponent
-            // const dialogName = dialog.dialogName! as keyof typeof dialogComponent
-            // const _com = dialogComponent[dialogName] as any
-            // const defaultCom = _com?.footer
-            // if (defaultCom != null) {
-            //     const modalData = dialog.dialogConfig.modalData
-            //     com = h(defaultCom, { dialog: dialog, modalData: modalData })
-            // } else {
-            //     com = h('div', ['footer'])
-            // }
-            // return com
 
         }
-        this.footerComponent = vNode
+        this.footerComponent = vNode as any
     }
     async initComponent(): Promise<void> {
         const _this = this
@@ -317,11 +305,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
 // export const dialogPool = reactive(new DialogPool())
 
 
-export const createDialog = (schemaName: string = 'codeEdit', schema: concatAny<VxeModalProps & {
-    table?: any,
-    openBefore?: () => Promise<boolean> | void,//打开之前
-    closeBefore?: () => Promise<void> | void//关闭之前
-}>, global: boolean = true) => {
+export const createDialog = (schemaName: string = 'codeEdit', schema: dialogConfig, global: boolean = true) => {
     //schemaName这个是弹框的名称
     const Dialog = reactive(new dialog(schemaName, schema, getSystem()))
     Dialog.initDialog()

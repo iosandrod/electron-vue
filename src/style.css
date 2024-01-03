@@ -155,3 +155,10 @@ body{
 .margin-view-overlays{
     /* margin-left:0px !important */
 }
+
+.ant-select-clear {
+    display:flex!important;
+    flex-direction:row!important;
+    justify-content:center!important;
+    align-items:center!important;
+}

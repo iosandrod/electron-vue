@@ -46,7 +46,6 @@ export class tab extends base {
                 return tabItems?.map((item: any) => {
                     const tabPaneCom = h(TabPane, {
                         ...item, closable: item.closable != false && _this.tabConfig.closable == true,
-
                     },
                         {
                             default: () => {
@@ -57,7 +56,6 @@ export class tab extends base {
                             }
                         }
                     )
-                    // return h('div', [tabPaneCom])
                     return tabPaneCom
                 })
             })

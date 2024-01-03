@@ -120,60 +120,7 @@ export const initRenderSearchForm = (entity: basicEntity) => {
 }
 
 export const initRenderEditForm = (entity: basicEntity) => {
-    const _this = entity
-    if (_this.pageRef.vxeForm != null) {
-        return { instance: _this.pageRef.vxeForm }
-    }
-    const renderEditForm = _this.renderEditForm
-    renderEditForm.data = computed({
-        set: (value: any) => {
-            renderEditForm.data = value
-        },
-        get: () => {
-            return _this.tableData.curRow
-        }
-    }) as any
-    renderEditForm.disabled = computed(() => {
-        const entityState = _this.entityState
-        if (entityState == 'scan') {
-            return true
-        }
-        return false
-    }) as any
-    renderEditForm.items = _this.tableConfig.columns?.filter(col => Boolean(col.editType) == true).sort((c1, c2) => {
-        const o1 = c1.editOrderNo!
-        const o2 = c2.editOrderNo!
-        return o1 - o2!
-    }).map(col => {
-        const obj: formItemConfig = {} as any
-        obj.type = computed(() => {
-            return col.editType
-        }) as any
-        obj.field = computed(() => {
-            return col.field
-        }) as any
-        obj.span = computed(() => {
-            const num = Number(col.editColSize)
-            if (isNaN(num)) {
-                return 6
-            }
-            return num! * 2
-        }) as any
-        obj.title = computed(() => {
-            return col.editTitle || col.title
-        }) as any
-        obj.baseInfoTable = computed(() => {
-            return col.baseInfoTable
-        }) as any
-        obj.options = computed(() => {
-            return col.options || []
-        }) as any
-        return obj
-    }) as any
-    const vxeForm = createForm(renderEditForm)
-    //@ts-ignore
-    _this.pageRef.vxeForm = vxeForm
-    return { formInstance: vxeForm, instance: _this.pageRef.vxeForm }
+
 }
 
 
