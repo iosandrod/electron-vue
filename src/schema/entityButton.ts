@@ -6,6 +6,8 @@ import { buttonObj } from "@/types/schema";
 import { formatFunction } from "@/utils/utils";
 import { basicEntity } from "./businessTable/basicEntity";
 import { StyleType } from "@/types/schema";
+import { getRenderFn } from "./columnFn";
+import { getIcon } from "./icon";
 
 class Translate {
     key?: any
@@ -166,12 +168,7 @@ export class entityButton extends button {
             return false
         }) as any
         renderButton.destroyOnClose = true
-        renderButton.slots = computed(() => {
-            const obj = {} as any
-            obj.default = () => {
-
-            }
-        }) as any
+        // renderButton.icon = 'vxe-icon-arrow-double-right'
         renderButton.content = computed(() => {
             return this.buttonConfig.cButtonText
         }) as any
@@ -195,8 +192,12 @@ export class entityButton extends button {
             }, {
                 default: () => {
                     const cButtonText = _this.buttonConfig?.cButtonText
-                    return h('div', { style: {} as StyleType }, [cButtonText || '按钮'])
-                }
+                    const outSizeDiv = getRenderFn('div', { style: { width: "", paddingLeft: "10px", paddingRight: "10px", display: 'flex', flexDirection: "row", alignItems: 'center' } as StyleType })
+                    const iconCom = getIcon({}, 'vxe-icon-envelope-fill')()
+                    const showValueCom = h('div', [cButtonText])
+                    return outSizeDiv([showValueCom, iconCom])
+                },
+
             })
         }
         this.component = vNode

@@ -483,7 +483,13 @@ export const initComponent = (table: table) => {
             onClick: () => {
                 console.log('search')
             }
-        }, () => { return getIcon({}, 'vxe-icon-search')() }), [[vShow, table.tableConfig.globalWhereSearchShow]])
+        }, () => { return getIcon({}, 'vxe-icon-search')() }), [[vShow, table.tableConfig.globalWhereSearchShow], [{
+            mounted: (el, binding) => {
+            },
+            updated: (el, binding) => {
+            }
+        }, table.tableConfig.globalWhereSearchShow]])
+
         //vxe-icon-close
         const inputBtn2 = withDirectives(h(VxeButton, {
             onClick: () => {

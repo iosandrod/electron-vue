@@ -1,0 +1,229 @@
+@use 'sass:map';
+.bu-load-loop {
+  animation: ani-load-loop 1s linear infinite;
+}
+@use 'sass:map';
+$button-height: var(--bu-button-height, 32px);
+$disabled-opacity: var(--bu-disabled-opacity, 0.7);
+$diabled-color: var(--bu-disabled-bg-color, #f5f7fa);
+$notification-padding: var(--bu-notification-padding, 14px 26px 14px 13px);
+$notification-width: var(--bu-notification-width, 330px);
+$notification-box-shadow: var(
+  --bu-notification-box-shadow,
+  0 0 12px rgba(0, 0, 0, 0.12)
+);
+$container-header-padding: 0 20px !default;
+$container-footer-padding: 0 20px !default;
+$container-main-padding: 20px !default;
+$checkbox-marign: var(--bu-heckbox-marign, 15px);
+$bu-transition-duration: var(--bu-transition-duration, 0.3s);
+$message-padding: var(--bu-message-padding, 10px 19px);
+
+$prefix: 'bb';
+$colors: () !default;
+$colors: map.deep-merge(
+  (
+    'white': #ffffff,
+    'black': #000000,
+    'primary': (
+      'base': #2d8cf0,
+    ),
+    'success': (
+      'base': #19be6b,
+    ),
+    'warning': (
+      'base': #ff9900,
+    ),
+    'danger': (
+      'base': #f56c6c,
+    ),
+    'error': (
+      'base': #ed4014,
+    ),
+    'info': (
+      'base': #2db7f5,
+    ),
+    'normal': (
+      'base': '#e6ebf1',
+    ),
+  ),
+  $colors
+);
+
+$color-white: map.get($colors, 'white') !default;
+$color-black: map.get($colors, 'black') !default;
+$color-primary: map.get($colors, 'primary', 'base') !default;
+$color-success: map.get($colors, 'success', 'base') !default;
+$color-warning: map.get($colors, 'warning', 'base') !default;
+$color-danger: map.get($colors, 'danger', 'base') !default;
+$color-error: map.get($colors, 'error', 'base') !default;
+$color-info: map.get($colors, 'info', 'base') !default;
+$color-line: var(--bu-line, #dcdee2);
+
+$color-bg-info: var(--color-bg-info, #f5f7fa);
+
+$common-component-size: () !default;
+$common-component-size: map.merge(
+  (
+    'large': 40px,
+    'default': 32px,
+    'small': 24px,
+  ),
+  $common-component-size
+);
+
+$border-radius: () !default;
+$border-radius: map.merge(
+  (
+    'base': 4px,
+    'small': 2px,
+    'round': 20px,
+    'circle': 100%,
+  ),
+  $border-radius
+);
+
+$border-width: () !default;
+$border-width: map.merge(
+  (
+    'base': 1px,
+    'small': 2px,
+  ),
+  $border-width
+);
+
+$input-font-size: () !default;
+$input-font-size: map.merge(
+  (
+    'large': 14px,
+    'base': 14px,
+    'small': 12px,
+  ),
+  $input-font-size
+);
+
+$font-size: () !default;
+$font-size: map.merge(
+  (
+    'extra-large': 20px,
+    'large': 18px,
+    'medium': 16px,
+    'base': 14px,
+    'small': 13px,
+    'extra-small': 12px,
+  ),
+  $font-size
+);
+
+// button
+$button-padding-x: () !default;
+$button-padding-x: map.merge(
+  (
+    'small': 12px,
+    'default': 16px,
+    'large': 20px,
+  ),
+  $button-padding-x
+);
+
+$button-padding-y: () !default;
+$button-padding-y: map.merge(
+  (
+    'small': 6px,
+    'default': 9px,
+    'large': 13px,
+  ),
+  $button-padding-y
+);
+
+$button-font-size: () !default;
+$button-font-size: map.merge(
+  (
+    'large': var(-bu-font-size-base, map.get($font-size, 'base')),
+    'default': var(--bu-font-size-base, map.get($font-size, 'base')),
+    'small': 12px,
+  ),
+  $button-font-size
+);
+
+$title: () !default;
+$title: map.merge(
+  (
+    'height': var(--bu-title-height, 40px),
+    'sub-width': var(--bu-title-sub-w, 4px),
+    'sub-height': var(--bu-title-sub-h, 28px),
+    'title-padding': var(--bu-title-padding, 15px),
+    'title-font-szie': var(--bu-title-font, 28px),
+    'sub-font-szie': var(--bu-title-font, 20px),
+    'border':
+      var(
+        --bu-title-border,
+        1px solid var(--bu-border-color-lighter, $color-line)
+      ),
+  ),
+  $title
+);
+
+$input: () !default;
+$input: map.merge(
+  (
+    'bg-color': var(--bu-input-bg-color, $color-white),
+    'border-color': var(--bu-input-border-color, $color-line),
+    'border-radius':
+      var(--bu-input-border-radius, map.get($border-radius, 'base')),
+    'padding-x': var(--bu-input-padding-x, 10px),
+    'padding-y': var(--bu-input-padding-y, 0px),
+  ),
+  $input
+);
+
+$form: () !default;
+$form: map.merge(
+  (
+    'label-font-size': var(--bu-font-size-base, 14px),
+    'form-item-spacing': var(--bu-form-item-spacing, 18px),
+  ),
+  $form
+);
+
+@keyframes ani-load-loop {
+  from {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.bu-loading {
+  &-mask {
+    position: absolute;
+    z-index: 2000;
+    background-color: var(--bu-mask-color, rgba(255, 255, 255, 0.9));
+    margin: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transition: opacity $bu-transition-duration;
+  }
+  &-spinner {
+    top: 50%;
+    margin-top: calc((0px - 20px) / 2);
+    width: 100%;
+    text-align: center;
+    position: absolute;
+  }
+  &-svg {
+    width: 20px;
+    height: 20px;
+    margin: 0 auto;
+    display: inline-block;
+  }
+  &-text {
+    color: $color-primary;
+  }
+}

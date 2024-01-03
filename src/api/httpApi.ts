@@ -110,7 +110,8 @@ export const typeNode = {
 
 export const getEntityConfig = async (entityType) => {
     let _itemArr = JSON.parse(JSON.stringify(typeNode[entityType]))
-    return _itemArr
+    // return _itemArr
+    return []
 }
 
 export const getDetailTableInfo = async (entity: any) => {

@@ -10,6 +10,7 @@ import instanceView from "./schemaComponent/instanceView"
 import formitemView from "./editComponent/formitemView"
 export class form extends base<formConfig> {
   formConfig: formConfig = {
+    data: {},
     isDraggable: false,
     isResizable: false,
     items: [],//编辑项
@@ -57,11 +58,12 @@ export class form extends base<formConfig> {
     this.initRenderLayout()
     this.initComponent()
   }
-  async initRenderLayout() {
-    const renderLayout = this.renderLayout
-    const formConfig = this.formConfig
+  //计算
+  calculateLayout() {
+    const _this = this
+    const formConfig = _this.formConfig
     const items: formitem[] = formConfig.items
-    const _layout = items.map((item: formitem, i, arr) => {
+    const _layout = items.filter(item => item.itemConfig.visible != false).map((item: formitem, i, arr) => {
       const itemConfig = item.itemConfig
       const span: number = itemConfig.span as number || 6
       const field = item.itemConfig.field!
@@ -87,6 +89,13 @@ export class form extends base<formConfig> {
       }
       return res
     }, { x: 0, y: 0 })
+    return _layout
+  }
+  async initRenderLayout() {
+    const renderLayout = this.renderLayout
+    const formConfig = this.formConfig
+    const items: formitem[] = formConfig.items
+    const _layout = this.calculateLayout()
     renderLayout.layout = _layout
     renderLayout.colNum = 24
     renderLayout.isDraggable = computed(() => {
@@ -139,11 +148,12 @@ export class form extends base<formConfig> {
           const entityCom =
             h('div', { class: 'h-full w-full' }, [
               h(layoutCom, { ...renderLayout, style: { height: '100%', width: '100%' } as StyleType, },
-                () => _this.formConfig.items!.map((item: formitem, i) => {
-
+                () => _this.formConfig.items!.filter((item: formitem) => {
+                  return item.itemConfig.visible == true
+                }).map((item: formitem, i) => {
                   const obj = item.renderLayoutItem
                   // return h(layoutItemCom, _item,
-                  return h(layoutItemCom, { ...obj },
+                  return h(layoutItemCom, { ...obj, key: item.itemConfig.field },
                     () => {
                       const inputCom = h(formitemView, { formitem: item, data: _this.formConfig.data })
                       return h('div', { style: { height: "100%", width: '100%' } }, [inputCom])
@@ -167,9 +177,27 @@ export class form extends base<formConfig> {
     const _disabled = Boolean(disabled)
     this.formConfig.disabled = _disabled
   }
+  setItemDisplay(field: string | Array<string>, status?: boolean) {
+    let fieldArr: any = null
+    if (typeof field == 'string') {
+      fieldArr = [field]
+    } else if (Array.isArray(field)) {
+      fieldArr = field
+    }
+    fieldArr.forEach((field: string) => {
+      const items = this.formConfig.items
+      const targetItem = items.find((item: formitem) => {
+        return item.itemConfig.field == field
+      })
+      if (targetItem) {
+        targetItem.itemConfig.visible = Boolean(status)
+      }
+    })
+    this.renderLayout.layout = this.calculateLayout()
+  }
 }
 
-export const createForm = (schema: any) => {
+export const createForm = (schema: formConfig) => {
   const _form = reactive(new form(schema, systemInstance))
   _form.initForm()
   return _form

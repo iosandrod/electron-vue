@@ -47,9 +47,10 @@ export const initRenderSelect = (input: input) => {
         const _onChange = inputConfig.onChange
         if (typeof _onChange == 'function') {
             const getTable = _this.getTable || (() => { return null })
+            const getForm = _this.getForm || (() => { return null })
             const table = getTable()
             //@ts-ignore 
-            _onChange({ value, inputInstance: _this, data: _this.getData!(), table: table })
+            _onChange({ value, inputInstance: _this, data: _this.getData!(), table: table, form: getForm() })
         }
     }
 }

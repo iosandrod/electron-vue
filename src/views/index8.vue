@@ -1,5 +1,5 @@
 <template>
-  <div @contextmenu="contextMenu.openContext($event)" class="w-full h-full overflow-auto">
+  <div class="w-full h-full overflow-auto">
     <vxe-button @click="btnClick">button</vxe-button>
     <vxe-button @click="btnClick1">btnClick1</vxe-button>
     <vxe-button @click="btnClick2">btnClick2</vxe-button>
@@ -11,71 +11,13 @@
     <vxe-button @click="btnClick8">login</vxe-button>
     <vxe-button @click="btnClick9">route9</vxe-button>
     <vxe-button @click="btnClick10">route10</vxe-button>
-    <!-- <vxe-input
-      @change="inputChange"
-      v-model="_menu.menuConfig.inputValue"
-    ></vxe-input> -->
-    <!-- <layoutGridView :pageTree="pageTree"></layoutGridView> -->
-    <!-- <form-view :items="formItems" :data="formData"></form-view> -->
-    <!-- <div class="w-10 h-10 bg-red-700">123</div> -->
-    <!-- <component :is="vNode"></component> -->
     <div style="" class="w-full h-full" v-if="showValue">
-      <!-- <div
-        class="relative w-full h-full mt-8 bg-red-500 ml-11"
-        style="
-          transform: translateX(50px);
-          position: relative; /* 设置相对定位 */
-        "
-      >
-        <teleport to="body" :disabled="false">
-          <div class="fixed top-0 left-0 bg-blue-800 w-9 h-9"></div>
-        </teleport>
-        <context-menu-view
-          :contextMenuInstance="contextMenu"
-        ></context-menu-view>
-      </div> -->
-      <!-- <table-view ref="tableView1" :tableInstance="table"></table-view> -->
-      <!-- <gantt></gantt> -->
-      <!-- <form-view :formInstance="_form"></form-view> -->
-      <!-- <component :is="com"></component> -->
-      <!-- <component :is="table.component"></component> -->
-      <table-view :tableInstance="table"></table-view>
-      <!-- <table-view
-        :columns="table.tableConfig.columns.map((col) => col.renderColumn)"
-        :data="table.tableData.data"
-        :height="100"
-        :scrollX="{
-          enabled: true,
-          mode: 'default',
-          gt: 0,
-        }"
-        :scrollY="{
-          enabled: true,
-          mode: 'default',
-          gt: 0,
-        }"
-      ></table-view> -->
-      <!-- <table-view
-        :columns="testTableViewData.columns"
-        :data="testTableViewData.data"
-        :scrollX="{
-          enabled: true,
-          mode: 'default',
-          gt: 0,
-        }"
-        :scrollY="{
-          enabled: true,
-          mode: 'default',
-          gt: 0,
-        }"
-        :height="100"
-      ></table-view> -->
       <!-- <input-view v-model="testValue" :inputInstance="_input"></input-view> -->
-      <!-- <entity-view ref="entity" :entityInstance="_entity"></entity-view> -->
-      <!-- <component :is="vNode"></component> -->
-      <!-- <menu-view :menuInstance="_menu"></menu-view> -->
-      <!-- <layout-grid-view :pageTree="mainEntity.pageTree"></layout-grid-view> -->
-      <!-- <template v-if="mainEntity.displayState != 'destroy'"></template> -->
+      <instance-view :instance="_form"></instance-view>
+      <!-- <codeEditCom :inputInstance="_input" :style="{
+        height: '500px',
+        width: '1200px',
+      }"></codeEditCom> -->
     </div>
   </div>
 </template>
@@ -84,6 +26,8 @@
 import { createPage, nodeConfig } from '@/schema/businessTable/pageTree'
 import tableView from '@/schema/schemaComponent/tableView'
 import { createTable } from '@/schema/table'
+import testIndex from './index12'
+import { codeEditCom } from '@/schema/editClass/codeEdit'
 import {
   computed,
   getCurrentInstance,
@@ -116,37 +60,19 @@ import entityView from '@/schema/schemaComponent/entityView'
 import Index9 from './index9.vue'
 import { VxeInput } from 'vxe-table'
 import { createForm } from '@/schema/form'
+import { inputComItems } from '@/schema/entityDesignCom/inputCom'
 const entity = ref(null)
 const testValue = ref('')
 const _entity = createMainEntity('t_SdOrder', null)
 const { proxy: instance } = getCurrentInstance()!
-const _menu = createMenu({
-  data: JSON.parse(JSON.stringify(menuData)),
-  key: 'id',
-  parentKey: 'parentId', //
-  titleKey: 'menuName',
-  rootKey: '0',
-  rootTitle: '系统菜单',
-} as any)
-const contextMenu = createContextMenu({
-  list: [],
-})
+
 function inputChange({ value }: any) {
   _menu.inputChange()
 }
 const showValue = ref(true)
-// const vNode = h('div', {
-//   // 通过directives属性设置v-show指令
-//   class: ['h-10 w-10 bg-red-700'],
-//   directives: [
-//     {
-//       name: 'v-show',
-//       value: showValue.value,
-//     },
-//   ],
-// })
 const _inputConfig = reactive({
 } as any)
+_inputConfig.type = 'codeEdit'
 //@ts-ignore
 const value = ref('1111')
 _inputConfig.modelValue = computed(() => {
@@ -155,14 +81,6 @@ _inputConfig.modelValue = computed(() => {
 _inputConfig['onChange'] = (value1: any) => {
   console.log(value.value)
 }
-// _inputConfig.onChange = (value1: any) => {
-//   //@ts-ignore
-//   // console.log(value1, 'testValue')
-//   // console.log(_inputConfig.modelValue) 
-//   nextTick(() => {
-//     console.log(value.value, 'changeValue')
-//   })
-// }
 const _data = reactive({
   name: '',
   nickname: '',
@@ -197,7 +115,6 @@ const formConfig = reactive({
   ]
 })
 // const _form = createForm(formConfig)
-const vNode = h(VxeInput, { modelValue: '123123' })
 const _input = createInput(_inputConfig)
 _input.getData = () => {
   return value
@@ -248,26 +165,7 @@ function btnClick8() {
   // localStorage.setItem('value', 'xiaoming')
   http.login()
 }
-// async function btnClick9() {
-//   const $router = instance?.$router!
-//   const entity1 = createMainEntity('t_SdOrder')
-//   const obj = {
-//     component: Index9 as any,
-//     path: '/index9',
-//     props: () => {
-//       return { testProps: 'xiaofeng', entityInstance: entity1 }
-//     },
-//   } as RouteRecordSingleView
-//   $router.addRoute('index', obj)
-//   nextTick(() => {
-//     $router.push({
-//       path: '/index9',
-//     })
-//   })
-// }
 async function btnClick9(params: any) {
-  // formConfig.data = {}
-  // _form.formConfig.data = {}
   if (state == true) {
     _entity.setEntityEdit('fullEdit')
   } else {
@@ -305,13 +203,14 @@ const nodeArr: Array<nodeConfig> = reactive([
     nodeData: {},
   },
 ])
-// const com = h(tableView, nodeArr[0].nodeData)
-// const pageTree = createPage(nodeArr)
 let _testTableViewData = reactive(testTableViewData)
 const table = createTable(_testTableViewData)
 table.tableState = 'fullEdit'
-
+// const _form = createForm()
 //律师
+const _form = createForm({
+  items: inputComItems as any,
+})
 //回应 
 
 function btnClick3() { }

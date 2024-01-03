@@ -1,16 +1,18 @@
-import { computed, reactive, watchEffect, h, withDirectives, vShow } from "vue";
+import { computed, reactive, watchEffect, h, withDirectives, vShow, ref } from "vue";
 import { base } from "./base";
 import { system, systemInstance } from "./system";
 import { TabPane, Tabs, TabsProps } from "ant-design-vue";
-import { tabConfig } from "@/types/schema";
+import { StyleType, tabConfig } from "@/types/schema";
 
 export class tab extends base {
     renderTab: TabsProps = {}
     tabConfig: tabConfig = {
+        hideAdd: true,//默认不可添加
         tabItems: [],
         activeKey: '',
-        type: "card",
-        tabMarginHidden: false
+        type: "editable-card",
+        tabMarginHidden: false,
+        closable: false
     }
     constructor(schema: any, system: any) {
         super(system, schema)
@@ -42,11 +44,11 @@ export class tab extends base {
             const tabCom = h(Tabs, this.renderTab, () => {
                 const tabItems = tabConfig.tabItems
                 return tabItems?.map((item: any) => {
-                    return h(TabPane, item,
-                        {
-                            tab: (params: any) => {
+                    const tabPaneCom = h(TabPane, {
+                        ...item, closable: item.closable != false && _this.tabConfig.closable == true,
 
-                            },
+                    },
+                        {
                             default: () => {
                                 const component = item.component
                                 if (typeof component == 'function') {
@@ -55,6 +57,8 @@ export class tab extends base {
                             }
                         }
                     )
+                    // return h('div', [tabPaneCom])
+                    return tabPaneCom
                 })
             })
             const _class = []
@@ -72,6 +76,9 @@ export class tab extends base {
         renderTab.type = computed(() => {
             return tabConfig.type
         }) as any
+        renderTab.hideAdd = computed(() => {
+            return tabConfig.hideAdd
+        }) as any
         renderTab.tabBarExtraContent = computed(() => {
             return tabConfig.tabBarExtraContent
         })
@@ -81,6 +88,13 @@ export class tab extends base {
         renderTab.tabBarStyle = computed(() => {
             return tabConfig.tabBarStyle || {}
         }) as any
+        const _this = this
+        renderTab.onEdit = (value, action) => {
+            const onEdit = _this.tabConfig.onEdit
+            if (typeof onEdit == 'function') {
+                onEdit(value, action)
+            }
+        }
         renderTab.onTabClick = (key, e) => {
             const _onTabClick = tabConfig.onTabClick
             if (typeof _onTabClick == 'function') {

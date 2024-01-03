@@ -24,6 +24,7 @@ export default {
         app.component('context-menu-view', contextMenuView)
         app.component('tab-view', tabView)
         app.component('input-view', inputView)
+        app.component('instance-view', instanceView)
     }
 }
 

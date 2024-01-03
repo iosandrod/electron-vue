@@ -1,5 +1,5 @@
 import { Subject } from "rxjs"
-import { reactive, h, computed, resolveComponent, Suspense, Teleport, isProxy, nextTick, watchEffect } from "vue"
+import { reactive, h, computed, resolveComponent, Suspense, Teleport, isProxy, nextTick, watchEffect, resolveDirective } from "vue"
 import { base } from "../base"
 import { pageTree } from "./pageTree"
 import layoutGridView from "../schemaComponent/layoutGridView"
@@ -40,11 +40,13 @@ import { getFn } from "./basicEntityFn"
 import { mainEditEntity } from "./mainEditEntity"
 import instanceView from "../schemaComponent/instanceView"
 import dialogPoolView from "../schemaComponent/dialogPoolView"
+import inputView from "../schemaComponent/inputView"
 interface tableMethod {
 
 }
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   buttonMethod: { [key: string]: Function } = {}
+  showTab = true
   tabIndex: number = 0//使用tabIndex ,路由的tab 
   sub = new Subject()//动作发射器
   getFn = getFn
@@ -174,6 +176,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     })
     const vNode = () => {
       //这里如果有虚拟节点必须使用虚拟节点
+      // const loadingDiretive = resolveDirective('v-loading')
+      // console.log(loadingDiretive, 'testDiretive')
       const layoutCom = resolveComponent('grid-layout')
       const layoutItemCom = resolveComponent('grid-item')
       const renderLayout = this.renderLayout
@@ -482,7 +486,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       }
     }
     const _dialog = createDialog(dialogName, dialogConfig) as any
-    console.log(_dialog, 'testDialog')
     this.dialogPool.push(_dialog)
     if (Boolean(dialogKey) != false) {
       //@ts-ignore
@@ -582,6 +585,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
     if (renderComName != null && comVetor[renderComName]) {
       renderCom = comVetor[renderComName]
+    }
+    if (renderCom == null) {
+      renderCom = inputView
     }
     item.component = () => {
       return h(renderCom, { ...renderData, style: { height: "100%", width: '100%' }, })
@@ -888,6 +894,12 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       rows: rows
     }
     await this.getRunAfter(afterConfig)//刷新数据之后
+  }
+  getSystemMainEntity() {
+    const entityName = this.entityName
+    const system = this.system
+    const entityVetor = system.entityVetor
+    return entityVetor[entityName]
   }
 }
 

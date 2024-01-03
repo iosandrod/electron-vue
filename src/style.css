@@ -134,3 +134,24 @@ body{
 .vxe-form--item-content{
     height:100% !important
 }
+
+.vxe-button{
+    /* padding:0px !important */
+    padding-left:6px !important;
+    padding-right:6px !important;
+}
+
+.ant-tabs-tab-remove{
+    margin:0px !important;
+    margin-left:2px !important;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+.bg-red{
+    background:red
+}
+
+.margin-view-overlays{
+    /* margin-left:0px !important */
+}

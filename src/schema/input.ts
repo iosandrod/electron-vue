@@ -21,7 +21,8 @@ export class input extends base {
     hasInit = false
     codeEditRender = {}
     pageRef: {
-        codeEdit?: monaco.editor.IStandaloneCodeEditor
+        codeEdit?: monaco.editor.IStandaloneCodeEditor,
+        [key: string]: any
     } = {}
     updateFn?: (value: any) => void
     getData?: () => any
@@ -42,8 +43,9 @@ export class input extends base {
     }
     renderInput: inputConfig = {}
     renderSelect: SelectProps = {}
-    constructor(schema: any, system: any) {
+    constructor(schema: any, system: any, form?: any) {
         super(system, schema)
+        this.getForm = () => form
     }
     initInput() {
         if (this.hasInit == true) {
@@ -206,9 +208,9 @@ export class input extends base {
     }
 }
 
-export const createInput = (schema: inputConfig) => {
+export const createInput = (schema: inputConfig, form?: any) => {
     const _system = systemInstance
-    const _input = reactive(new input(schema, _system))
+    const _input = reactive(new input(schema, _system, form))
     _input.initInput()
     return _input
 }

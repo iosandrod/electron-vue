@@ -9,6 +9,7 @@ import { column } from "@/schema/column"
 import { dialog } from "@/schema/dialog"
 import { entityColumn } from "@/schema/entityColumn"
 import { formitem } from "@/schema/formitem"
+import { input } from "@/schema/input"
 import { layoutGrid } from "@/schema/layoutGrid"
 import { menuItem } from "@/schema/menu"
 import { table } from "@/schema/table"
@@ -191,8 +192,11 @@ export type position = {
   left: number,
   top: number
 }
+export type selectOptions = { value: string, label: string }
 
 export type itemConfig = VxeFormItemProps & {
+  visible?: boolean,
+  columns?: columnConfig[]
   isPulldownFocus?: boolean
   type?: string,
   isFocus?: boolean,
@@ -201,10 +205,11 @@ export type itemConfig = VxeFormItemProps & {
     tableName: string,
     columns?: Array<any>//表格的列数据
   },
-  options?: [],
+  options?: selectOptions[],
   layout?: layoutItem,
-  disable?: boolean
-}
+  disable?: boolean,
+  itemChange?: () => void
+} & VxeInputEventProps
 
 export type formConfig = VxeFormProps & {
   disabled?: boolean,
@@ -530,6 +535,7 @@ export type tabItem = TabPaneProps & {
 }
 
 export type tabConfig = TabsProps & {
+  closable?: boolean
   tabItems?: TabPaneProps[]
   tabMarginHidden?: boolean
 }
@@ -674,4 +680,14 @@ export type entityDialogConfig = {
   dialogConfig: dialogConfig,
   closeOnDestroy?: boolean,
   dialogKey?: string
+}
+
+export type rowChangeType = 'next' | 'pre' | 'first' | 'last'
+
+
+export type valueChangeParams = {
+  table?: table,
+  form?: form,
+  value?: any,
+  inputInstance?: input
 }

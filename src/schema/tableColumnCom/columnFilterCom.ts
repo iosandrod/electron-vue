@@ -34,7 +34,6 @@ export default defineComponent({
         }
         const tableRef = column.value.table!.pageRef.filterTable
 
-        console.log('this is mounted', tableRef, 'testRef')
 
         const tabItems: TabPaneProps[] = [
             { key: 'array', tab: '过滤' },

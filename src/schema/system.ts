@@ -48,6 +48,7 @@ export class system extends base {
   systemConfig = {
     headerIcon: [],//配置信息
     activeKey: '',
+    tabIndex: 0,
     companyConfig: {
       companyId: '0009',
       companyName: "",
@@ -75,9 +76,10 @@ export class system extends base {
     await this.initRenderTab()
     this.displayState = 'show'
     setTimeout(() => {
-      this.routeOpen({ entityName: "t_SdOrder" })//跳转
+      // this.routeOpen({ entityName: "t_SdOrder" })//跳转
       // this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
-      // this.routeOpen('index10')
+      // this.routeOpen('index8')
+      // this.routeOpen('index13')
       // const router = this.getRouter()
       // router.push({ path: '/index8' })
     }, 1000);
@@ -100,7 +102,7 @@ export class system extends base {
       _this.routeOpen(tableName)
     }
     const menu = createMenu(renderMenu)
-    this.pageRef.menuRef = menu//这种配置是写死的
+    this.pageRef.menuRef = menu as any//这种配置是写死的
   }
   async initRenderTab() {
     const _this = this
@@ -108,13 +110,26 @@ export class system extends base {
     renderTab.onTabClick = () => {
       console.log('tabClick')
     }
+    renderTab.closable = true
     renderTab.onChange = (key: any) => {
       this.routeOpen(key)//使用key  
     }
+    renderTab.onEdit = (key, action) => {
+      // console.log(key, action, 'testAction')
+      if (action == 'remove') {
+        const _key = key as string
+        _this.routeClose({ entityName: _key })
+      }
+    }
+    // renderTab.de
     renderTab.tabItems = computed(() => {
       const entityVetor = _this.entityVetor
       const entityArr = Object.values(entityVetor).sort((entity1, entity2) => {
         return entity1.tabIndex - entity2.tabIndex//先排序
+      }).filter(entity => {
+        return entity.showTab == true
+      }).sort((en1, en2) => {
+        return en1.tabIndex - en2.tabIndex
       }).map(entity => {
         let cnName = entity?.tableInfo?.cnName || ''
         const obj = {
@@ -129,6 +144,7 @@ export class system extends base {
       })
       return entityArr//使用vetor的tab
     }) as any
+    renderTab.tabItems = []
     renderTab.activeKey = computed(() => {
       return this.systemConfig.activeKey
     }) as any
@@ -140,7 +156,7 @@ export class system extends base {
       return obj
     }) as any
     const tabRef = createTab(renderTab)
-    this.pageRef.tabRef = tabRef
+    this.pageRef.tabRef = tabRef as any
   }
   async initSystemHttp() { }
   async initSystemMenu() { }
@@ -161,6 +177,41 @@ export class system extends base {
   async initLocalStorage() {
     const localStorage = this.localStorage
     localStorage.token = useLocalStorage('token', '') as any
+  }
+  routeClose(closeConfig: routeOpenConfig) {
+    const _this = this
+    const entityName = closeConfig.entityName
+    const currentTabKey = _this.systemConfig.activeKey
+    const entity = _this.entityVetor[entityName]
+    if (entity == null) {
+      return
+    }
+    if (currentTabKey != entityName) {
+      entity.showTab = false
+      _this.systemConfig.tabIndex++
+      entity.tabIndex = _this.systemConfig.tabIndex
+      console.log(entity.tabIndex)
+      return
+    }
+    const renderTab = _this.renderTab
+    //得到索引
+    const tabIndex = renderTab.tabItems?.findIndex(tab => {
+      //@ts-ignore
+      return tab.key == entityName
+    })
+    //找不到
+    const preIndex = tabIndex! - 1
+    //@ts-ignore
+    const preKey = renderTab.tabItems![preIndex]?.key//找到key
+    if (preKey != null) {
+      this.routeOpen(preKey)
+    } else {
+      this.routeOpen('home')
+    }
+    entity.showTab = false
+    _this.systemConfig.tabIndex++
+    entity.tabIndex = _this.systemConfig.tabIndex
+    // console.log(entity.tabIndex) 
   }
   //打开路由
   routeOpen(openConfig: routeOpenConfig | string) {//打开某个路由 以路由基础,是否编辑页面 
@@ -196,6 +247,7 @@ export class system extends base {
     }
     const allRoute = $router.getRoutes()
     if (allRoute.map(route => route.name).filter(v => v != null).includes(entityKey)) {
+      this.showEntityTab({ entityName: entityKey })
       $router.push({ path: `/${entityKey}` })
     } else {
       let entityKey: any = null
@@ -208,7 +260,7 @@ export class system extends base {
         entityKey = `${entityName}_edit`
       }
       const route = {
-        component: () => entityView, path: `/${entityKey}`, name: entityKey,
+        component: async () => entityView, path: `/${entityKey}`, name: entityKey,
         props: (route) => {
           return { entityInstance: mainEntity, key: entityKey }
         }
@@ -217,8 +269,26 @@ export class system extends base {
       nextTick(() => {
         $router.push({ path: `/${entityKey}` })
       })
+      this.showEntityTab({ entityName: entityKey })
     }
     this.systemConfig.activeKey = entityKey
+  }
+  showEntityTab(showConfig: { entityName: string }) {
+    const _this = this
+    const entityName = showConfig.entityName
+    const hasTab = _this.renderTab.tabItems?.find(item => item.key == entityName)
+    if (hasTab) {
+      const targetEntity = _this.entityVetor[entityName]
+      targetEntity.showTab = true
+      return
+    }
+    else {
+      const targetEntity = _this.entityVetor[entityName]
+      targetEntity.showTab = true
+      _this.systemConfig.tabIndex++
+      targetEntity.tabIndex = _this.systemConfig.tabIndex
+    }
+
   }
   getMainEntity(entityName: string) {
     const entityVetor = this.entityVetor
@@ -226,6 +296,8 @@ export class system extends base {
     if (targetEntity == null) {
       targetEntity = createMainEntity(entityName)
       targetEntity.entityTabKey = entityName
+      this.systemConfig.tabIndex++
+      targetEntity.tabIndex = this.systemConfig.tabIndex
       entityVetor[entityName] = targetEntity//这个是实体类
     }
     return targetEntity
@@ -236,6 +308,8 @@ export class system extends base {
     let targetEntity: any = entityVetor[entityEditName]
     if (targetEntity == null) {
       targetEntity = createMainEditEntity(entityName)
+      this.systemConfig.tabIndex++
+      targetEntity.tabIndex = this.systemConfig.tabIndex
       targetEntity.entityTabKey = `${entityName}_edit`
       entityVetor[entityEditName] = targetEntity
     }

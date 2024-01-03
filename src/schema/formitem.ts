@@ -45,6 +45,7 @@ export class formitem extends baseEdit<any> {
         options: [] as any,
         layout: undefined,
         visible: true,
+        columns: [],
     }
     baseInfoDialogConfig = {
         props: {
@@ -144,7 +145,7 @@ export class formitem extends baseEdit<any> {
         renderInput.baseInfoTable = computed(() => {
             return itemConfig.baseInfoTable
         })
-        const inputInstance = createInput(this.renderInput)
+        const inputInstance = createInput(this.renderInput, this.form)
         inputInstance.getField = () => {
             return itemConfig.field
         }

@@ -79,7 +79,6 @@ export class mainEntity extends basicEntity {
     }
     editDialog.open()
   }
-
   async dbCurRowChange(config: curRowConfig) {
     const _this = this
     _this.jumpToEditPage({ type: 'edit' })

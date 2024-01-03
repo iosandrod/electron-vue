@@ -41,6 +41,11 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import("@/views/index10.vue")
       },
       {
+        path: "/index13",
+        name: "index13",
+        component: () => import("@/views/index13.vue")
+      },
+      {
         path: "/index1",
         name: "index1",
         component: () => import("@/views/index1.vue")

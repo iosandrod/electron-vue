@@ -13,7 +13,7 @@ import {
 } from "vxe-table"
 import * as tableFn from './tableFn'
 import { system, systemInstance } from "./system"
-import { StyleType, addTableRowConfig, curRowConfig, dialogConfig, dialogMap, inputConfig, pickKey, position, scrollConfig, tableConfig, tableData, tableSchema, tableState } from "@/types/schema"
+import { StyleType, addTableRowConfig, curRowConfig, dialogConfig, dialogMap, inputConfig, pickKey, position, rowChangeType, scrollConfig, tableConfig, tableData, tableSchema, tableState } from "@/types/schema"
 import { column, createColumn } from "./column"
 import { getTableRowConfig, getTableStyle } from "./tableFn"
 import { closeDialog, createDialog, destroyDialog, dialog, openDialog } from "./dialog"
@@ -381,6 +381,31 @@ export class table extends base<tableSchema> implements tableMethod {
       }, 0)
     })
   }
+  getRowByCurRow(type: rowChangeType) {
+    const _this = this
+    const showData = _this.tableData.showData
+    const curRow = _this.tableData.curRow
+    const curIndex = showData.findIndex(row => row == curRow)
+    let nextIndex = 0
+    if (curIndex == -1) {
+      return
+    }
+    if (type == 'next') {
+      nextIndex = curIndex + 1
+    } else if (type == 'pre') {
+      nextIndex = curIndex - 1
+    } else if (type == 'first') {
+      nextIndex = 0
+    } else if (type == 'last') {
+      nextIndex = showData.length - 1
+    }
+    if (nextIndex < 0 || nextIndex >= showData.length) {
+      return
+    }
+    const nextRow = showData[nextIndex]
+    return nextRow
+  }
+
   addTableRow(config: addTableRowConfig) {
     config = config || {}
     const num = config.num || 1
@@ -428,4 +453,3 @@ export function createTable(schema?: any, context?: any) {
 }
 /* 
 */
-
