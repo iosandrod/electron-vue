@@ -49,4 +49,8 @@ export const exit = async (entity: mainEditEntity) => {
     console.log('exit')
 }
 
+export const exitPage = async (entity: mainEditEntity) => {
+    await entity.exitPage()
+}
+
 //

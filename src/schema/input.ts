@@ -44,6 +44,7 @@ export class input extends base {
         options: [],
         allowClear: true,
         clearable: true,
+        range: false,
         field: '',
         baseInfoTable: null,
         formitems: []
@@ -97,6 +98,11 @@ export class input extends base {
     }
     runInitMethod(_type?: any) {
         const type = _type || this.inputConfig.type
+        const range = this.inputConfig.range
+        let initMethodName = `${type}Init`
+        if (range == true) {
+            initMethodName = `${type}InitRange`
+        }
         //@ts-ignore
         const initMethod = this[`${type}Init`]
         if (initMethod != null) {
@@ -189,6 +195,12 @@ export class input extends base {
         initRenderSelect(this)
         selectInitComponent(this)
     }
+    selectInitRange() {
+        const vNode = () => {
+            return null
+        }
+        this.component = vNode
+    }
     codeEditInit() {
         initRenderCodeEdit(this)
         codeEditInitComponent(this)
@@ -196,8 +208,12 @@ export class input extends base {
     stringInit() {
         this.initComponent()
     }
+    stringInitRange() { }
     baseInfoInit() {
         baseInfoInit(this)
+    }
+    baseInfoInitRange() {
+
     }
     baseInfoInitComponent() {
         baseInfoInitComponent(this)

@@ -181,6 +181,12 @@ export class mainEditEntity extends basicEntity {
         await this.getTableData(getDataConfig)//获取数据相当于编辑当前行了
         this.setEntityEdit('scan')
     }
+    async exitPage() {
+        await this.getRunBefore('exitEditPage')
+        const system = this.system
+        const tabKey = this.entityTabKey!
+        system.routeClose({ entityName: tabKey })//关闭页签
+    }
 }
 
 //业务

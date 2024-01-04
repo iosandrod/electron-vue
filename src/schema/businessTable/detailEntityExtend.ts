@@ -1,11 +1,11 @@
-import { runAfterConfig, runBeforeConfig, whereObj } from "@/types/schema";
+import { getDataConfig, runAfterConfig, runBeforeConfig, whereObj } from "@/types/schema";
 import { detailEntity } from "./detailEntity";
 
 export const getTableData_before = (beforeConfig: runBeforeConfig) => {
     const entity: detailEntity = beforeConfig.table as any
     const _this = entity
     const mainEntity = entity.mainEntity
-    const params = beforeConfig.params//is any
+    const params = beforeConfig.params as getDataConfig//is any
     const curRow = mainEntity?.getCurRow()
     const detailTableConfig = _this.detailTableConfig
     const foreignId = detailTableConfig.foreignKey
@@ -15,6 +15,8 @@ export const getTableData_before = (beforeConfig: runBeforeConfig) => {
         displayType: "Equal"
     }
     params?.wheres?.push(whereObj)
+    params.rows = 0
+    params.page = 0
     if (curRow == null) {
         _this.clearTableData()
         return Promise.reject("主表没有当前行")

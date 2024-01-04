@@ -37,16 +37,7 @@ export const formInitComponent = (input: input) => {
     const formitem = _this
     const renderInput = _this.renderInput
     const itemConfig = _this.inputConfig
-    const polldown = ref<VxePulldownInstance>(null as any)
     const vxeinput = ref<VxeInputInstance>(null as any)
-    const pullShow = computed({
-        set(value) {
-            formitem.inputConfig.isFocus = value as any
-        },
-        get() {
-            return formitem.inputConfig.isFocus as boolean
-        }
-    })
     const show = computed(() => {
         return _this.displayState == 'show'
     })
@@ -55,7 +46,6 @@ export const formInitComponent = (input: input) => {
     })
     const vNode = () => {
         const _this = input
-        let isMousedown = false
         if (destroy.value) {
             return null
         }
@@ -86,20 +76,7 @@ export const formInitComponent = (input: input) => {
                     itemConfig.isFocus = true
                 },
                 onBlur: () => {
-                    setTimeout(() => {
-                        if (isMousedown == false) {
-                            itemConfig.isFocus = false
-                            const options = _this.inputConfig.options
-                            const modelValue = _this.inputConfig.modelValue
-                            if (options?.find(row => row.key == modelValue)?.value == null) {
-                                const data = _this.getData!()
-                                const field = _this.getField!()
-                                if (data) {
-                                    data[field] = ''
-                                }
-                            }
-                        }
-                    }, 0)
+
                 },
                 ref: vxeinput
             }, {
@@ -109,7 +86,7 @@ export const formInitComponent = (input: input) => {
                     style: suffStyle,
                     onClick: (event: MouseEvent) => {
                         const system = _this.system
-                        system.addGlobalDialog('instanceView', { instance: _this.pageRef.formRef, height: 400, width: 600, modelValue: true })
+                        system.addGlobalDialog('instanceView', { instance: _this.pageRef.formRef, height: 600, width: 1200, modelValue: true })
                     },
                     onMousedown: (event: MouseEvent) => {
                         event.stopPropagation()

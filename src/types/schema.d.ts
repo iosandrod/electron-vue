@@ -546,6 +546,7 @@ export type localStorageValue = {
 }
 
 export type inputConfig = VxeInputProps & {
+  range?: boolean
   formitems?: formitem[]
   itemChange?: (value: any) => void
   field?: string

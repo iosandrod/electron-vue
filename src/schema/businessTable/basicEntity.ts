@@ -957,6 +957,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const entityVetor = system.entityVetor
     return entityVetor[entityName]
   }
+  async exitPage() {
+    await this.getRunBefore('exitPage')
+    const _this = this
+    const tabKey = _this.entityTabKey
+    const system = this.system
+    system.routeClose({ entityName: tabKey! })
+  }
 }
 
 export const createBasicEntity = async () => {

@@ -14,5 +14,12 @@ export const refresh = async function (entity: mainEntity) {
 
 
 export const exit = async (entity: mainEntity) => {
-    console.log('edit')
+    await entity.exitPage()
+}
+
+
+export const audit = (entity: mainEntity) => {
+}
+//反审
+export const unAudit = (entity: mainEntity) => {
 }

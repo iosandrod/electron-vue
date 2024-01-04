@@ -36,7 +36,7 @@ export default defineComponent({
             createConfig.modelValue = computed(() => {
                 return props.data[props.field]
             })
-            inputInstance = createInput(createConfig)
+            inputInstance = createInput(createConfig) as any
         }
         inputInstance.getData = () => {
             return props.data
