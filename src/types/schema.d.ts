@@ -243,6 +243,7 @@ export type layoutChildren = Array<pageTreeNode>
 
 export type layoutItemConfig = {
   //节点render数据初始化函数 ,固定死的
+  renderKey: string//必须填写
   renderFunName?: string,//渲染函数名称,返回一个render数据,的函数名称
   renderComName?: string
   renderFun?: (entity) => any//自定义渲染函数 返回一个虚拟节点

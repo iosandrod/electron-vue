@@ -43,12 +43,14 @@
             <vxe-button @click="changeEditType111111111">默认值</vxe-button>
             <vxe-button @click="changeEditType1111111111">默认值11</vxe-button>
             <vxe-button @click="changeEditType11111111111">默认值111</vxe-button>
+            <vxe-button @click="changeEditType111111111111">新增节点</vxe-button>
             <!-- 
               changeEditType11111111
              -->
           </div>
           <div class="flex-1 w-full">
-            <router-view></router-view>
+            <instance-view :instance="_entity"></instance-view>
+            <!-- <router-view></router-view> -->
           </div>
         </div>
         <dialogPoolView></dialogPoolView>
@@ -70,7 +72,7 @@ import { systemInstance } from '@/schema/system'
 import Index1 from './index1.vue';
 import { RouterView } from 'vue-router';
 import entityView from '@/schema/schemaComponent/entityView';
-import { mainEntity } from '@/schema/businessTable/mainEntity';
+import { createMainEntity, mainEntity } from '@/schema/businessTable/mainEntity';
 import XEUtils from 'xe-utils';
 import { layoutItemConfig } from '@/types/schema';
 import { http } from '@/schema/http'
@@ -301,6 +303,10 @@ async function changeEditType11111111111() {
     // entity.removeEntityItem(obj)
   }
   state11 = !state11
+}
+const _entity = createMainEntity('t_SdOrder')
+async function changeEditType111111111111() {
+
 }
 const collapsed = ref<boolean>(false)
 </script>

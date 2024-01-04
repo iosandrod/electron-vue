@@ -14,6 +14,14 @@ export default defineComponent({
                 return h('div', {})
             }
         }
-        return com
-    }
+        // return com
+        return { instance: props.instance }
+    },
+    render() {
+        const component = this.instance?.component
+        if (component == null) {
+            return h('div', {})
+        }
+        return this.instance.component()
+    },
 })
