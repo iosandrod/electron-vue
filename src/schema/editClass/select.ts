@@ -53,6 +53,7 @@ export const initRenderSelect = (input: input) => {
             _onChange({ value, inputInstance: _this, data: _this.getData!(), table: table, form: getForm() })
         }
     }
+    return renderSelect
 }
 
 export const selectInitComponent = (input: input) => {

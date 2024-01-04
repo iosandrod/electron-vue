@@ -1,6 +1,5 @@
 <template>
     <div>
-        <vxe-button content="自定义模板" @click="val1 = true"></vxe-button>
         <vxe-modal v-model="val1" width="600" show-footer>
             <template #title>
                 <span style="color:red">自定义标题</span>
@@ -27,16 +26,21 @@
 </template>
   
 <script lang="ts" setup>
-import { ref } from 'vue'
-
-const val1 = ref(false)
+import { computed, ref } from 'vue'
+const props = defineProps({
+    entity: {}
+})
+const entity = props.entity
+const val1 = computed(() => {
+    return Boolean(entity.testDialog)
+})
 const tableData = ref([])
 
 const cancelEvent = () => {
-    val1.value = false
+    entity.testDialog = false
 }
 
 const confirmEvent = () => {
-    val1.value = false
+    entity.testDialog = false
 }
 </script> 

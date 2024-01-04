@@ -26,6 +26,8 @@ export class formitem extends baseEdit<any> {
         isFocus: false
     }
     renderInput: inputConfig = {}
+    renderInput1: inputConfig = {}
+    renderInput2: inputConfig = {}
     renderLayoutItem: layoutItem = {
         i: "",
         x: 0,
@@ -96,6 +98,9 @@ export class formitem extends baseEdit<any> {
             return renderLayout
         }) as any
     }
+    initInputRangeInstance() {
+        const _this = this
+    }
     initInputInstance() {
         const _this = this
         const renderInput = this.renderInput
@@ -124,11 +129,6 @@ export class formitem extends baseEdit<any> {
             if (formDisabled == true) {
                 return true
             }
-            // const data = form?.formConfig.data
-            // const field = _this.itemConfig.field
-            // if (data['cSdOrderNo'] == '111' && field == 'cCustName') {
-            //     return true
-            // }
             return false
         }) as any
         renderInput.modelValue = computed(() => {
@@ -152,6 +152,9 @@ export class formitem extends baseEdit<any> {
                 _itemChange(value)
             }
         }
+        renderInput.range = computed(() => {
+            return Boolean(itemConfig.range)
+        }) as any
         renderInput.formitems = computed(() => {
             return itemConfig.formitems || []
         }) as any
@@ -160,6 +163,7 @@ export class formitem extends baseEdit<any> {
             return itemConfig.field
         }
         this.pageRef.inputInstance = inputInstance
+        return inputInstance
     }
     initBaseInfoDialog() {
         const type = this.itemConfig.type
@@ -176,7 +180,6 @@ export class formitem extends baseEdit<any> {
         if (this.pageRef.tableRef != null) {
             return
         }
-
     }
     async initComponent() {
         const _this = this

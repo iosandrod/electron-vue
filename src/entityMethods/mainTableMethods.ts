@@ -23,3 +23,7 @@ export const audit = (entity: mainEntity) => {
 //反审
 export const unAudit = (entity: mainEntity) => {
 }
+
+export const showSearchMenu = (entity: mainEntity) => {
+    entity.openDialog('searchDialog')
+}

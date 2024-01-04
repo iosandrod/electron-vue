@@ -41,6 +41,7 @@ import { mainEditEntity } from "./mainEditEntity"
 import instanceView from "../schemaComponent/instanceView"
 import dialogPoolView from "../schemaComponent/dialogPoolView"
 import inputView from "../schemaComponent/inputView"
+import modalVue from "@/components/modal.vue"
 interface tableMethod {
 
 }
@@ -70,7 +71,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   entityTabKey?: string
   entityType: entityType = 'main'//这里默认是主表
   // dialogArr
-  dialogPool: Array<dialog> = []
+  dialogPool: { [key: string]: dialog } = {}
   layoutConfig: layoutConfig = {
     rowHeight: 10,
     isDraggable: false,
@@ -193,7 +194,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         return null
       }
       const _divStyle = { position: 'absolute', top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px', zIndex: 999 } as StyleType
-      const dialogPool = _this.dialogPool
+      // const dialogPool = Object.values(_this.dialogPool)
       const entityCom = withDirectives(
         h('div', { class: 'h-full w-full' }, [
           h(layoutCom, { ...renderLayout, style: { height: '100%', width: '100%' } as StyleType, }, () => schema!.map((item: any) => {
@@ -237,8 +238,10 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
               }
             )
           })),
-          h(dialogPoolView, { dialogPool: _this.dialogPool })
-          // h(dialogView, { dialogInstance: _this.pageRef.searchDialog }),
+          // h(modalVue, { entity: _this })
+          h(dialogPoolView, { dialogPool: Object.values(_this.dialogPool) })
+          // h(dialogPoolView, { dialogPool: _this.dialogPool })
+          // h(dialogView, { dialogInstance: _this.dialogPool.searchDialog }),
           // h(instanceView, { instance: _this.pageRef.editEntityDialog })
         ])
         , [[vShow, show.value], [{
@@ -437,7 +440,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     renderSearchDialog.buttons = [{
       text: "查询",
       btnFun: async (dialog: dialog) => {
-        console.log(_this)
+        _this.getTableData()
+        dialog!.close()
       }
     }, {
       text: "取消",
@@ -446,28 +450,24 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       }
     }]
     renderSearchDialog.maskClosable = false
-    renderSearchDialog.height = 600
-    renderSearchDialog.width = 400
+    renderSearchDialog.height = 700
+    renderSearchDialog.width = 500
     renderSearchDialog.instance = _this.pageRef.searchForm//查询表单
     this.addEntityDialog({
       dialogName: "instanceView",
       dialogConfig: renderSearchDialog,
-      dialogKey: "searchDialog"
+      dialogKey: "searchDialog",
     })
   }
   //openConfig
-  addEntityDialog(config: entityDialogConfig) {
+  addEntityDialog(config: entityDialogConfig, destroy = false) {
+    const _this = this
     const dialogConfig = config.dialogConfig
     const closeOnDestroy = config.closeOnDestroy
     const dialogName = config.dialogName
     const dialogKey = config.dialogKey
-    const pageRef = this.pageRef
-    if (dialogKey != null) {
-      //@ts-ignore
-      const cacheRef = pageRef[dialogKey]
-      if (cacheRef != null) {
-        return cacheRef
-      }
+    if (dialogKey == null) {//这个必须有
+      return
     }
     const onBeforeHide_old = dialogConfig.onBeforeHide
     const dialogPool = this.dialogPool
@@ -477,24 +477,62 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
           onBeforeHide_old(dialogInstance)
         }
         //@ts-ignore
-        const index = dialogPool.findIndex(dialog => dialog === dialogInstance)
-        if (index != -1) {
-          setTimeout(() => {
-            dialogPool.splice(index, 1)
-          }, 200);
-        }
       }
     }
-    const _dialog = createDialog(dialogName, dialogConfig) as any
-    this.dialogPool.push(_dialog)
-    if (Boolean(dialogKey) != false) {
-      //@ts-ignore
-      this.pageRef[dialogKey!] = _dialog
+    let _dialog: any = dialogPool[dialogKey!]
+    if (_dialog == null) {
+      _dialog = createDialog(dialogName, dialogConfig) as any
+      dialogPool[dialogKey!] = _dialog
     }
     return _dialog
   }
+  openDialog(dialogKey: string) {
+    this.testDialog = true
+    const dialogPool = this.dialogPool
+    const targetDialog = dialogPool[dialogKey]
+    if (targetDialog == null) {
+      console.error('找不到弹框')
+      return
+    }
+    targetDialog.open()
+  }
   async initRenderSearchForm() {
-    return entityRenderFn.initRenderSearchForm(this)
+    const entity = this
+    const searchForm = entity.pageRef.searchForm
+    if (searchForm != null) {
+      return { instance: searchForm }
+    }
+    const _this = entity
+    const renderSearchForm = _this.renderSearchForm
+    renderSearchForm.data = computed(() => {
+      return _this.tableConfig.searchFormFields
+    }) as any
+    renderSearchForm.items = _this.tableConfig.columns!.filter(col => Boolean(col.searchType) !== false).map(col => {
+      let obj: itemConfig = {} as any
+      obj.range = computed(() => {
+        return Boolean(col.searchRange)
+      }) as any
+      obj.type = computed(() => {
+        return col.searchType
+      }) as any
+      obj.span = computed(() => {
+        return 24
+      }) as any
+      obj.field = computed(() => {
+        return col.sBindField || col.field
+      }) as any
+      obj.options = computed(() => {
+        return col.options
+      }) as any
+      obj.title = computed(() => {
+        return col.title
+      }) as any
+      return obj
+    })
+    const vxeForm = createForm(renderSearchForm)
+    //@ts-ignore 
+    _this.pageRef.searchForm = vxeForm//查询表单
+    return { formInstance: vxeForm, instance: vxeForm }
   }
   async initRenderEditForm() {
     const entity = this
@@ -969,3 +1007,40 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
 export const createBasicEntity = async () => {
   return null
 }
+/* 
+const dialogConfig = config.dialogConfig
+    const closeOnDestroy = config.closeOnDestroy
+    const dialogName = config.dialogName
+    const dialogKey = config.dialogKey
+    const pageRef = this.pageRef
+    if (dialogKey != null) {
+      //@ts-ignore
+      const cacheRef = pageRef[dialogKey]
+      if (cacheRef != null) {
+        return cacheRef
+      }
+    }
+    const onBeforeHide_old = dialogConfig.onBeforeHide
+    const dialogPool = this.dialogPool
+    if (closeOnDestroy == true) {
+      dialogConfig.onBeforeHide = (dialogInstance) => {
+        if (typeof onBeforeHide_old == 'function') {
+          onBeforeHide_old(dialogInstance)
+        }
+        //@ts-ignore
+        const index = dialogPool.findIndex(dialog => dialog === dialogInstance)
+        if (index != -1) {
+          setTimeout(() => {
+            dialogPool.splice(index, 1)
+          }, 200);
+        }
+      }
+    }
+    const _dialog = createDialog(dialogName, dialogConfig) as any
+    this.dialogPool.push(_dialog)
+    if (Boolean(dialogKey) != false) {
+      //@ts-ignore
+      this.pageRef[dialogKey!] = _dialog
+    }
+    return _dialog
+*/

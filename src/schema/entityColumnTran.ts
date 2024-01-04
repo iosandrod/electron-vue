@@ -33,9 +33,6 @@ export const columnObj = [
         if (value == 'undefined') {
             return null
         }
-        if (value == 'string') {
-            value = 'codeEdit'
-        }
         return value
     }),
     new Translate('visible', 'isDisplay', function (targetValue, column) {
@@ -216,6 +213,10 @@ export const columnObj = [
         _value.forEach((row: any) => { })
         return []
     }),
+    new Translate('searchRange', 'searchScope', function (targetValue) {
+        const _value = Boolean(targetValue)
+        return _value
+    }),
     new Translate('renderSlot', 'pagination', function (targetValue) {
         let _value = null
         if (Boolean(targetValue) === false) {
@@ -252,7 +253,16 @@ export const columnObj = [
     }),
     new Translate('isExtend', 'isExtend'),
     new Translate('sBindField', 'sBindField'),
-    new Translate('searchType', 'searchType'),
+    new Translate('searchType', 'searchType', function (targetValue) {
+        let value = targetValue
+        if (typeof targetValue == 'string') {
+            value = targetValue.slice(0, 1).toLocaleLowerCase() + targetValue.slice(1)
+        }
+        if (value == 'undefined') {
+            return null
+        }
+        return value
+    }),
     //sBindField
     new Translate('sBindField', 'sBindField'),
     new Translate('baseInfoTable', 'baseInfoTableName', function (targetValue, column, entityColumn) {

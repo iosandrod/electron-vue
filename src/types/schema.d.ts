@@ -195,6 +195,7 @@ export type position = {
 export type selectOptions = { value: string, label: string }
 
 export type itemConfig = VxeFormItemProps & {
+  range?: boolean
   visible?: boolean,
   columns?: columnConfig[]
   isPulldownFocus?: boolean
@@ -482,7 +483,7 @@ export type columnObj = {
 
 
 
-export type btnCategory = 'ViewGrid' | 'ViewFormGridEdit' | 'ViewDetailTable' | ''
+export type btnCategory = 'ViewImportGrid' | 'ViewGrid' | 'ViewFormGridEdit' | 'ViewDetailTable' | ''
 
 
 export type buttonObj = {
@@ -546,6 +547,8 @@ export type localStorageValue = {
 }
 
 export type inputConfig = VxeInputProps & {
+  updateFn?: (value: any) => void
+  rangeModelValue?: any[]
   range?: boolean
   formitems?: formitem[]
   itemChange?: (value: any) => void
@@ -560,7 +563,7 @@ export type buttonConfig = VxeButtonProps & { slots?: VxeButtonProps } & VxeButt
   cButtonName?: string
 }
 
-export type entityType = 'main' | 'detail' | 'search' | 'edit'
+export type entityType = 'main' | 'detail' | 'search' | 'edit' | 'import'
 
 export type baseInfoConfig = {
   tableName?: string

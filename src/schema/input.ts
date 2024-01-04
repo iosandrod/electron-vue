@@ -1,4 +1,4 @@
-import { Directive, computed, h, isProxy, nextTick, reactive, ref, useAttrs, vShow, watch, watchEffect, withDirectives } from "vue";
+import { Directive, computed, h, isProxy, nextTick, reactive, ref, toRefs, useAttrs, vShow, watch, watchEffect, withDirectives } from "vue";
 import { base } from "./base";
 import { system, systemInstance } from "./system";
 import { StyleType, formConfig, inputConfig } from "@/types/schema";
@@ -18,6 +18,8 @@ import { numberInit } from "./editClass/number";
 import { codeEditInitComponent, initRenderCodeEdit } from "./editClass/codeEdit";
 import * as monaco from 'monaco-editor'
 import { formInitComponent, initRenderForm } from "./entityDesignCom/formCom";
+import instanceView from "./schemaComponent/instanceView";
+import inputView from "./schemaComponent/inputView";
 
 
 
@@ -27,7 +29,9 @@ export class input extends base {
     renderForm: formConfig = {} as any
     pageRef: {
         codeEdit?: monaco.editor.IStandaloneCodeEditor,
-        formRef?: form
+        formRef?: form,
+        input1?: input
+        input2?: input
         [key: string]: any
     } = {}
     updateFn?: (value: any) => void
@@ -47,7 +51,8 @@ export class input extends base {
         range: false,
         field: '',
         baseInfoTable: null,
-        formitems: []
+        formitems: [],
+        rangeModelValue: []
     }
     renderInput: inputConfig = {}
     renderSelect: SelectProps = {}
@@ -70,6 +75,19 @@ export class input extends base {
                 this.effectPool[`input${key}Effect`] = watchEffect(() => {
                     inputConfig[key] = schema[key]
                 })
+                continue
+            }
+            if (key == 'field') {
+                this.inputConfig.field = schema[key]
+                this.getField = () => schema[key]
+                continue
+            }
+            if (key == 'range') {
+                watch(() => schema['range'], (newValue) => {
+                    inputConfig['range'] = newValue
+                    this.runInitMethod()
+                })
+                inputConfig['range'] = schema['range']
                 continue
             }
             if (key == 'type') {
@@ -101,10 +119,10 @@ export class input extends base {
         const range = this.inputConfig.range
         let initMethodName = `${type}Init`
         if (range == true) {
-            initMethodName = `${type}InitRange`
+            initMethodName = `inputInitRange`
         }
         //@ts-ignore
-        const initMethod = this[`${type}Init`]
+        const initMethod = this[initMethodName]
         if (initMethod != null) {
             initMethod.call(this)
         }
@@ -121,6 +139,11 @@ export class input extends base {
         }
     }
     updateData(value: any) {
+        const updateFn = this.inputConfig.updateFn
+        if (typeof updateFn == 'function') {
+            updateFn(value)
+            return
+        }
         const _this = this
         let getData = _this.getData
         if (getData == null) {
@@ -138,7 +161,9 @@ export class input extends base {
             field = this.getField!() as string
         }
         const data = _this.getData!()
-        data[field] = value
+        if (data != null) {
+            data[field] = value
+        }
     }
     initRenderInput() {
         const _this = this
@@ -195,12 +220,9 @@ export class input extends base {
         initRenderSelect(this)
         selectInitComponent(this)
     }
-    selectInitRange() {
-        const vNode = () => {
-            return null
-        }
-        this.component = vNode
-    }
+    // selectInitRange() {
+
+    // }
     codeEditInit() {
         initRenderCodeEdit(this)
         codeEditInitComponent(this)
@@ -208,7 +230,39 @@ export class input extends base {
     stringInit() {
         this.initComponent()
     }
-    stringInitRange() { }
+    inputInitRange() {
+        const _this = this
+        const inputConfig = _this.inputConfig
+        const schema = this.schema
+        const form = this.getForm!()
+        let input1 = this.pageRef.input1
+        if (input1 == null) {
+            const modelValue = computed(() => {
+                return inputConfig.rangeModelValue![0]
+            })
+            //@ts-ignore
+            const config = {
+                ...toRefs(schema), field: "0", modelValue, range: false,
+            } as inputConfig
+            input1 = createInput(config as any, form)
+        }
+        let input2 = this.pageRef.input2
+        if (input2 == null) {
+            const modelValue = computed(() => {
+                return inputConfig.rangeModelValue![1]
+            })
+            const config = { ...toRefs(schema), field: "1", modelValue, range: false } as any
+            input2 = createInput(config, form)
+        }
+        this.pageRef.input1 = input1
+        this.pageRef.input2 = input2
+        const vNode = () => {
+            const input1Com = h(inputView, { inputInstance: input1, data: _this.inputConfig.rangeModelValue })
+            const input2Com = h(inputView, { inputInstance: input2, data: _this.inputConfig.rangeModelValue })
+            return h('div', { style: { display: 'flex', flexDirection: "row", width: '100%', height: "100%" } as StyleType }, [input1Com, input2Com])
+        }
+        this.component = vNode
+    }
     baseInfoInit() {
         baseInfoInit(this)
     }
@@ -243,9 +297,9 @@ export class input extends base {
 }
 
 
-export const createInput = (schema: inputConfig, form?: any) => {
+export const createInput = (schema: inputConfig, form?: any): input => {
     const _system = systemInstance
     const _input = reactive(new input(schema, _system, form))
     _input.initInput()
-    return _input
+    return _input as input
 }

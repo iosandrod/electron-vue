@@ -32,6 +32,7 @@ options: [{
 export const inputComItems: formItemConfig[] = [
     {
         field: "type", title: '类型', type: "select",
+        range: true,
         // itemChange: (value?: valueChangeParams) => {
         //     const _value = value?.value
         //     const _form: form = value?.form!

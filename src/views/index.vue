@@ -94,8 +94,9 @@ function openDialog() {
   const key = systemConfig.activeKey
   const entity = systemInstance.entityVetor[key]
   if (entity) {
-    const dialog = entity.pageRef.searchDialog!
-    dialog.open()
+    // const dialog = entity.pageRef.searchDialog!
+    // dialog.open()
+    entity.openDialog('searchDialog')
   }
 }
 function changeForm() {

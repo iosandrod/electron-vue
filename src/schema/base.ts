@@ -7,6 +7,7 @@ import XEUtils from "xe-utils"
 export class base<T = any> {
   uniqueId: string = ''
   system: system
+  loadingState = false//加载中配置
   comopnentConfig?: concatAny<componentConfig>
   componentType?: string
   componentName?: string

@@ -76,7 +76,8 @@ export class system extends base {
     await this.initRenderTab()
     this.displayState = 'show'
     setTimeout(() => {
-      this.routeOpen({ entityName: "t_SdOrder" })//跳转
+      // this.routeOpen({ entityName: "t_SdOrder" })//跳转
+      this.routeOpen({ entityName: "t_Item" })
       // this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
       // this.routeOpen('index8')
       // this.routeOpen('index13')
@@ -107,9 +108,6 @@ export class system extends base {
   async initRenderTab() {
     const _this = this
     const renderTab = this.renderTab
-    renderTab.onTabClick = () => {
-      console.log('tabClick')
-    }
     renderTab.closable = true
     renderTab.onChange = (key: any) => {
       this.routeOpen(key)//使用key  
@@ -368,7 +366,7 @@ export class system extends base {
     this.commandQueue.push(command)
   }
   //添加全局弹出框
-  async confirm(confirmConfig?: confirmConfig) {
+  async confirm(confirmConfig?: confirmConfig) {//弹出框全局取消掉
     const _this = this
     return new Promise((resolve, reject) => {
       const buttons = [{
@@ -379,7 +377,7 @@ export class system extends base {
       }, {
         btnFun: async (dialog: dialog) => {
           resolve(false)
-          dialog.destroy()
+          dialog.close()
         }, text: "取消"
       }]
       const _confirmConfig: dialogConfig = Object.assign({

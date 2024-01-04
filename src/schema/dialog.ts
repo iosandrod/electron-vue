@@ -1,4 +1,4 @@
-import { withDirectives, isVNode, createApp, ComponentOptions, computed, defineComponent, h, nextTick, reactive, resolveComponent, watchEffect, App, VueElement, shallowRef, vShow, VNode } from "vue";
+import { withDirectives, isVNode, createApp, ComponentOptions, computed, defineComponent, h, nextTick, reactive, resolveComponent, watchEffect, App, VueElement, shallowRef, vShow, VNode, ref } from "vue";
 import { base } from "./base";
 import { system, getSystem } from "./system";
 import VXETable, { VxeModalProps, VxeModalDefines, VxeModal, VxeModalInstance, VxeTable, VxeButton } from "vxe-table";
@@ -29,6 +29,9 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
     dialogComponent: any = shallowRef(dialogComponent)
     modalInstance?: VxeModalInstance
     dialogData = {}
+    pageRef: { dialog?: VxeModalInstance } = {
+
+    }
     // dialogConfig: concatAny<VxeModalProps & { dialogPrimaryName?: string }> = {//modalData 是模态框的存储数据
     dialogConfig: dialogConfig = {
         dialogName: '',
@@ -76,13 +79,10 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
                 const position = this.dialogConfig.position
                 if (typeof position == 'object') {
                     nextTick(() => {
-                        const modalInstance = this.modalInstance
+                        const modalInstance = this.pageRef.dialog
                         if (modalInstance != null) {
                             const _position = tranPositionNumber(position as any)
-                            const box = modalInstance.getBox()
-                            if (box != null) {
-                                modalInstance.setPosition(_position.top, _position.left)
-                            }
+                            modalInstance.setPosition(_position.top, _position.left)
                         }
                     })
                 }
@@ -145,18 +145,22 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         renderDialog.minWidth = _this.dialogConfig.minWidth
         renderDialog.mask = getDialogMinMask(this) as any
         renderDialog.maskClosable = getDialogMaskClosable(this) as any
-        renderDialog.modelValue = getDialogModelValue(this) as any
+        renderDialog.modelValue = computed({
+            get: () => {
+                const dialogConfig = dialog.dialogConfig
+                return dialogConfig.modelValue
+            },
+            set: (value) => {
+                dialog.dialogConfig.modelValue = value
+            }
+        }) as any
         renderDialog.onHide = (params: any) => {
-            const $modal = params.$modal
-            dialog.modalInstance = ($modal)
-            const onShow = dialog.dialogConfig.onShow
-            if (typeof onShow == 'function') {
-                onShow(params)
+            const onHide = dialog.dialogConfig.onHide
+            if (typeof onHide == 'function') {
+                onHide(params)
             }
         }
         renderDialog.onShow = (params: any) => {
-            const $modal = params.$modal
-            dialog.modalInstance = ($modal)
             const onShow = dialog.dialogConfig.onShow
             if (typeof onShow == 'function') {
                 onShow(params)
@@ -193,6 +197,7 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
                     paddingRight: '10px'
                 } as StyleType
             }, [titleCom, closeIcon])
+            // return null
         }
         this.headerComponent = vNode
     }
@@ -241,7 +246,6 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
                 return h(VxeButton, {
                     ...button, onClick: async () => {
                         const runFun = button.btnFun
-                        console.log(button, 'tsetBtn')
                         if (typeof runFun == 'function') {
                             await runFun(_this)
                         }
@@ -250,7 +254,6 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
                     return h('div', [button.text || button.context])
                 })
             })
-
         }
         this.footerComponent = vNode as any
     }
@@ -268,12 +271,23 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
             if (destroy.value == true) {
                 return null
             }
-            return withDirectives(h('div', [h(VxeModal, { ...renderDialog },)]), [[vShow, show.value]])
+            const dialog = ref()
+            return withDirectives(h('div', [h(VxeModal, { ...renderDialog, ref: dialog },)]), [[vShow, show.value], [{
+                mounted: (div, node) => {
+                    _this.pageRef.dialog = dialog.value
+                },
+                unmounted: () => {
+                    //@ts-ignore
+                    _this.pageRef.dialog = null
+                }
+            }]])
         }
         this.component = vNode
     }
     //打开弹框
     async open() {
+        // const dialog = this.pageRef.dialog
+        // dialog?.open()
         this.dialogConfig.modelValue = true
         const modelValue = this.dialogConfig.modelValue
         if (modelValue == true) {
@@ -283,6 +297,8 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         this.dialogConfig.modelValue = true
     }
     async close() {
+        // const dialog = this.pageRef.dialog
+        // dialog?.close() 
         this.dialogConfig.modelValue = false
     }
     //确认弹框
@@ -290,12 +306,12 @@ export class dialog extends base<concatAny<VxeModalDefines.ModalOptions>> {
         console.log('confirm')
     }
     async destroy() {
-        this.dialogConfig.modelValue = false
-        const _this = this
-        setTimeout(() => {
-            const index = _this.system.dialogPool.findIndex(dialog => dialog == _this)
-            _this.system.dialogPool.splice(index, 1)
-        }, 200);
+        // this.dialogConfig.modelValue = false
+        // const _this = this
+        // setTimeout(() => {
+        //     const index = _this.system.dialogPool.findIndex(dialog => dialog == _this)
+        //     _this.system.dialogPool.splice(index, 1)
+        // }, 200);
     }
     getTableView() {
     }

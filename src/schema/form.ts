@@ -126,7 +126,6 @@ export class form extends base<formConfig> {
   }
   async initRenderForm() {
     const renderForm = this.renderForm
-    // renderForm.items = formFn.getFormItems(this) as any
     renderForm.data = formFn.getFormData(this) as any
     renderForm.customLayout = true
   }

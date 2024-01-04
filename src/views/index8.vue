@@ -204,9 +204,10 @@ const table = createTable(_testTableViewData)
 table.tableState = 'fullEdit'
 // const _form = createForm()
 //律师
-const _form = createForm({
-  items: inputComItems as any,
-})
+const _formConfig = reactive({
+  items: inputComItems
+}) as any
+const _form = createForm(_formConfig)
 //回应 
 
 function btnClick3() { }

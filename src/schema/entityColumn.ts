@@ -11,6 +11,7 @@ const mapFnType = {
 }
 export class entityColumn {
     getEntity?: () => basicEntity
+    searchRange?: boolean
     editType: string = ''
     scope?: boolean = false
     field: string = ''

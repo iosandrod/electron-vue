@@ -24,7 +24,7 @@ export class mainEntity extends basicEntity {
     this.entityType = 'main'
     this.entityState = 'scan'//扫描状态
     this.buttonCategory = 'ViewGrid'
-    this.buttonMethod = mainMethod
+    this.buttonMethod = mainMethod//静态数据
     Object.entries(mainEntityExtend).forEach(([key, value]) => {
       this.addExtendMethod(key, value)
     })

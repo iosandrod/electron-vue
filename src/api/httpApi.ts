@@ -25,14 +25,13 @@ export const typeNode = {
                 renderFunName: 'initRenderTable',//数据初始化函数 
             } as layoutItemConfig,
         },
-        {
-            x: 0, y: 34, h: 40, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-                // renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
-                renderComName: "instanceView",
-                // renderComName:"entityView",
-                renderFunName: "initRenderDetailEntity",
-            } as layoutItemConfig
-        },
+        // {
+        //     x: 0, y: 34, h: 40, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+        //         // renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
+        //         renderComName: "instanceView",
+        //         renderFunName: "initRenderDetailEntity",
+        //     } as layoutItemConfig
+        // },
         // {
         //     x: 0, y: 4, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
         //         renderComName: "formView",//组件
@@ -105,6 +104,9 @@ export const typeNode = {
                 renderFunName: "initRenderDetailEntity",
             } as layoutItemConfig
         },
+    ],
+    import: [
+
     ]
 }
 

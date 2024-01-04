@@ -7,11 +7,17 @@ export default defineComponent({
     props: ['dialogPool'],
     setup(props) {
         const _system = systemInstance
-        const dialogPool = props.dialogPool || _system.dialogPool
+        let dialogPool = props.dialogPool || _system.dialogPool
+        // if (!Array.isArray(dialogPool)) {
+        //     dialogPool = Object.values(dialogPool)
+        // }
         return () => {
             return h('div', {},
                 dialogPool.map((dialog: dialog) => {
-                    return h(instanceView, { instance: dialog, key: dialog.dialogConfig.dialogPrimaryName })
+                    return h(instanceView, {
+                        instance: dialog,
+                        key: dialog.dialogConfig.dialogPrimaryName
+                    })
                 }))
         }
     }
