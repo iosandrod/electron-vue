@@ -60,7 +60,6 @@ export const baseInfoInitComponent = (input: input) => {
     const tableName = baseInfoTable?.tableName || 't_SdOrder'
     const tableRef = computed(() => {
         const _table = _this.system.baseInfoTableMap[tableName] || {}
-        console.log('baseInfoTable', _table)
         return _table
     })
     nextTick(() => {

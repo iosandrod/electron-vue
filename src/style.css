@@ -125,7 +125,7 @@ body{
 }
 
 .vue-grid-item.vue-grid-placeholder {
-    background: none !important; 
+    /* background: none !important;  */
 }
 
 .vxe-form--item{

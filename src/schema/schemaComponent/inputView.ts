@@ -4,7 +4,7 @@ import { inputConfig } from '@/types/schema'
 import { table } from '../table'
 import defaultCom from '../tableColumnCom/defaultCom'
 export default defineComponent({
-    props: ['type', 'column', 'table', 'renderFormitem', 'inputInstance', 'data', 'field', 'onChange', 'options', 'modelValue'] as Array<'inputInstance' | 'column' | 'field' | 'data' | 'renderFormitem' | 'table' | keyof inputConfig>,
+    props: ['type', 'column', 'table', 'renderFormitem', 'inputInstance', 'instance', 'data', 'field', 'onChange', 'options', 'modelValue'] as Array<'inputInstance' | 'instance' | 'column' | 'field' | 'data' | 'renderFormitem' | 'table' | keyof inputConfig>,
     setup(props) {
         // let inputInstance = props.inputInstance
         const _data = computed(() => {
@@ -12,8 +12,8 @@ export default defineComponent({
         })
         let inputInstance: input = null as any
         const renderFormitem = props.renderFormitem || {}
-        if (props.inputInstance != null) {
-            inputInstance = props.inputInstance
+        if (props.inputInstance != null || props.instance != null) {
+            inputInstance = props.inputInstance || props.inputInstance
         } else {
             let createConfig = {} as any
             let _props: any = props

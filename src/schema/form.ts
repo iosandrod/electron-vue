@@ -57,6 +57,11 @@ export class form extends base<formConfig> {
     this.initRenderLayout()
     this.initComponent()
   }
+  setDefaultValue() {
+    this.formConfig.items.forEach(item => {
+      item.initDefaultValue()
+    })
+  }
   async validate() {
 
   }
@@ -164,9 +169,14 @@ export class form extends base<formConfig> {
   }
   async initRenderForm() {
     const renderForm = this.renderForm
-    renderForm.data = computed(() => {
-      return this.formConfig.data
-    })
+    renderForm.data = computed({
+      get: () => {
+        return this.formConfig.data
+      },
+      set: (value) => {
+        this.formConfig.data = value
+      }
+    }) as any
     renderForm.customLayout = true
   }
   async initComponent(): Promise<void> {

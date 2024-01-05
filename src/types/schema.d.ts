@@ -1,4 +1,5 @@
 import { tableinfo1 } from "@/api/data"
+import { basicEntityItem } from "@/schema/basicEntityItem"
 import { basicEntity } from "@/schema/businessTable/basicEntity"
 import { getFn } from "@/schema/businessTable/basicEntityFn"
 import { contextMenu } from "@/schema/businessTable/contextMenu"
@@ -263,7 +264,11 @@ export type layoutItem = {
   , x: number
   , y: number, w: number, h: number,
   layoutItemConfig?: layoutItemConfig,
-  component?: any
+  component?: any,
+  renderKey: string,
+  renderFunName: string,
+  renderCom?: string
+  renderFun?: string,
 }
 export type layoutConfig = {
   ['onUpdate:layout']?: (value: any) => void
@@ -732,3 +737,11 @@ export type contextItemValue = {
   contextMenu: contextMenu,
   item: any
 }
+
+export type entityItemConfig = {
+  renderKey: string,
+  renderCom: string | ((entityItem: basicEntityItem) => VNode),//
+  renderFun?: (value1: basicEntity, value2: basicEntityItem) => any
+  renderFunName: string,
+  instance?: any
+} & layoutItem

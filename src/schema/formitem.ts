@@ -91,7 +91,7 @@ export class formitem extends baseEdit<any> {
         this.initComponent()
     }
     initDefaultValue() {
-        const data = this.form?.formConfig.data!
+        const data = this.form?.formConfig.data! || {}
         const field = this.itemConfig.field!
         let _value = data[field!]
         if (_value == null) {

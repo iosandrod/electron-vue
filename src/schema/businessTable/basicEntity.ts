@@ -44,6 +44,7 @@ import inputView from "../schemaComponent/inputView"
 import modalVue from "@/components/modal.vue"
 import { contextList, formFormConfig, nodeFormConfig } from "./basicEntityData"
 import _ from "lodash"
+import { basicEntityItem, createEntityItem } from "../basicEntityItem"
 interface tableMethod {
 
 }
@@ -119,7 +120,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     curDetailKey: ''
   }
   buttonCategory: btnCategory = ''
-  entityConfig?: layoutItem[] = []//这个是模型的配置，是一个数组
+  entityConfig?: basicEntityItem[] = []//这个是模型的配置，是一个数组
   pageConfig: any = {}//页面配置
   tableInfo?: mainTableInfo = {} as any//远程获取的数据
   renderLayout: layoutConfig = {}//渲染节点数据
@@ -156,25 +157,38 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     return originTableInfo.cCodeColumn
   }
   calculateLayout() {
-    const _layout = this.entityConfig!.map((item: any) => {
-      return {
-        x: item.x, y: item.y, h: item.h, w: item.w,
-        i: item.i
-      } as layoutItem
+    // const _layout = this.entityConfig!.map((item: basicEntityItem) => {
+    //   return {
+    //     x: item.x, y: item.y, h: item.h, w: item.w,
+    //     i: item.i
+    //   } as layoutItem
+    // })
+    // return _layout
+    let items: basicEntityItem[] = this.entityConfig!
+    const _layout = items.map(item => {
+      let itemConfig = item.entityItemConfig
+      let renderKey = itemConfig.renderKey
+      let obj: layoutItem = {
+        i: renderKey,
+        x: itemConfig.x,
+        y: itemConfig.y,
+        w: itemConfig.w,
+        h: itemConfig.h
+      }
+      return obj
     })
     return _layout
   }
   initComponent() {
     const _this = this
-    let isDrag = computed(() => {
-      return _this.layoutConfig.isDraggable && _this.layoutConfig.isResizable
-    })
+    // let isDrag = computed(() => {
+    //   return _this.layoutConfig.isDraggable && _this.layoutConfig.isResizable
+    // })
     const vNode = () => {
       //这里如果有虚拟节点必须使用虚拟节点
       // const loadingDiretive = resolveDirective('v-loading')
       // console.log(loadingDiretive, 'testDiretive')
       const layoutCom = resolveComponent('grid-layout')
-      const layoutItemCom = resolveComponent('grid-item')
       const renderLayout = this.renderLayout
       const _this = this //
       const show = computed(() => {
@@ -190,54 +204,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       // const dialogPool = Object.values(_this.dialogPool)
       const entityCom = withDirectives(
         h('div', { class: 'h-full w-full' }, [
-          h(layoutCom, { ...renderLayout, style: { height: '100%', width: '100%' } as StyleType, }, () => {
-            const schema = _this.entityConfig
-            const itemArr = schema!.map((item: any) => {
-              const _item = {
-                x: item.x, y: item.y, h: item.h, w: item.w, i: item.i, onMove: (i: any, newx: any, newy: any) => {
-                  item.x = newx
-                  item.y = newy
-                },
-                onResize: (i: any, newH: any, newW: any, newHPx: any, newWPx: any) => {
-                  item.h = newH
-                  item.w = newW
-                }
-              } as layoutItem
-              return h(layoutItemCom, _item,
-                () => {
-                  let renderCom: any = null
-                  let defaultCom: any = null
-                  const component = item.component//
-                  if (component != null) {//
-                    renderCom = component()
-                  }
-                  const renderStyle = { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType
-                  const dragCom = withDirectives(
-                    h('div', {
-                      style: _divStyle,
-                      onContextmenu: (event: MouseEvent) => {
-                        console.log(item, 'testItem')
-                        _this.openContext(event)
-                      }
-                    } as propsConfig, [
-                      h(contextMenuView, { contextMenuInstance: _this.pageRef.contextMenu })
-                    ]), [[vShow, isDrag.value]]
-                  )
-                  if (renderCom) {
-                    defaultCom = h('div', { style: renderStyle }, [renderCom,
-                      dragCom
-                    ])
-                  } else {
-                    defaultCom = h('div', { style: renderStyle }, ['默认节点'])
-                  }
-                  return defaultCom
-                }
-              )
-            })
-            return itemArr
-          }
-
-
+          h(layoutCom, { ...renderLayout, style: { height: '100%', width: '100%' } as StyleType, },
+            () => {
+              const entityConfig = this.entityConfig
+              return entityConfig?.map(entity => {
+                return h(instanceView, { instance: entity })
+              })
+            }
           ),
           // h(modalVue, { entity: _this })
           h(dialogPoolView, { dialogPool: Object.values(_this.dialogPool) })
@@ -373,22 +346,28 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const renderKey = data.renderKey
     const h = data.h
     const w = data.w
-    this.addEntityItem({
+    const x = data.x || 0
+    const y = data.y || 0
+    let config = {
       i: renderKey,
-      x: 0,
-      y: 0,
+      x: x,
+      y: y,
       w: w,
       h: h,
-      layoutItemConfig: {
-        renderKey: renderKey,
-        renderFunName: renderFunName
-      }
-    })
+      renderKey: renderKey,
+      renderFunName: renderFunName
+    }
+    const hasNode = this.renderLayout.layout?.find(item => item.i == renderKey)
+    if (hasNode != null) {
+      console.error("已经存在该节点")
+      return
+    }
+    this.addEntityItem(config)
   }
   removeNode(nodeKey: string) {
 
   }
-  async initRenderTable() {
+  initRenderTable() {
     try {
       if (this.pageRef.vxeGrid != null) {
         return { instance: this.pageRef.vxeGrid, tableInstance: this.pageRef.vxeGrid }
@@ -508,7 +487,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     return _dialog
   }
   openDialog(dialogKey: string) {
-    this.testDialog = true
     const dialogPool = this.dialogPool
     const targetDialog = dialogPool[dialogKey]
     if (targetDialog == null) {
@@ -555,7 +533,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     _this.pageRef.searchForm = vxeForm//查询表单
     return { formInstance: vxeForm, instance: vxeForm }
   }
-  async initRenderEditForm() {
+  initRenderEditForm() {
     const entity = this
     // return entityRenderFn.initRenderEditForm(this)
     const _this = entity
@@ -612,7 +590,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const vxeForm = createForm(renderEditForm)
     //@ts-ignore
     _this.pageRef.vxeForm = vxeForm
-    return { formInstance: vxeForm, instance: _this.pageRef.vxeForm }
+    return { formInstance: _this.pageRef.vxeForm, instance: _this.pageRef.vxeForm }
   }
   async initTableInfo() {
     const tableInfo = await getTableConfig(this.entityName)//相当于表名吧,这个函数具有副作用
@@ -667,9 +645,11 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   async addEntityItem(config: layoutItem) {//添加一个节点
     // debugger
+    // console.log(config, 'testConfig')
     const _config = lodash.cloneDeep(config)
     const _config1: any = await this.resolveEntityItem(_config)
     this.entityConfig!.push(_config1)
+    this.renderLayout.layout = this.calculateLayout()
   }
   async removeEntityItem(config: layoutItem) {
     const i = config.i
@@ -682,25 +662,26 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     this.entityConfig?.splice(index, 1)
   }
   async resolveEntityItem(item: any) {
-    const _this: any = this
-    const itemConfig = item.layoutItemConfig!
-    const renderFunName = itemConfig.renderFunName
-    let renderComName = itemConfig.renderComName || 'instanceView'
-    let renderCom: any = h('div', [])
-    let renderData: any = {}
-    //@ts-ignore
-    let _comVetor: any = comVetor
-    if (renderFunName != null && _this[renderFunName]) {//初始化渲染数据
-      const _this: any = this
-      renderData = await _this[renderFunName](_this)//渲染函数数据 这个是函数来的
-    }
-    if (renderComName != null && _comVetor[renderComName]) {
-      renderCom = _comVetor[renderComName]
-    }
-    item.component = () => {
-      return h(renderCom, { ...renderData, style: { height: "100%", width: '100%' }, })
-    }
-    return item
+    return createEntityItem(item, this)
+    // const _this: any = this
+    // const itemConfig = item.layoutItemConfig!
+    // const renderFunName = itemConfig.renderFunName
+    // let renderComName = itemConfig.renderComName || 'instanceView'
+    // let renderCom: any = h('div', [])
+    // let renderData: any = {}
+    // //@ts-ignore
+    // let _comVetor: any = comVetor
+    // if (renderFunName != null && _this[renderFunName]) {//初始化渲染数据
+    //   const _this: any = this
+    //   renderData = await _this[renderFunName](_this)//渲染函数数据 这个是函数来的
+    // }
+    // if (renderComName != null && _comVetor[renderComName]) {
+    //   renderCom = _comVetor[renderComName]
+    // }
+    // item.component = () => {
+    //   return h(renderCom, { ...renderData, style: { height: "100%", width: '100%' }, })
+    // }
+    // return item
   }
   async runMiddlewares(payload: any, middlewares: any[], index: any) {
     if (index < middlewares.length) {
@@ -748,20 +729,20 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     this.pageRef.buttonGroup = buttonGroup as any
     return { instance: buttonGroup }
   }
-  async initRenderDetailEntity() {
+  initRenderDetailEntity() {
     const _this = this
     if (_this.pageRef.dEntityInstance != null) {
       return { instance: _this.pageRef.dEntityInstance }
     }
     const tableInfo = _this.tableInfo
     const detailTable = tableInfo?.detailTable! || []
-    const detailEntity = await Promise.all(detailTable.map(async (table) => {
+    const detailEntity = detailTable.map((table) => {
       //@ts-ignore
       const createFn = _this.createFn
-      const dTable = await createFn.createDetailEntity(table.tableName, table)//表名
+      const dTable = createFn.createDetailEntity(table.tableName, table)//表名
       dTable.mainEntity = _this as any
       return dTable
-    }))
+    })
     _this.detailTable = detailEntity as any//业务逻辑类型的子组件
     const renderDetailEntity = _this.renderDetailEntity
     renderDetailEntity.entityGroup = computed(() => {
@@ -781,13 +762,12 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       }
       return obj
     }) as any
-    //@ts-ignore
+    //@ts-ignore 
     const dEntityInstance = _this.createFn.createDetailEntityGroup(renderDetailEntity)
     //@ts-ignore
     _this.pageRef.dEntityInstance = dEntityInstance
     _this.detailEntityConfig.curDetailKey = _this.detailTable?.[0]?.tableInfo?.tableName || ''
     return { instance: _this.pageRef.dEntityInstance }
-
   }
   async getDefaultModel() {
     const _this = this
@@ -1057,4 +1037,53 @@ const dialogConfig = config.dialogConfig
       this.pageRef[dialogKey!] = _dialog
     }
     return _dialog
+*/
+
+
+/* 
+const schema = _this.entityConfig
+            const itemArr = schema!.map(
+              (item: any) => {
+                const _item = {
+                  x: item.x, y: item.y, h: item.h, w: item.w, i: item.i, onMove: (i: any, newx: any, newy: any) => {
+                    item.x = newx
+                    item.y = newy
+                  },
+                  onResize: (i: any, newH: any, newW: any, newHPx: any, newWPx: any) => {
+                    item.h = newH
+                    item.w = newW
+                  }
+                } as layoutItem
+                return h(layoutItemCom, _item,
+                  () => {
+                    let renderCom: any = null
+                    let defaultCom: any = null
+                    const component = item.component//
+                    if (component != null) {//
+                      renderCom = component()
+                    }
+                    const renderStyle = { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType
+                    const dragCom = withDirectives(
+                      h('div', {
+                        style: _divStyle,
+                        onContextmenu: (event: MouseEvent) => {
+                          console.log(item, 'testItem')
+                          _this.openContext(event)
+                        }
+                      } as propsConfig, [
+                        h(contextMenuView, { contextMenuInstance: _this.pageRef.contextMenu })
+                      ]), [[vShow, isDrag.value]]
+                    )
+                    if (renderCom) {
+                      defaultCom = h('div', { style: renderStyle }, [renderCom,
+                        dragCom
+                      ])
+                    } else {
+                      defaultCom = h('div', { style: renderStyle }, ['默认节点'])
+                    }
+                    return defaultCom
+                  }
+                )
+              })
+            return itemArr
 */

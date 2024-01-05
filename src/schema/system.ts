@@ -22,7 +22,7 @@ import { createDialog, dialog } from "./dialog"
 import { confirmConfig } from '@/types/schema'
 import { formitem } from "./formitem"
 import { nodeFormConfig } from "./businessTable/basicEntityData"
-import { createForm } from "./form"
+import { createForm, form } from "./form"
 import _ from "lodash"
 export class system extends base {
   globalComMap = new WeakMap()
@@ -428,15 +428,18 @@ export class system extends base {
       if (formConfig == null) {
         return Promise.reject("没有表单配置")
       }
-      formConfig.data = data
       const _formConfig: formConfig = (formConfig)
-      let _form = null
+      let _form: form = null as any
       _form = this.globalComMap.get(_formConfig)
       if (_form == null) {
+        _formConfig.data = data
         _form = createForm(_formConfig)
         this.globalComMap.set(_formConfig, _form)
+      } else {
+        _form.formConfig.data = data
+        _form.setDefaultValue()
       }
-      // if (data != null) {
+      // if (data != null) { 
       //   _form.formConfig.data = data
       // }
       const _confirmConfig: dialogConfig = Object.assign({
