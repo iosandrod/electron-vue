@@ -421,13 +421,14 @@ export class system extends base {
         }, text: "确认"
       }, {
         btnFun: async (dialog: dialog) => {
-          resolve(false)
+          reject(false)
           dialog.close()
         }, text: "取消"
       }]
       if (formConfig == null) {
         return Promise.reject("没有表单配置")
       }
+      formConfig.data = data
       const _formConfig: formConfig = (formConfig)
       let _form = null
       _form = this.globalComMap.get(_formConfig)
@@ -435,9 +436,9 @@ export class system extends base {
         _form = createForm(_formConfig)
         this.globalComMap.set(_formConfig, _form)
       }
-      if (data != null) {
-        _form.formConfig.data = data
-      }
+      // if (data != null) {
+      //   _form.formConfig.data = data
+      // }
       const _confirmConfig: dialogConfig = Object.assign({
         type: "modal",
         buttons: buttons,
@@ -459,7 +460,7 @@ export class system extends base {
         }, text: "确认"
       }, {
         btnFun: async (dialog: dialog) => {
-          resolve(false)
+          reject(false)
           dialog.close()
         }, text: "取消"
       }]

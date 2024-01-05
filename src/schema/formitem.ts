@@ -1,4 +1,4 @@
-import { ReactiveEffect, computed, h, reactive, resolveComponent, watch, watchEffect } from "vue";
+import { ReactiveEffect, computed, h, isProxy, reactive, resolveComponent, watch, watchEffect } from "vue";
 import { base } from "./base";
 import { system, systemInstance } from "./system";
 import { VxeButton, VxeFormItemProps } from 'vxe-table'
@@ -39,6 +39,7 @@ export class formitem extends baseEdit<any> {
     column?: column
     //@ts-ignore
     itemConfig: itemConfig & inputConfig = {
+        validate: null,
         isPulldownFocus: false,
         folding: false, //折叠
         type: "text",
@@ -84,9 +85,24 @@ export class formitem extends baseEdit<any> {
         }
         this.initRenderItem()
         this.initBaseInfoDialog()
+        this.initDefaultValue()
         this.initInputInstance()
         this.initRenderLayoutItem()
         this.initComponent()
+    }
+    initDefaultValue() {
+        const data = this.form?.formConfig.data!
+        const field = this.itemConfig.field!
+        let _value = data[field!]
+        if (_value == null) {
+            let defaultValue = this.itemConfig.defaultValue
+            if (defaultValue != null) {
+                data[field] = defaultValue
+            }
+        }
+    }
+    async validate() {
+
     }
     initRenderLayoutItem() {
         const form = this.form
@@ -130,11 +146,12 @@ export class formitem extends baseEdit<any> {
                 if (formDisabled == true) {
                     return true
                 }
-                let myDisabled = Boolean(_this.itemConfig.disable)
+                let myDisabled = Boolean(_this.itemConfig.disabled)
                 return myDisabled
             },
             set: (value) => {
-                _this.itemConfig.disable = value
+                console.log('set Diaabled')
+                _this.itemConfig.disabled = value
             }
         }) as any
         renderInput.placeholder = computed({

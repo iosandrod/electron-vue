@@ -151,8 +151,9 @@ export class contextMenu extends base {
     }
 }
 
-export const createContextMenu = (schema: any) => {
+export const createContextMenu = (schema: any, parent?: any) => {
     const menu = reactive(new contextMenu(schema, systemInstance))
+    menu.getParent = () => parent
     menu.initContextMenu()
     return menu
 }

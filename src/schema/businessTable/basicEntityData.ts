@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { formConfig, itemConfig } from "@/types/schema"
+import { contextList, formConfig, itemConfig } from "@/types/schema"
 import { formitem } from "../formitem"
 import { form } from "../form"
 export const tableFormConfig: formConfig = {
@@ -134,6 +134,7 @@ export const nodeFormConfig: formConfig = {
         field: 'h',
         type: "number",
         title: "高度",
+        defaultValue: 20,
         placeholder: "范围0-80",
         itemChange: (value) => {
             const data = value?.data
@@ -148,6 +149,7 @@ export const nodeFormConfig: formConfig = {
         type: "number",
         title: '宽度',
         placeholder: '范围0-24',
+        defaultValue: 20,
         itemChange: (value) => {
             const _value = value?.value
             if (Number(_value) > 24 || Number(_value) < 0) {
@@ -160,3 +162,21 @@ export const nodeFormConfig: formConfig = {
 }
 
 
+
+
+export const contextList: contextList = [{
+    key: 'designItem',
+    label: '设计当前组件',
+    runFun: (value) => {
+        console.log(value, 'testValue')
+    }
+},
+{
+    key: 'removeItem',
+    label: '移除当前组件',
+    runFun: (value) => {
+        const menu = value.contextMenu
+        const parent = menu.getParent()
+        console.log(parent, 'testP')
+    },
+},]

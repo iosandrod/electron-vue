@@ -1,4 +1,4 @@
-import { computed, h, reactive, resolveComponent, vShow, watchEffect, withDirectives } from "vue"
+import { computed, h, reactive, resolveComponent, vShow, watch, watchEffect, withDirectives } from "vue"
 import { base } from "./base"
 import { system, systemInstance } from "./system"
 import { VxeFormItem, VxeFormProps } from "vxe-table"
@@ -16,6 +16,9 @@ export class form extends base<formConfig> {
     items: [],//编辑项
     disabled: false,
   }
+  formData = {
+
+  }
   renderForm: VxeFormProps = {
   }
   renderLayout: layoutConfig = {}
@@ -29,34 +32,69 @@ export class form extends base<formConfig> {
     for (const key of Object.keys(schema)) {
       const value = schema[key]
       if (key == 'items') {
-        effectPool[`form${key}Effect`] = watchEffect(() => {
-          let _value = schema[key] || []
-          //@ts-ignore
-          formConfig.items = _value.map((item: any, i) => {
-            let _item = null
-            if (item instanceof formitem) {
-              _item = item
-            } else {
-              _item = createFormItem(item, this)
-            }
-            return _item
-          })
-          // formConfig.items.forEach(item => {
-          //   //@ts-ignore
-          //   item.getData = () => {
-          //     return schema.data || {}
-          //   }
-          // })
-        }) as any
+        // effectPool[`form${key}Effect`] = watchEffect(() => {
+        //   let _value = schema[key] || []
+        //   //@ts-ignore
+        //   formConfig.items = _value.map((item: any, i) => {
+        //     let _item = null
+        //     if (item instanceof formitem) {
+        //       _item = item
+        //     } else {
+        //       _item = createFormItem(item, this)
+        //     }
+        //     return _item
+        //   })
+        // }) as any
         continue
       }
       effectPool[`form${key}Effect`] = watchEffect(() => {
         formConfig[key] = schema[key]
       })
     }
+    this.initFormItems()
+    this.initFormRules()
     this.initRenderForm()
     this.initRenderLayout()
     this.initComponent()
+  }
+  async validate() {
+
+  }
+  initFormRules() {
+
+  }
+  initFormItems() {
+    const schema = this.schema!
+    let key = 'items'
+    const formConfig: any = this.formConfig//表格
+    let _value = schema[key] || []
+    watch(() => schema['items'], (newValue: any) => {
+      if (!Array.isArray(newValue)) {
+        return
+      }
+      formConfig.items = newValue.map((item: any,) => {
+        let _item = null
+        if (item instanceof formitem) {
+          _item = item
+        } else {
+          _item = createFormItem(item, this)
+        }
+        return _item
+      })
+    })
+    //@ts-ignore 
+    formConfig.items = _value.map((item: any, i) => {
+      let _item = null
+      if (item instanceof formitem) {
+        _item = item
+      } else {
+        _item = createFormItem(item, this)
+      }
+      return _item
+    })
+
+    // debugger
+    // console.log(formConfig.ites)
   }
   //计算
   calculateLayout(reset = false) {
@@ -126,7 +164,9 @@ export class form extends base<formConfig> {
   }
   async initRenderForm() {
     const renderForm = this.renderForm
-    renderForm.data = formFn.getFormData(this) as any
+    renderForm.data = computed(() => {
+      return this.formConfig.data
+    })
     renderForm.customLayout = true
   }
   async initComponent(): Promise<void> {
@@ -194,7 +234,7 @@ export class form extends base<formConfig> {
         return item.itemConfig.field == field
       }) as formitem
       if (targetItem) {
-        targetItem!.itemConfig.disable = Boolean(status)
+        targetItem!.itemConfig.disabled = Boolean(status)
       }
     })
   }

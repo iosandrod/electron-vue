@@ -1,6 +1,7 @@
 import { tableinfo1 } from "@/api/data"
 import { basicEntity } from "@/schema/businessTable/basicEntity"
 import { getFn } from "@/schema/businessTable/basicEntityFn"
+import { contextMenu } from "@/schema/businessTable/contextMenu"
 import { detailEntity } from "@/schema/businessTable/detailEntity"
 import { mainEditEntity } from "@/schema/businessTable/mainEditEntity"
 import { mainEntity } from "@/schema/businessTable/mainEntity"
@@ -11,7 +12,7 @@ import { entityColumn } from "@/schema/entityColumn"
 import { formitem } from "@/schema/formitem"
 import { input } from "@/schema/input"
 import { layoutGrid } from "@/schema/layoutGrid"
-import { menuItem } from "@/schema/menu"
+import { menu, menuItem } from "@/schema/menu"
 import { table } from "@/schema/table"
 import { MenuProps, SelectProps, TabPaneProps, TabsProps } from "ant-design-vue"
 import { CSSProperties } from "ant-design-vue/es/_util/cssinjs/hooks/useStyleRegister"
@@ -195,7 +196,8 @@ export type position = {
 export type selectOptions = { value: string, label: string }
 
 export type itemConfig = VxeFormItemProps & {
-
+  validate?: ((value: any) => Promise<any>) | null
+  defaultValue?: any
   required?: boolean
   range?: boolean
   visible?: boolean,
@@ -716,4 +718,17 @@ export type addNodeData = {
   renderFunName: string,
   tableConfig?: tableConfig,
   formConfig?: formConfig
+}
+
+export type contextListItem = {
+  key: string,
+  label: string,
+  runFun: (value: contextItemValue) => void
+}
+
+export type contextList = Array<contextListItem>
+
+export type contextItemValue = {
+  contextMenu: contextMenu,
+  item: any
 }

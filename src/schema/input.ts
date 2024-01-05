@@ -193,7 +193,8 @@ export class input extends base {
                 _this.inputConfig.disabled = value
             },
             get: () => {
-                return _this.inputConfig.disabled
+                let _disabled = _this.inputConfig.disabled
+                return _disabled
             }
         }) as any
         renderInput.onChange = ({ value }: any) => {
@@ -232,6 +233,7 @@ text, search, number, integer, float, password, date, time, datetime, week, mont
                 if (['string', 'text'].includes(_type)) {
                     return 'text'
                 }
+                return 'text'
             }
         }) as any
         //@ts-ignore 
