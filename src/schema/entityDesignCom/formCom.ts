@@ -16,8 +16,8 @@ export const initRenderForm = (input: input) => {
     const _this = input
     const inputConfig = input.inputConfig
     inputConfig.clearable = false
-    const renderForm = input.renderForm
-    renderForm.items = JSON.parse(JSON.stringify(inputComItems))
+    // const renderForm = input.renderForm
+    const renderForm = input.inputConfig.formConfig || {} as any
     renderForm.data = computed(() => {
         try {
             const value = input.getBindValue()

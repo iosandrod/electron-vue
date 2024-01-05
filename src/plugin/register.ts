@@ -27,8 +27,7 @@ export default {
         app.component('instance-view', instanceView)
     }
 }
-
-export const comVetor = {
+let _comVetor = {
     tabView,
     contextMenuView,
     tableView,
@@ -42,3 +41,4 @@ export const comVetor = {
     entityView,
     instanceView
 }
+export const comVetor: { [key in keyof typeof _comVetor]: any; } = _comVetor 

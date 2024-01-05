@@ -27,7 +27,7 @@ export const initRenderSelect = (input: input) => {
         return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     }
     renderSelect.onFocus = () => {
-        console.log('focus')
+
     }
     renderSelect.value = computed(() => {
         const modelValue = inputConfig.modelValue

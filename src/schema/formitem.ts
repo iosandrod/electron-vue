@@ -123,14 +123,28 @@ export class formitem extends baseEdit<any> {
             }
             return []
         }) as any
-        renderInput.disabled = computed(() => {
-            const form = this.form
-            const formDisabled = form?.formConfig.disabled
-            if (formDisabled == true) {
-                return true
+        renderInput.disabled = computed({
+            get: () => {
+                const form = this.form
+                const formDisabled = form?.formConfig.disabled
+                if (formDisabled == true) {
+                    return true
+                }
+                let myDisabled = Boolean(_this.itemConfig.disable)
+                return myDisabled
+            },
+            set: (value) => {
+                _this.itemConfig.disable = value
             }
-            return false
         }) as any
+        renderInput.placeholder = computed({
+            set: (value) => {
+                _this.itemConfig.placeholder = value
+            },
+            get: () => {
+                return _this.itemConfig.placeholder
+            }
+        })
         renderInput.modelValue = computed(() => {
             let value = ''
             const data = _this.form?.formConfig.data
@@ -155,8 +169,14 @@ export class formitem extends baseEdit<any> {
         renderInput.range = computed(() => {
             return Boolean(itemConfig.range)
         }) as any
-        renderInput.formitems = computed(() => {
-            return itemConfig.formitems || []
+        // renderInput.formitems = computed(() => {
+        //     return itemConfig.formitems || []
+        // }) as any
+        renderInput.formConfig = computed(() => {
+            return itemConfig.formConfig
+        }) as any
+        renderInput.tableConfig = computed(() => {
+            return itemConfig.tableConfig
         }) as any
         const inputInstance = createInput(this.renderInput, this.form)
         inputInstance.getField = () => {

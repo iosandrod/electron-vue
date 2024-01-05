@@ -81,7 +81,6 @@ onMounted(() => {
   //   language: 'javascript',
   // })
   // edit.onDidChangeModelContent((value) => {
-  //   console.log(value, 'testValue')
   //   const context = edit.getValue()
   //   console.log(context, 'testContext')
   // })

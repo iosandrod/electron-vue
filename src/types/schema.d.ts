@@ -195,9 +195,13 @@ export type position = {
 export type selectOptions = { value: string, label: string }
 
 export type itemConfig = VxeFormItemProps & {
+
+  required?: boolean
   range?: boolean
   visible?: boolean,
   columns?: columnConfig[]
+  tableConfig?: tableConfig
+  formConfig?: formConfig
   isPulldownFocus?: boolean
   type?: string,
   isFocus?: boolean,
@@ -210,13 +214,15 @@ export type itemConfig = VxeFormItemProps & {
   layout?: layoutItem,
   disable?: boolean,
   formitems?: itemConfig[],
+  placeholder?: string
   itemChange?: (value?: valueChangeParams) => void
 } & VxeInputEventProps
 
-export type formConfig = VxeFormProps & {
+export type formConfig = {
   disabled?: boolean,
-  items: formitem[]
-} & layoutConfig
+  itemWidth?: number,
+  items: Array<formitem>
+} & layoutConfig & VxeFormProps
 
 
 export type selectConfig = pickKey<SelectProps & {
@@ -548,6 +554,8 @@ export type localStorageValue = {
 }
 
 export type inputConfig = VxeInputProps & {
+  formConfig?: formConfig,
+  tableConfig?: tableConfig
   updateFn?: (value: any) => void
   rangeModelValue?: any[]
   range?: boolean
@@ -693,8 +701,19 @@ export type rowChangeType = 'next' | 'pre' | 'first' | 'last'
 
 
 export type valueChangeParams = {
+  data?: any
   table?: table,
   form?: form,
   value?: any,
   inputInstance?: input
+}
+
+
+export type addNodeData = {
+  w: number,
+  h: number,
+  renderKey: string,
+  renderFunName: string,
+  tableConfig?: tableConfig,
+  formConfig?: formConfig
 }

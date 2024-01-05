@@ -42,6 +42,7 @@ import instanceView from "../schemaComponent/instanceView"
 import dialogPoolView from "../schemaComponent/dialogPoolView"
 import inputView from "../schemaComponent/inputView"
 import modalVue from "@/components/modal.vue"
+import { formFormConfig, nodeFormConfig } from "./basicEntityData"
 interface tableMethod {
 
 }
@@ -365,11 +366,32 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   async getTableConfig() { }
   //添加一个节点
-  addItem() { }
+  async addNewNode() {
+    const system = this.system
+    const data: any = await system.confirmForm(nodeFormConfig)//缓存组件
+    const renderFunName = data.renderFunName
+    const renderKey = data.renderKey
+    const h = data.h
+    const w = data.w
+    this.addEntityItem({
+      i: renderKey,
+      x: 0,
+      y: 0,
+      w: w,
+      h: h,
+      layoutItemConfig: {
+        renderKey: renderKey,
+        renderFunName: renderFunName
+      }
+    })
+  }
+  removeNode(nodeKey: string) {
+
+  }
   async initRenderTable() {
     try {
       if (this.pageRef.vxeGrid != null) {
-        return { tableInstance: this.pageRef.vxeGrid }
+        return { instance: this.pageRef.vxeGrid, tableInstance: this.pageRef.vxeGrid }
       }
       const entity = this
       const _this = this
@@ -384,11 +406,10 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         await _this.curRowChange(value)
       }
       renderTable.dbCurRowChange = async (value) => {
-        // console.log('dbCurRowChange entity')
         await _this.dbCurRowChange(value)
       }
       renderTable.onCellClick = () => {
-
+        console.log('onCellClick')
       }
       const table = createTable(renderTable)
       //@ts-ignore
@@ -651,6 +672,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
   }
   async addEntityItem(config: layoutItem) {//添加一个节点
+    // debugger
     const _config = lodash.cloneDeep(config)
     const _config1: any = await this.resolveEntityItem(_config)
     this.entityConfig!.push(_config1)
@@ -666,22 +688,20 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     this.entityConfig?.splice(index, 1)
   }
   async resolveEntityItem(item: any) {
-    const _this = this
+    const _this: any = this
     const itemConfig = item.layoutItemConfig!
     const renderFunName = itemConfig.renderFunName
-    let renderComName = itemConfig.renderComName as keyof typeof comVetor
+    let renderComName = itemConfig.renderComName || 'instanceView'
     let renderCom: any = h('div', [])
     let renderData: any = {}
     //@ts-ignore
+    let _comVetor: any = comVetor
     if (renderFunName != null && _this[renderFunName]) {//初始化渲染数据
       const _this: any = this
       renderData = await _this[renderFunName](_this)//渲染函数数据 这个是函数来的
     }
-    if (renderComName != null && comVetor[renderComName]) {
-      renderCom = comVetor[renderComName]
-    }
-    if (renderCom == null) {
-      renderCom = inputView
+    if (renderComName != null && _comVetor[renderComName]) {
+      renderCom = _comVetor[renderComName]
     }
     item.component = () => {
       return h(renderCom, { ...renderData, style: { height: "100%", width: '100%' }, })

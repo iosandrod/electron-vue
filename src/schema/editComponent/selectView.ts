@@ -41,7 +41,6 @@ export default defineComponent({
                     bindValue.value = value
                 }),
                 onFocus: () => {
-                    console.log('focus')
                 },
                 value: bindValue.value as string
             }

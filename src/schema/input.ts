@@ -20,6 +20,7 @@ import * as monaco from 'monaco-editor'
 import { formInitComponent, initRenderForm } from "./entityDesignCom/formCom";
 import instanceView from "./schemaComponent/instanceView";
 import inputView from "./schemaComponent/inputView";
+import { initRenderTable, tableInitComponent } from "./entityDesignCom/tableCom";
 
 
 
@@ -28,6 +29,7 @@ export class input extends base {
     codeEditRender = {}
     renderForm: formConfig = {} as any
     pageRef: {
+        tableRef?: table,
         codeEdit?: monaco.editor.IStandaloneCodeEditor,
         formRef?: form,
         input1?: input
@@ -109,6 +111,7 @@ export class input extends base {
                 inputConfig[key] = schema[key]//进行注入
             })
         }
+        // this.inputConfig.
         this.initRenderInput()
         this.initComponent()
         this.runInitMethod()
@@ -211,6 +214,26 @@ export class input extends base {
                 renderInput.clearable = value
             }
         }) as any
+        /* 
+        	
+text, search, number, integer, float, password, date, time, datetime, week, month, quarter, year */
+        renderInput.type = computed({
+            set: () => {
+
+            },
+            get: () => {
+                let _type = inputConfig.type!
+                if (['int', 'float', 'number'].includes(_type)) {
+                    return 'number'
+                }
+                if (['datetime', 'time', 'date'].includes(_type)) {
+                    return _type
+                }
+                if (['string', 'text'].includes(_type)) {
+                    return 'text'
+                }
+            }
+        }) as any
         //@ts-ignore 
     }
     initComponent() {
@@ -266,9 +289,6 @@ export class input extends base {
     baseInfoInit() {
         baseInfoInit(this)
     }
-    baseInfoInitRange() {
-
-    }
     baseInfoInitComponent() {
         baseInfoInitComponent(this)
     }
@@ -285,11 +305,15 @@ export class input extends base {
         numberInit(this)
     }
     floatInit() {
-
+        numberInit(this)
     }
     formInit() {
         initRenderForm(this)
         formInitComponent(this)
+    }
+    tableInit() {
+        initRenderTable(this)
+        tableInitComponent(this)
     }
     initBaseInfoTable() {
         initBaseInfoTable(this)

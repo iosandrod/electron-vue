@@ -217,6 +217,7 @@ const obj = {
     renderFunName: 'initRenderTable',//数据初始化函数
   } as layoutItemConfig
 } as any
+
 function changeEditType1111() {
 
   const systemConfig = systemInstance.systemConfig
@@ -305,8 +306,11 @@ async function changeEditType11111111111() {
   state11 = !state11
 }
 const _entity = createMainEntity('t_SdOrder')
+_entity.setCurrentEntityDesign(true)
 async function changeEditType111111111111() {
-
+  // await systemInstance.confirmForm()
+  _entity.addNewNode()
+  // _entity.addEntityItem()
 }
 const collapsed = ref<boolean>(false)
 </script>

@@ -3,7 +3,7 @@ import { VxeButton, VxeTableDefines } from "vxe-table"
 import { base } from "./base"
 import { createMenu, menu } from "./menu"
 import { menuData, menuData1 } from "@/api/data3"
-import { StyleType, command, dialogConfig, localStorageValue, menuConfig, routeOpenConfig, tabConfig, tableConfig } from "@/types/schema"
+import { StyleType, command, dialogConfig, formConfig, localStorageValue, menuConfig, routeOpenConfig, tabConfig, tableConfig } from "@/types/schema"
 import { useLocalStorage } from '@vueuse/core'
 import { createMainEntity, mainEntity } from "./businessTable/mainEntity"
 import { getRouter } from "@/router"
@@ -20,7 +20,12 @@ import { getTableConfig } from "@/api/httpApi"
 import { createBaseInfoTable } from "./editClass/baseInfoTable"
 import { createDialog, dialog } from "./dialog"
 import { confirmConfig } from '@/types/schema'
+import { formitem } from "./formitem"
+import { nodeFormConfig } from "./businessTable/basicEntityData"
+import { createForm } from "./form"
+import _ from "lodash"
 export class system extends base {
+  globalComMap = new WeakMap()
   dialogPool: any[] = []
   commandQueue: command[] = [
 
@@ -366,13 +371,91 @@ export class system extends base {
     this.commandQueue.push(command)
   }
   //添加全局弹出框
+  async confirmTable(tableConfig?: tableConfig, data: any = []) {
+    const _this = this;
+    return new Promise((resolve, reject) => {
+      const buttons = [{
+        btnFun: async (dialog: dialog) => {
+          resolve(true)
+          dialog.close()
+          // _this.confirm()
+        }, text: "确认"
+      }, {
+        btnFun: async (dialog: dialog) => {
+          resolve(false)
+          dialog.close()
+        }, text: "取消"
+      }]
+      if (tableConfig == null) {
+        return Promise.reject("")
+      }
+      const _tableConfig: tableConfig = (tableConfig)
+      let _table = null
+      _table = this.globalComMap.get(_tableConfig)
+      if (_table == null) {
+        _table = createTable(_tableConfig)
+        this.globalComMap.set(_tableConfig, _table)
+      }
+      if (data != null) {
+        _table.tableData.data = data
+      }
+      const _confirmConfig: dialogConfig = Object.assign({
+        type: "modal",
+        buttons: buttons,
+        modelValue: true,
+        height: 400,
+        width: 600,//正方形的弹框
+        instance: _table
+      } as dialogConfig)
+      this.addGlobalDialog('instanceView', _confirmConfig)
+    })
+  }
+  async confirmForm(formConfig?: formConfig, data: any = {}) {
+    const _this = this;
+    return new Promise((resolve, reject) => {
+      const buttons = [{
+        btnFun: async (dialog: dialog) => {
+          resolve(data)
+          dialog.close()
+          // _this.confirm()
+        }, text: "确认"
+      }, {
+        btnFun: async (dialog: dialog) => {
+          resolve(false)
+          dialog.close()
+        }, text: "取消"
+      }]
+      if (formConfig == null) {
+        return Promise.reject("没有表单配置")
+      }
+      const _formConfig: formConfig = (formConfig)
+      let _form = null
+      _form = this.globalComMap.get(_formConfig)
+      if (_form == null) {
+        _form = createForm(_formConfig)
+        this.globalComMap.set(_formConfig, _form)
+      }
+      if (data != null) {
+        _form.formConfig.data = data
+      }
+      const _confirmConfig: dialogConfig = Object.assign({
+        type: "modal",
+        buttons: buttons,
+        modelValue: true,
+        height: 400,
+        width: 600,//正方形的弹框
+        instance: _form
+      } as dialogConfig, formConfig)
+      this.addGlobalDialog('instanceView', _confirmConfig)
+    })
+  }
   async confirm(confirmConfig?: confirmConfig) {//弹出框全局取消掉
     const _this = this
     return new Promise((resolve, reject) => {
       const buttons = [{
         btnFun: async (dialog: dialog) => {
           resolve(true)
-          _this.confirm()
+          // _this.confirm()
         }, text: "确认"
       }, {
         btnFun: async (dialog: dialog) => {

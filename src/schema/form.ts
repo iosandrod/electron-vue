@@ -62,10 +62,11 @@ export class form extends base<formConfig> {
   calculateLayout(reset = false) {
     const _this = this
     const formConfig = _this.formConfig
-    const items: formitem[] = formConfig.items
+    const items: formitem[] = formConfig.items as formitem[]
+    const itemWidth = formConfig.itemWidth || 6
     const _layout = items.filter(item => item.itemConfig.visible != false).map((item: formitem, i, arr) => {
       const itemConfig = item.itemConfig
-      const span: number = itemConfig.span as number || 6
+      const span: number = itemConfig.span as number || itemWidth
       const field = item.itemConfig.field!
       const obj: layoutItem = {
         i: field,
@@ -97,7 +98,6 @@ export class form extends base<formConfig> {
   async initRenderLayout() {
     const renderLayout = this.renderLayout
     const formConfig = this.formConfig
-    const items: formitem[] = formConfig.items
     const _layout = this.calculateLayout()
     renderLayout.layout = _layout
     renderLayout.colNum = 24
@@ -174,6 +174,30 @@ export class form extends base<formConfig> {
   getEditItems() {
     return this.formConfig.items
   }
+  getEditItemFields() {
+    const items = this.getEditItems()
+    return items.map(item => item.itemConfig.field)
+  }
+  setItemDisabled(field?: Array<string> | string, status?: boolean) {
+    let fieldArr: any = null
+    if (typeof field == 'string') {
+      fieldArr = [field]
+    } else {
+      fieldArr = field
+    }
+    if (!Array.isArray(fieldArr)) {
+      return
+    }
+    fieldArr.forEach((field: string) => {
+      const items = this.formConfig.items
+      const targetItem = items.find((item: formitem) => {
+        return item.itemConfig.field == field
+      }) as formitem
+      if (targetItem) {
+        targetItem!.itemConfig.disable = Boolean(status)
+      }
+    })
+  }
   setFormDisabled(disabled: boolean) {
     const _disabled = Boolean(disabled)
     this.formConfig.disabled = _disabled
@@ -205,9 +229,9 @@ export class form extends base<formConfig> {
       const items = this.formConfig.items
       const targetItem = items.find((item: formitem) => {
         return item.itemConfig.field == field
-      })
+      }) as formitem
       if (targetItem) {
-        targetItem.itemConfig.visible = Boolean(status)
+        targetItem!.itemConfig.visible = Boolean(status)
       }
     })
     this.renderLayout.layout = this.calculateLayout()

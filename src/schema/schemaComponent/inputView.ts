@@ -63,7 +63,7 @@ export default defineComponent({
                             if (inputInstance.getForm) {
                                 form = inputInstance.getForm()
                             }
-                            itemChange({ value: value, form: form, inputInstance: inputInstance })
+                            itemChange({ value: value, form: form, inputInstance: inputInstance, data: props.data })
                         }
                     })
                 } catch (error) {
