@@ -25,6 +25,7 @@ export class basicEntityItem extends base {
         h: 0,
         renderKey: '',
         renderCom: '',//渲染组件名称
+        renderComName: "",
         renderFunName: 'instanceView',
         instance: null,
     }
@@ -59,25 +60,44 @@ export class basicEntityItem extends base {
             return entity.layoutConfig.isDraggable && entity.layoutConfig.isResizable
         })
         const vNode = () => {
-            let renderCom: any = null
-            let defaultCom: any = null
-            const renderComName = _this.entityItemConfig.renderCom || 'instanceView'
-            const renderFunName = _this.entityItemConfig.renderFunName
-            const renderFun = _this.entityItemConfig.renderFun
-            let renderData = {}
-            if (renderFunName != null) {
+            console.log('render testRender')
+            let renderCom: any = null//渲染的组件类型
+            let renderData = {}//渲染组件的数据
+            let defaultCom: any = null//最终输入的组件实例
+            //获取数据的函数 init renderData
+            let renderFunName = _this.entityItemConfig.renderFunName
+            let renderFun = _this.entityItemConfig.renderDataFun
+            if (typeof renderFun == 'function') {
+                renderFun = renderFun
+            } else {
                 //@ts-ignore
-                let _renderFun = entity[renderFunName]
-                if (typeof _renderFun == 'function') {
-                    //@ts-ignore
-                    renderData = entity[renderFunName]()
-                }
-            } else if (renderFun != null && typeof renderFun == 'function') {
-                renderData = renderFun(entity, this)
+                renderFun = _this.entity[renderFunName]
             }
-            // const instance = this.entityItemConfig.instance//是否有实例 
-            if (typeof renderComName == 'function') {
-                renderCom = renderComName(_this)
+            if (typeof renderFun == 'function') {
+                //@ts-ignore
+                renderData = renderFun.call(_this.entity, { entity: _this.entity, entityItem: _this })
+            }
+            //渲染组件名称
+            //渲染组件函数,返回一个vNode?还是普通的组件类型?
+            let renderComName = _this.entityItemConfig.renderComName || 'instanceView'
+            let renderComFun = _this.entityItemConfig.renderComFun//直接返回vNode吧
+            //处理组件传递数据的
+            // if (renderFunName != null) {
+            //     //@ts-ignore
+            //     let _renderFun = entity[renderFunName]
+            //     if (typeof _renderFun == 'function') {
+            //         //@ts-ignore
+            //         renderData = entity[renderFunName]({ entity: entity, entityItem: this })//默认的初始化函数
+            //     }
+            // } else if (renderFun != null && typeof renderFun == 'function') {
+            //     //@ts-ignore
+            //     renderData = renderFun({ entity, entityItem: this })
+            // }
+            //处理组件实例的
+            //判断渲染函数
+            if (typeof renderComFun == 'function') {
+                //@ts-ignore
+                renderCom = renderComFun({ entityItem: _this, entity: _this.entity })//函数式
             } else {
                 //@ts-ignore
                 let renderComponent = comVetor[renderComName]
@@ -94,7 +114,6 @@ export class basicEntityItem extends base {
                 h('div', {
                     style: _divStyle,
                     onContextmenu: (event: MouseEvent) => {
-                        console.log(_this, 'testItem')
                         const entity = _this.entity!
                         entity.openContext(event)
                     }
@@ -116,8 +135,6 @@ export class basicEntityItem extends base {
     initComponent() {
         const _this = this
         const entityItemConfig = _this.entityItemConfig
-        const renderFunName = entityItemConfig.renderFunName
-        const renderComName = entityItemConfig.renderCom || 'instanceView'
         const entity = this.entity!
         let isDrag = computed(() => {
             return entity.layoutConfig.isDraggable && entity.layoutConfig.isResizable

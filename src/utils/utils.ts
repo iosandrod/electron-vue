@@ -218,7 +218,7 @@ export const formatTableExtend = (xExtend: any[] = []) => {
     return _xExtend
 }
 
-export const formatFunction = (str: any) => {
+export const formatFunction = (str: any,) => {
     let fn = null
     try {
         let _fn = new Function(`return ${str}`)
@@ -334,3 +334,7 @@ export const getFixedPosition = (el: any, mousePosition: position) => {
     const fTop = mTop - tY - top
     return { left: fLeft, top: fTop }
 }
+
+// export const formatFunction = (fun: string) => {
+    
+// }

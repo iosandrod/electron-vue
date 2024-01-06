@@ -84,14 +84,6 @@ export const getRenderDetailEntity = async <T extends mainEntity>(entity: T) => 
     // return { mainEntity: entity, }//子表 随便把主表传过去
 }
 
-export const initRenderSearchForm = (entity: basicEntity) => {
-
-}
-
-export const initRenderEditForm = (entity: basicEntity) => {
-
-}
-
 
 
 export const jumpToEditPage = (entity: mainEntity) => {

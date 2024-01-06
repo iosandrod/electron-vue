@@ -75,6 +75,16 @@ export const nodeFormConfig: formConfig = {
         itemChange: (value) => {
         }
     }, {
+        field: "renderDataFun",
+        type: 'codeEdit',
+        title: '节点数据函数'
+    },
+    {
+        field: "renderComFun",
+        type: "codeEdit",
+        title: "节点函数",
+    },
+    {
         field: "renderFunName",
         type: "select",
         title: "业务组件",
@@ -108,12 +118,14 @@ export const nodeFormConfig: formConfig = {
             }
         }
     },
+
     {
         field: "renderComName",
         type: "select",
         title: "渲染节点",
         options: [
-            { label: "输入框", value: "inputView" }
+            { label: "输入框", value: "inputView" },
+            { label: "表格", value: "tableView" }
         ]
     },
     {

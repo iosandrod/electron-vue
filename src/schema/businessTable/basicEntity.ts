@@ -11,7 +11,7 @@ import { http } from "../http"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig, tableKeyType, pickKey, getDataConfig, detailTableConfig, entityDialogConfig, jumpConfig } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig, tableKeyType, pickKey, getDataConfig, detailTableConfig, entityDialogConfig, jumpConfig, entityInitConfig } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -45,6 +45,7 @@ import modalVue from "@/components/modal.vue"
 import { contextList, formFormConfig, nodeFormConfig } from "./basicEntityData"
 import _ from "lodash"
 import { basicEntityItem, createEntityItem } from "../basicEntityItem"
+import { formatFunction } from "@/utils/utils"
 interface tableMethod {
 
 }
@@ -343,7 +344,15 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const system = this.system
     const data: any = await system.confirmForm(nodeFormConfig)//缓存组件
     const renderFunName = data.renderFunName
+    const renderComName = data.renderComName
     const renderKey = data.renderKey
+    const renderDataFun = formatFunction(data.renderDataFun)
+    const renderComFun = formatFunction(data.renderComFun)
+
+    if (Boolean(renderKey) == false) {
+      console.error('没有节点主键')
+      return
+    }
     const h = data.h
     const w = data.w
     const x = data.x || 0
@@ -355,7 +364,10 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       w: w,
       h: h,
       renderKey: renderKey,
-      renderFunName: renderFunName
+      renderFunName: renderFunName,
+      renderComName: renderComName,
+      renderDataFun: renderDataFun,
+      renderComFun: renderComFun
     }
     const hasNode = this.renderLayout.layout?.find(item => item.i == renderKey)
     if (hasNode != null) {
@@ -367,13 +379,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   removeNode(nodeKey: string) {
 
   }
-  initRenderTable() {
+  initRenderTable(initConfig?: entityInitConfig) {
     try {
       if (this.pageRef.vxeGrid != null) {
         return { instance: this.pageRef.vxeGrid, tableInstance: this.pageRef.vxeGrid }
       }
-      const entity = this
-      const _this = this
+      const entity = initConfig?.entity || this
+      const _this = entity
       const renderTable = entity.renderTable//这个是渲染表格的数据
       renderTable.columns = computed(() => {
         return this.tableConfig.columns

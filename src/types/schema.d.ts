@@ -739,9 +739,16 @@ export type contextItemValue = {
 }
 
 export type entityItemConfig = {
+  renderComName?: string
   renderKey: string,
   renderCom: string | ((entityItem: basicEntityItem) => VNode),//
-  renderFun?: (value1: basicEntity, value2: basicEntityItem) => any
+  renderComFun: string | ((entityItem: basicEntityItem) => VNode)
+  renderDataFun?: (value1: basicEntity, value2: basicEntityItem) => any
   renderFunName: string,
   instance?: any
 } & layoutItem
+
+export type entityInitConfig = {
+  entity?: basicEntity,
+  entityItem?: basicEntityItem
+}
