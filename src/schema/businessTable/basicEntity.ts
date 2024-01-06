@@ -77,7 +77,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   // dialogArr
   dialogPool: { [key: string]: dialog } = {}
   layoutConfig: layoutConfig = {
-    rowHeight: 10,
+    rowHeight: 1,
     isDraggable: false,
     isResizable: false,
     useCssTransform: false,
@@ -158,13 +158,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     return originTableInfo.cCodeColumn
   }
   calculateLayout() {
-    // const _layout = this.entityConfig!.map((item: basicEntityItem) => {
-    //   return {
-    //     x: item.x, y: item.y, h: item.h, w: item.w,
-    //     i: item.i
-    //   } as layoutItem
-    // })
-    // return _layout
     let items: basicEntityItem[] = this.entityConfig!
     const _layout = items.map(item => {
       let itemConfig = item.entityItemConfig
@@ -213,6 +206,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
               })
             }
           ),
+          h(instanceView, { instance: _this.pageRef.contextMenu }),
           // h(modalVue, { entity: _this })
           h(dialogPoolView, { dialogPool: Object.values(_this.dialogPool) })
           // h(dialogPoolView, { dialogPool: _this.dialogPool })
@@ -346,9 +340,9 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const renderFunName = data.renderFunName
     const renderComName = data.renderComName
     const renderKey = data.renderKey
+    const nodeType = data.nodeType
     const renderDataFun = formatFunction(data.renderDataFun)
     const renderComFun = formatFunction(data.renderComFun)
-
     if (Boolean(renderKey) == false) {
       console.error('没有节点主键')
       return
@@ -367,7 +361,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       renderFunName: renderFunName,
       renderComName: renderComName,
       renderDataFun: renderDataFun,
-      renderComFun: renderComFun
+      renderComFun: renderComFun,
+      nodeType: nodeType
     }
     const hasNode = this.renderLayout.layout?.find(item => item.i == renderKey)
     if (hasNode != null) {
@@ -402,9 +397,20 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
       renderTable.onCellClick = () => {
         console.log('onCellClick')
       }
+      renderTable.refreshData_after = (value: any) => {
+        const rows = value.rows
+        const afterConfig: runAfterConfig = {
+          vxeGrid: value.table,
+          methodName: "refreshData",
+          rows: rows,
+          table: _this
+        }
+        this.getRunAfter(afterConfig)
+      }
       const table = createTable(renderTable)
       //@ts-ignore
       entity.pageRef.vxeGrid = table//只初始化一次
+
       return { tableInstance: table, instance: table }
     } catch (error) {
       return Promise.reject("表格组件初始化失败")
@@ -606,6 +612,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   async initTableInfo() {
     const tableInfo = await getTableConfig(this.entityName)//相当于表名吧,这个函数具有副作用
+    //存tableInfo
+    //tableInfo 东西放到tableConfig
     this.tableInfo = tableInfo
     const entity = this
     const columns: any = entity.tableInfo!.tableColumns
@@ -642,7 +650,12 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     renderLayout.colNum = 24
     const _layout = this.calculateLayout()
     renderLayout.layout = _layout as any
-    // renderLayout.o
+    renderLayout['onUpdate:layout'] = (value) => {
+      this.renderLayout.layout = value
+      this.entityConfig?.forEach(item => {
+        item.updateLayout(value)
+      })
+    }
   }
   async initEntityConfig() {//初始化页面节点数据
     // const entityConfig = this.entityConfig!//这个是节点配置
@@ -656,12 +669,11 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
   }
   async addEntityItem(config: layoutItem) {//添加一个节点
-    // debugger
-    // console.log(config, 'testConfig')
     const _config = lodash.cloneDeep(config)
     const _config1: any = await this.resolveEntityItem(_config)
     this.entityConfig!.push(_config1)
     this.renderLayout.layout = this.calculateLayout()
+    // console.log(this.renlayou)
   }
   async removeEntityItem(config: layoutItem) {
     const i = config.i

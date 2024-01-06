@@ -128,6 +128,7 @@ export type roundType = {
 }
 
 export type columnConfig = {
+  fnTemplate?: string
   title?: string,
   width?: number
   renderColumn?: any,
@@ -196,7 +197,7 @@ export type position = {
 }
 export type selectOptions = { value: string, label: string }
 
-export type itemConfig = VxeFormItemProps & {
+export type itemConfig = {
   validate?: ((value: any) => Promise<any>) | null
   defaultValue?: any
   required?: boolean
@@ -219,9 +220,10 @@ export type itemConfig = VxeFormItemProps & {
   formitems?: itemConfig[],
   placeholder?: string
   itemChange?: (value?: valueChangeParams) => void
-} & VxeInputEventProps
+} & VxeInputEventProps & VxeFormItemProps
 
 export type formConfig = {
+  title?: string
   disabled?: boolean,
   itemWidth?: number,
   items: Array<formitem>
@@ -738,7 +740,11 @@ export type contextItemValue = {
   item: any
 }
 
+export type nodeType = 'form' | 'input' | 'table'
+
 export type entityItemConfig = {
+  createConfig?: any
+  nodeType?: nodeType
   renderComName?: string
   renderKey: string,
   renderCom: string | ((entityItem: basicEntityItem) => VNode),//

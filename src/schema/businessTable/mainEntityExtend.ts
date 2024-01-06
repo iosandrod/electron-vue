@@ -3,6 +3,7 @@ import { detailEntity } from "./detailEntity";
 import { mainEditEntity } from "./mainEditEntity";
 import { mainEntity } from "./mainEntity";
 import { uid } from "quasar";
+import { t } from "vxe-table";
 
 export const getTableData_before = (runBeforeConfig: runBeforeConfig) => {
     const table = runBeforeConfig.table
@@ -60,4 +61,19 @@ export const curRowChange_after = (runAfterConfig: runAfterConfig) => {
     })
 
     //发送指令 
+}
+
+
+export const refreshData_after = (runAfterConfig: runAfterConfig) => {
+    // console.log(runAfterConfig, 'test refresh Data')
+    const rows = runAfterConfig.rows || []
+    const entity = runAfterConfig.table
+    const curRow = entity?.getCurRow()
+    if (rows.includes(curRow)) {
+        return
+    } else {
+        entity?.detailTable?.forEach(table => {
+            table.clearTableData()
+        })
+    }
 }

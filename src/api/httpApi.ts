@@ -13,34 +13,34 @@ export const getTableInfo = async (entity?: basicEntity) => {
 }
 export const typeNode = {
     main: [
-        // {
-        //     x: 0, y: 0, h: 4, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-        //         renderComName: "instanceView",//组件
-        //         renderFunName: 'initRenderButtonGroup',//数据初始化函数
-        //     } as layoutItemConfig,
-        //     renderKey: 'buttonGroup',
-        //     renderComName: "instanceView",//组件
-        //     renderFunName: 'initRenderButtonGroup',//数据初始化函数
-        // },
-        // {
-        //     x: 0, y: 4, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-        //         renderComName: "instanceView",//组件
-        //         renderFunName: 'initRenderTable',//数据初始化函数
-        //     } as layoutItemConfig,
-        //     renderKey: 'vxeGrid',
-        //     renderComName: "instanceView",//组件
-        //     renderFunName: 'initRenderTable',//数据初始化函数
-        // },
-        // {
-        //     x: 0, y: 34, h: 40, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
-        //         // renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
-        //         renderComName: "instanceView",
-        //         renderFunName: "initRenderDetailEntity",
-        //     } as layoutItemConfig,
-        //     renderKey: 'dEntityInstance',
-        //     renderComName: "instanceView",
-        //     renderFunName: "initRenderDetailEntity",
-        // },
+        {
+            x: 0, y: 0, h: 40, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "instanceView",//组件
+                renderFunName: 'initRenderButtonGroup',//数据初始化函数
+            } as layoutItemConfig,
+            renderKey: 'buttonGroup',
+            renderComName: "instanceView",//组件
+            renderFunName: 'initRenderButtonGroup',//数据初始化函数
+        },
+        {
+            x: 0, y: 4, h: 300, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                renderComName: "instanceView",//组件
+                renderFunName: 'initRenderTable',//数据初始化函数
+            } as layoutItemConfig,
+            renderKey: 'vxeGrid',
+            renderComName: "instanceView",//组件
+            renderFunName: 'initRenderTable',//数据初始化函数
+        },
+        {
+            x: 0, y: 34, h: 400, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+                // renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
+                renderComName: "instanceView",
+                renderFunName: "initRenderDetailEntity",
+            } as layoutItemConfig,
+            renderKey: 'dEntityInstance',
+            renderComName: "instanceView",
+            renderFunName: "initRenderDetailEntity",
+        },
         // {
         //     x: 0, y: 4, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
         //         renderComName: "formView",//组件
@@ -62,7 +62,7 @@ export const typeNode = {
         //     } as layoutItemConfig,
         // },
         {
-            x: 0, y: 0, h: 4, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            x: 0, y: 0, h: 40, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
                 renderComName: "instanceView",//组件
                 renderFunName: 'initRenderButtonGroup',//数据初始化函数
             } as layoutItemConfig,
@@ -71,7 +71,7 @@ export const typeNode = {
             renderFunName: 'initRenderButtonGroup',//数据初始化函数
         },
         {
-            x: 0, y: 4, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            x: 0, y: 4, h: 300, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
                 renderComName: "instanceView",//组件
                 renderFunName: 'initRenderTable',//数据初始化函数 
             } as layoutItemConfig,
@@ -82,7 +82,7 @@ export const typeNode = {
     ],
     search: [
         {
-            x: 0, y: 0, h: 4, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            x: 0, y: 0, h: 40, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
                 renderComName: "buttonGroupView",//组件
                 renderFunName: 'initRenderButtonGroup',//数据初始化函数
             } as layoutItemConfig,
@@ -90,7 +90,7 @@ export const typeNode = {
             renderFunName: 'initRenderButtonGroup',//数据初始化函数
         },
         {
-            x: 0, y: 4, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            x: 0, y: 4, h: 300, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
                 renderComName: "tableView",//组件
                 renderFunName: 'initRenderTable',//数据初始化函数
             } as layoutItemConfig,
@@ -98,7 +98,7 @@ export const typeNode = {
             renderFunName: 'initRenderTable',//数据初始化函数
         },
         {
-            x: 0, y: 34, h: 35, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            x: 0, y: 34, h: 350, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
                 renderComName: "detailEntityView",//组件,一般这种呢都是固定死的
                 renderFunName: "initRenderDetailEntity",
             } as layoutItemConfig,
@@ -108,7 +108,7 @@ export const typeNode = {
     ],
     edit: [
         {
-            x: 0, y: 0, h: 4, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            x: 0, y: 0, h: 40, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
                 renderComName: "instanceView",//组件 
                 renderFunName: 'initRenderButtonGroup',//数据初始化函数
             } as layoutItemConfig,
@@ -117,7 +117,7 @@ export const typeNode = {
             renderFunName: 'initRenderButtonGroup',//数据初始化函数
         },
         {
-            x: 0, y: 4, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            x: 0, y: 4, h: 300, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
                 renderComName: "instanceView",//组件
                 renderFunName: 'initRenderEditForm',//数据初始化函数 初始化编辑的表单的
             } as layoutItemConfig,
@@ -126,7 +126,7 @@ export const typeNode = {
             renderFunName: 'initRenderEditForm',//数据初始化函数 初始化编辑的表单的
         },
         {
-            x: 0, y: 34, h: 35, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
+            x: 0, y: 34, h: 350, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
                 renderComName: "instanceView",//组件,一般这种呢都是固定死的
                 renderFunName: "initRenderDetailEntity",
             } as layoutItemConfig,

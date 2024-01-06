@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { VNode, computed, h, reactive, resolveComponent, vShow, withDirectives } from "vue";
 import { base } from "./base";
 import { systemInstance } from "./system";
@@ -6,6 +7,7 @@ import { StyleType, entityItemConfig, layoutItem, propsConfig } from "@/types/sc
 import contextMenuView from "./schemaComponent/contextMenuView";
 import instanceView from "./schemaComponent/instanceView";
 import { comVetor } from "@/plugin/register";
+import basicEntityItemView from "./schemaComponent/basicEntityItemView";
 
 export class basicEntityItem extends base {
     renderComponent: (() => null) | (() => VNode) = () => null
@@ -28,6 +30,8 @@ export class basicEntityItem extends base {
         renderComName: "",
         renderFunName: 'instanceView',
         instance: null,
+        nodeType: '',
+        createConfig: {}
     }
     pageRef = {}
     constructor(schema: any, system: any) {
@@ -39,9 +43,14 @@ export class basicEntityItem extends base {
         Object.entries(schema).forEach(([key, value]) => {
             _entityItemConfig[key] = value
         })//处理这个entity
+        this.initRenderInstance()
         this.initRenderComponent()
         this.initRenderLayoutItem()
         this.initComponent()
+    }
+    //设计当前组件
+    designCurrentItem() {
+        const instance = this.entityItemConfig.instance
     }
     initRenderLayoutItem() {
         const renderKey = this.entityItemConfig.renderKey!
@@ -51,7 +60,34 @@ export class basicEntityItem extends base {
                 return layout.i == renderKey
             })
             return renderLayout
-        }) as any
+        }) as any// who illuminated you?
+    }
+    updateLayout(layoutArr: any[]) {
+        const targetItem = layoutArr.find(item => {
+            return item.i == this.entityItemConfig.renderKey
+        })
+        const entityItemConfig = this.entityItemConfig
+        if (targetItem) {
+            entityItemConfig['x'] = targetItem['x']
+            entityItemConfig['y'] = targetItem['y']
+            entityItemConfig['w'] = targetItem['w']
+            entityItemConfig['h'] = targetItem['h']
+        }
+    }
+    initRenderInstance() {
+        const entityItemConfig = this.entityItemConfig
+        const nodeType = entityItemConfig.nodeType
+        if (Boolean(nodeType) == false) {
+            return
+        }
+        const createFn = this.entity.createFn
+        const targetCreateFn = createFn[nodeType]
+        if (typeof targetCreateFn != 'function') {
+            return
+        }
+        const createConfig = entityItemConfig.createConfig
+        const instance = targetCreateFn(createConfig)
+        entityItemConfig.instance = instance
     }
     initRenderComponent() {
         const _this = this
@@ -60,7 +96,6 @@ export class basicEntityItem extends base {
             return entity.layoutConfig.isDraggable && entity.layoutConfig.isResizable
         })
         const vNode = () => {
-            console.log('render testRender')
             let renderCom: any = null//渲染的组件类型
             let renderData = {}//渲染组件的数据
             let defaultCom: any = null//最终输入的组件实例
@@ -81,23 +116,12 @@ export class basicEntityItem extends base {
             //渲染组件函数,返回一个vNode?还是普通的组件类型?
             let renderComName = _this.entityItemConfig.renderComName || 'instanceView'
             let renderComFun = _this.entityItemConfig.renderComFun//直接返回vNode吧
-            //处理组件传递数据的
-            // if (renderFunName != null) {
-            //     //@ts-ignore
-            //     let _renderFun = entity[renderFunName]
-            //     if (typeof _renderFun == 'function') {
-            //         //@ts-ignore
-            //         renderData = entity[renderFunName]({ entity: entity, entityItem: this })//默认的初始化函数
-            //     }
-            // } else if (renderFun != null && typeof renderFun == 'function') {
-            //     //@ts-ignore
-            //     renderData = renderFun({ entity, entityItem: this })
-            // }
-            //处理组件实例的
-            //判断渲染函数
             if (typeof renderComFun == 'function') {
-                //@ts-ignore
-                renderCom = renderComFun({ entityItem: _this, entity: _this.entity })//函数式
+                try {
+                    renderCom = renderComFun({ entityItem: _this, entity: _this.entity })//函数式
+                } catch (error) {
+                    renderCom = h('div')
+                }
             } else {
                 //@ts-ignore
                 let renderComponent = comVetor[renderComName]
@@ -105,7 +129,11 @@ export class basicEntityItem extends base {
                     //@ts-ignore
                     renderComponent = instanceView
                 }
-                renderCom = h(renderComponent, { ...renderData, key: _this.entityItemConfig.renderKey })
+                const renderConfig = { ...renderData, key: _this.entityItemConfig.renderKey }
+                if (_this.entityItemConfig.instance != null && Boolean(_this.entityItemConfig.nodeType) != false) {
+                    renderConfig.instance = this.entityItemConfig.instance
+                }
+                renderCom = h(renderComponent, renderConfig)
             }
             //获取renderCom的组件
             const _divStyle = { position: 'absolute', top: '0px', left: '0px', bottom: '0px', background: "white", opacity: '0', right: '0px', zIndex: 999 } as StyleType
@@ -134,7 +162,6 @@ export class basicEntityItem extends base {
     }
     initComponent() {
         const _this = this
-        const entityItemConfig = _this.entityItemConfig
         const entity = this.entity!
         let isDrag = computed(() => {
             return entity.layoutConfig.isDraggable && entity.layoutConfig.isResizable
@@ -143,8 +170,7 @@ export class basicEntityItem extends base {
             const renderLayoutItem = _this.renderLayoutItem
             const gridItemCom = resolveComponent('grid-item')
             const layoutItemCom = h(gridItemCom, renderLayoutItem, () => {
-                const renderComponent = _this.renderComponent
-                return renderComponent()//子节点
+                return h(basicEntityItemView, { instance: _this })
             })
             return layoutItemCom
         }

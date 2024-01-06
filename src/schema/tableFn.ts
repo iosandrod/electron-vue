@@ -583,7 +583,8 @@ export const initTableColumn = (table: table) => {
     const schema = table.schema
     const tableConfig = table.tableConfig
     //@ts-ignore
-    tableConfig.columns = schema['columns']?.map(col => {
+    const _columns = schema['columns'] || []
+    tableConfig.columns = _columns?.map(col => {
         if (col instanceof column) {
             return col
         }

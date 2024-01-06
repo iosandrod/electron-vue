@@ -81,7 +81,7 @@ export class system extends base {
     await this.initRenderTab()
     this.displayState = 'show'
     setTimeout(() => {
-      // this.routeOpen({ entityName: "t_SdOrder" })//跳转
+      this.routeOpen({ entityName: "t_SdOrder" })//跳转
       // this.routeOpen({ entityName: "t_Item" })
       // this.routeOpen({ entityName: 't_SdOrder', isEdit: true })
       // this.routeOpen('index8')
@@ -405,7 +405,8 @@ export class system extends base {
         modelValue: true,
         height: 400,
         width: 600,//正方形的弹框
-        instance: _table
+        instance: _table,
+
       } as dialogConfig)
       this.addGlobalDialog('instanceView', _confirmConfig)
     })
@@ -448,8 +449,9 @@ export class system extends base {
         modelValue: true,
         height: 400,
         width: 600,//正方形的弹框
-        instance: _form
-      } as dialogConfig, formConfig)
+        instance: _form,
+        title: _form.formConfig.title || '表单'
+      } as dialogConfig,)
       this.addGlobalDialog('instanceView', _confirmConfig)
     })
   }

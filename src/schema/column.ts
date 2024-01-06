@@ -18,6 +18,7 @@ export class column extends base<VxeTableDefines.ColumnOptions> {
   formItemMap = new WeakMap()
   columnConfig: VxeTableDefines.ColumnOptions & columnConfig = {
     isEdit: false,
+    fnTempalte: '',
     type: 'string' as any,
     showFilter: true,//显示filter
     showSort: true,

@@ -10,6 +10,7 @@ import instanceView from "./schemaComponent/instanceView"
 import formitemView from "./editComponent/formitemView"
 export class form extends base<formConfig> {
   formConfig: formConfig = {
+    title: "表单",
     data: {},
     isDraggable: false,
     isResizable: false,

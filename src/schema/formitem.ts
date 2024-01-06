@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { ReactiveEffect, computed, h, isProxy, reactive, resolveComponent, watch, watchEffect } from "vue";
 import { base } from "./base";
 import { system, systemInstance } from "./system";
@@ -94,11 +95,19 @@ export class formitem extends baseEdit<any> {
         const data = this.form?.formConfig.data! || {}
         const field = this.itemConfig.field!
         let _value = data[field!]
-        if (_value == null) {
-            let defaultValue = this.itemConfig.defaultValue
-            if (defaultValue != null) {
-                data[field] = defaultValue
+        try {
+            if (_value == null) {
+                let defaultValue = this.itemConfig.defaultValue
+                if (defaultValue != null) {
+                    if (typeof defaultValue == 'function') {
+                        data[field] = defaultValue(this)
+                    } else {
+                        data[field] = defaultValue
+                    }
+                }
             }
+        } catch (error) {
+            console.warn('默认值初始化失败')
         }
     }
     async validate() {
@@ -237,6 +246,9 @@ export class formitem extends baseEdit<any> {
         renderItem.span = formitemFn.getFormitemSpan(this) as any
         // renderItem.visible = formitemFn.getFormItemVisible(this) as any 
         renderItem.field = formitemFn.getFormItemField(this) as any
+    }
+    changeEditType(type: string) {
+        this.itemConfig.type = type//修改编辑类型
     }
 }
 

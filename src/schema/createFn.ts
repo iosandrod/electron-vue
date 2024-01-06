@@ -19,6 +19,11 @@ const createFn = {
     createMenu,
     createTab,
     createForm,
+    form: createForm,
+    table: createTable,
+    input: createInput,
+    menu: createMenu,
+    button: createButton
 }
 
 export { createFn }

@@ -2,6 +2,7 @@
 import { contextList, formConfig, itemConfig } from "@/types/schema"
 import { formitem } from "../formitem"
 import { form } from "../form"
+import XEUtils from "xe-utils"
 export const tableFormConfig: formConfig = {
     items: []
 }
@@ -60,7 +61,10 @@ export const nodeFormConfig: formConfig = {
         type: 'string',
         field: "renderKey",
         required: true,
-        title: "节点主键"
+        title: "节点主键",
+        defaultValue: () => {
+            return XEUtils.uniqueId()
+        }
     }, {
         field: "nodeType",
         title: "节点类型",
@@ -77,12 +81,14 @@ export const nodeFormConfig: formConfig = {
     }, {
         field: "renderDataFun",
         type: 'codeEdit',
-        title: '节点数据函数'
+        title: '节点数据函数',
+        placeholder: "返回节点组件需要的数据,慎用"
     },
     {
         field: "renderComFun",
         type: "codeEdit",
-        title: "节点函数",
+        title: "节点组件函数",
+        placeholder: '返回某个组件或者虚拟节点,慎用'
     },
     {
         field: "renderFunName",
@@ -107,7 +113,7 @@ export const nodeFormConfig: formConfig = {
                 form.setItemDisabled(_fieldArr, true)
             } else {
                 form.setItemDisabled(_fieldArr, false)
-                data['renderKey'] = ''
+                // data['renderKey'] = ''
             }
             if (_value == 'initRenderTable') {
                 data['renderKey'] = 'vxeGrid'
@@ -146,8 +152,8 @@ export const nodeFormConfig: formConfig = {
         field: 'h',
         type: "number",
         title: "高度",
-        defaultValue: 20,
-        placeholder: "范围0-80",
+        defaultValue: 200,
+        placeholder: "范围0-200",
         itemChange: (value) => {
             const data = value?.data
             const _value = value?.value
@@ -192,3 +198,88 @@ export const contextList: contextList = [{
         console.log(parent, 'testP')
     },
 },]
+
+
+
+
+export const formItemForm: formConfig = {
+    title: "表单设计器",
+    items: [//列类型
+        {
+            type: "select",
+            field: "type",
+            title: '编辑类型',
+            options: [{
+                label: "字符串",
+                value: "string"
+            }, {
+                label: "select",
+                value: "选择框",
+            }, {
+                label: "关联表",
+                value: "baseInfo"
+            }, {
+                label: "日期",
+                value: "date"
+            }, {
+                label: "日期时间",
+                value: "datetime"
+            }, {
+                label: "时间",
+                value: "time"
+            }],
+        }, {
+            type: "string",
+            title: "标题",
+            field: "title",
+        },
+        {
+            field: "options",
+            type: "table",
+            title: '下拉选项',
+            placeholder: "类型为select生效",
+            tableConfig: {
+                title: "选择列表",
+                columns: [
+                    {
+                        editType: "string",
+                        title: "显示值",
+                        field: "label"
+                    },
+                    {
+                        editType: "string",
+                        title: "绑定值",
+                        field: 'value'
+                    }
+                ]
+            }
+        },
+        {
+            type: "codeEdit",
+            field: "itemChange",
+            fnTemplate: "",
+        },
+        {
+            type: 'string',
+            field: 'field',
+            title: "绑定字段"
+        }, {
+            type: "number",
+            field: "w",
+            title: "宽度",
+        }, {
+            type: "number",
+            field: "h",
+            title: "高度",
+        },
+        {
+            type: 'number',
+            field: "x",
+            title: "水平位置"
+        }, {
+            type: 'number',
+            field: "y",
+            title: "垂直位置"
+        }
+    ] as itemConfig[]
+}

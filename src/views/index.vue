@@ -27,31 +27,20 @@
           <div>
             <vxe-button @click="designEntity">进入设计</vxe-button>
             <vxe-button @click="openDialog">打开弹框</vxe-button>
-            <vxe-button @click="changeForm">改变form</vxe-button>
-            <vxe-button @click="visibleNode">改变node</vxe-button>
             <vxe-button @click="getTableData">获取数据</vxe-button>
             <vxe-button @click="routeOpen">路由跳转</vxe-button>
-            <vxe-button @click="changeEditType">改变类型</vxe-button>
             <vxe-button @click="changeEditType1">改变编辑框类型</vxe-button>
-            <vxe-button @click="changeEditType11">改变类型11</vxe-button>
-            <vxe-button @click="changeEditType111">scrollTo</vxe-button>
             <vxe-button @click="changeEditType1111">scrollTo11</vxe-button>
             <vxe-button @click="changeEditType11111">进入编辑路由</vxe-button>
-            <vxe-button @click="changeEditType111111">修改编辑状态</vxe-button>
-            <vxe-button @click="changeEditType1111111">添加弹框</vxe-button>
-            <vxe-button @click="changeEditType11111111">删除弹框</vxe-button>
-            <vxe-button @click="changeEditType111111111">默认值</vxe-button>
-            <vxe-button @click="changeEditType1111111111">默认值11</vxe-button>
-            <vxe-button @click="changeEditType11111111111">默认值111</vxe-button>
             <vxe-button @click="changeEditType111111111111">新增节点</vxe-button>
-            <!-- 
+            <!--  
               changeEditType11111111
              -->
           </div>
           <div class="flex-1 w-full">
             <!-- <component :is="vNode1"></component> -->
-            <instance-view :instance="_entity"></instance-view>
-            <!-- <router-view></router-view> -->
+            <!-- <instance-view :instance="_entity"></instance-view> -->
+            <router-view></router-view>
           </div>
         </div>
         <dialogPoolView></dialogPoolView>
@@ -100,35 +89,8 @@ function openDialog() {
     entity.openDialog('searchDialog')
   }
 }
-function changeForm() {
-  const systemConfig = systemInstance.systemConfig
-  const key = systemConfig.activeKey
-  const entity = systemInstance.entityVetor[key]
-  if (entity) {
-    let col = entity.tableInfo?.tableColumns.find(col => {
-      return col.columnName == 'cStatus'
-    })!
-    if (col.editType != 'string') {
-      col.editType = 'string'
-    } else {
-      col.editType = 'select'
-    }
-  }
-}
-function visibleNode() {
-  const systemConfig = systemInstance.systemConfig
-  const key = systemConfig.activeKey
-  const entity = systemInstance.entityVetor[key]
-  if (entity) {
-    if (
-      entity.pageRef.vxeGrid?.displayState == 'hidden'
-    ) {
-      entity.pageRef.vxeGrid.displayState = 'show'
-    } else {
-      entity.pageRef.vxeGrid!.displayState = 'hidden'
-    }
-  }
-}
+
+
 function getTableData() {
   const systemConfig = systemInstance.systemConfig
   const key = systemConfig.activeKey
@@ -141,20 +103,7 @@ function routeOpen() {
   systemInstance.routeOpen('index8')
 }
 let state1 = false
-function changeEditType() {
-  const systemConfig = systemInstance.systemConfig
-  const key = systemConfig.activeKey
-  const entity = systemInstance.entityVetor[key]
-  const vxeGrid = entity.pageRef.vxeGrid
-  if (state1) {
-    vxeGrid?.setEntityEdit('fullEdit')
-    // vxeGrid?.changeColumnEditType('cCustName', 'select')
-  } else {
-    vxeGrid?.setEntityEdit('scan')
-    // vxeGrid?.changeColumnEditType('cCustName', 'string')
-  }
-  state1 = !state1
-}
+
 let state11 = false
 function changeEditType1() {
   const systemConfig = systemInstance.systemConfig
@@ -175,41 +124,7 @@ function changeEditType1() {
   state11 = !state11
 }
 
-function changeEditType11() {
-  const systemConfig = systemInstance.systemConfig
-  const key = systemConfig.activeKey
-  const entity = systemInstance.entityVetor[key]
-  const vxeGrid = entity.pageRef.vxeGrid
-  if (state11) {
-    entity.tableConfig.columns!.forEach((col: any) => {
-      if (col.editType == 'select') {
-        col.options = [{ label: '小风1', value: 'xiaofeng1' }, { label: '小峰1', value: 'xiaofeng11' }]
-      }
-    })
-    // vxeGrid?.setEntityEdit('fullEdit')
-  } else {
-    // vxeGrid?.setEntityEdit('scan')
-    entity.tableConfig.columns!.forEach((col: any) => {
-      if (col.editType == 'select') {
-        col.options = [{ label: '小风11', value: 'xiaofeng11' }, { label: '小峰11', value: 'xiaofeng111' }]
-      }
-    })
-  }
-  state11 = !state11
-}
 
-function changeEditType111() {
-  const systemConfig = systemInstance.systemConfig
-  const key = systemConfig.activeKey
-  const entity = systemInstance.entityVetor[key]
-  const vxeGrid = entity.pageRef.vxeGrid
-  if (state11) {
-    vxeGrid?.scrollToPosition(100, 100)
-  } else {
-    vxeGrid?.scrollToPosition(100, 100)
-  }
-  state11 = !state11
-}
 const obj = {
   x: 0, y: 4, h: 30, w: 24, i: XEUtils.uniqueId(), layoutItemConfig: {
     renderComName: "tableView",//组件
@@ -244,66 +159,7 @@ function changeEditType11111() {
   }
   state11 = !state11
 }
-function changeEditType111111() {
-  const systemConfig = systemInstance.systemConfig
-  const key = systemConfig.activeKey
-  const entity = systemInstance.entityVetor[key]
-  const entityName = entity.entityName
-  const system = entity.system!
-  if (state11) {
-    entity.entityState = 'scan'
-    // entity.addEntityItem(obj)
-  } else {
-    // entity.removeEntityItem(obj)
-    entity.entityState = 'edit'
-  }
-  state11 = !state11
-}
-async function changeEditType1111111() {
-  await systemInstance.confirm()
-  console.log('testAwait')
-}
-function changeEditType11111111() {
-  systemInstance.removeGlobalDialog('')
-}
-async function changeEditType111111111() {
-  const systemConfig = systemInstance.systemConfig
-  const key = systemConfig.activeKey
-  const entity = systemInstance.entityVetor[key]
-  const entityName = entity.entityName
-  const system = entity.system!
-  const model = await entity.getDefaultModel()
-  // console.log(model, 'testModel')
-  if (state11) {
-    // entity.addEntityItem(obj)
-    entity.addTableRow(10)
-  } else {
-    // entity.removeEntityItem(obj)
-  }
-  state11 = !state11
-}
-async function changeEditType1111111111() {
-  http.getTableInfo('t_SdOrder').then(res => {
-    console.log(res)
-  }).catch(err => {
-    console.error(err)
-  })
-}
-async function changeEditType11111111111() {
-  const systemConfig = systemInstance.systemConfig
-  const key = systemConfig.activeKey
-  const entity = systemInstance.entityVetor[key]
-  const entityName = entity.entityName
-  const system = entity.system!
-  const model = await entity.getDefaultModel()
-  if (state11) {
-    // entity.addTableRow(10)
-    entity.openDialogEditPage({ type: "add" })
-  } else {
-    // entity.removeEntityItem(obj)
-  }
-  state11 = !state11
-}
+
 const _entity = createMainEntity('t_SdOrder')
 _entity.setCurrentEntityDesign(true)
 async function changeEditType111111111111() {
