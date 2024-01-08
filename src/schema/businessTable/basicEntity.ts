@@ -11,7 +11,7 @@ import { http } from "../http"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig, tableKeyType, pickKey, getDataConfig, detailTableConfig, entityDialogConfig, jumpConfig, entityInitConfig, tabConfig, createFn } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig, tableKeyType, pickKey, getDataConfig, detailTableConfig, entityDialogConfig, jumpConfig, entityInitConfig, tabConfig, createFn, tabItemConfig } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -47,6 +47,8 @@ import _ from "lodash"
 import { basicEntityItem, createEntityItem } from "../basicEntityItem"
 import { formatFunction } from "@/utils/utils"
 import { createTab, tab } from "../tab"
+import * as utils from '@/utils/utils'
+import * as httpApi from '@/api/httpApi'
 interface tableMethod {
   createFn: {
 
@@ -64,8 +66,8 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   detailTable?: detailEntity[] = []
   renderDetailEntity: tabConfig = {}
   tableExtend: { [key: string]: Array<Function> } = {}//表格扩展函数
-  utils = {
-  } as any
+  utils = utils
+  httpApi = httpApi
   detailTableConfig: detailTableConfig = {
     keyCodeColumn: "",
     clsKey: "",
@@ -116,6 +118,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     editItems: [],
     searchItems: [],
   }
+  entityButtons: entityButton[] = []
   tableData: { data: any[], curRow: any } = {
     data: [],
     curRow: null
@@ -135,13 +138,12 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   renderEditForm: formConfig = {} as any //渲染编辑表格 
   renderEditEntity: any = {}//初始化编辑表格
   renderSearchForm: any = {}//渲染查询表格
-  renderButtonGroup: any = []//初始化按钮   
+  renderButtonGroup: tabConfig = {}//初始化按钮   
   renderDetailTable: any = {}//渲染子表配置
   renderEditTable: any = {}//渲染编辑表格配置 
   renderSearchDialog: dialogConfig = {}
   nodeArr: [] = []
   renderTableInfo: any = {}
-  util: any
 
   constructor(schema: any, system: any) {
     super(schema, system)
@@ -678,7 +680,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const _config1: any = await this.resolveEntityItem(_config)
     this.entityConfig!.push(_config1)
     this.renderLayout.layout = this.calculateLayout()
-    // console.log(this.renlayou)
   }
   async removeEntityItem(config: layoutItem) {
     const i = config.i
@@ -692,25 +693,6 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   async resolveEntityItem(item: any) {
     return createEntityItem(item, this)
-    // const _this: any = this
-    // const itemConfig = item.layoutItemConfig!
-    // const renderFunName = itemConfig.renderFunName
-    // let renderComName = itemConfig.renderComName || 'instanceView'
-    // let renderCom: any = h('div', [])
-    // let renderData: any = {}
-    // //@ts-ignore
-    // let _comVetor: any = comVetor
-    // if (renderFunName != null && _this[renderFunName]) {//初始化渲染数据
-    //   const _this: any = this
-    //   renderData = await _this[renderFunName](_this)//渲染函数数据 这个是函数来的
-    // }
-    // if (renderComName != null && _comVetor[renderComName]) {
-    //   renderCom = _comVetor[renderComName]
-    // }
-    // item.component = () => {
-    //   return h(renderCom, { ...renderData, style: { height: "100%", width: '100%' }, })
-    // }
-    // return item
   }
   async runMiddlewares(payload: any, middlewares: any[], index: any) {
     if (index < middlewares.length) {
@@ -731,32 +713,62 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     return this.mainEntity || this//获取主表实例
   }
   initRenderButtonGroup() {
+    const _this = this
     if (this.pageRef.buttonGroup != null) {
       return { instance: this.pageRef.buttonGroup }
     }
-    const entity = this.getMainTable()
-    const tableInfo = entity.tableInfo
-    let buttons: any = tableInfo?.tableButtons! || []//
-    if (!Array.isArray(buttons)) {
-      buttons = []
+    const renderButtonGroup = this.renderButtonGroup
+    const originButtons: any[] = this.getTableInfoKey("entityButtons")//获取原始的按钮
+    const entityButtons = originButtons.map(btn => {
+      return createEntityButton(btn, _this)
+    })
+    renderButtonGroup.tabItems = entityButtons.map(btn => {
+      let obj: tabItemConfig = { renderKey: btn.buttonConfig!.cButtonName!, key: btn.buttonConfig!.cButtonName!, tab: btn.component as any }
+      // let obj1 = { renderKey: btn.entityButtonConfig!.cButtonName!, key: btn.entityButtonConfig!.cButtonName!, tab: '新的11111111111111111111111111111111111111111按钮' as any }
+      return obj
+    }) as any
+    renderButtonGroup.tabBarStyle = {
+      margin: '0 0 0 0 !important',
+      height: '35px'
     }
-    const buttonCategory = this.buttonCategory
-    const entityName = this.entityName
-    let _button = buttons?.find((btn: any) => {
-      const category = btn.category
-      const tableName = btn.tableName
-      if (category == buttonCategory && entityName == tableName) {
-        return true
-      }
-    })
-    _button = _button || buttons?.find((btn: any) => {
-      const category = btn.category
-      return category == buttonCategory
-    })
-    const targetButtons = _button?.buttons || []//获取到这个东西
-    const buttonGroup = createButtonGroup({ buttons: targetButtons, buttonType: 'entityButton' }, this)
+    renderButtonGroup.tabMarginHidden = true
+    const buttonGroup = createTab(renderButtonGroup)
     this.pageRef.buttonGroup = buttonGroup as any
     return { instance: buttonGroup }
+  }
+  async deleteModel() {
+    try {
+      let selectRow: any[] = this.getTableInfoKey("selectRows")
+      let curRow = this.getTableInfoKey('curRow')
+      if (selectRow.length > 1 && curRow == null) {
+        this.utils.message.warning('请选择一行进行删除')
+        return
+      }
+      let deleteRows = [curRow]
+      let key = this.getTableInfoKey('key')//主键
+      if (key == null || curRow == null) {
+        return
+      }
+      let deleteKeys = deleteRows.map((row) => row[key])//获取删除的主键的值
+      const status = await this.system.confirm({ message: '此操作将永久删除当前选中高亮数据, 是否继续?' })
+      if (status == true) {
+        let { url, params } = await this.httpApi.getDeleteModel(this, 'Delete')
+        const beforeConfig = { methodName: 'deleteRow', deleteKeys: deleteKeys, url, params }
+        await this.getRunBefore(beforeConfig)//删除之前做的事情
+        let result = await this.http.postZkapsApi(url, params)//结果
+        await this.http.checkPostResult(result)//
+        this.utils.message.success('选中记录已删除成功', 1000)
+        await this.getTableData()
+        await this.getRunAfter(beforeConfig)
+        // await this.getTableData()
+      } else if (status == false) {
+        return
+      }
+    } catch (error: any) {
+      console.error(error.message)
+      this.system.confirm({ message: error?.message })
+      this.getTableData()
+    }
   }
   initRenderDetailEntity() {
     const _this = this
@@ -765,14 +777,14 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
     const tableInfo = _this.tableInfo
     const detailTable = tableInfo?.detailTable! || []
-    // const detailEntity = detailTable.map((table) => {
-    //   //@ts-ignore
-    //   const createFn = _this.createFn
-    //   const dTable = createFn.createDetailEntity(table.tableName, table)//表名
-    //   dTable.mainEntity = _this as any
-    //   return dTable
-    // })
-    // _this.detailTable = detailEntity as any//业务逻辑类型的子组件
+    const detailEntity = detailTable.map((table) => {
+      //@ts-ignore
+      const createFn = _this.createFn
+      const dTable = createFn.createDetailEntity(table.tableName, table)//表名
+      dTable.mainEntity = _this as any
+      return dTable
+    })
+    _this.detailTable = detailEntity as any//业务逻辑类型的子组件
     const renderDetailEntity = _this.renderDetailEntity
     renderDetailEntity.tabItems = _this.detailTable?.map(row => {
       const obj = {
@@ -861,13 +873,17 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     vxeGrid?.setMergeConfig()
   }
   setEntityEdit(state: tableState) {
+    if (state != 'scan') {
+      this.entityState = 'edit'
+    } else {
+      this.entityState = 'scan'
+    }
     const vxeGrid = this.pageRef.vxeGrid
     if (vxeGrid == null) {
       return
     }
     if (state == 'fullEdit' || state == 'scan') {
-      // vxeGrid.tableState = state
-      vxeGrid.setTableEdit(state)
+      vxeGrid?.setTableEdit(state)
     }
   }
   //改变编辑类型
@@ -1008,13 +1024,14 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   }
   async dbCurRowChange(config: curRowConfig) {
   }
-  getTableInfoKey(keyName: tableKeyType) {
+  getTableInfoKey<T = any>(keyName: tableKeyType): T {
     const _this = this
     const getFn = this.getFn
     const targetFn = getFn[keyName]
     if (typeof targetFn == 'function') {
-      return targetFn(_this)
+      return targetFn(_this) as any
     }
+    return null as any
   }
   async setCurRow(row: any) {
     if (row == null) {
@@ -1046,6 +1063,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const system = this.system
     system.routeClose({ entityName: tabKey! })
   }
+  //添加子表逻辑
   async addDetailEntity() {
     const _this = this
     const bindData = {
@@ -1061,6 +1079,13 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const system = _this.system
     await system.confirmForm(formConfig, bindData)
     // const dInfo=await 满足
+    const hasName = this.detailTable?.map(table => {
+      return table.entityName
+    }).includes(bindData.tableName)
+    if (hasName) {
+      console.error('已经存在该子表')
+      return
+    }
     const dTable = this.tableInfo?.detailTable?.[0]
     const entity: any = this
     const createFn: createFn = entity.createFn

@@ -51,6 +51,12 @@ export class system extends base {
     headerHeight: '50px'
   }
   systemConfig = {
+    userConfig: {
+      userName: 'admin',
+      password: 'zkaps#1',
+      companyId: "0009",
+      companyName: "",
+    },
     headerIcon: [],//配置信息
     activeKey: '',
     tabIndex: 0,
@@ -462,6 +468,7 @@ export class system extends base {
       const buttons = [{
         btnFun: async (dialog: dialog) => {
           resolve(true)
+          dialog.close()
           // _this.confirm()
         }, text: "确认"
       }, {
@@ -480,7 +487,6 @@ export class system extends base {
       } as dialogConfig, confirmConfig)
       this.addGlobalDialog('confirm', _confirmConfig)
     })
-    // const dia = createDialog('confirm', _confirmConfig)
   }//移除一些东西
   addGlobalDialog(dialogName: string, dialogConfig?: dialogConfig) {
     const _this = this
@@ -507,6 +513,9 @@ export class system extends base {
   removeGlobalDialog(key: string) {
     const dialogPool = this.dialogPool
     dialogPool.pop()
+  }
+  setPageLoading(status: boolean) {
+
   }
 }
 //

@@ -11,6 +11,7 @@ import { mainEntity } from "./mainEntity"
 import { createForm } from "../form"
 import * as mainEditExtend from './mainEditEntityExtend'
 import * as mainMethod from '@/entityMethods/mainEditTableMethods'
+import { getFn_edit } from "./basicEntityFn"
 export class mainEditEntity extends basicEntity {
     //页面树
     isEditEntity = true
@@ -23,6 +24,10 @@ export class mainEditEntity extends basicEntity {
         this.buttonMethod = mainMethod
         Object.entries(mainEditExtend).forEach(([key, value]) => {
             this.addExtendMethod(key, value)
+        })
+        Object.entries(getFn_edit).forEach(([key, value]) => {
+            //@ts-ignore
+            this.getFn[key] = value
         })
     }
     async initEntity() {
@@ -37,59 +42,6 @@ export class mainEditEntity extends basicEntity {
     async initComponent() {//初始化节点
         await super.initComponent()
     }
-    //初始化子表数据
-    // async initRenderEditForm() {
-    //     const _this = this
-    //     if (_this.pageRef.vxeForm != null) {
-    //         return { instance: _this.pageRef.vxeForm }
-    //     }
-    //     const renderEditForm = _this.renderEditForm
-    //     renderEditForm.data = computed(() => {
-    //         return _this.tableData.curRow
-    //     }) as any
-    //     renderEditForm.disabled = computed(() => {
-    //         const entityState = _this.entityState
-    //         if (entityState == 'scan') {
-    //             return true
-    //         }
-    //         return false
-    //     }) as any
-    //     renderEditForm.items = _this.tableConfig.columns?.filter(col => Boolean(col.editType) == true).sort((c1, c2) => {
-    //         const o1 = c1.editOrderNo!
-    //         const o2 = c2.editOrderNo!
-    //         return o1 - o2!
-    //     }).map(col => {
-    //         const obj: formItemConfig = {} as any
-    //         obj.type = computed(() => {
-    //             return col.editType
-    //         }) as any
-    //         obj.field = computed(() => {
-    //             return col.field
-    //         }) as any
-    //         obj.span = computed(() => {
-    //             const num = Number(col.editColSize)
-    //             if (isNaN(num)) {
-    //                 return 6
-    //             }
-    //             return num! * 2
-    //         }) as any
-    //         obj.title = computed(() => {
-    //             return col.editTitle || col.title
-    //         }) as any
-    //         obj.baseInfoTable = computed(() => {
-    //             return col.baseInfoTable
-    //         }) as any
-    //         obj.options = computed(() => {
-    //             return col.options || []
-    //         }) as any
-    //         return obj
-    //     }) as any
-
-    //     const vxeForm = createForm(renderEditForm)
-    //     //@ts-ignore
-    //     _this.pageRef.vxeForm = vxeForm
-    //     return { formInstance: vxeForm, instance: _this.pageRef.vxeForm }
-    // } 
     setNodeDisplayState(refName: string | Object, state: displayState) {
         const pageRef = this.pageRef as any//
         const targetNode = pageRef[refName as string] as base
@@ -135,7 +87,7 @@ export class mainEditEntity extends basicEntity {
     }
     setEntityEdit(state: tableState) {
         super.setEntityEdit(state)
-        const vxeForm = this.pageRef.vxeForm
+        const vxeForm = this.pageRef.vxeForm//设置编辑
         if (state !== 'scan' && state != null) {
             vxeForm?.setFormDisabled(false)
             this.detailTable?.forEach(table => {

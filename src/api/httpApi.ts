@@ -226,3 +226,52 @@ export const getTableData = async (entity: basicEntity) => {
 }
 
 
+
+
+export const getDeleteModel = async (_this: basicEntity, code?: string) => {
+    const clsKey = _this.getTableInfoKey('key')
+    const keyCode = _this.getTableInfoKey("keyCode")
+    let operateUser = _this.utils.constant.operator
+    let userName = _this.getTableInfoKey("userName")
+    let _table = _this.getTableInfoKey("xTableInfo")
+    let billTypeID = _this.getTableInfoKey('billTypeID')
+    let tableEntity = _this.getTableInfoKey("tableEntity")
+    let realTableName = _this.getTableInfoKey('realTableName')
+    tableEntity = tableEntity || realTableName
+    let url = `/api/${tableEntity}/Delete`
+    let curRow = _this.getTableInfoKey('curRow')
+    let cVouchType = _this.getTableInfoKey('cVouchType')
+    curRow = JSON.parse(JSON.stringify(curRow))
+    let saveModel = curRow
+    let companyId = _this.getTableInfoKey("companyId")
+    const dbServer = _this.getTableInfoKey("dbServer")
+    _this.tableConfig.columns.forEach(col => {
+        col.formatSaveData(curRow)
+    })
+    let detailTableData = _this.detailTable?.map(table => {
+        let deleteBill = table.getTableInfoKey('deleteBill')
+        if (deleteBill == false) {
+            return null
+        }
+        return table.getTableInfoKey("realTableName")
+    }).filter(row => row != null).join(',')
+    let params = {
+        mainData: saveModel,
+        table: _table,
+        detailData: [],
+        companyId: companyId,
+        tableName: realTableName,
+        cVouchType: cVouchType,
+        iInterID: saveModel[clsKey],
+        DelKeys: [],
+        cBillCode: saveModel[keyCode],
+        cMainPrimaryCol: clsKey,
+        sSqlsList: [], //保存后执行SQL,同一事务
+        sSqlBefore: [], //保存前执行SQL,同一事务
+        cFlag: '1',
+        cOperater: userName,
+        DBSource: dbServer,   //第三方数据库链接
+        cDetailTables: detailTableData //'t_WorkOrderEntry,t_WorkOrderRoute,t_WorkOrderResource'
+    }
+    return { url, params }
+}

@@ -8,7 +8,7 @@ import { basicEntity } from "./businessTable/basicEntity";
 import { StyleType } from "@/types/schema";
 import { getRenderFn } from "./columnFn";
 import { getIcon } from "./icon";
-
+import { staticDisabled } from "@/entityMethods/allButtonDisabled";
 class Translate {
     key?: any
     targetKey?: any
@@ -72,7 +72,6 @@ const _button = [
             return targetValue
         }
         if (targetValue != null) {
-            // return entityBtn.formatFunData(targetValue)
             let fn = formatFunction(targetValue) as Function
             if (typeof fn == 'function') {
                 fn = fn.bind(entityBtn)
@@ -136,12 +135,12 @@ export class entityButton extends button {
         cButtonName: '',
         cButtonText: '',
         cFunName: '',
-
     }
     getEntity: (() => basicEntity) | (() => null) = () => null
     constructor(schema: any, system: any, entity: any) {
         super(schema, system)
         this.displayState = 'destroy'
+        this.entity = entity
         this.getEntity = () => entity
     }
     async initButton() {
@@ -164,8 +163,17 @@ export class entityButton extends button {
     async initRenderButton() {
         await super.initRenderButton()
         const renderButton = this.renderButton
+        const entity = this.entity
         renderButton.disabled = computed(() => {
-            return false
+            let status = false
+            const cButtonName = this.buttonConfig.cButtonName
+            //@ts-ignore
+            const disabledFn = staticDisabled[cButtonName!]
+            if (typeof disabledFn == 'function') {
+                let _status = disabledFn(entity)
+                status = Boolean(_status)
+            }
+            return status
         }) as any
         renderButton.destroyOnClose = true
         // renderButton.icon = 'vxe-icon-arrow-double-right'

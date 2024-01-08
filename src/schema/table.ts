@@ -122,6 +122,7 @@ export class table extends base<tableSchema> implements tableMethod {
   }
   // dialogConfig = createDialogConfig(this)  
   tableData: tableData = {
+    selectRows: [],
     showData: [],
     data: [],
     editData: [],
@@ -141,7 +142,12 @@ export class table extends base<tableSchema> implements tableMethod {
   getTableKeyCode() {
   }
   getCurRow() {
-    return this.tableData.curRow
+    const curRow = this.tableData.curRow
+    let showData = this.tableData.showData
+    if (showData.includes(curRow)) {
+      return curRow
+    }
+    return null
   }
   initTableConfig() {
     tableFn.initTableConfig(this)
@@ -267,9 +273,12 @@ export class table extends base<tableSchema> implements tableMethod {
   }
   //获取选择配置
   getCheckBoxRecord() {
-    const vxeGrid = this.pageRef.vxeGrid
-    const checkArr = vxeGrid?.getCheckboxRecords()
-    return checkArr
+    const showData = this.tableData.showData
+    const selectRows = this.tableData.selectRows
+    let _selectRows = selectRows.filter(row => {
+      return showData.includes(row)
+    })
+    return _selectRows
   }
   setCheckBoxRecord(rowArr: any[]) {
     const vxeGrid = this.pageRef.vxeGrid
@@ -432,7 +441,16 @@ export class table extends base<tableSchema> implements tableMethod {
     tableData.curRow = null
     tableData.editData = []
     tableData.showData = []
+    tableData.selectRows = []
     tableData.curMenuRow = null
+  }
+  checkboxChange(row: any, rows: any[]) {
+    this.tableData.selectRows = rows
+    const checkChange = this.tableConfig.onCheckboxChange
+    if (typeof checkChange == 'function') {
+      //@ts-ignore
+      checkChange(row, rows)
+    }
   }
   //清空过滤状态
   clearFilterConfig() {

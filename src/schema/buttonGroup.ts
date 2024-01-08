@@ -9,9 +9,11 @@ import tabView from "./schemaComponent/tabView";
 import instanceView from "./schemaComponent/instanceView";
 import { createEntityButton } from "./entityButton";
 import { mainEntity } from "./businessTable/mainEntity";
+import { basicEntity } from "./businessTable/basicEntity";
 
 export class buttonGroup extends base {
     getEntity: (() => mainEntity) = () => null as any
+    entity?: basicEntity
     pageRef: { tabInstance?: tab } = {
     }
     buttonGroupConfig = {
@@ -19,15 +21,16 @@ export class buttonGroup extends base {
         buttonType: "button"
     }
     renderTab: TabPaneProps = {}
-    constructor(schema: any, system: any, entity) {
+    constructor(schema: any, system: any, entity: any) {
         super(system, schema)
         this.getEntity = () => entity
+        this.entity = entity
     }
     initButtonGroup() {
         const schema = this.schema
         const buttonGroupConfig: any = this.buttonGroupConfig
         for (const key of Object.keys(schema)) {
-            if (key == 'button') {
+            if (key == 'buttons') {
                 continue
             }
             this.effectPool[`buttonGroup${key}Effect`] = watchEffect(() => {
@@ -53,7 +56,6 @@ export class buttonGroup extends base {
         renderTab.tabMarginHidden = true
         const tabInstance = createTab(renderTab)
         this.pageRef.tabInstance = tabInstance
-        // renderTab.
     }
     initButtons() {
         const schema = this.schema
@@ -66,7 +68,7 @@ export class buttonGroup extends base {
             if (buttonType == 'button') {
                 return createButton(btn)
             } else {
-                const entity = this.getEntity()
+                const entity = this.entity
                 return createEntityButton(btn, entity)
             }
         })
@@ -81,7 +83,7 @@ export class buttonGroup extends base {
     }
 }
 
-export const createButtonGroup = (schema: any, entity) => {
+export const createButtonGroup = (schema: any, entity: any) => {
     const btnGroup = reactive(new buttonGroup(schema, systemInstance, entity))
     btnGroup.initButtonGroup()
     return btnGroup

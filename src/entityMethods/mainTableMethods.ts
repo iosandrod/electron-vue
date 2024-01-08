@@ -19,11 +19,17 @@ export const exit = async (entity: mainEntity) => {
 
 
 export const audit = (entity: mainEntity) => {
+    //审核
 }
 //反审
 export const unAudit = (entity: mainEntity) => {
 }
 
 export const showSearchMenu = (entity: mainEntity) => {
+    //显示查询框
     entity.openDialog('searchDialog')
+}
+
+export async function del(_this: mainEntity) {
+    await _this.deleteModel()
 }

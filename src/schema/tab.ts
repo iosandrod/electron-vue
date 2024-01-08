@@ -191,5 +191,5 @@ export class tab extends base {
 export const createTab = (schema: tabConfig) => {
     const _tab = reactive(new tab(schema, systemInstance))
     _tab.initTab()
-    return _tab
+    return _tab as tab
 }

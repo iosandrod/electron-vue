@@ -31,6 +31,12 @@ export const getTableData_after = async (runAfterConfig: runAfterConfig) => {
         })
         if (targetRow != null) {
             await _this.setCurRow(targetRow)
+        } else {
+            let data = _this.tableData.data
+            const targetRow = data[0]
+            if (targetRow) {
+                await _this.setCurRow(targetRow)
+            }
         }
     } else {
         let data = _this.tableData.data

@@ -9,6 +9,7 @@ import json5 from 'json5'
 import * as equal from './equal'
 import _ from 'lodash'
 import { system } from '@/schema/system'
+import { message as antMessage } from 'ant-design-vue'
 export const getMouseEventPosition = ($event: MouseEvent) => {
     // const left = $event.offsetX
     const left = $event.clientX
@@ -335,6 +336,25 @@ export const getFixedPosition = (el: any, mousePosition: position) => {
     return { left: fLeft, top: fTop }
 }
 
-// export const formatFunction = (fun: string) => {
-    
-// }
+
+
+export const message = {
+    success: (message: string, timeout: number = 1) => {
+        antMessage.success(message, 1)
+    },
+    warning: (message: string, timeout?: number) => {
+        antMessage.warn(message, 1)
+    },
+
+}
+
+export const constant = {
+    operator: {
+        makeUserFiled: 'cOperator', // 制单人字段
+        makeDateFile: 'dOpeDate', // 制单日期
+        alterUserFiled: 'cModifier', // 修改人字段
+        alterDateFile: 'dModifyDate', // 修改日期
+        checkUserFiled: 'cChecker', // 审核人字段
+        checkDateFile: 'dCheckDate' // 审核日期
+    }
+}

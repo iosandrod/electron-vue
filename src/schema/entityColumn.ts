@@ -107,6 +107,9 @@ export class entityColumn {
         const _this = this
         const searchType = _this.searchType
     }
+    formatSaveData(row: any) {
+
+    }
 }
 
 

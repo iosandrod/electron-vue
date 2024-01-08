@@ -111,6 +111,15 @@ export class myHttp {
       },
     )
   }
+  async checkPostResult(result: any) {
+    const system = this.getSystem()
+    let status = result.status
+    let message = result.message || result.msg
+    if (Boolean(status) == false || status == 400 || status == -1) {
+      await system.confirm({ title: "出错提示", message: message })
+      return Promise.reject('')
+    }
+  }
 }
 export const http = new myHttp({
   baseURL: 'http://127.0.0.1:9000/api',

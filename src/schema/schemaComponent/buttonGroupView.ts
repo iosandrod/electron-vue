@@ -17,8 +17,8 @@ export default defineComponent({
             // return { key: btn.buttonConfig.cButtonName, tab: btn.component }
             return { key: btn.buttonConfig.cButtonName, tab: btn.component }
         })
-
         const buttonTab = createTab({
+            //@ts-ignore
             tabItems: _tabItem,
             tabBarStyle: {
                 margin: '0 0 0 0 !important',

@@ -108,6 +108,7 @@ export type tableConfig = {
   // [key in keyof ]:[]
 } & VxeTableProps & VxeTableEventProps
 export type tableData = {
+  selectRows: any[]
   curMenuRow: any//右键菜单
   data: any[],
   editData: any[]
@@ -313,11 +314,13 @@ export type scrollConfig = {
 
 export type entityConfig = typeof tableinfo1
 
-
+export type confirmType = 'success' | 'warning' | 'error'
 export type confirmConfig = {
-  callback: (dialog: dialog) => Promise<void>,
-  cancelCallback: (dialog: dialog) => Promise<void>,
+  type?: confirmType,
+  callback?: (dialog: dialog) => Promise<void>,
+  cancelCallback?: (dialog: dialog) => Promise<void>,
   message: string,
+  title?: string
   height?: number,
   width?: number
 }

@@ -359,27 +359,31 @@ export const initComponent = (table: table) => {
                     onCellMenu({ row, column } as any)
                 }
             },
+            //这里都是checkboxChange的东西
             onCheckboxChange: (value) => {
-                const checkChange = table.tableConfig.onCheckboxChange as any
-                if (typeof checkChange == 'function') {
-                    const row = value.row
-                    const records = value.records
-                    checkChange(row, records)//哪一行改变了
-                }
+                const row = value.row
+                const records = value.records
+                _this.checkboxChange(row, records)
+                // const checkChange = table.tableConfig.onCheckboxChange as any
+                // if (typeof checkChange == 'function') {
+                //     const row = value.row
+                //     const records = value.records
+                //     checkChange(row, records)//哪一行改变了
+                // }
             },
             onCheckboxRangeEnd: (value) => {
-                const checkChange = table.tableConfig.onCheckboxChange as any
-                if (typeof checkChange == 'function') {
-                    const row = value.records
-                    checkChange(row, row)
-                }
+                // const row = value.row
+                const records = value.records
+                _this.checkboxChange(records, records)
+                // const checkChange = table.tableConfig.onCheckboxChange as any
+                // if (typeof checkChange == 'function') {
+                //     const row = value.records
+                //     checkChange(row, row)
+                // }
             },
             onCheckboxAll: (value) => {
-                const checkChange = table.tableConfig.onCheckboxChange as any
-                if (typeof checkChange == 'function') {
-                    const row = value.records
-                    checkChange(row, row)
-                }
+                const records = value.records
+                _this.checkboxChange(records, records)
             }
         }, {
             /* 

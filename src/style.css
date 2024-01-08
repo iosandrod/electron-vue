@@ -49,8 +49,11 @@ body{
     /* background: blue; */
 }
 
-.rowSelect{
-    background:RGB(139, 199, 200);
+.rowSelect .vxe-cell{
+    /* background:RGB(139, 199, 200);
+    bord */
+    border:solid 2px red;
+    /* box-sizing:boder-box !important; */
 }
 .vxe-modal--wrapper .vxe-modal--content {
     flex-grow: 1;
@@ -147,9 +150,6 @@ body{
     display:flex;
     flex-direction:column;
     justify-content:center;
-}
-.bg-red{
-    background:red
 }
 
 .margin-view-overlays{

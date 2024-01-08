@@ -9,6 +9,7 @@ import { mainEntity } from "./mainEntity";
 import { TabsProps } from "ant-design-vue";
 import { createForm } from "../form";
 import { createDialog, dialog } from "../dialog";
+import { mainEditEntity } from "./mainEditEntity";
 // import { createDetailEntity } from "./detailEntity";
 // import { createDetailEntityGroup } from "./detailEntityGroup";
 
@@ -157,7 +158,7 @@ export const getFn = {
         return tableInfo?.tableEntity
     },
     maxKey: async (_this: basicEntity) => {
-
+        //返回主键最大值
     },
     searchItems: (_this: basicEntity) => {
         const searchForm = _this.pageRef.searchForm
@@ -172,5 +173,74 @@ export const getFn = {
     },
     searchForm: (_this: basicEntity) => {
         return _this.pageRef.searchForm
+    },
+    selectRows: (_this: basicEntity): any[] => {
+        return _this.pageRef.vxeGrid?.getCheckBoxRecord() || []//
+    },
+    curRow: (_this: basicEntity) => {
+        return _this.pageRef.vxeGrid?.getCurRow()
+    },
+    userName: (_this: basicEntity) => {
+        return _this.system.systemConfig.userConfig.userName
+    },
+    xTableInfo: (_this: basicEntity) => {
+        return _this.tableInfo?.xTableInfo
+    },
+    billTypeID: (_this: basicEntity) => {
+        return _this.tableInfo?.xTableInfo.Print.IbillTypeID
+    },
+    tableEntity: (_this: basicEntity) => {
+        return _this.tableInfo?.tableEntity
+    },
+    realTableName: (_this: basicEntity) => {
+        return _this.tableInfo?.tableTrueName
+    },
+    deleteBill: (_this: basicEntity) => {
+        const xTableInfo = _this.getTableInfoKey("xTableInfo")
+        const detailTableConfig = _this.detailTableConfig
+        const _config = { ...xTableInfo, ...detailTableConfig }
+        const deleteBill = _config['deleteBill']
+        if (deleteBill == 1 || deleteBill == false) {
+            return false
+        }
+        return null
+    },
+    companyId: (_this: basicEntity) => {
+        return _this.system.systemConfig.companyConfig.companyId
+    },
+    cVouchType: (_this: basicEntity) => {
+        return _this.tableInfo?.xTableInfo?.Print?.IbillTypeID || ''
+    },
+    dbServer: (_this: basicEntity) => {
+        return _this.tableInfo?.dbServer
+    },
+    entityButtons: (_this: basicEntity) => {
+        const entity = _this.getMainTable()
+        const tableInfo = entity.tableInfo
+        let buttons: any = tableInfo?.tableButtons! || []//
+        if (!Array.isArray(buttons)) {
+            buttons = []
+        }
+        const buttonCategory = _this.buttonCategory
+        const entityName = _this.entityName
+        let _button = buttons?.find((btn: any) => {
+            const category = btn.category
+            const tableName = btn.tableName
+            if (category == buttonCategory && entityName == tableName) {
+                return true
+            }
+        })
+        _button = _button || buttons?.find((btn: any) => {
+            const category = btn.category
+            return category == buttonCategory
+        })
+        const targetButtons = _button?.buttons || []//获取到这个东西
+        return targetButtons
+    }
+}
+
+export const getFn_edit = {
+    curRow: (_this: mainEditEntity) => {
+        return _this.tableData.curRow
     }
 }

@@ -1235,3 +1235,72 @@ export const initTableMenu = (table: table) => {
         // })
     }
 }
+
+
+
+const clsKey = table.getTableKey() // table.tableConfig.table.clsKey || table.tableConfig.table.key || table.tableConfig.originTableInfo.cKeyColumn
+    const keyCode = table.getTableKeyCode()
+    let operateUser = table.util.constant.operator
+    // const { makeUserFiled, makeDateFile, alterUserFiled, alterDateFile } = operateUser
+    const { userName } = table.util.store.state.system.userInfo
+    let _table = table.tableConfig.table
+    //2、生成单据号，billTypeID=-1,如果是基础资料，不需要生成
+    let billTypeID = Number(table.tableConfig.mainTable?.Print?.IbillTypeID) || table.tableConfig?.table?.Print?.IbillTypeID
+    //4、生成请求参数
+    //获取主表数据
+    //获取子表数据
+    let detailTable = table.detailTable
+    let url = await table.getSaveUrl('Delete')
+    let realTableName = table.getRealTableName()
+    //单据删除时，增加属性
+    // public string cVouchType = "-1";              //单据类型ID
+    // //public string TableName { get; set; }             //功能表名 2022-06-13 JonasCheng
+    // public string iInterID ;                      //单据类型ID,单张单删除
+    // public List<object> DelKeys { get; set; }                         //删除主表的主键字段
+    // public string cBillCode;                      //单据编号/基础资料编号
+    // public string cMainPrimaryCol;                //主键子段
+    // public string cFlag;                          //操作类型 1 删除单据  2 多行删除  DelKeys
+    // public string cOperater ;                     //操作人员
+    // public string cDetailTables;                  //---子表名，多个子表用逗号分开,如果是单据删除
+
+    let saveModel = JSON.parse(JSON.stringify(table.tableData.curRow || table.getCurRow())) //周旭2023-7-14修改：此处在删除一条数据时如果什么都不重新选数据 继续点击删除，table.tableData.curRow会为null，顾新增条件 || table.getCurRow()
+    table.tableConfig.columns.forEach((col) => {
+        col.formatSaveData(saveModel)
+    })
+    let detailTableData = detailTable
+        .map((table) => {
+            let deleteBill = table.getDeleteBill() === false
+            if (deleteBill == true) {
+                return null
+            }
+            return table.getRealTableName()
+        })
+        .filter((tableName) => {
+            return tableName != null
+        })
+        .join(',')
+    let params = {
+        // mainData: saveModel,
+        // table: _table,
+        // detailData: detailTableData,
+        mainData: saveModel,
+        table: _table,
+        detailData: [],
+        companyId: table.util.$util.getCompany()?.companyId,
+        tableName: realTableName,
+        cVouchType: table.getIbillTypeID(),
+        iInterID: saveModel[clsKey],
+        DelKeys: [],
+        cBillCode: saveModel[keyCode],
+        cMainPrimaryCol: table.getTableKey(),
+        sSqlsList: table.sSqlsList||[], //保存后执行SQL,同一事务
+        sSqlBefore: table.sSqlBefore||[], //保存前执行SQL,同一事务
+        cFlag: '1',
+        cOperater: userName,
+        DBSource: table.tableConfig.originTableInfo.dbServer,   //第三方数据库链接
+        cDetailTables: detailTableData //'t_WorkOrderEntry,t_WorkOrderRoute,t_WorkOrderResource'
+    }
+    return {
+        url,
+        params
+    }
