@@ -1,7 +1,7 @@
 import { computed, h, reactive, vShow, } from "vue"
 import { basicEntity } from "./basicEntity"
 import { systemInstance } from "../system"
-import { StyleType, displayState, entityConfig, layoutItem, routeOpenConfig, command, jumpConfig, whereObj, paramType, dialogConfig, curRowConfig } from "@/types/schema"
+import { StyleType, displayState, entityConfig, layoutItem, routeOpenConfig, command, jumpConfig, whereObj, paramType, dialogConfig, curRowConfig, runBeforeConfig } from "@/types/schema"
 import { createPage } from "./pageTree"
 import { getTableConfig, getTableInfo } from "@/api/httpApi"
 import { createDetailEntity, detailEntity } from "./detailEntity"
@@ -128,7 +128,107 @@ export class mainEntity extends basicEntity {
     const editEntity = entityPool[entityNameEdit]
     return editEntity
   }
-
+  async billOpenCurRow(row = this.tableData.curRow) {
+    let _this = this
+    const curRow = this.getTableInfoKey('curRow')
+    const selectRows = this.getTableInfoKey('selectRows')
+    if (curRow == null && selectRows.length == 0) {
+      return
+    }
+    let {
+      url,
+      params
+    } = await this.httpApi.getBillOpenCurRow(_this)
+    const beforeConfig: runBeforeConfig = {
+      methodName: "billOpen",
+      table: _this,
+      params: params,
+      url: url
+    }
+    await this.getRunBefore(beforeConfig)
+    let result = await this.http.postZkapsApi(beforeConfig.url, beforeConfig.params)
+    await this.getRunAfter(beforeConfig)
+    await this.http.checkAuditPostResult(result, params?.type)
+    this.utils.message.success('打开成功', 1)
+    await this.getTableData()
+    return
+  }
+  //关闭选择行或者当前行        点击父表头部菜单按钮‘关闭’触发
+  async billCloseCurRow(row = this.tableData.curRow) {
+    let _this = this
+    const curRow = this.getTableInfoKey('curRow')
+    const selectRows = this.getTableInfoKey('selectRows')
+    if (curRow == null && selectRows.length == 0) {
+      return
+    }
+    let {
+      url,
+      params
+    } = await this.httpApi.getBillCloseCurRow(_this)
+    const beforeConfig: runBeforeConfig = {
+      methodName: "billClose",
+      table: _this,
+      params: params,
+      url: url
+    }
+    await this.getRunBefore(beforeConfig)
+    let result = await this.http.postZkapsApi(beforeConfig.url, beforeConfig.params)
+    await this.getRunAfter(beforeConfig)
+    await this.http.checkAuditPostResult(result, params?.type)
+    this.utils.message.success('关闭成功', 1)
+    await this.getTableData()
+    return
+  }
+  async unAuditRow() {
+    let _this = this
+    const curRow = this.getTableInfoKey('curRow')
+    const selectRows = this.getTableInfoKey('selectRows')
+    if (curRow == null && selectRows.length == 0) {
+      return
+    }
+    let {
+      url,
+      params
+    } = await this.httpApi.getUnAuditCurRow(_this)
+    const beforeConfig: runBeforeConfig = {
+      methodName: "auditRow",
+      table: _this,
+      params: params,
+      url: url
+    }
+    await this.getRunBefore(beforeConfig)
+    let result = await this.http.postZkapsApi(beforeConfig.url, beforeConfig.params)
+    await this.getRunAfter(beforeConfig)
+    await this.http.checkAuditPostResult(result, params?.type)
+    this.utils.message.success('审核成功', 1)
+    await this.getTableData()
+    return
+  }
+  async auditRow() {//审核流 
+    let _this = this
+    const curRow = this.getTableInfoKey('curRow')
+    const selectRows = this.getTableInfoKey('selectRows')
+    if (curRow == null && selectRows.length == 0) {
+      return
+    }
+    let {
+      url,
+      params
+    } = await this.httpApi.getAuditCurRow(_this)
+    const beforeConfig: runBeforeConfig = {
+      methodName: "auditRow",
+      table: _this,
+      params: params,
+      url: url
+    }
+    await this.getRunBefore(beforeConfig)
+    let result = await this.http.postZkapsApi(url, params)
+    await this.getRunAfter(beforeConfig)
+    await this.http.checkAuditPostResult(result, params?.type)
+    this.utils.message.success('审核成功', 1)
+    await this.getTableData()
+    return
+  }
 }
 
 //业务

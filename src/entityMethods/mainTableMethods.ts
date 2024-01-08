@@ -20,9 +20,12 @@ export const exit = async (entity: mainEntity) => {
 
 export const audit = (entity: mainEntity) => {
     //审核
+    // console.log('审核')
+    entity.auditRow()
 }
 //反审
 export const unAudit = (entity: mainEntity) => {
+    entity.unAuditRow()
 }
 
 export const showSearchMenu = (entity: mainEntity) => {
@@ -32,4 +35,13 @@ export const showSearchMenu = (entity: mainEntity) => {
 
 export async function del(_this: mainEntity) {
     await _this.deleteModel()
+}
+
+export async function closeBill(_this: mainEntity) {
+    // billClose(table)
+    await _this.billCloseCurRow()
+}
+//打开单据
+export async function openBill(_this: mainEntity) {
+    await _this.billOpenCurRow()
 }

@@ -136,11 +136,8 @@ export class table extends base<tableSchema> implements tableMethod {
     //父级节点
     super(system, schema)
   }
-  getTableKey() {
 
-  }
-  getTableKeyCode() {
-  }
+
   getCurRow() {
     const curRow = this.tableData.curRow
     let showData = this.tableData.showData

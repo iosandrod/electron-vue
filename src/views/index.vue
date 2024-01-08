@@ -25,17 +25,14 @@
             <tab-view :tabInstance="systemInstance.pageRef.tabRef"></tab-view>
           </div>
           <div>
-            <vxe-button @click="designEntity">进入设计</vxe-button>
+            <!-- <vxe-button @click="designEntity">进入设计</vxe-button>
             <vxe-button @click="openDialog">打开弹框</vxe-button>
             <vxe-button @click="getTableData">获取数据</vxe-button>
             <vxe-button @click="routeOpen">路由跳转</vxe-button>
             <vxe-button @click="changeEditType1">改变编辑框类型</vxe-button>
             <vxe-button @click="changeEditType1111">scrollTo11</vxe-button>
             <vxe-button @click="changeEditType11111">进入编辑路由</vxe-button>
-            <vxe-button @click="changeEditType111111111111">新增节点</vxe-button>
-            <!--  
-              changeEditType11111111
-             -->
+            <vxe-button @click="changeEditType111111111111">新增节点</vxe-button> -->
           </div>
           <div class="flex-1 w-full">
             <!-- <component :is="vNode1"></component> -->

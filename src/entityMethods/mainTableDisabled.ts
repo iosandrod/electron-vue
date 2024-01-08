@@ -18,7 +18,6 @@ export function m_Copy(_this: mainEntity) {
 export function m_Update(_this: mainEntity) {
     const curRow = _this.getTableInfoKey('curRow')
     let status = false
-    console.log(curRow, 'testCurRow')
     if (curRow) {
         let cStatus = curRow['cStatus']
         if (['A', 'F', 'G', 'F'].includes(cStatus) || cStatus == 'C') {

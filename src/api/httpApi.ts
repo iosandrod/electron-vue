@@ -8,6 +8,7 @@ import { table } from "@/schema/table";
 import XEUtils from "xe-utils";
 import { _columns, _columns1 } from "@/schema/entityColumn";
 import { formatTableInfo } from "@/utils/utils";
+import { mainEntity } from "@/schema/businessTable/mainEntity";
 export const getTableInfo = async (entity?: basicEntity) => {
 
 }
@@ -274,4 +275,293 @@ export const getDeleteModel = async (_this: basicEntity, code?: string) => {
         cDetailTables: detailTableData //'t_WorkOrderEntry,t_WorkOrderRoute,t_WorkOrderResource'
     }
     return { url, params }
+}
+
+
+export const getAuditCurRow = (_this: mainEntity) => {
+    let type = '1'
+    let data = _this.getTableInfoKey('selectRows')
+    let curRow = _this.getTableInfoKey("curRow")
+    let _data = data
+    if (_data.length == 0) {
+        _data = [curRow]
+    }
+    let tableKey = _this.getTableInfoKey("key")
+    let IbillTypeID = _this.getTableInfoKey("billTypeID")
+    let realTableName = _this.getTableInfoKey("realTableName")
+    let userAccount = _this.getTableInfoKey("userName")
+    const currentDate = _this.getTableInfoKey("currentDate")
+    const keyCode = _this.getTableInfoKey('keyCode')
+    let postData = _data.map((row) => {
+        let obj = [
+            {
+                name: 'iInterID',
+                value: row[tableKey]
+            }, //主键ID
+            {
+                name: 'cVouchType',
+                value: IbillTypeID
+            }, //单据类型
+            {
+                name: 'cMainTableName',
+                value: realTableName
+            }, //对应表名
+            {
+                name: 'cMainPrimaryCol',
+                value: tableKey
+            }, //主键子段
+            {
+                name: 'cFlag',
+                value: type
+            },
+            {
+                name: 'cChecker',
+                value: userAccount
+            },
+            {
+                name: 'dCheckDate',
+                value: currentDate
+            },
+            {
+                name: 'cBillCode',
+                value: row[keyCode]
+            },
+            {
+                name: 'iAuditTypeID',
+                value: row.iAuditTypeID || -1
+            },
+            {
+                name: 'AuditStatus',
+                // value: AuditStatus || ''
+                value: ''
+            },
+            {
+                name: 'AuditResult',
+                value: ''
+            }
+        ]
+        return obj
+    })
+    let url = `/api/Sys_Role/ExecuteAudit`
+    let params = postData
+    return {
+        url,
+        params
+    }
+}
+
+export const getUnAuditCurRow = (_this: mainEntity) => {
+    let type = '0'
+    let data = _this.getTableInfoKey('selectRows')
+    let curRow = _this.getTableInfoKey("curRow")
+    let _data = data
+    if (_data.length == 0) {
+        _data = [curRow]
+    }
+    let tableKey = _this.getTableInfoKey("key")
+    let IbillTypeID = _this.getTableInfoKey("billTypeID")
+    let realTableName = _this.getTableInfoKey("realTableName")
+    let userAccount = _this.getTableInfoKey("userName")
+    const currentDate = _this.getTableInfoKey("currentDate")
+    const keyCode = _this.getTableInfoKey('keyCode')
+    let postData = _data.map((row) => {
+        let obj = [
+            {
+                name: 'iInterID',
+                value: row[tableKey]
+            }, //主键ID
+            {
+                name: 'cVouchType',
+                value: IbillTypeID
+            }, //单据类型
+            {
+                name: 'cMainTableName',
+                value: realTableName
+            }, //对应表名
+            {
+                name: 'cMainPrimaryCol',
+                value: tableKey
+            }, //主键子段
+            {
+                name: 'cFlag',
+                value: type
+            },
+            {
+                name: 'cChecker',
+                value: userAccount
+            },
+            {
+                name: 'dCheckDate',
+                value: currentDate
+            },
+            {
+                name: 'cBillCode',
+                value: row[keyCode]
+            },
+            {
+                name: 'iAuditTypeID',
+                value: row.iAuditTypeID || -1
+            },
+            {
+                name: 'AuditStatus',
+                // value: AuditStatus || ''
+                value: ''
+            },
+            {
+                name: 'AuditResult',
+                value: ''
+            }
+        ]
+        return obj
+    })
+    let url = `/api/Sys_Role/ExecuteAudit`
+    let params = postData
+    return {
+        url,
+        params
+    }
+}
+
+export const getBillOpenCurRow = (_this: mainEntity) => {
+    let type = '3'
+    let data = _this.getTableInfoKey('selectRows')
+    let curRow = _this.getTableInfoKey("curRow")
+    let _data = data
+    if (_data.length == 0) {
+        _data = [curRow]
+    }
+    let tableKey = _this.getTableInfoKey("key")
+    let IbillTypeID = _this.getTableInfoKey("billTypeID")
+    let realTableName = _this.getTableInfoKey("realTableName")
+    let userAccount = _this.getTableInfoKey("userName")
+    const currentDate = _this.getTableInfoKey("currentDate")
+    const keyCode = _this.getTableInfoKey('keyCode')
+    let postData = _data.map((row) => {
+        let obj = [
+            {
+                name: 'iInterID',
+                value: row[tableKey]
+            }, //主键ID
+            {
+                name: 'cVouchType',
+                value: IbillTypeID
+            }, //单据类型
+            {
+                name: 'cMainTableName',
+                value: realTableName
+            }, //对应表名
+            {
+                name: 'cMainPrimaryCol',
+                value: tableKey
+            }, //主键子段
+            {
+                name: 'cFlag',
+                value: type
+            },
+            {
+                name: 'cChecker',
+                value: userAccount
+            },
+            {
+                name: 'dCheckDate',
+                value: currentDate
+            },
+            {
+                name: 'cBillCode',
+                value: row[keyCode]
+            },
+            {
+                name: 'iAuditTypeID',
+                value: row.iAuditTypeID || -1
+            },
+            {
+                name: 'AuditStatus',
+                // value: AuditStatus || ''
+                value: ''
+            },
+            {
+                name: 'AuditResult',
+                value: ''
+            }
+        ]
+        return obj
+    })
+    let url = `/api/Sys_Role/ExecuteAudit`
+    let params = postData
+    return {
+        url,
+        params
+    }
+}
+
+export const getBillCloseCurRow = (_this: mainEntity) => {
+    let type = '2'
+    let data = _this.getTableInfoKey('selectRows')
+    let curRow = _this.getTableInfoKey("curRow")
+    let _data = data
+    if (_data.length == 0) {
+        _data = [curRow]
+    }
+    let tableKey = _this.getTableInfoKey("key")
+    let IbillTypeID = _this.getTableInfoKey("billTypeID")
+    let realTableName = _this.getTableInfoKey("realTableName")
+    let userAccount = _this.getTableInfoKey("userName")
+    const currentDate = _this.getTableInfoKey("currentDate")
+    const keyCode = _this.getTableInfoKey('keyCode')
+    let postData = _data.map((row) => {
+        let obj = [
+            {
+                name: 'iInterID',
+                value: row[tableKey]
+            }, //主键ID
+            {
+                name: 'cVouchType',
+                value: IbillTypeID
+            }, //单据类型
+            {
+                name: 'cMainTableName',
+                value: realTableName
+            }, //对应表名
+            {
+                name: 'cMainPrimaryCol',
+                value: tableKey
+            }, //主键子段
+            {
+                name: 'cFlag',
+                value: type
+            },
+            {
+                name: 'cChecker',
+                value: userAccount
+            },
+            {
+                name: 'dCheckDate',
+                value: currentDate
+            },
+            {
+                name: 'cBillCode',
+                value: row[keyCode]
+            },
+            {
+                name: 'iAuditTypeID',
+                value: row.iAuditTypeID || -1
+            },
+            {
+                name: 'AuditStatus',
+                // value: AuditStatus || ''
+                value: ''
+            },
+            {
+                name: 'AuditResult',
+                value: ''
+            }
+        ]
+        return obj
+    })
+    let url = `/api/Sys_Role/ExecuteAudit`
+    let params = postData
+    return {
+        url,
+        params
+    }
 }

@@ -111,6 +111,54 @@ export class myHttp {
       },
     )
   }
+  async checkAuditPostResult(result: any, type: any) {
+    let text = ''
+    switch (type) {
+      case 1 || '1':
+      case '1':
+        text = '审核'
+        break
+      case 2:
+      case '2':
+        text = '审核'
+        break
+      case 3:
+        break
+      case 8:
+      case '8':
+        text = '打开'
+        break
+      case 9:
+      case '9':
+        text = '关闭'
+        break
+      default:
+        break
+    }
+    let data = result.data
+    let errorBill = data
+      .reduce((result: any, item: any) => {
+        result.push({
+          code: item.cCode,
+          message: item.message
+        })
+        return result
+      }, [])
+      .reduce((result: any, item: any) => {
+        if (item.message != 'success') {
+          result += `单据号：【${item.code}】${text}失败, ${item.message}`
+        }
+        return result
+      }, '')
+    if (errorBill?.length > 0) {
+      const system = getSystem()
+      system.confirm({
+        message: errorBill,
+        type: "error"
+      })
+      return Promise.reject('')
+    }
+  }
   async checkPostResult(result: any) {
     const system = this.getSystem()
     let status = result.status

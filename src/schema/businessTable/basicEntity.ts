@@ -159,11 +159,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const originTableInfo = this.originTableInfo
     return originTableInfo.cKeyColumn
   }
-  getTableKeyCode() {
-    //获取表格必录字段 
-    const originTableInfo = this.originTableInfo
-    return originTableInfo.cCodeColumn
-  }
+
   calculateLayout() {
     let items: basicEntityItem[] = this.entityConfig!
     const _layout = items.map(item => {
@@ -402,7 +398,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
         await _this.dbCurRowChange(value)
       }
       renderTable.onCellClick = () => {
-        console.log('onCellClick')
+
       }
       renderTable.refreshData_after = (value: any) => {
         const rows = value.rows

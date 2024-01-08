@@ -1,6 +1,7 @@
 import { getRenderFn } from '@/schema/columnFn'
 import { propsConfig } from '@/schema/icon'
 import { StyleType, position } from '@/types/schema'
+import * as  dateFns from 'date-fns'
 import { isNumber } from 'lodash'
 import { Directive, getCurrentInstance } from 'vue'
 import XEUtils, * as vxUtils from 'xe-utils'
@@ -357,4 +358,11 @@ export const constant = {
         checkUserFiled: 'cChecker', // 审核人字段
         checkDateFile: 'dCheckDate' // 审核日期
     }
+}
+
+export const getCurrentDate = () => {
+    const currentDate = new Date();
+    // 格式化为年月日
+    const formattedDate = dateFns.format(currentDate, 'yyyy-MM-dd');
+    return formattedDate
 }

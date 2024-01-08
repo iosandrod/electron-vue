@@ -142,6 +142,9 @@ export const getTableData = (entity: mainEntity) => {
 }
 
 export const getFn = {
+    currentDate: (_this: basicEntity) => {
+        return _this.utils.getCurrentDate()
+    },
     tableCnName: (_this: basicEntity) => {
         return _this.tableInfo?.cnName
     },

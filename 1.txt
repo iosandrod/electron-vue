@@ -1304,3 +1304,88 @@ const clsKey = table.getTableKey() // table.tableConfig.table.clsKey || table.ta
         url,
         params
     }
+
+
+
+
+     let type = '1'
+    let data = table.getTableSelectRow() //当前勾选了的行数据
+    let curRow = table.getCurRow() //当前高亮行数据
+    let _data = data
+    if (!workFlowCurRow) {
+        if (data?.length == 0) {
+            if (curRow == null) {
+                table.util.message.warning('没有选择当前行')
+                return Promise.reject('')
+            }
+            _data = [curRow]
+        }
+    } else {
+        _data = workFlowData
+        if (workFlowData?.length == 0) {
+            _data = [workFlowCurRow]
+        }
+    }
+    let tableKey = table.getTableKey() //获取主键
+    let IbillTypeID = table.getIbillTypeID()
+    let realTableName = table.getRealTableName()
+    let userAccount = table.getUserInfo()?.userAccount
+    let curData = table.util.$util.getDate()
+    let keyCode = table.getTableKeyCode()
+    let AuditStatus = table.store.getters.data().AuditStatus
+    let AuditResult = table.store.getters.data().AuditResult
+    let postData = _data.map((row) => {
+        let obj = [
+            {
+                name: 'iInterID',
+                value: row[tableKey]
+            }, //主键ID
+            {
+                name: 'cVouchType',
+                value: IbillTypeID
+            }, //单据类型
+            {
+                name: 'cMainTableName',
+                value: realTableName
+            }, //对应表名
+            {
+                name: 'cMainPrimaryCol',
+                value: tableKey
+            }, //主键子段
+            {
+                name: 'cFlag',
+                value: type
+            },
+            {
+                name: 'cChecker',
+                value: userAccount
+            },
+            {
+                name: 'dCheckDate',
+                value: curData
+            },
+            {
+                name: 'cBillCode',
+                value: row[keyCode]
+            },
+            {
+                name: 'iAuditTypeID',
+                value: row.iAuditTypeID || -1
+            },
+            {
+                name: 'AuditStatus',
+                value: AuditStatus || ''
+            },
+            {
+                name: 'AuditResult',
+                value: AuditResult || ''
+            }
+        ]
+        return obj
+    })
+    let url = `/api/Sys_Role/ExecuteAudit`
+    let params = postData
+    return {
+        url,
+        params
+    }   
