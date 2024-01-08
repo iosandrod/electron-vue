@@ -65,7 +65,6 @@ export const curRowChange_after = (runAfterConfig: runAfterConfig) => {
 
 
 export const refreshData_after = (runAfterConfig: runAfterConfig) => {
-    // console.log(runAfterConfig, 'test refresh Data')
     const rows = runAfterConfig.rows || []
     const entity = runAfterConfig.table
     const curRow = entity?.getCurRow()

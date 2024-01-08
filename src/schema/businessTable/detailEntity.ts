@@ -55,11 +55,12 @@ export class detailEntity extends basicEntity {
   getForeignKey() {
     const mainTable = this.mainEntity
   }
-  //子表暂时不需要初始化子表
+  //子表暂时不需要初始化子表 
 }
 
-export const createDetailEntity = (entityName: string, tableInfo: any) => {
+export const createDetailEntity = (entityName: string, tableInfo: any, mainEntity?: any) => {
   const entity = reactive(new detailEntity(entityName, tableInfo, systemInstance))
+  entity.mainEntity = mainEntity
   entity.initEntity()
   return entity
 }

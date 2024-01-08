@@ -1,6 +1,6 @@
 import { computed, getCurrentInstance, h, isReactive, nextTick, onMounted, reactive, ref, resolveComponent, vShow, watch, watchEffect, withDirectives } from "vue";
 import { table } from "./table";
-import { StyleType, filterConfig, position, tableSchema } from "@/types/schema";
+import { StyleType, filterConfig, position, tabItemConfig, tableSchema } from "@/types/schema";
 import { column, createColumn } from "./column";
 import { VxeGridProps, VxeGridEventProps, VxeGrid, VxeColumnProps, VxeColumnSlotTypes, VxeSelect, VxeButton, VxeGridEmits, VxeGridEvents } from "vxe-table";
 import { getRenderFn } from "./columnFn";
@@ -19,6 +19,7 @@ import baseInfoInputView from "./schemaComponent/baseInfoInputView";
 import checkboxCom from "./tableColumnCom/checkboxCom";
 import { createInput } from "./input";
 import { getIcon } from "./icon";
+import { createTab } from "./tab";
 
 export const getTableRowConfig = (table: table) => {
     const tableConfig = table?.tableConfig
@@ -608,8 +609,8 @@ export const initTableConfig = (table: table) => {
     initTableMenu(table)
     initTableGlobalWhere(table)
     initGridOptions(table)
-    initRenderFilterTable(table)
     initRenderFilterColTable(table)
+    initRenderFilterTable(table)
     initComponent(table)
 }
 export const initTableGlobalWhere = (table: table) => {
@@ -642,15 +643,26 @@ export const initRenderFilterColTable = (table: table) => {
         type: 'string',
         field: "operator",
         editType: "select",
+        title: "条件类型",
         options: [
             { label: "大于", value: ">" },
             { label: "等于", value: '=' },
             { label: "小于", value: "<" },
-            { label: "包含", value: "%" }
+            { label: "包含", value: "%" },
+            { label: "大于等于", value: ">=" },
+            { label: "小于等于", value: "<=" },
+            { label: "为空", value: "null" },
+            { label: "非空", value: "not null" },
+
         ],
         onChange: (value) => {
             console.log(value)
         }
+    }, {
+        type: "string",
+        editType: "string",
+        field: "value",
+        title: "值"//条件的值
     }]
     const filterColTable = createTable(renderFilterColTable)
     filterColTable.tableState = 'fullEdit'
@@ -684,7 +696,7 @@ export const initRenderFilterTable = (table: table) => {
     renderFilterTable.showHeaderMenuDialog = false
     renderFilterTable.globalWhereCloseShow = false
     renderFilterTable.globalWhereSearchShow = false
-    //@ts-ignore
+    // //@ts-ignore
     renderFilterTable.onCheckboxChange = (row, record) => {
         const _record = record//is Array
         const curFilterColumn = table.tableData.curFilterColumn
@@ -694,7 +706,21 @@ export const initRenderFilterTable = (table: table) => {
         filterConfig!.filterData = _valueArr
     }
     const _table = createTable(renderFilterTable)
+    //@ts-ignore
     table.pageRef.filterTable = _table
+    // // const renderFilterCalTable = table.renderFilterCalTable
+    // // const _table1 = createTable(renderFilterCalTable)
+    // //@ts-ignore
+    // // table.pageRef.filterCalTable = _table1
+    const tabInstance = createTab({
+        //@ts-ignore 
+        tabItems: [
+            { instance: _table, key: "array", tab: "值过滤", renderKey: "array", renderComName: "instanceView" },
+            { instance: table.pageRef.filterColTable, key: "cal", tab: "值过滤", renderKey: "cal", renderComName: "instanceView" },
+        ] as tabItemConfig[]
+    })
+    table.pageRef.tabInstance = tabInstance
+
 }
 
 export const initTableMenu = (table: table) => {

@@ -1,91 +1,64 @@
 <template>
-  <div class="w-full h-full" id="">
-    <div class="w-full h-full" ref="container">
-      <input-view :inputInstance="input"></input-view>
+  <div>
+    <div :style="{ marginBottom: '16px' }">
+      <a-button @click="add">ADD</a-button>
     </div>
+    <a-tabs v-model:activeKey="activeKey" hide-add type="editable-card" @edit="onEdit">
+      <a-tab-pane v-for="pane in panes" :key="pane.key" :tab="pane.title" :closable="pane.closable">
+        {{ pane.content }}
+      </a-tab-pane>
+    </a-tabs>
   </div>
 </template>
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
 
-<script setup lang="ts">
-import { createPage, nodeConfig } from '@/schema/businessTable/pageTree'
-import tableView from '@/schema/schemaComponent/tableView'
-import { createTable } from '@/schema/table'
-import {
-  computed,
-  getCurrentInstance,
-  h,
-  isProxy,
-  nextTick,
-  onMounted,
-  reactive,
-  ref,
-  vShow,
-  withDirectives,
-} from 'vue'
-import { createMainEntity } from '@/schema/businessTable/mainEntity'
-import { getTableConfig } from '@/api/httpApi'
-import { _columns } from '@/schema/entityColumn'
-import { mainEntity } from '@/schema/businessTable/mainEntity'
-import Mousetrap from 'mousetrap'
-import { tableData, tableData2 } from '@/api/data'
-import { tableData3 } from '@/api/data2'
-import { createDialog, confirm } from '@/schema/dialog'
-import { createInput } from '@/schema/input'
-import { http } from '@/schema/http'
-import { createMenu } from '@/schema/menu'
-import { menuData, } from '@/api/data3'
-import { testTableViewData } from '@/api/data5'
-import { createContextMenu } from '@/schema/businessTable/contextMenu'
-import { useLocalStorage } from '@vueuse/core'
-import { RouteRecordSingleView } from 'vue-router'
-import entityView from '@/schema/schemaComponent/entityView'
-import Index9 from './index9.vue'
-import { VxeInput } from 'vxe-table'
-import { createForm } from '@/schema/form'
-import { treeTableConfig } from '@/api/data6'
-import * as monaco from 'monaco-editor'
-// import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-// import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
-// import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
-// import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
-// import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
-// const container = ref(null)
-// self.MonacoEnvironment = {
-//   getWorker(_, label) { 
-//     if (label === 'json') {
-//       return new jsonWorker()
-//     }
-//     if (label === 'css' || label === 'scss' || label === 'less') {
-//       return new cssWorker()
-//     }
-//     if (label === 'html' || label === 'handlebars' || label === 'razor') {
-//       return new htmlWorker()
-//     }
-//     if (label === 'typescript' || label === 'javascript') {
-//       return new tsWorker()
-//     }
-//     return new editorWorker()
-//   }
-// }
-const { proxy: instance } = getCurrentInstance()!
-const input = createInput({
-  //@ts-ignore
-  type: "codeEdit",
-  field: "test"
-})
-onMounted(() => {
-  // console.log(monaco, 'testCo')
-  // const divIns = (instance?.$refs.container) as any
-  // const edit = monaco.editor.create(divIns, {
-  //   value: "function hello() {\n\talert('Hello world!');\n}",
-  //   language: 'javascript',
-  // })
-  // edit.onDidChangeModelContent((value) => {
-  //   const context = edit.getValue()
-  //   console.log(context, 'testContext')
-  // })
-  // console.log(edit, 'testEdit')
-})
+export default defineComponent({
+  setup() {
+    const panes = ref([
+      { title: 'Tab 1', content: 'Content of Tab 1', key: '1' },
+      { title: 'Tab 2', content: 'Content of Tab 2', key: '2' },
+    ]);
+    const activeKey = ref(panes.value[0].key);
+    const newTabIndex = ref(0);
+
+    const add = () => {
+      activeKey.value = `newTab${newTabIndex.value++}`;
+      panes.value.push({
+        title: `New Tab ${activeKey.value}`,
+        content: `Content of new Tab ${activeKey.value}`,
+        key: activeKey.value,
+      });
+    };
+
+    const remove = (targetKey: string) => {
+      let lastIndex = 0;
+      panes.value.forEach((pane, i) => {
+        if (pane.key === targetKey) {
+          lastIndex = i - 1;
+        }
+      });
+      panes.value = panes.value.filter(pane => pane.key !== targetKey);
+      if (panes.value.length && activeKey.value === targetKey) {
+        if (lastIndex >= 0) {
+          activeKey.value = panes.value[lastIndex].key;
+        } else {
+          activeKey.value = panes.value[0].key;
+        }
+      }
+    };
+
+    const onEdit = (targetKey: string) => {
+      remove(targetKey);
+    };
+
+    return {
+      panes,
+      activeKey,
+      onEdit,
+      add,
+    };
+  },
+});
 </script>
 
-<style scoped></style>

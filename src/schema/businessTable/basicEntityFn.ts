@@ -84,6 +84,45 @@ export const getRenderDetailEntity = async <T extends mainEntity>(entity: T) => 
     // return { mainEntity: entity, }//子表 随便把主表传过去
 }
 
+export const initRenderSearchForm = (entity: basicEntity) => {
+    const searchForm = entity.pageRef.searchForm
+    if (searchForm != null) {
+        return { instance: searchForm }
+    }
+    const _this = entity
+    const renderSearchForm = _this.renderSearchForm
+    renderSearchForm.data = computed(() => {
+        return _this.tableConfig.searchFormFields
+    }) as any
+    renderSearchForm.items = _this.tableConfig.columns!.filter(col => Boolean(col.searchType) !== false).map(col => {
+        let obj: itemConfig = {} as any
+        obj.type = computed(() => {
+            return col.searchType
+        }) as any
+        obj.span = computed(() => {
+            return 24
+        }) as any
+        obj.field = computed(() => {
+            return col.sBindField || col.field
+        }) as any
+        obj.options = computed(() => {
+            return col.options
+        }) as any
+        obj.title = computed(() => {
+            return col.title
+        }) as any
+        return obj
+    })
+    const vxeForm = createForm(renderSearchForm)
+    //@ts-ignore
+    _this.pageRef.searchForm = vxeForm//查询表单
+    return { formInstance: vxeForm, instance: vxeForm }
+}
+
+export const initRenderEditForm = (entity: basicEntity) => {
+
+}
+
 
 
 export const jumpToEditPage = (entity: mainEntity) => {

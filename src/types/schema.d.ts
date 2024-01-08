@@ -14,6 +14,7 @@ import { formitem } from "@/schema/formitem"
 import { input } from "@/schema/input"
 import { layoutGrid } from "@/schema/layoutGrid"
 import { menu, menuItem } from "@/schema/menu"
+import { tabItem } from "@/schema/tabItem"
 import { table } from "@/schema/table"
 import { MenuProps, SelectProps, TabPaneProps, TabsProps } from "ant-design-vue"
 import { CSSProperties } from "ant-design-vue/es/_util/cssinjs/hooks/useStyleRegister"
@@ -548,13 +549,11 @@ export type menuConfig = MenuProps & _menuConfig & {
   formitems?: formItemConfig[]
 }
 
-export type tabItem = TabPaneProps & {
-  title?: string//标题
-}
+
 
 export type tabConfig = TabsProps & {
   closable?: boolean
-  tabItems?: TabPaneProps[]
+  tabItems?: Array<tabItem>
   tabMarginHidden?: boolean
 }
 
@@ -757,4 +756,41 @@ export type entityItemConfig = {
 export type entityInitConfig = {
   entity?: basicEntity,
   entityItem?: basicEntityItem
+}
+
+
+export type tabItemConfig = {
+  tabIndex?: number
+  renderKey: string,
+  renderCom?: string,//渲染组件名称
+  renderComName?: string,
+  renderFunName?: string,
+  instance?: any,
+  nodeType?: nodeType,
+  createConfig?: any,
+  key: string,
+  tab: string | (() => VNode),//
+  id?: string,
+  active?: boolean,
+  closable?: boolean,
+  disabled?: boolean,
+  renderDataFun?: (value: any) => any
+  renderComFun?: (value: any) => any
+}
+
+export type createFn = {
+  createDetailEntity: any,
+  createMainEntity: any,
+  createDetailEntityGroup: any,
+  createButton: any,
+  createInput: any,
+  createTable: any,
+  createMenu: any,
+  createTab: any,
+  createForm: any,
+  form: any,
+  table: any,
+  input: any,
+  menu: any,
+  button: any
 }

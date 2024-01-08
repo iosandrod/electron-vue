@@ -10,12 +10,6 @@ export default defineComponent({
     props: ['instance', 'data', 'table'] as Array<keyof TabsProps | 'table' | 'instance' | 'data' | 'field' | 'tabInstance' | 'tabItems'>,
     setup(props) {
         const instance = props.instance
-        let com: any = instance?.component
-        if (com == null) {
-            com = () => {
-                return h('div', {})
-            }
-        }
         if (toRaw(instance) instanceof input) {
             let inputInstance = instance
             inputInstance.getData = () => {

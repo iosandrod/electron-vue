@@ -8,6 +8,7 @@ import { createTab } from "../tab";
 import tabView from "../schemaComponent/tabView";
 import { createButton } from "../button";
 import buttonView from "../schemaComponent/buttonView";
+import instanceView from "../schemaComponent/instanceView";
 
 export default defineComponent({
     props: ['column', 'data'],
@@ -34,26 +35,26 @@ export default defineComponent({
         }
         const tableRef = column.value.table!.pageRef.filterTable
 
-
-        const tabItems: TabPaneProps[] = [
-            { key: 'array', tab: '过滤' },
-            { key: 'cal', tab: '条件' }
-        ]
-        const activeKey = computed(() => {
-            return filterConfig?.filterType || 'array'
-        })
-        const tabConfig = reactive<tabConfig>({
-            tabItems: tabItems,
-            activeKey: activeKey as any,
-            onChange: (key: any) => {
-                filterConfig!.filterType = key;
-            },
-            tabBarStyle: {
-                margin: '0 0 0 0 !important',
-                height: '20px'
-            }
-        })
-        const tabInstance = createTab(tabConfig)
+        const tabInstance = column.value.table?.pageRef.tabInstance
+        // const tabItems: TabPaneProps[] = [
+        //     { key: 'array', tab: '过滤' },
+        //     { key: 'cal', tab: '条件' }
+        // ]
+        // const activeKey = computed(() => {
+        //     return filterConfig?.filterType || 'array'
+        // })
+        // const tabConfig = reactive<tabConfig>({
+        //     tabItems: tabItems,
+        //     activeKey: activeKey as any,
+        //     onChange: (key: any) => {
+        //         filterConfig!.filterType = key;
+        //     },
+        //     tabBarStyle: {
+        //         margin: '0 0 0 0 !important',
+        //         height: '20px'
+        //     }
+        // })
+        // const tabInstance = createTab(tabConfig)
         const buttonArr: buttonConfig[] = [{
             content: "重置",
             onClick: () => {
@@ -94,11 +95,12 @@ export default defineComponent({
         }).map(btn1 => h(buttonView, { buttonInstance: btn1 }))
         const buttonIns = h('div', { style: { width: "100%", display: 'flex', flexDirection: "row", justifyContent: "space-between" } as StyleType }, btnArr)
         return () => {
-            const tab = h(tabView, { tabInstance: tabInstance })
-            const tableCom = h(tableView, { tableInstance: tableRef })
+            // const tab = h(tabView, { tabInstance: tabInstance })
+            const tab = h(instanceView, { instance: tabInstance })
+            // const tableCom = h(tableView, { tableInstance: tableRef })
             return h('div', { style: { zIndex: 99999, height: '100%', width: '100%', display: 'flex', flexDirection: "column" } as StyleType }, [
                 tab,
-                tableCom,
+                // tableCom,
                 buttonIns
             ])
             // return h('div', Array(10000).fill(1))

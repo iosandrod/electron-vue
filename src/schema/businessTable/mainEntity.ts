@@ -13,6 +13,7 @@ import * as mainMethod from '@/entityMethods/mainTableMethods'
 import * as mainEntityExtend from './mainEntityExtend'
 import { createMainEditEntity, mainEditEntity } from "./mainEditEntity"
 import { createDialog } from "../dialog"
+import { detailAddForm } from "./basicEntityData"
 
 export class mainEntity extends basicEntity {
   //页面树
@@ -127,6 +128,7 @@ export class mainEntity extends basicEntity {
     const editEntity = entityPool[entityNameEdit]
     return editEntity
   }
+
 }
 
 //业务

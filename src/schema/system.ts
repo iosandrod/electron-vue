@@ -138,6 +138,7 @@ export class system extends base {
         const obj = {
           tab: cnName,
           key: entity.entityName,
+          tabIndex: entity.tabIndex
         } as TabPaneProps & { key: string }
         if (entity.isEditEntity == true) {
           obj.tab = `${obj.tab}编辑`

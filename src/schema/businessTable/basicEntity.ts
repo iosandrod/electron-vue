@@ -11,7 +11,7 @@ import { http } from "../http"
 import { createTable, table } from "../table"
 import { getEntityConfig, getTableConfig, getTableData, getTableInfo } from "@/api/httpApi"
 import { tableData, tableData2 } from "@/api/data"
-import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig, tableKeyType, pickKey, getDataConfig, detailTableConfig, entityDialogConfig, jumpConfig, entityInitConfig } from "@/types/schema"
+import { layoutConfig, tableConfig, layoutItem, StyleType, mainTableInfo, btnCategory, formConfig, itemConfig, formItemConfig, layoutItemConfig, menuConfig, dialogConfig, tableState, entityType, entityGroupConfig, entityTableConfig, entityState, command, runBeforeConfig, runAfterConfig, curRowConfig, tableKeyType, pickKey, getDataConfig, detailTableConfig, entityDialogConfig, jumpConfig, entityInitConfig, tabConfig, createFn } from "@/types/schema"
 import { _columns, entityColumn } from "../entityColumn"
 import lodash from "lodash"
 import { comVetor } from "@/plugin/register"
@@ -42,13 +42,18 @@ import instanceView from "../schemaComponent/instanceView"
 import dialogPoolView from "../schemaComponent/dialogPoolView"
 import inputView from "../schemaComponent/inputView"
 import modalVue from "@/components/modal.vue"
-import { contextList, formFormConfig, nodeFormConfig } from "./basicEntityData"
+import { contextList, detailAddForm, formFormConfig, nodeFormConfig } from "./basicEntityData"
 import _ from "lodash"
 import { basicEntityItem, createEntityItem } from "../basicEntityItem"
 import { formatFunction } from "@/utils/utils"
+import { createTab, tab } from "../tab"
 interface tableMethod {
+  createFn: {
 
+  },
+  [key: string]: any
 }
+//@ts-ignore
 export class basicEntity extends base implements tableMethod {//其实他也是一个组件
   buttonMethod: { [key: string]: Function } = {}
   showTab = true
@@ -57,7 +62,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   getFn = getFn
   entityState: entityState = 'scan'
   detailTable?: detailEntity[] = []
-  renderDetailEntity: entityGroupConfig = {}
+  renderDetailEntity: tabConfig = {}
   tableExtend: { [key: string]: Array<Function> } = {}//表格扩展函数
   utils = {
   } as any
@@ -91,7 +96,7 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
   pageRef: {
     editEntityDialog?: dialog
     editEntity?: mainEditEntity
-    dEntityInstance?: detailEntityGroup
+    dEntityInstance?: tab
     buttonGroup?: buttonGroup
     // menuRef?: menu,
     searchDialog?: dialog
@@ -760,34 +765,55 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     }
     const tableInfo = _this.tableInfo
     const detailTable = tableInfo?.detailTable! || []
-    const detailEntity = detailTable.map((table) => {
-      //@ts-ignore
-      const createFn = _this.createFn
-      const dTable = createFn.createDetailEntity(table.tableName, table)//表名
-      dTable.mainEntity = _this as any
-      return dTable
-    })
-    _this.detailTable = detailEntity as any//业务逻辑类型的子组件
+    // const detailEntity = detailTable.map((table) => {
+    //   //@ts-ignore
+    //   const createFn = _this.createFn
+    //   const dTable = createFn.createDetailEntity(table.tableName, table)//表名
+    //   dTable.mainEntity = _this as any
+    //   return dTable
+    // })
+    // _this.detailTable = detailEntity as any//业务逻辑类型的子组件
     const renderDetailEntity = _this.renderDetailEntity
-    renderDetailEntity.entityGroup = computed(() => {
-      return _this.detailTable
+    renderDetailEntity.tabItems = _this.detailTable?.map(row => {
+      const obj = {
+        tab: computed(() => {
+          return row?.tableInfo?.cnName
+        }),
+        key: row.entityName,
+        instance: row,
+      }
+      return obj
     }) as any
     renderDetailEntity.type = computed(() => {
-      return 'card'
+      return 'editable-card'
     }) as any
+    renderDetailEntity.hideAdd = computed(() => {
+      return false
+    }) as any
+    renderDetailEntity.activeKey = computed(() => {
+      return _this.detailEntityConfig.curDetailKey
+    }) as any
+    renderDetailEntity.onEdit = (value, action) => {
+      if (action == 'add') {
+        // const system = _this.system
+        // system.confirmForm
+        this.addDetailEntity()
+      }
+    }
     renderDetailEntity.tabBarStyle = computed(() => {
       const detailTable = _this.detailTable
       const obj = {
         margin: '0 0 0 0 !important',
         height: '30px'
       } as StyleType
-      if (detailTable!?.length <= 1) {
+      if (detailTable!?.length <= 1 && this.layoutConfig.isDraggable == true) {
         obj.display = 'none'
       }
       return obj
     }) as any
     //@ts-ignore 
-    const dEntityInstance = _this.createFn.createDetailEntityGroup(renderDetailEntity)
+    // const dEntityInstance = _this.createFn.createDetailEntityGroup(renderDetailEntity)
+    const dEntityInstance = createTab(renderDetailEntity)
     //@ts-ignore
     _this.pageRef.dEntityInstance = dEntityInstance
     _this.detailEntityConfig.curDetailKey = _this.detailTable?.[0]?.tableInfo?.tableName || ''
@@ -1020,94 +1046,32 @@ export class basicEntity extends base implements tableMethod {//其实他也是�
     const system = this.system
     system.routeClose({ entityName: tabKey! })
   }
+  async addDetailEntity() {
+    const _this = this
+    const bindData = {
+      "keyCodeColumn": "cInvCode",
+      "clsKey": "iSdLineID",
+      "keyCode": "cSdOrderNo",
+      "cnName": "销售订单明细",
+      "tableName": "t_SdOrderEntry",
+      "foreignKey": "iInterID",
+      "needData": true
+    }
+    const formConfig = detailAddForm
+    const system = _this.system
+    await system.confirmForm(formConfig, bindData)
+    // const dInfo=await 满足
+    const dTable = this.tableInfo?.detailTable?.[0]
+    const entity: any = this
+    const createFn: createFn = entity.createFn
+    const createDetailEntity = createFn.createDetailEntity
+    const dEntity: detailEntity = createDetailEntity(dTable?.tableName, dTable, _this)
+    this.detailTable?.push(dEntity)
+    this.pageRef.dEntityInstance?.addTabItem({ key: dEntity.entityName!, instance: dEntity, tab: dTable?.cnName })
+    this.detailEntityConfig.curDetailKey = dEntity.entityName
+  }
 }
 
 export const createBasicEntity = async () => {
   return null
 }
-/* 
-const dialogConfig = config.dialogConfig
-    const closeOnDestroy = config.closeOnDestroy
-    const dialogName = config.dialogName
-    const dialogKey = config.dialogKey
-    const pageRef = this.pageRef
-    if (dialogKey != null) {
-      //@ts-ignore
-      const cacheRef = pageRef[dialogKey]
-      if (cacheRef != null) {
-        return cacheRef
-      }
-    }
-    const onBeforeHide_old = dialogConfig.onBeforeHide
-    const dialogPool = this.dialogPool
-    if (closeOnDestroy == true) {
-      dialogConfig.onBeforeHide = (dialogInstance) => {
-        if (typeof onBeforeHide_old == 'function') {
-          onBeforeHide_old(dialogInstance)
-        }
-        //@ts-ignore
-        const index = dialogPool.findIndex(dialog => dialog === dialogInstance)
-        if (index != -1) {
-          setTimeout(() => {
-            dialogPool.splice(index, 1)
-          }, 200);
-        }
-      }
-    }
-    const _dialog = createDialog(dialogName, dialogConfig) as any
-    this.dialogPool.push(_dialog)
-    if (Boolean(dialogKey) != false) {
-      //@ts-ignore
-      this.pageRef[dialogKey!] = _dialog
-    }
-    return _dialog
-*/
-
-
-/* 
-const schema = _this.entityConfig
-            const itemArr = schema!.map(
-              (item: any) => {
-                const _item = {
-                  x: item.x, y: item.y, h: item.h, w: item.w, i: item.i, onMove: (i: any, newx: any, newy: any) => {
-                    item.x = newx
-                    item.y = newy
-                  },
-                  onResize: (i: any, newH: any, newW: any, newHPx: any, newWPx: any) => {
-                    item.h = newH
-                    item.w = newW
-                  }
-                } as layoutItem
-                return h(layoutItemCom, _item,
-                  () => {
-                    let renderCom: any = null
-                    let defaultCom: any = null
-                    const component = item.component//
-                    if (component != null) {//
-                      renderCom = component()
-                    }
-                    const renderStyle = { position: "relative", overflow: "hidden", height: '100%', width: "100%" } as StyleType
-                    const dragCom = withDirectives(
-                      h('div', {
-                        style: _divStyle,
-                        onContextmenu: (event: MouseEvent) => {
-                          console.log(item, 'testItem')
-                          _this.openContext(event)
-                        }
-                      } as propsConfig, [
-                        h(contextMenuView, { contextMenuInstance: _this.pageRef.contextMenu })
-                      ]), [[vShow, isDrag.value]]
-                    )
-                    if (renderCom) {
-                      defaultCom = h('div', { style: renderStyle }, [renderCom,
-                        dragCom
-                      ])
-                    } else {
-                      defaultCom = h('div', { style: renderStyle }, ['默认节点'])
-                    }
-                    return defaultCom
-                  }
-                )
-              })
-            return itemArr
-*/

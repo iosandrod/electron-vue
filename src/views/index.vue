@@ -41,6 +41,7 @@
             <!-- <component :is="vNode1"></component> -->
             <!-- <instance-view :instance="_entity"></instance-view> -->
             <router-view></router-view>
+            <!-- <instance-view :instance="_tab"></instance-view> -->
           </div>
         </div>
         <dialogPoolView></dialogPoolView>
@@ -64,8 +65,9 @@ import { RouterView } from 'vue-router';
 import entityView from '@/schema/schemaComponent/entityView';
 import { createMainEntity, mainEntity } from '@/schema/businessTable/mainEntity';
 import XEUtils from 'xe-utils';
-import { layoutItemConfig } from '@/types/schema';
+import { layoutItemConfig, tabItemConfig } from '@/types/schema';
 import { http } from '@/schema/http'
+import { createTab } from '@/schema/tab';
 const pageConfig = computed(() => {
   return systemInstance.pageConfig
 })
@@ -89,6 +91,22 @@ function openDialog() {
     entity.openDialog('searchDialog')
   }
 }
+
+const _tab = createTab({
+  tabItems: [{
+    renderKey: '3',
+    key: '3',
+    renderCom: '',
+    renderComName: '',
+    tab: "第一"
+  }, {
+    renderKey: '4',
+    key: '4',
+    renderCom: '',
+    renderComName: '',
+    tab: "第二"
+  }] as tabItemConfig[]
+})
 
 
 function getTableData() {

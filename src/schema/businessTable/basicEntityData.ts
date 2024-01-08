@@ -283,3 +283,110 @@ export const formItemForm: formConfig = {
         }
     ] as itemConfig[]
 }
+
+export const detailAddForm: formConfig = {
+    title: "新增子表",
+    itemWidth: 12,
+    items: [
+        {
+            "field": "tableName",
+            "title": "表名称",
+            "type": "string"
+        },
+        {
+            "field": "cnName",
+            "title": "表中文名",
+            "type": "string"
+        },
+        {
+            "field": "foreignKey",
+            "title": "表外键",
+            "type": "wangeEditor"
+        },
+        {
+            "field": "clsKey",
+            "title": "子表主键",
+            "type": "wangeEditor"
+        },
+        {
+            "field": "keyCodeColumn",
+            "title": "子表必录字段",
+            "type": "wangeEditor"
+        },
+        {
+            "field": "detailTable",
+            "title": "子表",
+            "type": "wangeEditor"
+        },
+        {
+            "field": "keyCode",
+            "title": "主表必录字段",
+            "type": "wangeEditor"
+        },
+        {
+            "field": "mainView",
+            "title": "子表组件",
+            "type": "string"
+        },
+        {
+            "field": "dTableExtend",
+            "title": "子表函数扩展",
+            "type": "wangeEditor"
+        },
+        {
+            "field": "dPosition",
+            "title": "子表的子表位置",
+            "type": "select",
+            "options": [
+                {
+                    "key": "bottom",
+                    "value": "下侧"
+                },
+                {
+                    "key": "right",
+                    "value": "右侧"
+                }
+            ]
+        },
+        {
+            "field": "addRowNum",
+            "title": "新增行数量",
+            "type": "number"
+        },
+        {
+            "field": "deleteBill",
+            "title": "无需删除数据",
+            "type": "bool"
+        },
+        {
+            "field": "canSelect",
+            "title": "启用选择框",
+            "type": "bool"
+        },
+        {
+            "field": "forgotData",
+            "title": "保存无需数据",
+            "type": "bool"
+        },
+        {
+            "field": "editHidden",
+            "title": "编辑隐藏",
+            "type": "bool"
+        },
+        {
+            "field": "viewHidden",
+            "title": "主页隐藏",
+            "type": "bool"
+        },
+        {
+            "field": "mainButtonShow",
+            "title": "主页按钮显示",
+            "type": "bool"
+        },
+        {
+            "field": "specialTable",
+            "title": "特殊表",
+            "type": "bool"
+        }
+    ] as itemConfig[]
+}
